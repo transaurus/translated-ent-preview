@@ -1,0 +1,362 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-crud.md",
+  "source_file_content_hash": "2eeb93a0d79a015a8cda387eebdf292f4d2904ab17e4825df2dc8752e32a2b0c",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-crud\ntitle: Query and Mutation\nsidebar_label: Query and Mutation\n---",
+      "source_content_hash": "1f0f58fbbe023424eabf00d4da61c7c38f2006fba3d6af22b5c93d4aee970b9e",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "After setting up our project, we're ready to create our Todo list and query it.",
+      "source_content_hash": "1bd4af6c6176809a0dfbb4313f3f10ebf8aef12a2ac398e172426f6ce399befb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成项目设置后，我们已准备好创建待办事项列表并进行查询。"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "## Create a Todo",
+      "source_content_hash": "12dc27c9d13cf83025ec7cd01567a43787c17b5c4705160fe3421053be35140c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 创建待办事项"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "Let's create a Todo in our testable example. We do it by adding the following code to `example_test.go`:",
+      "source_content_hash": "1c37caa9690c682eecbdde31c6f2035bf040961f37cb5e1ecb26aa2ef05a8b6e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们在测试示例中创建一个待办事项。通过将以下代码添加到`example_test.go`中实现："
+      }
+    },
+    {
+      "segment_id": "b9c7a144",
+      "source_content": "```go\nfunc Example_Todo() {\n\t// ...\n\ttask1, err := client.Todo.Create().Save(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating a todo: %v\", err)\n\t}\n\tfmt.Println(task1)\n\t// Output:\n\t// Todo(id=1)\n}\n```",
+      "source_content_hash": "6a2a589b811dfb1c832e906e1d3c18b883c06fb90227d181d8f75e5cd09a2a8d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b9c7a144"
+      }
+    },
+    {
+      "segment_id": "ccc88b4c",
+      "source_content": "Running `go test` should pass successfully. ",
+      "source_content_hash": "f7e4b2e79effd241e5ecf7bffb414385d5c36065d505d06ee0353234aed5dc1a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行`go test`应能成功通过。"
+      }
+    },
+    {
+      "segment_id": "3c36424c",
+      "source_content": "## Add Fields To The Schema",
+      "source_content_hash": "cb61b2f85cee2582f418c2977267b13dbf603fcf018447e2f58e6a50ef9eb660",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 向Schema添加字段"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "As you can see, our Todos are too boring as they contain only the `ID` field. Let's improve this example by adding\nmultiple fields to the schema in `todo/ent/schema/todo.go`:",
+      "source_content_hash": "c73e152eff7670470540d69d5ef029eb510474b51414f1a3f6a0a67ce0ee7c01",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如你所见，当前的待办事项仅包含`ID`字段过于简单。让我们通过在`todo/ent/schema/todo.go`中添加多个字段来改进示例："
+      }
+    },
+    {
+      "segment_id": "a2110253",
+      "source_content": "```go\nfunc (Todo) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Text(\"text\").\n\t\t\tNotEmpty(),\n\t\tfield.Time(\"created_at\").\n\t\t\tDefault(time.Now).\n\t\t\tImmutable(),\n\t\tfield.Enum(\"status\").\n\t\t\tNamedValues(\n\t\t\t\t\"InProgress\", \"IN_PROGRESS\",\n\t\t\t\t\"Completed\", \"COMPLETED\",\n\t\t\t).\n\t\t\tDefault(\"IN_PROGRESS\"),\n\t\tfield.Int(\"priority\").\n\t\t\tDefault(0),\n\t}\n}\n```",
+      "source_content_hash": "fc9522278c991daf2b9dcf711a15f11fabeff7c391e61c03988fa2f06bc629f8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a2110253"
+      }
+    },
+    {
+      "segment_id": "98d26038",
+      "source_content": "After adding these fields, we need to run the code-generation as before:",
+      "source_content_hash": "2c583f386e3a1a66bb575ef8e0a9c7a272c11be3b5607e741de179e88bbea7dc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "添加这些字段后，需要像之前一样运行代码生成："
+      }
+    },
+    {
+      "segment_id": "f275f5fd",
+      "source_content": "```console\ngo generate ./ent\n```",
+      "source_content_hash": "c0973348962a802c92e5593c9f9a81eb75bfaa2305c100e2924981cdf22269f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f275f5fd"
+      }
+    },
+    {
+      "segment_id": "23dfb152",
+      "source_content": "As you may notice, all fields have a default value on creation except the `text` field, which must be provided by\nthe user. Let's change our `example_test.go` to follow these changes:",
+      "source_content_hash": "b93ca87e6271345856bde7439962317e09f351b11123664347557441e5428daa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "你可能注意到，除必须由用户提供的`text`字段外，所有字段在创建时都有默认值。让我们修改`example_test.go`以适应这些变更："
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```go\nfunc Example_Todo() {\n\t// ...\n\ttask1, err := client.Todo.Create().SetText(\"Add GraphQL Example\").Save(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating a todo: %v\", err)\n\t}\n\tfmt.Printf(\"%d: %q\\n\", task1.ID, task1.Text)\n\ttask2, err := client.Todo.Create().SetText(\"Add Tracing Example\").Save(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating a todo: %v\", err)\n\t}\n\tfmt.Printf(\"%d: %q\\n\", task2.ID, task2.Text)\n    // Output:\n    // 1: \"Add GraphQL Example\"\n    // 2: \"Add Tracing Example\"\n}\n```",
+      "source_content_hash": "b22831612a6b50a5344c564d914e8d56bfb8860410ed35230f8fb3a7e5c7e361",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "463ed165",
+      "source_content": "Wonderful! We created a schema in the database with 5 columns (`id`, `text`, `created_at`, `status`, `priority`)\nand created 2 items in our todo list, by inserting 2 rows to the table.",
+      "source_content_hash": "e9506b874ddd55c864679187b108826f074487f7fa4d2abb9eca9b8e11fbbf2f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了！我们已在数据库中创建包含5列（`id`、`text`、`created_at`、`status`、`priority`）的schema，并通过向表中插入2行数据创建了2个待办事项。"
+      }
+    },
+    {
+      "segment_id": "a1fa5396",
+      "source_content": "![tutorial-todo-create](https://entgo.io/images/assets/tutorial-todo-create-items.png)",
+      "source_content_hash": "d0a2a9663aaa2c3e2dd6a73bcc521481fdf72d9d22f5f39e09b4bc00e86b4f09",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![tutorial-todo-create](https://entgo.io/images/assets/tutorial-todo-create-items.png)"
+      }
+    },
+    {
+      "segment_id": "1c598ecd",
+      "source_content": "## Add Edges To The Schema",
+      "source_content_hash": "71fcd3efcde2bb3bef47da7daea6c33381b8bf11b6cfd8a68f249ee1f68010b8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 向Schema添加边关系"
+      }
+    },
+    {
+      "segment_id": "2547a6bb",
+      "source_content": "Let’s say we want to design our todo list so that an item can depend on another item. Therefore, we'll add a `parent`\nedge to each Todo item, to get the item it depends on, and a back-reference edge named `children` in order to get all\nitems that depend on it.",
+      "source_content_hash": "f286122c32ecb38cdf917fb132936fdb171f7325d0bdb79f1dc87e4f71729ffc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "假设我们需要设计待办事项列表，使得一个事项可以依赖另一个事项。因此，我们将为每个待办事项添加`parent`边以获取其依赖项，并添加反向引用边`children`以获取所有依赖它的事项。"
+      }
+    },
+    {
+      "segment_id": "86348f98",
+      "source_content": "Let's change our schema again in `todo/ent/schema/todo.go`:",
+      "source_content_hash": "d7b7291a5bc7dba5158a9cafffa60b007b42223907987ea8e6224293dfaffbb3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们再次修改`todo/ent/schema/todo.go`中的schema："
+      }
+    },
+    {
+      "segment_id": "daa16011",
+      "source_content": "```go\nfunc (Todo) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"parent\", Todo.Type).\n\t\t\tUnique().\n\t\t\tFrom(\"children\"),\n\t}\n}\n```",
+      "source_content_hash": "493451955ec00e07f0f604301673e2de26d9c899132d0ca534dcad3297275b77",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daa16011"
+      }
+    },
+    {
+      "segment_id": "a2c0166e",
+      "source_content": "After adding these edges, we need to run the code-generation as before:",
+      "source_content_hash": "498d9dfbb755817df0f10f606d5c5fe2da67309ca71fab5e82d67591fe75ff2c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "添加这些边关系后，需要像之前一样运行代码生成："
+      }
+    },
+    {
+      "segment_id": "d44e4104",
+      "source_content": "```console\ngo generate ./ent\n```",
+      "source_content_hash": "c0973348962a802c92e5593c9f9a81eb75bfaa2305c100e2924981cdf22269f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d44e4104"
+      }
+    },
+    {
+      "segment_id": "56bc971f",
+      "source_content": "## Connect 2 Todos",
+      "source_content_hash": "7c7dfade08b3a1edaeb54790039b4ef1d925fe3e5964032ecbdbb02a2fe6a684",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 连接两个待办事项"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "We continue our edges example, by updating the 2 todo items we just created. We define that item-2 (*\"Add Tracing Example\"*)\ndepends on item-1 (*\"Add GraphQL Example\"*). ",
+      "source_content_hash": "d88251a0cceaf91de79c8e7129367593632881c96cebe2db76eb025e151f830d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们通过更新刚创建的两个待办事项来继续边关系示例。设定事项2（*\"添加追踪示例\"*）依赖于事项1（*\"添加GraphQL示例\"*）。"
+      }
+    },
+    {
+      "segment_id": "e9313fef",
+      "source_content": "![tutorial-todo-create](https://entgo.io/images/assets/tutorial-todo-create-edges.png)",
+      "source_content_hash": "a512ebaef112b1cb7073bff239eaf879bba22e8b7ec8b10852eaa60dd213d223",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![tutorial-todo-create](https://entgo.io/images/assets/tutorial-todo-create-edges.png)"
+      }
+    },
+    {
+      "segment_id": "342e4d80",
+      "source_content": "```go\nfunc Example_Todo() {\n\t// ...\n\tif err := task2.Update().SetParent(task1).Exec(ctx); err != nil {\n\t\tlog.Fatalf(\"failed connecting todo2 to its parent: %v\", err)\n\t}\n    // Output:\n    // 1: \"Add GraphQL Example\"\n    // 2: \"Add Tracing Example\"\n}\n```",
+      "source_content_hash": "eeb105328cc0c2ffd2c1b2e673d5b22ccc4cb40e25bf391a1d7d645246f20c07",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_342e4d80"
+      }
+    },
+    {
+      "segment_id": "2bb63d77",
+      "source_content": "## Query Todos",
+      "source_content_hash": "927bd4b1ab50e1b4f96ace08baf36060e8bacee8eadaa512e634151cc063a7b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 查询待办事项"
+      }
+    },
+    {
+      "segment_id": "53aa2b95",
+      "source_content": "After connecting item-2 to item-1, we're ready to start querying our todo list. ",
+      "source_content_hash": "dd243f09727fe4e7252256f8dc0b4f6813ee230f8026210bbd5b5737e54048f2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "将事项2连接到事项1后，我们已准备好开始查询待办事项列表。"
+      }
+    },
+    {
+      "segment_id": "c766290e",
+      "source_content": "#### Query all todo items:",
+      "source_content_hash": "d3cec2fcd782bd73909f0b7e25c80a1a7774f4cc1aa340e7b5f93a7570ac93ee",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 查询所有待办事项："
+      }
+    },
+    {
+      "segment_id": "43cca4d3",
+      "source_content": "```go\nfunc Example_Todo() {\n\t// ...\n\n\t// Query all todo items.\n\titems, err := client.Todo.Query().All(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed querying todos: %v\", err)\n\t}\n\tfor _, t := range items {\n\t\tfmt.Printf(\"%d: %q\\n\", t.ID, t.Text)\n\t}\n\t// Output:\n\t// 1: \"Add GraphQL Example\"\n\t// 2: \"Add Tracing Example\"\n}\n```",
+      "source_content_hash": "3747ab24121a8f2d93cdc2cbc395f065bc42e9f59bb0eec65f88ea578ead54e7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_43cca4d3"
+      }
+    },
+    {
+      "segment_id": "671cbf7c",
+      "source_content": "#### Query all todo items that depend on other items:",
+      "source_content_hash": "14da858fb51c810ee696df9b2e45516a6039237c8c10e89de437b345af2e0191",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 查询所有依赖其他事项的待办事项："
+      }
+    },
+    {
+      "segment_id": "d58c5dc0",
+      "source_content": "```go\nfunc Example_Todo() {\n\t// ...\n\n\t// Query all todo items that depend on other items.\n\titems, err := client.Todo.Query().Where(todo.HasParent()).All(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed querying todos: %v\", err)\n\t}\n\tfor _, t := range items {\n\t\tfmt.Printf(\"%d: %q\\n\", t.ID, t.Text)\n\t}\n\t// Output:\n\t// 2: \"Add Tracing Example\"\n}\n```",
+      "source_content_hash": "a02b973537b51ecc7d259582652dfaff863e2141801efdb524246889a3185da8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d58c5dc0"
+      }
+    },
+    {
+      "segment_id": "89b740fe",
+      "source_content": "#### Query all todo items that don't depend on other items and have items that depend on them:",
+      "source_content_hash": "f8624af4bd2521cd9977ebbd2fd93207c417d4a0a704147212817a0849a3df67",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 查询所有不依赖其他事项但被其他事项依赖的待办事项："
+      }
+    },
+    {
+      "segment_id": "a1af15b5",
+      "source_content": "```go\nfunc Example_Todo() {\n\t// ...\n\n\t// Query all todo items that don't depend on other items and have items that depend them.\n\titems, err := client.Todo.Query().\n\t\tWhere(\n\t\t\ttodo.Not(\n\t\t\t\ttodo.HasParent(),\n\t\t\t),\n\t\t\ttodo.HasChildren(),\n\t\t).\n\t\tAll(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed querying todos: %v\", err)\n\t}\n\tfor _, t := range items {\n\t\tfmt.Printf(\"%d: %q\\n\", t.ID, t.Text)\n\t}\n\t// Output:\n\t// 1: \"Add GraphQL Example\"\n}\n```",
+      "source_content_hash": "f018af6432198d75c193c97d76cabb64df3060d8306f622dfab598139eda7f25",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a1af15b5"
+      }
+    },
+    {
+      "segment_id": "3bff4086",
+      "source_content": "#### Query parent through its children:",
+      "source_content_hash": "15fa486f34d24a926c9f4ed92116a7452288cff16f3cd93cb5e264e96f7864e9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 通过子项查询父项："
+      }
+    },
+    {
+      "segment_id": "ec2ce541",
+      "source_content": "```go\nfunc Example_Todo() {\n\t// ...\n\t\n\t// Get a parent item through its children and expect the\n\t// query to return exactly one item.\n\tparent, err := client.Todo.Query(). // Query all todos.\n\t\tWhere(todo.HasParent()).        // Filter only those with parents.\n\t\tQueryParent().                  // Continue traversals to the parents.\n\t\tOnly(ctx)                       // Expect exactly one item.\n\tif err != nil {\n\t\tlog.Fatalf(\"failed querying todos: %v\", err)\n\t}\n\tfmt.Printf(\"%d: %q\\n\", parent.ID, parent.Text)\n\t// Output:\n\t// 1: \"Add GraphQL Example\"\n}\n```",
+      "source_content_hash": "3650717ebab36685850d9cc6252c6604f8c05a183c36d804e3cf0bc5349e3aac",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ec2ce541"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-crud.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.686484+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "2eeb93a0d79a015a8cda387eebdf292f4d2904ab17e4825df2dc8752e32a2b0c"
+  }
+}

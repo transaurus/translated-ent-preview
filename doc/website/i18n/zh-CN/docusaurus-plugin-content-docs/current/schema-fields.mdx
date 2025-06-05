@@ -1,0 +1,996 @@
+---
+id: schema-fields
+title: Fields
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## 快速概览
+
+模式中的字段（或属性）是节点的属性。例如，一个包含4个字段的`User`：`age`、`name`、`username`和`created_at`：
+
+![re-fields-properties](https://entgo.io/images/assets/er_fields_properties.png)
+
+字段通过`Fields`方法从模式中返回。例如：
+
+```go
+package schema
+
+import (
+	"time"
+
+	"entgo.io/ent"
+	"entgo.io/ent/schema/field"
+)
+
+// User schema.
+type User struct {
+	ent.Schema
+}
+
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int("age"),
+		field.String("name"),
+		field.String("username").
+			Unique(),
+		field.Time("created_at").
+			Default(time.Now),
+	}
+}
+```
+
+默认情况下所有字段都是必填的，可以通过`Optional`方法设置为可选。
+
+## 类型
+
+框架目前支持以下类型：
+
+- 所有Go数值类型。如`int`、`uint8`、`float64`等。
+- `bool`
+- `string`
+- `time.Time`
+- `UUID`
+- `[]byte`（仅限SQL）。
+- `JSON`（仅限SQL）。
+- `Enum`（仅限SQL）。
+- `Other`（仅限SQL）。
+
+```go
+package schema
+
+import (
+	"time"
+	"net/url"
+
+	"github.com/google/uuid"
+	"entgo.io/ent"
+	"entgo.io/ent/schema/field"
+)
+
+// User schema.
+type User struct {
+	ent.Schema
+}
+
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int("age").
+			Positive(),
+		field.Float("rank").
+			Optional(),
+		field.Bool("active").
+			Default(false),
+		field.String("name").
+			Unique(),
+		field.Time("created_at").
+			Default(time.Now),
+		field.JSON("url", &url.URL{}).
+			Optional(),
+		field.JSON("strings", []string{}).
+			Optional(),
+		field.Enum("state").
+			Values("on", "off").
+			Optional(),
+		field.UUID("uuid", uuid.UUID{}).
+			Default(uuid.New),
+	}
+}
+```
+
+要了解每种类型如何映射到其数据库类型，请参阅[迁移](migrate.md)部分。
+
+## ID字段
+
+`id`字段是模式中内置的，无需声明。在基于SQL的数据库中，其类型默认为`int`（但可以通过[代码生成选项](code-gen.md#code-generation-options)更改），并在数据库中自动递增。
+
+若要将`id`字段配置为在所有表中全局唯一，请在运行模式迁移时使用[WithGlobalUniqueID](migrate.md#universal-ids)选项。
+
+如果需要为`id`字段进行不同的配置，或者应由应用程序在创建实体时提供`id`值（例如UUID），请覆盖内置的`id`配置。例如：
+
+```go
+// Fields of the Group.
+func (Group) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int("id").
+			StructTag(`json:"oid,omitempty"`),
+	}
+}
+
+// Fields of the Blob.
+func (Blob) Fields() []ent.Field {
+	return []ent.Field{
+		field.UUID("id", uuid.UUID{}).
+			Default(uuid.New).
+			StorageKey("oid"),
+	}
+}
+
+// Fields of the Pet.
+func (Pet) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").
+			MaxLen(25).
+			NotEmpty().
+			Unique().
+			Immutable(),
+	}
+}
+```
+
+如果需要设置自定义函数来生成ID，可以使用`DefaultFunc`指定一个在创建资源时始终运行的函数。更多信息请参阅[相关FAQ](faq.md#how-do-i-use-a-custom-generator-of-ids)。
+
+```go
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int64("id").
+			DefaultFunc(func() int64 {
+				// An example of a dumb ID generator - use a production-ready alternative instead.
+				return time.Now().Unix() << 8 | atomic.AddInt64(&counter, 1) % 256
+			}),
+	}
+}
+```
+
+## 数据库类型
+
+每种数据库方言都有其从Go类型到数据库类型的映射。例如，MySQL方言将`float64`字段创建为数据库中的`double`列。但是，可以使用`SchemaType`方法覆盖默认行为。
+
+```go
+package schema
+
+import (
+    "entgo.io/ent"
+    "entgo.io/ent/dialect"
+    "entgo.io/ent/schema/field"
+)
+
+// Card schema.
+type Card struct {
+    ent.Schema
+}
+
+// Fields of the Card.
+func (Card) Fields() []ent.Field {
+	return []ent.Field{
+		field.Float("amount").
+			SchemaType(map[string]string{
+				dialect.MySQL:    "decimal(6,2)",   // Override MySQL.
+				dialect.Postgres: "numeric",        // Override Postgres.
+			}),
+	}
+}
+```
+
+## Go类型
+
+字段的默认类型是基本的Go类型。例如，字符串字段的类型是`string`，时间字段的类型是`time.Time`。`GoType`方法提供了用自定义类型覆盖默认ent类型的选项。
+
+自定义类型必须是可以转换为Go基本类型的类型，或者实现了[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field?tab=doc#ValueScanner)接口的类型，或者具有[外部ValueScanner](#external-valuescanner)的类型。此外，如果提供的类型实现了Validator接口且未设置验证器，则将使用类型验证器。
+
+```go
+package schema
+
+import (
+    "database/sql"
+
+    "entgo.io/ent"
+    "entgo.io/ent/dialect"
+    "entgo.io/ent/schema/field"
+    "github.com/shopspring/decimal"
+)
+
+// Amount is a custom Go type that's convertible to the basic float64 type.
+type Amount float64
+
+// Card schema.
+type Card struct {
+    ent.Schema
+}
+
+// Fields of the Card.
+func (Card) Fields() []ent.Field {
+	return []ent.Field{
+		field.Float("amount").
+			GoType(Amount(0)),
+		field.String("name").
+			Optional().
+			// A ValueScanner type.
+			GoType(&sql.NullString{}),
+		field.Enum("role").
+			// A convertible type to string.
+			GoType(role.Role("")),
+		field.Float("decimal").
+			// A ValueScanner type mixed with SchemaType.
+			GoType(decimal.Decimal{}).
+			SchemaType(map[string]string{
+			    dialect.MySQL:    "decimal(6,2)",
+			    dialect.Postgres: "numeric",
+			}),
+	}
+}
+```
+
+#### 外部`ValueScanner`
+
+Ent允许为基本或自定义Go类型附加自定义`ValueScanner`。这使得可以在不实现`ValueScanner`接口的情况下使用标准模式字段，同时控制它们在数据库中的存储方式。此外，此选项还允许用户使用未实现`ValueScanner`的`GoType`，例如`*url.URL`。
+
+:::note
+目前，此选项仅适用于文本和数字字段，但未来将扩展到其他类型。
+:::
+
+<Tabs>
+<TabItem value="TextMarshaller">
+
+Fields with a custom Go type that implements the `encoding.TextMarshaller` and `encoding.TextUnmarshaller` interfaces can
+use the `field.TextValueScanner` as a `ValueScanner`. This `ValueScanner` calls `MarshalText` and `UnmarshalText` for
+writing and reading field values from the database:
+
+```go
+field.String("big_int").
+    GoType(&big.Int{}).
+    ValueScanner(field.TextValueScanner[*big.Int]{})
+```
+
+</TabItem>
+<TabItem value="BinaryMarshaller">
+
+Fields with a custom Go type that implements the `encoding.BinaryMarshaller` and `encoding.BinaryUnmarshaller` interfaces can
+use the `field.BinaryValueScanner` as a `ValueScanner`. This `ValueScanner` calls `MarshalBinary` and `UnmarshalBinary` for
+writing and reading field values from the database:
+
+```go
+field.String("url").
+    GoType(&url.URL{}).
+    ValueScanner(field.BinaryValueScanner[*url.URL]{})
+```
+
+</TabItem>
+<TabItem value="Functions based">
+
+The `field.ValueScannerFunc` allows setting two functions to be used for writing and reading database values: `V`
+for `driver.Value` and `S` for `sql.Scanner`:
+
+```go
+field.String("encoded").
+	ValueScanner(field.ValueScannerFunc[string, *sql.NullString]{
+		V: func(s string) (driver.Value, error) {
+			return base64.StdEncoding.EncodeToString([]byte(s)), nil
+		},
+		S: func(ns *sql.NullString) (string, error) {
+			if !ns.Valid {
+				return "", nil
+			}
+			b, err := base64.StdEncoding.DecodeString(ns.String)
+			if err != nil {
+				return "", err
+			}
+			return string(b), nil
+		},
+	})
+```
+
+</TabItem>
+<TabItem value="Custom">
+
+```go title="usage"
+field.String("prefixed").
+	ValueScanner(PrefixedHex{
+		prefix: "0x",
+	})
+```
+
+```go title="implementation"
+
+// PrefixedHex is a custom type that implements the TypeValueScanner interface.
+type PrefixedHex struct {
+	prefix string
+}
+
+// Value implements the TypeValueScanner.Value method.
+func (p PrefixedHex) Value(s string) (driver.Value, error) {
+	return p.prefix + ":" + hex.EncodeToString([]byte(s)), nil
+}
+
+// ScanValue implements the TypeValueScanner.ScanValue method.
+func (PrefixedHex) ScanValue() field.ValueScanner {
+	return &sql.NullString{}
+}
+
+// FromValue implements the TypeValueScanner.FromValue method.
+func (p PrefixedHex) FromValue(v driver.Value) (string, error) {
+	s, ok := v.(*sql.NullString)
+	if !ok {
+		return "", fmt.Errorf("unexpected input for FromValue: %T", v)
+	}
+	if !s.Valid {
+		return "", nil
+	}
+	d, err := hex.DecodeString(strings.TrimPrefix(s.String, p.prefix+":"))
+	if err != nil {
+		return "", err
+	}
+	return string(d), nil
+}
+```
+
+</TabItem>
+</Tabs>
+
+## 其他字段类型
+
+Other类型表示不适合任何标准字段类型的特殊字段，例如PostgreSQL的范围类型或地理空间类型。
+
+```go
+package schema
+
+import (
+	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/schema/field"
+	
+	"github.com/jackc/pgtype"
+)
+
+// User schema.
+type User struct {
+	ent.Schema
+}
+
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Other("duration", &pgtype.Tstzrange{}).
+			SchemaType(map[string]string{
+				dialect.Postgres: "tstzrange",
+			}),
+	}
+}
+```
+
+## 默认值
+
+**非唯一**字段支持通过`Default`和`UpdateDefault`方法设置默认值，也可使用`DefaultFunc`指定自定义生成器。
+
+```go
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Time("created_at").
+			Default(time.Now),
+		field.Time("updated_at").
+			Default(time.Now).
+			UpdateDefault(time.Now),
+		field.String("name").
+			Default("unknown"),
+		field.String("cuid").
+			DefaultFunc(cuid.New),
+		field.JSON("dirs", []http.Dir{}).
+			Default([]http.Dir{"/tmp"}),
+	}
+}
+```
+
+可通过[`entsql.Annotation`](https://pkg.go.dev/entgo.io/ent@master/dialect/entsql#Annotation)为默认值配置添加SQL特有的字面量或表达式（如函数调用）：
+
+```go {9,16,23-27}
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		// Add a new field with CURRENT_TIMESTAMP
+		// as a default value to all previous rows.
+		field.Time("created_at").
+			Default(time.Now).
+			Annotations(
+				entsql.Default("CURRENT_TIMESTAMP"),
+			),
+		// Add a new field with a default value
+		// expression that works on all dialects.
+		field.String("field").
+			Optional().
+			Annotations(
+				entsql.DefaultExpr("lower(other_field)"),
+			),
+		// Add a new field with custom default value
+		// expression for each dialect.
+		field.String("default_exprs").
+			Optional().
+			Annotations(
+				entsql.DefaultExprs(map[string]string{
+				    dialect.MySQL:    "TO_BASE64('ent')",
+				    dialect.SQLite:   "hex('ent')",
+				    dialect.Postgres: "md5('ent')",
+			    }),
+			),
+	}
+}
+```
+
+若`DefaultFunc`需要返回错误，建议通过[schema-hooks](hooks.md#schema-hooks)妥善处理，详见[此FAQ](faq.md#how-to-use-a-custom-generator-of-ids)。
+
+## 字段验证器
+
+字段验证器是形如`func(T) error`的函数，通过`Validate`方法在模式中定义，会在实体创建/更新前对字段值进行校验。
+
+支持的验证器类型包括`string`及所有数字类型。
+
+```go
+package schema
+
+import (
+	"errors"
+	"regexp"
+	"strings"
+	"time"
+
+	"entgo.io/ent"
+	"entgo.io/ent/schema/field"
+)
+
+
+// Group schema.
+type Group struct {
+	ent.Schema
+}
+
+// Fields of the group.
+func (Group) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name").
+			Match(regexp.MustCompile("[a-zA-Z_]+$")).
+			Validate(func(s string) error {
+				if strings.ToLower(s) == s {
+					return errors.New("group name must begin with uppercase")
+				}
+				return nil
+			}),
+	}
+}
+```
+
+以下是可复用验证器的编写示例：
+
+```go
+import (
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/schema/field"
+)
+
+// MaxRuneCount validates the rune length of a string by using the unicode/utf8 package.
+func MaxRuneCount(maxLen int) func(s string) error {
+	return func(s string) error {
+		if utf8.RuneCountInString(s) > maxLen {
+			return errors.New("value is more than the max length")
+		}
+		return nil
+	}
+}
+
+field.String("name").
+	// If using a SQL-database: change the underlying data type to varchar(10).
+	Annotations(entsql.Annotation{
+		Size: 10,
+	}).
+	Validate(MaxRuneCount(10))
+field.String("nickname").
+	//  If using a SQL-database: change the underlying data type to varchar(20).
+	Annotations(entsql.Annotation{
+		Size: 20,
+	}).
+	Validate(MaxRuneCount(20))
+```
+
+## 内置验证器
+
+框架为每种类型提供以下内置验证器：
+
+- 数字类型：
+  - `Positive()` - 必须为正数
+  - `Negative()` - 必须为负数
+  - `NonNegative()` - 必须非负
+  - `Min(i)` - 必须大于i
+  - `Max(i)` - 必须小于i
+  - `Range(i, j)` - 必须在[i, j]范围内
+
+- 字符串：
+  - `MinLen(i)` - 最小长度
+  - `MaxLen(i)` - 最大长度
+  - `Match(regexp.Regexp)` - 正则匹配
+  - `NotEmpty` - 非空
+
+- 字节切片：
+  - `MaxLen(i)` - 最大长度
+  - `MinLen(i)` - 最小长度
+  - `NotEmpty` - 非空
+
+## 可选字段
+
+可选字段在实体创建时非必须，在数据库中会设置为可空字段。注意**字段默认是必填的**，必须显式调用`Optional`方法才能设为可选。
+
+```go
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("required_name"),
+		field.String("optional_name").
+			Optional(),
+	}
+}
+```
+
+## 可空字段
+
+当需要区分字段零值与`NULL`时（如数据库列包含`0`或`NULL`），应使用`Nillable`选项。
+
+对类型为`T`的`Optional`字段启用`Nillable`后，生成的结构体字段类型将变为`*T`。若数据库返回`NULL`则该字段为`nil`，否则为指向实际值的指针。
+
+例如给定模式：
+
+```go
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("required_name"),
+		field.String("optional_name").
+			Optional(),
+		field.String("nillable_name").
+			Optional().
+			Nillable(),
+	}
+}
+```
+
+生成的`User`实体结构如下：
+
+```go title="ent/user.go"
+package ent
+
+// User entity.
+type User struct {
+	RequiredName string `json:"required_name,omitempty"`
+	OptionalName string `json:"optional_name,omitempty"`
+	NillableName *string `json:"nillable_name,omitempty"`
+}
+```
+
+#### 必填可空字段
+
+对于未被查询`Select`的字段（如`time.Time`），`Nillable`还能避免JSON序列化时出现零值。
+
+```go
+// Fields of the task.
+func (Task) Fields() []ent.Field {
+	return []ent.Field{
+		field.Time("created_at").
+			Default(time.Now),
+		field.Time("nillable_created_at").
+            Default(time.Now).
+			Nillable(),
+	}
+}
+```
+
+生成的`Task`实体结构如下：
+
+```go title="ent/task.go"
+package ent
+
+// Task entity.
+type Task struct {
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// NillableCreatedAt holds the value of the "nillable_created_at" field.
+	NillableCreatedAt *time.Time `json:"nillable_created_at,omitempty"`
+}
+```
+
+JSON序列化结果示例：
+
+```go
+b, _ := json.Marshal(Task{})
+fmt.Printf("%s\n", b)
+//highlight-next-line-info
+// {"created_at":"0001-01-01T00:00:00Z"}
+
+now := time.Now()
+b, _ = json.Marshal(Task{CreatedAt: now, NillableCreatedAt: &now})
+fmt.Printf("%s\n", b)
+//highlight-next-line-info
+// {"created_at":"2009-11-10T23:00:00Z","nillable_created_at":"2009-11-10T23:00:00Z"}
+```
+
+## 不可变字段
+
+不可变字段只能在实体创建时设置值。即实体更新构建器不会生成这些字段的setter方法。
+
+```go {6}
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Time("created_at").
+			Default(time.Now).
+			Immutable(),
+	}
+}
+```
+
+## 唯一性
+
+可通过`Unique`方法将字段定义为唯一。注意唯一性字段不能设置默认值。
+
+```go {5}
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("nickname").
+			Unique(),
+	}
+}
+```
+
+## 注释
+
+通过`.Comment()`方法可为字段添加注释。该注释会出现在生成实体代码的字段上方，支持使用`\n`换行符进行多行注释。
+
+```go
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name").
+			Default("John Doe").
+			Comment("Name of the user.\n If not specified, defaults to \"John Doe\"."),
+	}
+}
+```
+
+## 弃用字段
+
+`Deprecated`方法用于标记字段为弃用状态。弃用字段默认不会被查询选中，且在生成代码中其结构体字段会标注`Deprecated`注解。
+
+```go
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name").
+			Deprecated("use `full_name` instead"),
+	}
+}
+```
+
+## 存储键
+
+通过`StorageKey`方法可配置自定义存储名称。在SQL方言中映射为列名，在Gremlin中映射为属性名。
+
+```go
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name").
+			StorageKey("old_name"),
+	}
+}
+```
+
+## 索引
+
+可在多字段及某些边类型上定义索引。但需注意当前该特性仅支持SQL数据库。
+
+详见[索引](schema-indexes.md)章节。
+
+## 结构体标签
+
+通过`StructTag`方法可为生成实体添加自定义结构体标签。若未提供此配置，或提供的标签中不含`json`标签，系统会自动添加带字段名的默认`json`标签。
+
+```go
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name").
+			StructTag(`gqlgen:"gql_name"`),
+	}
+}
+```
+
+## 附加结构体字段
+
+默认情况下，`ent`仅根据`schema.Fields`方法配置生成实体模型字段。例如给定如下模式配置：
+
+```go
+// User schema.
+type User struct {
+	ent.Schema
+}
+
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int("age").
+			Optional().
+			Nillable(),
+		field.String("name").
+			StructTag(`gqlgen:"gql_name"`),
+	}
+}
+```
+
+生成的模型如下：
+
+```go
+// User is the model entity for the User schema.
+type User struct {
+	// Age holds the value of the "age" field.
+	Age  *int	`json:"age,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty" gqlgen:"gql_name"`
+}
+```
+
+如需添加不存储到数据库的附加字段，请使用[外部模板](code-gen.md/#external-templates)。例如：
+
+```gotemplate
+{{ define "model/fields/additional" }}
+	{{- if eq $.Name "User" }}
+		// StaticField defined by template.
+		StaticField string `json:"static,omitempty"`
+	{{- end }}
+{{ end }}
+```
+
+生成的模型将包含：
+
+```go
+// User is the model entity for the User schema.
+type User struct {
+	// Age holds the value of the "age" field.
+	Age  *int	`json:"age,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty" gqlgen:"gql_name"`
+	// StaticField defined by template.
+	StaticField string `json:"static,omitempty"`
+}
+```
+
+## 敏感字段
+
+通过`Sensitive`方法可将字符串字段标记为敏感字段。敏感字段不会被打印显示，序列化时也会被忽略。
+
+注意敏感字段不能设置结构体标签。
+
+```go
+// User schema.
+type User struct {
+	ent.Schema
+}
+
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("password").
+			Sensitive(),
+	}
+}
+```
+
+## 枚举字段
+
+`Enum`构建器用于创建带允许值列表的枚举字段。
+
+```go
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("first_name"),
+		field.String("last_name"),
+		field.Enum("size").
+			Values("big", "small"),
+	}
+}
+```
+
+:::info[[使用PostgreSQL原生枚举类型](/docs/migration/enum-types)]
+默认情况下，Ent在**PostgreSQL和SQLite**中使用简单字符串类型表示枚举值。但在某些场景下，可能需要使用数据库原生枚举类型。具体操作请参阅[枚举迁移指南](/docs/migration/enum-types)。
+:::
+
+使用自定义[`GoType`](#go-type)时，该类型必须可转换为基本`string`类型，或需实现[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field#ValueScanner)接口。
+
+自定义Go类型还需实现[EnumValues](https://pkg.go.dev/entgo.io/ent/schema/field#EnumValues)接口，用于向Ent声明枚举的允许值范围。
+
+以下示例展示了如何定义一个使用可转换为`string`的自定义Go类型的`Enum`字段：
+
+```go
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("first_name"),
+		field.String("last_name"),
+		// A convertible type to string.
+		field.Enum("shape").
+			GoType(property.Shape("")),
+	}
+}
+```
+
+实现[EnumValues](https://pkg.go.dev/entgo.io/ent/schema/field#EnumValues)接口。
+
+```go
+package property
+
+type Shape string
+
+const (
+	Triangle Shape = "TRIANGLE"
+	Circle   Shape = "CIRCLE"
+)
+
+// Values provides list valid values for Enum.
+func (Shape) Values() (kinds []string) {
+	for _, s := range []Shape{Triangle, Circle} {
+		kinds = append(kinds, string(s))
+	}
+	return
+}
+
+```
+
+以下示例展示了如何定义一个使用不可转换为`string`但实现了[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field#ValueScanner)接口的自定义Go类型的`Enum`字段：
+
+```go
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("first_name"),
+		field.String("last_name"),
+		// Add conversion to and from string
+		field.Enum("level").
+			GoType(property.Level(0)),
+	}
+}
+```
+
+同时实现[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field?tab=doc#ValueScanner)接口。
+
+```go
+package property
+
+import "database/sql/driver"
+
+type Level int
+
+const (
+	Unknown Level = iota
+	Low
+	High
+)
+
+func (p Level) String() string {
+	switch p {
+	case Low:
+		return "LOW"
+	case High:
+		return "HIGH"
+	default:
+		return "UNKNOWN"
+	}
+}
+
+// Values provides list valid values for Enum.
+func (Level) Values() []string {
+	return []string{Unknown.String(), Low.String(), High.String()}
+}
+
+// Value provides the DB a string from int.
+func (p Level) Value() (driver.Value, error) {
+	return p.String(), nil
+}
+
+// Scan tells our code how to read the enum into our type.
+func (p *Level) Scan(val any) error {
+	var s string
+	switch v := val.(type) {
+	case nil:
+		return nil
+	case string:
+		s = v
+	case []uint8:
+		s = string(v)
+	}
+	switch s {
+	case "LOW":
+		*p = Low
+	case "HIGH":
+		*p = High
+	default:
+		*p = Unknown
+	}
+	return nil
+}
+```
+
+完整整合示例如下：
+
+```go
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("first_name"),
+		field.String("last_name"),
+		field.Enum("size").
+			Values("big", "small"),
+		// A convertible type to string.
+		field.Enum("shape").
+			GoType(property.Shape("")),
+		// Add conversion to and from string.
+		field.Enum("level").
+			GoType(property.Level(0)),
+	}
+}
+```
+
+代码生成后的使用方式非常简单：
+
+```go 
+client.User.Create().
+	SetFirstName("John").
+	SetLastName("Dow").
+	SetSize(user.SizeSmall).
+	SetShape(property.Triangle).
+	SetLevel(property.Low).
+	SaveX(context.Background())
+	
+john := client.User.Query().FirstX(context.Background())
+fmt.Println(john)
+// User(id=1, first_name=John, last_name=Dow, size=small, shape=TRIANGLE, level=LOW)
+```
+
+## 注解
+
+`Annotations`用于在代码生成时为字段对象附加任意元数据。模板扩展可以通过模板检索这些元数据并使用。
+
+注意元数据对象必须可序列化为JSON原始值（例如结构体、映射或切片）。
+
+```go
+// User schema.
+type User struct {
+	ent.Schema
+}
+
+// Fields of the user.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Time("creation_date").
+			Annotations(entgql.Annotation{
+				OrderField: "CREATED_AT",
+			}),
+	}
+}
+```
+
+更多关于注解及其在模板中使用的信息，请参阅[模板文档](templates.md#annotations)。
+
+## 命名规范
+
+按照惯例，字段名应使用`snake_case`。`ent`生成的对应结构体字段将遵循Go语言的`PascalCase`命名规范。如需使用`PascalCase`命名，可通过`StorageKey`或`StructTag`方法实现。

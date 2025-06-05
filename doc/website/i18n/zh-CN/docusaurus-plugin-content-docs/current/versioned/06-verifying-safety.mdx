@@ -1,0 +1,235 @@
+---
+title: Verifying migration safety
+id: verifying-safety
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::info[支持仓库]
+
+本节描述的变更可在支持仓库的
+[PR #8](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/8/files)
+中找到。
+
+:::
+
+## 验证迁移安全性
+
+数据库作为应用程序的核心组件，我们必须确保对其进行的任何变更都不会造成破坏。规划不当的迁移可能导致数据丢失、应用停机等问题。Atlas 提供了一种称为[迁移代码检查](https://atlasgo.io/versioned/lint)的机制来验证迁移是否可安全执行，本节将演示如何使用该功能。
+
+## 检查迁移目录
+
+我们可以使用 `atlas migrate lint` 命令对迁移目录进行检查。例如，假设我们将 `User` 模型中的 `Title` 字段从可选改为必填：
+
+```diff
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name"),
+		field.String("email").
+		  Unique(),
+--		field.String("title").
+--         Optional(),
+++		field.String("title"),
+	}
+}
+
+```
+
+重新运行代码生成：
+
+```shell
+go generate ./...
+```
+
+接着自动生成新迁移：
+
+<Tabs
+defaultValue="mysql"
+values={[
+{label: 'MySQL', value: 'mysql'},
+{label: 'MariaDB', value: 'maria'},
+{label: 'PostgreSQL', value: 'postgres'},
+{label: 'SQLite', value: 'sqlite'},
+]}>
+<TabItem value="mysql">
+
+```shell
+atlas migrate diff user_title_required \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "docker://mysql/8/ent"
+```
+
+</TabItem>
+<TabItem value="maria">
+
+```shell
+atlas migrate diff user_title_required \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "docker://mariadb/latest/test"
+```
+
+</TabItem>
+<TabItem value="postgres">
+
+```shell
+atlas migrate diff user_title_required \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "docker://postgres/15/test?search_path=public"
+```
+
+</TabItem>
+<TabItem value="sqlite">
+
+```shell
+atlas migrate diff user_title_required \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "sqlite://file?mode=memory&_fk=1"
+```
+
+</TabItem>
+</Tabs>
+
+此时会在 `ent/migrate/migrations` 目录下创建新迁移文件：
+
+```sql title="ent/migrate/migrations/20221116051710_user_title_required.sql"
+-- modify "users" table
+ALTER TABLE `users` MODIFY COLUMN `title` varchar(255) NOT NULL;
+```
+
+现在执行目录检查：
+
+```shell
+atlas migrate lint --dev-url mysql://root:pass@localhost:3306/dev --dir file://ent/migrate/migrations --latest 1
+```
+
+Atlas 报告该迁移可能存在风险：
+
+```text
+20221116051710_user_title_required.sql: data dependent changes detected:
+
+        L2: Modifying nullable column "title" to non-nullable might fail in case it contains NULL values
+```
+
+Atlas 检测到这是数据依赖型变更（data dependent change），意味着该迁移的执行结果取决于数据库中的实际数据，因此被判定为不安全操作。
+
+Atlas 可检测多种问题类型，完整列表参见[官方文档](https://atlasgo.io/lint/analyzers)。
+
+## 在CI中执行迁移检查
+
+前文展示了本地检查迁移目录的方法，本节将介绍如何在持续集成(CI)中实施该流程，确保合并到主分支前的迁移历史记录都是安全的。
+
+[GitHub Actions](https://github.com/features/actions) 是 GitHub 提供的流行 CI/CD 服务，用户可轻松定义在代码仓库各类生命周期事件中触发的工作流。例如许多团队会配置 GitHub Actions 在每次提交时运行所有单元测试。
+
+GitHub Actions 的强大之处在于其可扩展性：任何功能都可以打包为可复用的模块（称为"action"）。
+
+使用 GitHub 的团队若想确保所有数据库模式变更的安全性，可以使用 [`atlas-action`](https://github.com/ariga/atlas-action) 这个 GitHub Action。
+
+该 Action 通过 `atlas migrate lint` 命令对[迁移目录进行检查](/versioned/lint)，该命令会验证并分析迁移目录内容，生成变更诊断报告：
+
+* 确保迁移历史可从任意时间点重放
+* 防止多人并发修改迁移目录导致意外变更
+* 检测是否存在破坏性/不可逆变更，或依赖表内容可能导致迁移失败的操作
+
+## 使用方法
+
+在仓库中添加 `.github/workflows/atlas-ci.yaml` 文件，内容如下：
+
+```yaml
+name: Atlas CI
+on:
+  # Run whenever code is changed in the master branch,
+  # change this to your root branch.
+  push:
+    branches:
+      - master
+  pull_request:
+    paths:
+      - 'ent/migrate/migrations/*'
+jobs:
+  lint:
+    services:
+      # Spin up a mysql:8.0.29 container to be used as the dev-database for analysis.
+      mysql:
+        image: mysql:8.0.29
+        env:
+          MYSQL_ROOT_PASSWORD: pass
+          MYSQL_DATABASE: dev
+        ports:
+          - "3306:3306"
+        options: >-
+          --health-cmd "mysqladmin ping -ppass"
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.1
+        with:
+          fetch-depth: 0 # Mandatory unless "latest" is set below.
+      - uses: ariga/atlas-action@v0
+        with:
+          dir: ent/migrate/migrations
+          dev-url: mysql://root:pass@localhost:3306/dev
+```
+
+现在，每当我们提交包含潜在不安全迁移的拉取请求时，Atlas GitHub Action 都会运行并报告检查结果。例如针对我们的数据依赖型变更：
+![](https://atlasgo.io/uploads/images/atlas-ci-report-dd.png)
+
+更深入的文档请参阅 Atlas 官网的 [atlas-action](https://atlasgo.io/integrations/github-actions) 文档。
+
+让我们通过回填 `title` 列来修复这个问题。在迁移文件中添加以下语句：
+
+```sql title="ent/migrate/migrations/20221116051710_user_title_required.sql"
+-- modify "users" table
+UPDATE `users` SET `title` = "" WHERE `title` IS NULL;
+
+ALTER TABLE `users` MODIFY COLUMN `title` varchar(255) NOT NULL;
+```
+
+重新生成迁移目录的校验和：
+
+```shell
+atlas migrate hash --dir file://ent/migrate/migrations
+```
+
+再次运行 `atlas migrate lint` 可以看到迁移目录不再包含任何不安全变更：
+
+```text
+atlas migrate lint --dev-url mysql://root:pass@localhost:3306/dev --dir file://ent/migrate/migrations --latest 1
+```
+
+由于未发现问题，命令将以零退出码静默退出。
+
+当我们将此变更提交到 GitHub 时，Atlas GitHub Action 会运行并报告问题已解决：
+
+![](https://atlasgo.io/uploads/images/atlas-ci-report-noissue.png)
+
+## 总结
+
+本节我们学习了如何在本地和 CI 环境中使用 Atlas 验证迁移的安全性。
+
+至此我们完成了将 Ent 项目从自动迁移升级到版本化迁移的教程。回顾要点包括：
+
+* 启用版本化迁移功能标志
+* 创建基于 Ent Schema 自动规划迁移的脚本
+* 使用 Atlas 将生产数据库升级至版本化迁移
+* 为项目规划自定义迁移
+* 通过 `atlas migrate lint` 安全验证迁移
+
+后续步骤
+
+:::note[获取更多 Ent 资讯：]
+
+- 订阅我们的[新闻通讯](https://entgo.substack.com/)
+- 关注 [Twitter](https://twitter.com/entgo_io)
+- 加入 [Gophers Slack](https://entgo.io/docs/slack) 的 #ent 频道
+- 参与 [Ent Discord 社区](https://discord.gg/qZmPgTE6RX)
+
+:::

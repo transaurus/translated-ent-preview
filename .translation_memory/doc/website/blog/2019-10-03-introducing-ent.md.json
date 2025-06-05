@@ -1,0 +1,122 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2019-10-03-introducing-ent.md",
+  "source_file_content_hash": "6fdc92723ef7f4a663f5566b769ce46b2b755882de7e359f6b39862bed55da00",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Introducing ent\nauthor: Ariel Mashraki\nauthorURL: \"https://github.com/a8m\"\nauthorImageURL: \"https://avatars0.githubusercontent.com/u/7413593\"\nauthorTwitter: arielmashraki\n---",
+      "source_content_hash": "0c31f32288667dce6cbd08ca419bebe6c577b31d927171acc06c415af9624583",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "cc3c868d",
+      "source_content": "## The state of Go in Facebook Connectivity Tel Aviv",
+      "source_content_hash": "dc4f9a1e825d54c30e9219666263d22f271b14332e5be56f1ce3bf834ccecec2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## Facebook Connectivity 特拉维夫团队的 Go 语言现状"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "20 months ago, I joined Facebook Connectivity (FBC) team in Tel Aviv after ~5 years\nof programming in Go and embedding it in a few companies.  \nI joined a team that was working on a new project and we needed to choose a language\nfor this mission. We compared a few languages and decided to go with Go.",
+      "source_content_hash": "830767b15d3ae324887b12e1d6159661f7068fe4f93e204d265e6ab3818760d2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "20个月前，在积累了约5年Go语言开发经验并推动其在多家公司落地后，我加入了Facebook Connectivity（FBC）特拉维夫团队。  \n当时团队正在启动新项目，需要选择编程语言。经过多语言对比评估，我们最终选择了Go。"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "Since then, Go continued to spread across other FBC projects and became a big success\nwith around 15 Go engineers in Tel Aviv alone. **New services are now written in Go**.",
+      "source_content_hash": "3decfc583747cf259640f9682eaeb9b372cc9cda71c407f1ec8cc207fc4104e5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此后，Go语言在FBC其他项目中持续扩散，仅特拉维夫办公室就已有约15名Go工程师，取得了显著成功。**新服务现在均采用Go编写**。"
+      }
+    },
+    {
+      "segment_id": "3daf1b88",
+      "source_content": "## The motivation for writing a new ORM in Go",
+      "source_content_hash": "4c837925462ce53bf46eba3abc32516c0851702ae356504dda6e89f799a36f10",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 开发新型Go ORM的动机"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "Most of my work in my 5 years before Facebook was on infra tooling and micro-services without\ntoo much data-model work. A service that was needed to do a little amount of work with an SQL\ndatabase used one of the existing open-source solutions, but one that had worked with a\ncomplicated data model was written in a different language with a robust ORM. For example,\nPython with SQLAlchemy. ",
+      "source_content_hash": "3ecd60d5b658cee1575385243f13b37e405d45483eee62ecdb8138ba3d717a56",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在加入Facebook前的5年里，我的工作主要聚焦基础设施工具和微服务领域，较少涉及复杂数据模型开发。对于需要简单SQL数据库操作的服务，我们采用现有开源解决方案；而涉及复杂数据模型的服务则使用具备成熟ORM的其他语言实现，例如基于SQLAlchemy的Python。"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "At Facebook we like to think about our data-model in graph concepts. We've had a good experience\nwith this model internally.  \nThe lack of a proper Graph-based ORM for Go, led us to write one here with the following principles:",
+      "source_content_hash": "d7f0d0f61b7a288ff5c59f1d9b2c490c85e624711333b6a5504fc976d77b8ffc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在Facebook，我们习惯以图论思维构建数据模型，这种模式在内部实践中表现优异。  \n由于Go生态缺乏完善的图式ORM，我们基于以下原则自主开发："
+      }
+    },
+    {
+      "segment_id": "77bf3ec9",
+      "source_content": "- **Schema As Code** - defining types, relations and constraints should be in Go code (not struct\n  tags), and should be validated using a CLI tool. We have good experience with a similar tool\n  internally at Facebook.\n- **Statically typed and explicit API** using codegen - API with `interface{}`s everywhere affects\n  developers efficiency; especially project newbies.\n- **Queries, aggregations and graph traversals** should be simple - developers don’t want to deal\n  with raw SQL queries nor SQL terms.\n- **Predicates should be statically typed**. No strings everywhere.\n- Full support for `context.Context` - This helps us to get full visibility in our traces and logs\n  systems, and it’s important for other features like cancellation.\n- **Storage agnostic** - we tried to keep the storage layer dynamic using codegen templates,\n  since the development initially started on Gremlin (AWS Neptune) and switched later to MySQL.",
+      "source_content_hash": "e34f07c9b5aa3bf3c18c0d19f23344fa3a53b4052303a409f2377b40bfa63514",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- **代码即Schema** - 类型定义、关系映射和约束条件应通过Go代码（而非结构体标签）实现，并通过CLI工具进行验证。Facebook内部类似工具的良好实践为此提供了参考。\n- **静态类型化显式API** - 通过代码生成避免`interface{}`泛滥，这对提升开发效率（尤其对新成员）至关重要。\n- **简化查询/聚合/图遍历** - 开发者不应被原始SQL语句或专业术语困扰。\n- **谓词条件静态类型化** - 彻底杜绝字符串魔法。\n- **完整支持context.Context** - 这对于实现全链路追踪、日志系统集成以及取消机制等特性不可或缺。\n- **存储无关架构** - 通过代码生成模板保持存储层灵活性，项目初期基于Gremlin（AWS Neptune）开发，后期顺利切换至MySQL。"
+      }
+    },
+    {
+      "segment_id": "8d04259b",
+      "source_content": "## Open-sourcing ent",
+      "source_content_hash": "f1c0947520ec79ab3b6aefbde1d8af7fffe16b07324b546e7f5d1d236e7405c7",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 开源ent框架"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "**ent** is an entity framework (ORM) for Go, built with the principles described above.\n**ent** makes it possible to define any data model or graph-structure in Go code easily; The\nschema configuration is verified by **entc** (the ent codegen) that generates an idiomatic and\nstatically-typed API that keeps Go developers productive and happy.\nIt supports MySQL, MariaDB, PostgreSQL, SQLite, and Gremlin-based graph databases.",
+      "source_content_hash": "5cb5f20896f39aea64f251e0773feb9fefd2a3106dfb46de3d6f88e7a363e0fb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**ent**是基于上述原则构建的Go实体框架（ORM）。通过**ent**，开发者可以便捷地用Go代码定义任意数据模型或图结构。Schema配置经**entc**（ent代码生成器）验证后，将生成符合Go语言习惯的静态类型化API，持续保障开发效率与工程愉悦度。当前支持MySQL、MariaDB、PostgreSQL、SQLite及基于Gremlin的图数据库。"
+      }
+    },
+    {
+      "segment_id": "a44047a5",
+      "source_content": "We’re open-sourcing **ent** today, and invite you to get started → [entgo.io/docs/getting-started](/docs/getting-started).",
+      "source_content_hash": "410fd5d13adef4887706de10cf1fae162976802f0fd0c1599a7a6e8a9275446e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "今天我们正式开源**ent**，欢迎开始体验 → [entgo.io/docs/getting-started](/docs/getting-started)"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2019-10-03-introducing-ent.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.679030+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "6fdc92723ef7f4a663f5566b769ce46b2b755882de7e359f6b39862bed55da00"
+  }
+}

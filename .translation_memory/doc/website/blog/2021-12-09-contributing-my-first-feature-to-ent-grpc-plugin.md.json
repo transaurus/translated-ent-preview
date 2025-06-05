@@ -1,0 +1,532 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-12-09-contributing-my-first-feature-to-ent-grpc-plugin.md",
+  "source_file_content_hash": "52260f06d557dff648e2d72ca4e3df05279484db6bedb5ab4c200ee41b79fa82",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: \"What I learned contributing my first feature to Ent's gRPC plugin\"\nauthor: Jeremy Vesperman\nauthorURL: \"https://github.com/jeremyv2014\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/9276415?v=4\"\nimage: https://entgo.io/images/assets/grpc/ent_party.png\n---",
+      "source_content_hash": "875e009006377d686048c0dfaefd52de50fec2da5b723c2404b6b4688d25c5f3",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "I've been writing software for years, but, until recently, I didn't know what an ORM was. I learned many things \nobtaining my B.S. in Computer Engineering, but Object-Relational Mapping was not one of those; I was too focused on \nbuilding things out of bits and bytes to be bothered with something that high-level. It shouldn't be too surprising \nthen, that when I found myself tasked with helping to build a distributed web application, I ended up outside my comfort \nzone.",
+      "source_content_hash": "bd0e5515b10f4038c9a89ec78355301453495d5eadda280aa3f38a720e2a1da7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我从事软件开发多年，但直到最近才了解什么是ORM。在获得计算机工程学士学位的过程中，我学到了许多知识，但对象关系映射并不在其中——那时我过于专注用比特和字节构建底层系统，无暇顾及如此高层级的抽象。因此，当需要协助开发分布式Web应用时，我发现自己完全处于舒适区之外也就不足为奇了。"
+      }
+    },
+    {
+      "segment_id": "cf898102",
+      "source_content": "One of the difficulties with developing software for someone else is, that you aren't able to see inside their head. The \nrequirements aren't always clear and asking questions only helps you understand so much of what they are looking for. \nSometimes, you just have to build a prototype and demonstrate it to get useful feedback.",
+      "source_content_hash": "a55316f5fbe5d86af4f1cdf59f03f69caeb7461057dcd7283e412e6bb96d7037",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为他人开发软件的难点在于，你无法洞悉对方的思维。需求往往不够明确，而提问所能获取的理解又有限。有时你不得不构建原型并演示，才能获得有价值的反馈。"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "The issue with this approach, of course, is that it takes time to develop prototypes, and you need to pivot frequently. \nIf you were like me and didn't know what an ORM was, you would waste a lot of time doing simple, but time-consuming \ntasks:",
+      "source_content_hash": "3ed5cb60ccafad5481a990ef4a089ad48e3a0e50494775a325e75b9bb5fde9ee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这种方法的问题在于，原型开发耗时且需要频繁调整方向。如果像我当初一样不了解ORM，就会在重复性劳动中浪费大量时间："
+      }
+    },
+    {
+      "segment_id": "da23c906",
+      "source_content": "1. Re-define the data model with new customer feedback.\n2. Re-create the test database.\n3. Re-write the SQL statements for interfacing with the database.\n4. Re-define the gRPC interface between the backend and frontend services.\n5. Re-design the frontend and web interface.\n6. Demonstrate to customer and get feedback\n7. Repeat",
+      "source_content_hash": "f655389af83651e662662b52ccd362b4e5c80845b720896150013fe76438de4a",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 根据客户反馈重新定义数据模型  \n2. 重建测试数据库  \n3. 重写数据库交互的SQL语句  \n4. 重新定义前后端服务的gRPC接口  \n5. 重构前端和网页界面  \n6. 向客户演示并获取反馈  \n7. 循环往复"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "Hundreds of hours of work only to find out that everything needs to be re-written. So frustrating! I think you can \nimagine my relief (and also embarrassment), when a senior developer asked me why I wasn't using an ORM \nlike Ent. ",
+      "source_content_hash": "10f704e1406d486248c550512933f05b3568c868c7535b2f0d63a1ef4950efc5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "耗费数百小时的工作成果可能面临全面重写。所以当资深开发者问我为何不使用Ent这样的ORM时，你可以想象我的解脱（以及尴尬）。"
+      }
+    },
+    {
+      "segment_id": "f422383e",
+      "source_content": "### Discovering Ent",
+      "source_content_hash": "27859c2fffffe641e8b8a209221119446159887527e03b73e7365202bc38d6da",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 发现Ent"
+      }
+    },
+    {
+      "segment_id": "517051a7",
+      "source_content": "It only took one day to re-implement our current data model with Ent. I couldn't believe I had been doing all this work \nby hand when such a framework existed! The gRPC integration through entproto was the icing on the cake! I could perform \nbasic CRUD operations over gRPC just by adding a few annotations to my schema. This allows me to skip all the steps \nbetween data model definition and re-designing the web interface! There was, however, just one problem for my use case: \nHow do you get the details of entities over the gRPC interface if you don't know their IDs ahead of time? I see that \nEnt can query all, but where is the `GetAll` method for entproto?",
+      "source_content_hash": "b4676ae480f929c4ecaa31fc984b32967e89c899ad732116434172c9caf854a3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "仅用一天时间，我们就用Ent重构了现有数据模型。难以置信竟有如此框架存在，而我一直在手工实现这些功能！通过entproto实现的gRPC集成更是锦上添花——只需在模式中添加注解就能实现基础CRUD操作，直接跳过了从数据模型定义到重构网页界面的所有中间步骤。但我的使用场景仍有一个问题：如果无法预知实体ID，如何通过gRPC接口获取实体详情？Ent支持查询全部记录，但entproto的`GetAll`方法在哪里？"
+      }
+    },
+    {
+      "segment_id": "06c0f776",
+      "source_content": "### Becoming an Open-Source Contributor",
+      "source_content_hash": "f8fb2a487067c75cfdfa5bf1aba425980fb5b013a573f8c6c1e3cf15c7f2dccc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 成为开源贡献者"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "I was surprised to find it didn't exist! I could have added it to my project by implementing the feature in a separate \nservice, but it seemed like a generic enough method to be generally useful. For years, I had wanted \nto find an open-source project that I could meaningfully contribute to; this seemed like the perfect opportunity!",
+      "source_content_hash": "9f43f637cfda3adc33673bd8eabe3407f32caca4e865e2cae7951992c4ac92a1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "惊讶地发现这个功能并不存在！本可以在独立服务中实现该特性，但考虑到这是通用需求，我决定直接贡献代码。多年来我一直想寻找有意义的开源项目参与——这简直是完美契机！"
+      }
+    },
+    {
+      "segment_id": "a9d49f92",
+      "source_content": "So, after poking around entproto's source into the early morning hours, I managed to hack the feature in! Feeling \naccomplished, I opened a pull request and headed off to sleep, not realizing the learning experience I had just signed \nmyself up for.",
+      "source_content_hash": "d69e112d897058ccdfcbca73b233782f189573f7756cd34cccaef02f501b23a5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "经过凌晨时分的源码钻研，我成功实现了这个功能！怀着成就感提交PR后沉沉睡去，浑然不知即将迎来怎样的学习历程。"
+      }
+    },
+    {
+      "segment_id": "f7ef78f9",
+      "source_content": "In the morning, I awoke to the disappointment of my pull request being closed by [Rotem](https://github.com/rotemtam), \nbut with an invitation to collaborate further to refine the idea. The reason for closing the request was obvious, my \nimplementation of `GetAll` was dangerous. Returning an entire table's worth of data is only feasible if the table is \nsmall. Exposing this interface on a large table could have disastrous results!",
+      "source_content_hash": "82ad425e8f03dece377c0c0e889969f2e7da3f86ded7041711d1fac9b3fb09a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "清晨醒来发现PR已被[Rotem](https://github.com/rotemtam)关闭，但获得了继续完善方案的邀请。关闭原因显而易见：我的`GetAll`实现存在风险——只有小数据量表才适合返回全量数据，大型表暴露此接口可能导致灾难性后果！"
+      }
+    },
+    {
+      "segment_id": "e50bebbf",
+      "source_content": "### Optional Service Method Generation",
+      "source_content_hash": "b483154422ab6f0ab9dac5ab60312f6f6a092c936a8f256e543d61e96ee64ba9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 可选服务方法生成"
+      }
+    },
+    {
+      "segment_id": "e536ea0d",
+      "source_content": "My solution was to make the `GetAll` method optional by passing an argument into `entproto.Service()`. This \nprovides control over whether this feature is exposed. We decided that this was a desirable feature, but that \nit should be more generic. Why should `GetAll` get special treatment just because it was added last? It would be better \nif all methods could be optionally generated. Something like:",
+      "source_content_hash": "cf58d37250b7c5241295f2e38cd4428069620043e036f0491359f0b962eba780",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我的解决方案是通过`entproto.Service()`参数使`GetAll`成为可选方法。但我们意识到应该将其设计为通用功能——为何仅因`GetAll`是最后添加的就给予特殊待遇？理想方案是让所有方法都可选生成，例如："
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```go\nentproto.Service(entproto.Methods(entproto.Create | entproto.Get))\n```",
+      "source_content_hash": "4a4c30d47bc0e5a78593e9618e4353af9c80b486d7a79578e2cc54d41d463f4d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "5dae11e3",
+      "source_content": "However, to keep everything backwards-compatible, an empty `entproto.Service()` annotation would also need to generate \nall methods. I'm not a Go expert, so the only way I knew of to do this was with a variadic function:",
+      "source_content_hash": "11bf062f17239dc43f274e1458ecf49c8c9194dcd93ae6ac5c06ae6188b897dd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然而，为了保持向后兼容性，空的 `entproto.Service()` 注解仍需生成所有方法。作为Go新手，我唯一能想到的实现方式是使用可变参数函数："
+      }
+    },
+    {
+      "segment_id": "1d510af2",
+      "source_content": "```go\nfunc Service(methods ...Method)\n```",
+      "source_content_hash": "e7f6cc15301c15da50859a4434c820c0134cfdfaf5a3adafd06bad6fe092c557",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1d510af2"
+      }
+    },
+    {
+      "segment_id": "7f71ff2a",
+      "source_content": "The problem with this approach is that you can only have one argument type that is variable length. What if we wanted to \nadd additional options to the service annotation later on? This is where I was introduced to the powerful design pattern \nof [functional options](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis):",
+      "source_content_hash": "014b6d09cf75d41798c136521dc6c768843f0b40cbd955d544c3ef97f29922d8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这种方法的局限性在于只能有一个可变长度的参数类型。如果后续需要为服务注解添加更多选项怎么办？这时我接触到了强大的[函数式选项模式](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis)："
+      }
+    },
+    {
+      "segment_id": "af983f82",
+      "source_content": "```go\n// ServiceOption configures the entproto.Service annotation.\ntype ServiceOption func(svc *service)\n\n// Service annotates an ent.Schema to specify that protobuf service generation is required for it.\nfunc Service(opts ...ServiceOption) schema.Annotation {\n\ts := service{\n\t\tGenerate: true,\n\t}\n\tfor _, apply := range opts {\n\t\tapply(&s)\n\t}\n\t// Default to generating all methods\n\tif s.Methods == 0 {\n\t\ts.Methods = MethodAll\n\t}\n\treturn s\n}\n```",
+      "source_content_hash": "dadbb4b6260563d29a934f2ea6b22fa6ae9ea51117903f695e9871741c78138e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_af983f82"
+      }
+    },
+    {
+      "segment_id": "51867d16",
+      "source_content": "This approach takes in a variable number of functions that are called to set options on a struct, in this case, our \nservice annotation. With this approach, we can implement any number of other options functions aside from `Methods`. \nVery cool!",
+      "source_content_hash": "dee8d0d60b3f641799c1af9ef91077757fde973f6fc2a4424d2b29619e607590",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该模式通过接收可变数量的函数来设置结构体选项（本例中即服务注解）。基于此模式，我们除了`Methods`外还能实现任意数量的其他选项函数。非常巧妙！"
+      }
+    },
+    {
+      "segment_id": "b10963d7",
+      "source_content": "### List: The Superior GetAll",
+      "source_content_hash": "50adb5a8a21861e92b346f453e3ff2702be291e6591433ce4c39c41aafb4a2b4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### List：更优的GetAll方案"
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "With optional method generation out of the way, we could return our focus to adding `GetAll`. How could we implement \nthis method in a safe fashion? Rotem suggested we base the method off of Google's API Improvement Proposal (AIP) for List, \n[AIP-132](https://google.aip.dev/132). This approach allows a client to retrieve all entities, but breaks the retrieval \nup into pages. As an added bonus, it also sounds better than \"GetAll\"!",
+      "source_content_hash": "0aff77f0c6b139ba13b1fe193a0fb75653a76f45a16188555ac73e829c56bbd3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "解决可选方法生成问题后，我们重新聚焦于安全实现`GetAll`。Rotem建议基于Google的API改进提案[AIP-132](https://google.aip.dev/132)实现List方法。该方案允许客户端分页获取所有实体，不仅比\"GetAll\"命名更优雅，还解决了安全性问题。"
+      }
+    },
+    {
+      "segment_id": "71169a2d",
+      "source_content": "### List Request",
+      "source_content_hash": "7ba6cc54a2d1dbbc7eca2a5a61d617533b1f172519c6715c4814216efb8b3a60",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### List请求"
+      }
+    },
+    {
+      "segment_id": "2838eb68",
+      "source_content": "With this design, a request message would look like:",
+      "source_content_hash": "270441394d6e3ef6ada05d2548e54da4e8c7ec9a538531330580983f6ec24a04",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该设计下的请求消息结构如下："
+      }
+    },
+    {
+      "segment_id": "d44e4104",
+      "source_content": "```protobuf\nmessage ListUserRequest {\n  int32 page_size = 1;\n\n  string page_token = 2;\n\n  View view = 3;\n\n  enum View {\n    VIEW_UNSPECIFIED = 0;\n\n    BASIC = 1;\n\n    WITH_EDGE_IDS = 2;\n  }\n}\n```",
+      "source_content_hash": "10a007263cf4d6663fb11bce4510f3a764fd9d7d99589c6b2d5e1116700d79ca",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d44e4104"
+      }
+    },
+    {
+      "segment_id": "64d57278",
+      "source_content": "#### Page Size",
+      "source_content_hash": "26724607bc4887397130e568a8eaeba5ad3d69e8d6e36a584a2519ae0677f0b6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 分页大小"
+      }
+    },
+    {
+      "segment_id": "b6152880",
+      "source_content": "The `page_size` field allows the client to specify the maximum number of entries they want to receive in the \nresponse message, subject to a maximum page size of 1000. This eliminates the issue of returning more results than the \nclient can handle in the initial `GetAll` implementation. Additionally, the maximum page size was implemented to prevent \na client from overburdening the server.",
+      "source_content_hash": "201cf1bd4872dca294328f31c0d23dcea74e106dc8678f3003b655fc4aa9b779",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`page_size`字段允许客户端指定单次响应返回的最大条目数（上限1000条），既避免了原始`GetAll`可能返回过量数据的问题，又通过限制最大页数防止服务器过载。"
+      }
+    },
+    {
+      "segment_id": "4dd6a631",
+      "source_content": "#### Page Token",
+      "source_content_hash": "57516a335e4009f0f70327d43be020c777d7483f84095efd313d98874a46e922",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 分页令牌"
+      }
+    },
+    {
+      "segment_id": "53aa2b95",
+      "source_content": "The `page_token` field is a base64-encoded string utilized by the server to determine where the next page begins. An \nempty token means that we want the first page.",
+      "source_content_hash": "5706de198482d3220437f361ca26bb9bc5070739ac3f02b74e85e2fdca9a4950",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`page_token`是Base64编码字符串，服务器据此确定下一页起始位置。空令牌表示获取第一页。"
+      }
+    },
+    {
+      "segment_id": "8f1c1cd6",
+      "source_content": "#### View",
+      "source_content_hash": "12250d35798f8a32ed26a69799503e97d0ab743faabf956ceca154bb2d748a34",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 视图模式"
+      }
+    },
+    {
+      "segment_id": "5c7d994c",
+      "source_content": "The `view` field is used to specify whether the response should return the edge IDs associated with the entities.",
+      "source_content_hash": "17a9433004788e01e107a9904e4ed5d3a5c64473e5bbe1ea0399d21aed43937f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`view`字段用于指定响应是否返回实体关联的边缘ID。"
+      }
+    },
+    {
+      "segment_id": "13292277",
+      "source_content": "### List Response",
+      "source_content_hash": "9dcbe3b90cd171839fa3f4df9bbf0ba9e5cbdc1ec60c750dbf7319fa75ad673f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### List响应"
+      }
+    },
+    {
+      "segment_id": "e77cf7c6",
+      "source_content": "The response message would look like:",
+      "source_content_hash": "51a46e9164f3d66d17e76d3210cdc5d375e333cb9fdd939a28f3e724bffa0110",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "响应消息结构如下："
+      }
+    },
+    {
+      "segment_id": "9ed0f908",
+      "source_content": "```protobuf\nmessage ListUserResponse {\n  repeated User user_list = 1;\n\n  string next_page_token = 2;\n}\n```",
+      "source_content_hash": "6854cff0969ee8e8a6503b5221a37554bd1bb7d645f70bc237481e617f319498",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9ed0f908"
+      }
+    },
+    {
+      "segment_id": "dd4905a4",
+      "source_content": "#### List",
+      "source_content_hash": "ccf8bc889c6f4d8460d2b126a0258d412a0111e721dfa3a61dc6f35c8ad1fd91",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 实体列表"
+      }
+    },
+    {
+      "segment_id": "be17ccc3",
+      "source_content": "The `user_list` field contains page entities.",
+      "source_content_hash": "c821b47d69e100a98cfe7e39941e9ad3578f84c1ef9fd97ca37d2a24edd8c318",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`user_list`字段包含当前页的实体数据。"
+      }
+    },
+    {
+      "segment_id": "3cd8185f",
+      "source_content": "#### Next Page Token",
+      "source_content_hash": "58955f27813c0c1422b137fbe34a73aef33fc5cd6203f78972333a54762f8d01",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 下一页令牌"
+      }
+    },
+    {
+      "segment_id": "719d3997",
+      "source_content": "The `next_page_token` field is a base64-encoded string that can be utilized in another List request to retrieve the next \npage of entities. An empty token means that this response contains the last page of entities.",
+      "source_content_hash": "e22243b523bbae25d237e86a9752c351e7cc0402e726f06c1fa9ec1c23e2fc6a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`next_page_token`是Base64编码字符串，可用于后续List请求获取下一页。空令牌表示当前页为最后一页。"
+      }
+    },
+    {
+      "segment_id": "2f2d5f01",
+      "source_content": "### Pagination",
+      "source_content_hash": "c48745e263cd48b9660f70a177afafd8f77ac929a421c258304a0f784f9b60e5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 分页实现"
+      }
+    },
+    {
+      "segment_id": "63565425",
+      "source_content": "With the gRPC interface determined, the challenge of implementing it began. One of the most critical design decisions \nwas how to implement the pagination. The naive approach would be to use `LIMIT/OFFSET` pagination to skip over \nthe entries we've already seen. However, this approach has massive [drawbacks](https://use-the-index-luke.com/no-offset); \nthe most problematic being that the database has to _fetch all the rows it is skipping_ to get the rows we want. ",
+      "source_content_hash": "dd8d0f8a214cfe2bcf6d1eb00f9d6e3cbf9036f85bdf8510f62052da0b9944af",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "确定gRPC接口后，面临分页实现的技术选型。最基础的`LIMIT/OFFSET`分页需要[跳过已获取行](https://use-the-index-luke.com/no-offset)，存在严重性能缺陷——数据库必须读取所有跳过的行才能定位目标数据。"
+      }
+    },
+    {
+      "segment_id": "ee213c98",
+      "source_content": "#### Keyset Pagination",
+      "source_content_hash": "d84a7fcda47e06bb79d9e994fbf4aaab7e28ae58e3ff33c4b190bb720ee8bd59",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 键集分页"
+      }
+    },
+    {
+      "segment_id": "6f08f877",
+      "source_content": "Rotem proposed a much better approach: keyset pagination. This approach is slightly more \ncomplicated since it requires the use of a unique column (or combination of columns) to order the rows. But \nin exchange we gain a significant performance improvement. This is because we can take advantage of the sorted rows to select only entries with \nunique column(s) values that are greater (ascending order) or less (descending order) than / equal to the value(s) in \nthe client-provided page token. Thus, the database doesn't have to fetch the rows we want to skip over, significantly \nspeeding up queries on large tables!",
+      "source_content_hash": "e8216cf1ce06b7573546d9d9b10ca2e108e029cdb9eef5e737309a84ead09c3f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Rotem提出了更优的键集分页方案：通过唯一列（或列组合）排序，只需比较客户端提供的分页令牌与有序数据的键值关系（大于/小于等于），即可精准定位分页起始点。这种方案虽然实现稍复杂，但能避免无效数据读取，显著提升大表查询性能！"
+      }
+    },
+    {
+      "segment_id": "b08ad0b4",
+      "source_content": "With keyset pagination selected, the next step was to determine how to order the entities. The most straightforward \napproach for Ent was to use the `id` field; every schema will have this, and it is guaranteed to be unique for the schema. \nThis is the approach we chose to use for the initial implementation. Additionally, a decision needed to be made regarding \nwhether ascending or descending order should be employed. Descending order was chosen for the initial release.",
+      "source_content_hash": "07449fd2410f42fdf69176bf3de8d72945d8b8ca65b6f7de61d1e4924d609c3a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "选定键集分页方案后，下一步需要确定实体排序方式。对Ent而言最直接的方法是使用`id`字段——所有模式都包含该字段且保证唯一性。我们选择将此作为初始实现方案。此外还需决定采用升序还是降序排列，初始版本选择了降序排序。"
+      }
+    },
+    {
+      "segment_id": "a6b29dc7",
+      "source_content": "### Usage",
+      "source_content_hash": "7a5b2d87044217ebeda4e071a80585106bae705217da72a3ec329261002e16ff",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 使用方式"
+      }
+    },
+    {
+      "segment_id": "808b0414",
+      "source_content": "Let's take a look at how to actually use the new `List` feature:",
+      "source_content_hash": "009da8b2251af96c2bc2aacdcdbb9b63805e69ac6286099319be71c69731a29b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下面我们来看看如何实际使用新的`List`功能："
+      }
+    },
+    {
+      "segment_id": "028bef0a",
+      "source_content": "```go\npackage main\n\nimport (\n  \"context\"\n  \"log\"\n\n  \"ent-grpc-example/ent/proto/entpb\"\n  \"google.golang.org/grpc\"\n  \"google.golang.org/grpc/status\"\n)\n\nfunc main() {\n  // Open a connection to the server.\n  conn, err := grpc.Dial(\":5000\", grpc.WithInsecure())\n  if err != nil {\n    log.Fatalf(\"failed connecting to server: %s\", err)\n  }\n  defer conn.Close()\n  // Create a User service Client on the connection.\n  client := entpb.NewUserServiceClient(conn)\n  ctx := context.Background()\n  // Initialize token for first page.\n  pageToken := \"\"\n  // Retrieve all pages of users.\n  for {\n    // Ask the server for the next page of users, limiting entries to 100.\n    users, err := client.List(ctx, &entpb.ListUserRequest{\n        PageSize:  100,\n        PageToken: pageToken,\n    })\n    if err != nil {\n        se, _ := status.FromError(err)\n        log.Fatalf(\"failed retrieving user list: status=%s message=%s\", se.Code(), se.Message())\n    }\n    // Check if we've reached the last page of users.\n    if users.NextPageToken == \"\" {\n        break\n    }\n    // Update token for next request.\n    pageToken = users.NextPageToken\n    log.Printf(\"users retrieved: %v\", users)\n  }\n}\n```",
+      "source_content_hash": "0ebd96e5678358d715a5cb144815aff65fd9cbaabebcc781712f29c45e7e7d1f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_028bef0a"
+      }
+    },
+    {
+      "segment_id": "dae9676f",
+      "source_content": "### Looking Ahead",
+      "source_content_hash": "4b02c3a65b7997abc8cc9d783856d17f4b2d1505b223ed20a467c835f5be258f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 未来展望"
+      }
+    },
+    {
+      "segment_id": "49be422b",
+      "source_content": "The current implementation of `List` has a few limitations that can be addressed in future revisions. First, sorting is \nlimited to the `id` column. This makes `List` compatible with any schema, but it isn't very flexible. Ideally, the client \nshould be able to specify what columns to sort by. Alternatively, the sort column(s) could be defined in the schema. \nAdditionally, `List` is restricted to descending order. In the future, this could be an option specified in the request. \nFinally, `List` currently only works with schemas that use `int32`, `uuid`, or `string` type `id` fields. This is because \na separate conversion method to/from the page token must be defined for each type that Ent supports in the code generation \ntemplate (I'm only one person!).",
+      "source_content_hash": "8cd4250fb901b49bd59b97034330697a9091db2d1d8069e32f2de3dce593c70d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当前`List`实现存在若干待改进的限制：首先排序仅支持`id`列，这虽然兼容所有模式但缺乏灵活性。理想情况下客户端应能指定排序列，或通过模式定义排序列。其次当前仅支持降序排列，未来可将其设为请求选项。最后目前仅支持`int32`、`uuid`和`string`类型的`id`字段，因为代码生成模板中需要为每种类型单独实现页码令牌的转换方法（毕竟开发资源有限）。"
+      }
+    },
+    {
+      "segment_id": "f210f942",
+      "source_content": "### Wrap-up",
+      "source_content_hash": "459c7ddde05b97e84b9bfcba00f8ca0f5c513ffe9e2318aeb8191758d78324c8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "130a77cc",
+      "source_content": "I was pretty nervous when I first embarked on my quest to contribute this functionality to entproto; as a newbie open-source \ncontributor, I didn't know what to expect. I'm happy to share that working on the Ent project was a ton of fun! \nI got to work with awesome, knowledgeable people while helping out the open-source community. From functional \noptions and keyset pagination to smaller insights gained through PR review, I learned so much about Go \n(and software development in general) in the process! I'd highly encourage anyone thinking they might want to contribute \nsomething to take that leap! You'll be surprised with how much you gain from the experience.",
+      "source_content_hash": "0e4e693b63d7520540e896dca678e6bb36e5719bba34b59f065cb28a8cecba4b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最初决定为entproto贡献此功能时我十分忐忑，作为开源新手完全不知从何入手。但很高兴地告诉大家，参与Ent项目的过程充满乐趣！我有幸与优秀的开发者共事，同时为开源社区贡献力量。从函数式选项、键集分页到代码审查中的细节洞察，整个过程中我收获了丰富的Go语言和软件开发经验。强烈建议有意贡献的朋友勇敢尝试——你将从这段经历中获得超乎想象的成长！"
+      }
+    },
+    {
+      "segment_id": "dfb6fc67",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "d0537932cd96ebc172f07d40432ff073381adb709b3fdc6d263a79438858fef3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若有疑问或需要入门帮助？欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack/)。"
+      }
+    },
+    {
+      "segment_id": "97679c10",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-12-09-contributing-my-first-feature-to-ent-grpc-plugin.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.677590+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "52260f06d557dff648e2d72ca4e3df05279484db6bedb5ab4c200ee41b79fa82"
+  }
+}

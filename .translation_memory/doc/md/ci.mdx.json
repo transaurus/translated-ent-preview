@@ -1,0 +1,192 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/ci.mdx",
+  "source_file_content_hash": "fe211a9199c7983b4194f6afa910184fe45e767b97412ce5144073d0222a6d6f",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: ci\ntitle: Continuous Integration\n---",
+      "source_content_hash": "9f701cd65304ffd9d6f1ea4d7c85fe980204f974fc1d351276c0e66f9d21a9f0",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "To ensure the quality of their software, teams often apply _Continuous\nIntegration_ workflows, commonly known as CI. With CI, teams continuously run a suite\nof automated verifications against every change to the code-base. During CI,\nteams may run many kinds of verifications:",
+      "source_content_hash": "387345f417e3537a3eed9abe28b627099c75c9825268f7f7658e7f0a8ee83cfe",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为确保软件质量，团队通常会实施持续集成（Continuous Integration，简称CI）工作流。通过CI，团队能针对代码库的每次变更自动运行一系列验证流程。在CI过程中，团队可能执行多种验证："
+      }
+    },
+    {
+      "segment_id": "730c423c",
+      "source_content": "* Compilation or build of the most recent version to make sure it\n  isn't broken.\n* Linting to enforce any accepted code-style standards.\n* Unit tests that verify individual components work as expected\n  and that changes to the codebase do not cause regressions in\n  other areas.\n* Security scans to make sure no known vulnerabilities are introduced\n  to the codebase.\n* And much more!",
+      "source_content_hash": "269396116bdf0e7c250d302becc15bfa58d19410ad691e67a577e6f572afd07d",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 编译或构建最新版本代码，确保其未被破坏。\n* 代码静态检查以强制执行公认的代码风格标准。\n* 单元测试验证各组件是否按预期工作，并确保代码变更不会导致其他功能退化。\n* 安全扫描防止已知漏洞被引入代码库。\n* 以及其他更多验证项！"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "From our discussions with the Ent community, we have learned\nthat many teams using Ent already use CI and would like to enforce some\nEnt-specific verifications into their workflows.",
+      "source_content_hash": "d37b7a9c4ccbd9edb0a62159e6ed9252afc596d469a37d33bb07c4474f4a81ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "根据与Ent社区的交流，我们了解到许多使用Ent的团队已采用CI流程，并希望在现有工作流中增加Ent专项验证。"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "To support the community with this effort we have started this guide which\ndocuments common best practices to verify in CI and introduces\n[ent/contrib/ci](https://github.com/ent/contrib/tree/master/ci) a GitHub Action\nwe maintain that codifies them.",
+      "source_content_hash": "f5df3f003afa5b4eaa3a9a082a0de5b2163869e1894bc60e40287d493e2856a5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为支持社区这一需求，我们编写了本指南，记录CI中应验证的常见最佳实践，并介绍由我们维护的GitHub Action工具[ent/contrib/ci](https://github.com/ent/contrib/tree/master/ci)，该工具将这些实践代码化实现。"
+      }
+    },
+    {
+      "segment_id": "b25f21be",
+      "source_content": "## Verify all generated files are checked in",
+      "source_content_hash": "1db1357498ae5ca93f721a0d32fc36b7233a4f7b5a76c3d3c541ebd16149e0dc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 验证所有生成文件已提交"
+      }
+    },
+    {
+      "segment_id": "7499a4e7",
+      "source_content": "Ent heavily relies on code generation. In our experience, generated code\nshould always be checked into source control. This is done for two reasons:",
+      "source_content_hash": "126d5da5a76bdd399bfa15942cee25f15e28a3b094403ce8101be67365dfd248",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent高度依赖代码生成。根据经验，生成的代码必须始终提交至版本控制系统，原因有二："
+      }
+    },
+    {
+      "segment_id": "7a2e981c",
+      "source_content": "* If generated code is checked into source control, it can be read\n  along with the main application code. Having generated code present when\n  the code is reviewed or when a repository is browsed is essential to get\n  a complete picture of how things work.\n* Differences in development environments between team members can easily be\n  spotted and remedied. This further reduces the chance of \"it works on my\n  machine\" type issues since everyone is running the same code.",
+      "source_content_hash": "be9c04dac259094c7f982ee1ba8ebc1967c11c1c8ac1f7b28e2e7d9b98b85b15",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 提交生成的代码后，可随主代码一同审阅。在代码审查或浏览仓库时，生成代码的存在对于完整理解系统工作原理至关重要。\n* 能快速发现并修复团队成员开发环境的差异，从而减少\"在我机器上能运行\"这类问题，确保所有人运行相同代码。"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "If you're using GitHub for source control, it's easy to verify that all generated\nfiles are checked in with the `ent/contrib/ci` GitHub Action.\nOtherwise, we supply a simple bash script that you can integrate in your existing\nCI flow.",
+      "source_content_hash": "b19d8ae7bb986a53b36c5b9e1a8b7b11d1ba71c9e0981c9f266b97ddf9e170de",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若使用GitHub管理代码，可通过`ent/contrib/ci`的GitHub Action轻松验证生成文件是否全部提交。其他情况下，我们提供简单的bash脚本供集成至现有CI流程。"
+      }
+    },
+    {
+      "segment_id": "6127963f",
+      "source_content": "<Tabs\n    defaultValue=\"gh\"\n    values={[\n        {label: 'GitHub Action', value: 'gh'},\n        {label: 'Bash', value: 'bash'},\n    ]}>\n<TabItem value=\"gh\">\nSimply add a file named `.github/workflows/ent-ci.yaml` in your repository:\n\n```yaml\nname: EntCI\non:\n  push:\n  # Run whenever code is changed in the master.\n    branches:\n      - master\n  # Run on PRs where something changed under the `ent/` directory.\n  pull_request:\n    paths:\n      - 'ent/*'\njobs:\n  ent:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3.0.1\n      - uses: actions/setup-go@v3\n        with:\n          go-version-file: 'go.mod'\n      - uses: ent/contrib/ci@master\n```\n\n</TabItem>\n<TabItem value=\"bash\">\n\n```bash\ngo generate ./...\nstatus=$(git status --porcelain)\nif [ -n \"$status\" ]; then\n    echo \"you need to run 'go generate ./...' and commit the changes\"\n    echo \"$status\"\n    exit 1\nfi\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "3b4b3c88a9a3fce19f2d3e96862fe04116129825dba7d41134023ab791ac9ad8",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6127963f"
+      }
+    },
+    {
+      "segment_id": "5baf88e2",
+      "source_content": "## Lint migration files",
+      "source_content_hash": "2e40a57eaebba83ed7be6e32916823d0bebe76db929ee68215c27e35bc2931ca",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 迁移文件静态检查"
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "Changes to your project's Ent schema almost always result in a modification\nof your database. If you are using [Versioned Migrations](/docs/versioned-migrations)\nto manage changes to your database schema, you can run [migration linting](https://atlasgo.io/versioned/lint)\nas part of your continuous integration flow. This is done for multiple reasons:",
+      "source_content_hash": "643ed1e767ba9b3617659182d029992856c6dce4835819f753368f45da6a01fa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "项目Ent模式的变更几乎总会引发数据库修改。若使用[版本化迁移](/docs/versioned-migrations)管理数据库模式变更，可在CI流程中运行[迁移静态检查](https://atlasgo.io/versioned/lint)，其作用包括："
+      }
+    },
+    {
+      "segment_id": "584b7213",
+      "source_content": "* Linting replays your migration directory on a [database container](https://atlasgo.io/concepts/dev-database) to\n  make sure all SQL statements are valid and in the correct order.\n* [Migration directory integrity](/docs/versioned-migrations#atlas-migration-directory-integrity-file)\n  is enforced - ensuring that history wasn't accidentally changed and that migrations that are\n  planned in parallel are unified to a clean linear history.\n* Destructive changes are detected notifying you of any potential data loss that may be\n  caused by your migrations way before they reach your production database.\n* Linting detects data-dependant changes that _may_ fail upon deployment and require\n  more careful review from your side.",
+      "source_content_hash": "6eacb9e2fb27090194553925ed542ecd67a10043a8fc3fcc115961c584313293",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 在[开发数据库容器](https://atlasgo.io/concepts/dev-database)上重放迁移目录，确保所有SQL语句有效且顺序正确。\n* 强制保障[迁移目录完整性](/docs/versioned-migrations#atlas-migration-directory-integrity-file)，避免历史记录被意外修改，并确保并行规划的迁移最终合并为线性历史。\n* 检测破坏性变更，在迁移触及生产环境前预警潜在数据丢失风险。\n* 识别数据依赖性变更，这类变更可能在部署时失败，需要额外人工审查。"
+      }
+    },
+    {
+      "segment_id": "6693c38c",
+      "source_content": "If you're using GitHub, you can use the [Official Atlas Action](https://github.com/ariga/atlas-action)\nto run migration linting during CI.",
+      "source_content_hash": "0a7a2e64383daecf5b4c243f194c813902afb548141ef190e0d216685fb8b003",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若使用GitHub，可通过[官方Atlas Action](https://github.com/ariga/atlas-action)在CI中执行迁移静态检查。"
+      }
+    },
+    {
+      "segment_id": "d21af28f",
+      "source_content": "Add `.github/workflows/atlas-ci.yaml` to your repo with the following contents:",
+      "source_content_hash": "4b44d04db1969c5ff92bdf6946c2b51d319ce363511b113075ee568e7cd2a65e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在仓库中添加`.github/workflows/atlas-ci.yaml`文件，内容如下："
+      }
+    },
+    {
+      "segment_id": "ebbb7828",
+      "source_content": "<Tabs\ndefaultValue=\"mysql\"\nvalues={[\n    {label: 'MySQL', value: 'mysql'},\n    {label: 'MariaDB', value: 'maria'},\n    {label: 'PostgreSQL', value: 'postgres'},\n    {label: 'SQLite', value: 'sqlite'},\n]}>\n<TabItem value=\"mysql\">\n\n```yaml\nname: Atlas CI\non:\n  # Run whenever code is changed in the master branch,\n  # change this to your root branch.\n  push:\n    branches:\n      - master\n  # Run on PRs where something changed under the `ent/migrate/migrations/` directory.\n  pull_request:\n    paths:\n      - 'ent/migrate/migrations/*'\njobs:\n  lint:\n    services:\n      # Spin up a mysql:8.0.29 container to be used as the dev-database for analysis.\n      mysql:\n        image: mysql:8.0.29\n        env:\n          MYSQL_ROOT_PASSWORD: pass\n          MYSQL_DATABASE: test\n        ports:\n          - \"3306:3306\"\n        options: >-\n          --health-cmd \"mysqladmin ping -ppass\"\n          --health-interval 10s\n          --health-start-period 10s\n          --health-timeout 5s\n          --health-retries 10\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: ariga/setup-atlas@v0\n        with:\n          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}\n      - uses: ariga/atlas-action/migrate/lint@v1\n        with:\n          dir: 'file://ent/migrate/migrations'\n          dir-name: 'my-project' # The name of the project in Atlas Cloud\n          dev-url: \"mysql://root:pass@localhost:3306/dev\"\n```\n\n</TabItem>\n<TabItem value=\"maria\">\n\n```yaml\nname: Atlas CI\non:\n  # Run whenever code is changed in the master branch,\n  # change this to your root branch.\n  push:\n    branches:\n      - master\n  # Run on PRs where something changed under the `ent/migrate/migrations/` directory.\n  pull_request:\n    paths:\n      - 'ent/migrate/migrations/*'\njobs:\n  lint:\n    services:\n      # Spin up a maria:11 container to be used as the dev-database for analysis.\n      mariadb:\n        image: mariadb:11\n        env:\n          MYSQL_DATABASE: dev\n          MYSQL_ROOT_PASSWORD: pass\n        ports:\n          - \"3306:3306\"\n        options: >-\n          --health-cmd \"healthcheck.sh --su-mysql --connect --innodb_initialized\"\n          --health-interval 10s\n          --health-start-period 10s\n          --health-timeout 5s\n          --health-retries 10\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: ariga/setup-atlas@v0\n        with:\n          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}\n      - uses: ariga/atlas-action/migrate/lint@v1\n        with:\n          dir: 'file://ent/migrate/migrations'\n          dir-name: 'my-project' # The name of the project in Atlas Cloud\n          dev-url: \"maria://root:pass@localhost:3306/dev\"\n```\n\n</TabItem>\n<TabItem value=\"postgres\">\n\n```yaml\nname: Atlas CI\non:\n  # Run whenever code is changed in the master branch,\n  # change this to your root branch.\n  push:\n    branches:\n      - master\n  # Run on PRs where something changed under the `ent/migrate/migrations/` directory.\n  pull_request:\n    paths:\n      - 'ent/migrate/migrations/*'\njobs:\n  lint:\n    services:\n      # Spin up a postgres:15 container to be used as the dev-database for analysis.\n      postgres:\n        image: postgres:15\n        env:\n          POSTGRES_DB: dev\n          POSTGRES_PASSWORD: pass\n        ports:\n          - 5432:5432\n        options: >-\n          --health-cmd pg_isready\n          --health-interval 10s\n          --health-start-period 10s\n          --health-timeout 5s\n          --health-retries 5\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: ariga/setup-atlas@v0\n        with:\n          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}\n      - uses: ariga/atlas-action/migrate/lint@v1\n        with:\n          dir: 'file://ent/migrate/migrations'\n          dir-name: 'my-project' # The name of the project in Atlas Cloud\n          dev-url: postgres://postgres:pass@localhost:5432/dev?sslmode=disable\n```\n\n</TabItem>\n<TabItem value=\"sqlite\">\n\n```yaml\nname: Atlas CI\non:\n  # Run whenever code is changed in the master branch,\n  # change this to your root branch.\n  push:\n    branches:\n      - master\n  # Run on PRs where something changed under the `ent/migrate/migrations/` directory.\n  pull_request:\n    paths:\n      - 'ent/migrate/migrations/*'\njobs:\n  lint:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: ariga/setup-atlas@v0\n        with:\n          cloud-token: ${{ secrets.ATLAS_CLOUD_TOKEN }}\n      - uses: ariga/atlas-action/migrate/lint@v1\n        with:\n          dir: 'file://ent/migrate/migrations'\n          dir-name: 'my-project' # The name of the project in Atlas Cloud\n          dev-url: sqlite://file?mode=memory&_fk=1\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "7bf4d4ae11b7abae4443216879720f4b188825a4b62b9ea4f72ffdf42af8d157",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ebbb7828"
+      }
+    },
+    {
+      "segment_id": "f0db2ff1",
+      "source_content": "Notice that running `atlas migrate lint` requires a clean [dev-database](https://atlasgo.io/concepts/dev-database)\nwhich is provided by the `services` block in the example code above.",
+      "source_content_hash": "51b3d16e9bf1d77332dfaf39d55cd66e98bd6b92d15799deb06e18239f7e58cc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意运行`atlas migrate lint`需要干净的[开发数据库](https://atlasgo.io/concepts/dev-database)，上述示例代码中的`services`模块即用于提供该环境。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/ci.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.685830+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "fe211a9199c7983b4194f6afa910184fe45e767b97412ce5144073d0222a6d6f"
+  }
+}

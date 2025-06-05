@@ -1,0 +1,32 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/components/_atlas_migrate_diff.mdx",
+  "source_file_content_hash": "ab4b4f9ebda9d5da06300b680a0f8fd93fc23fc4f6f4e431daba04c555373933",
+  "segments": [
+    {
+      "segment_id": "a9b642df",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a9b642df"
+      }
+    },
+    {
+      "segment_id": "137c0135",
+      "source_content": "<Tabs\ndefaultValue=\"mysql\"\nvalues={[\n{label: 'MySQL', value: 'mysql'},\n{label: 'MariaDB', value: 'maria'},\n{label: 'PostgreSQL', value: 'postgres'},\n{label: 'SQLite', value: 'sqlite'},\n]}>\n<TabItem value=\"mysql\">\n\n```shell\natlas migrate diff migration_name \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://mysql/8/ent\"\n```\n\n</TabItem>\n<TabItem value=\"maria\">\n\n```shell\natlas migrate diff migration_name \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://mariadb/latest/test\"\n```\n\n</TabItem>\n<TabItem value=\"postgres\">\n\n```shell\natlas migrate diff migration_name \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://postgres/15/test?search_path=public\"\n```\n\n</TabItem>\n<TabItem value=\"sqlite\">\n\n```shell\natlas migrate diff migration_name \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"sqlite://file?mode=memory&_fk=1\"\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "404ce3e3442ac597a01f8a56848b8da3df92f7e3b21cb33d5f946a6301fb0c07",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_137c0135"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/components/_atlas_migrate_diff.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.650985+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "ab4b4f9ebda9d5da06300b680a0f8fd93fc23fc4f6f4e431daba04c555373933"
+  }
+}

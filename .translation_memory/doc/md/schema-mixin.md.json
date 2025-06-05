@@ -1,0 +1,122 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/schema-mixin.md",
+  "source_file_content_hash": "525ef874483b17f533ecb71e922c8ca914d517378c3ce6102f6d3a8ec19890f9",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: schema-mixin\ntitle: Mixin\n---",
+      "source_content_hash": "a11951785a67323a46e5ec57b9eedc717c30aa23c7d43c31578baa3d00fe40b2",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "A `Mixin` allows you to create reusable pieces of `ent.Schema` code that can be injected into other schemas\nusing composition.",
+      "source_content_hash": "e3c54fcbd3d850359845808e00049d0d2e248dd6f342b3b0168293b94dec0864",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Mixin` 允许您创建可复用的 `ent.Schema` 代码片段，这些片段可以通过组合方式注入到其他模式中。"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "The `ent.Mixin` interface is as follows:",
+      "source_content_hash": "9451eac9dcfb88f052518a9b01ccb795fbc1ed2e2b35ca342db1da5963dbc5c9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent.Mixin` 接口定义如下："
+      }
+    },
+    {
+      "segment_id": "43a8bc7e",
+      "source_content": "```go\ntype Mixin interface {\n\t// Fields returns a slice of fields to add to the schema.\n\tFields() []Field\n\t// Edges returns a slice of edges to add to the schema.\n\tEdges() []Edge\n\t// Indexes returns a slice of indexes to add to the schema.\n\tIndexes() []Index\n\t// Hooks returns a slice of hooks to add to the schema.\n\t// Note that mixin hooks are executed before schema hooks.\n\tHooks() []Hook\n\t// Policy returns a privacy policy to add to the schema.\n\t// Note that mixin policy are executed before schema policy.\n\tPolicy() Policy\n\t// Annotations returns a list of schema annotations to add\n\t// to the schema annotations.\n\tAnnotations() []schema.Annotation\n}\n```",
+      "source_content_hash": "d699d7ff15f797dcc1219320eae0e4f573eb2c70712451f7264e5894c08651f0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_43a8bc7e"
+      }
+    },
+    {
+      "segment_id": "48847fd4",
+      "source_content": "## Example",
+      "source_content_hash": "9bf34f44c9d1371f4eda569dfa04ff7830aff81cfa81646e680cef087714cdc1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 示例"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "A common use case for `Mixin` is to mix-in a list of common fields to your schema.",
+      "source_content_hash": "fbaabef490ab2bb90f6776ef69a5c14433cada8f8669a3b2c4570f9e9dc182b9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Mixin` 的一个常见用例是将公共字段列表混入到您的模式中。"
+      }
+    },
+    {
+      "segment_id": "ef6eebef",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"time\"\n\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n\t\"entgo.io/ent/schema/mixin\"\n)\n\n// -------------------------------------------------\n// Mixin definition\n\n// TimeMixin implements the ent.Mixin for sharing\n// time fields with package schemas.\ntype TimeMixin struct{\n\t// We embed the `mixin.Schema` to avoid\n\t// implementing the rest of the methods.\n\tmixin.Schema\n}\n\nfunc (TimeMixin) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Time(\"created_at\").\n\t\t\tImmutable().\n\t\t\tDefault(time.Now),\n\t\tfield.Time(\"updated_at\").\n\t\t\tDefault(time.Now).\n\t\t\tUpdateDefault(time.Now),\n\t}\n}\n\n// DetailsMixin implements the ent.Mixin for sharing\n// entity details fields with package schemas.\ntype DetailsMixin struct{\n\t// We embed the `mixin.Schema` to avoid\n\t// implementing the rest of the methods.\n\tmixin.Schema\n}\n\nfunc (DetailsMixin) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"age\").\n\t\t\tPositive(),\n\t\tfield.String(\"name\").\n\t\t\tNotEmpty(),\n\t}\n}\n\n// -------------------------------------------------\n// Schema definition\n\n// User schema mixed-in the TimeMixin and DetailsMixin fields and therefore\n// has 5 fields: `created_at`, `updated_at`, `age`, `name` and `nickname`.\ntype User struct {\n\tent.Schema\n}\n\nfunc (User) Mixin() []ent.Mixin {\n\treturn []ent.Mixin{\n\t\tTimeMixin{},\n\t\tDetailsMixin{},\n\t}\n}\n\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"nickname\").\n\t\t\tUnique(),\n\t}\n}\n\n// Pet schema mixed-in the DetailsMixin fields and therefore\n// has 3 fields: `age`, `name` and `weight`.\ntype Pet struct {\n\tent.Schema\n}\n\nfunc (Pet) Mixin() []ent.Mixin {\n\treturn []ent.Mixin{\n\t\tDetailsMixin{},\n\t}\n}\n\nfunc (Pet) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Float(\"weight\"),\n\t}\n}\n```",
+      "source_content_hash": "c252a151b34c64204cb5554b142fec52629b77c0bde549f80027ece4457e1f65",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ef6eebef"
+      }
+    },
+    {
+      "segment_id": "23b96cc0",
+      "source_content": "## Builtin Mixin",
+      "source_content_hash": "76913cd87124f53a8c9f05da3d2c2f0131896b38f9850c9920aecce5c7af165b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 内置 Mixin"
+      }
+    },
+    {
+      "segment_id": "8fcdd6d4",
+      "source_content": "Package `mixin` provides a few builtin mixins that can be used\nfor adding the `create_time` and `update_time` fields to the schema.",
+      "source_content_hash": "8bdb797acc24e100379aeb69e4aea7cf2dda62dc72fcb05cab8fe3957e7cf8f5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`mixin` 包提供了一些内置的 mixin，可用于向模式添加 `create_time` 和 `update_time` 字段。"
+      }
+    },
+    {
+      "segment_id": "f45239ba",
+      "source_content": "In order to use them, add the `mixin.Time` mixin to your schema as follows:",
+      "source_content_hash": "2c0e1929b904661584baebc703c2f816e0b252b8490173c0d4d3b678e7387bdf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要使用它们，请按如下方式将 `mixin.Time` mixin 添加到您的模式中："
+      }
+    },
+    {
+      "segment_id": "18fb666f",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/mixin\"\n)\n\ntype Pet struct {\n\tent.Schema\n}\n\nfunc (Pet) Mixin() []ent.Mixin {\n\treturn []ent.Mixin{\n\t\tmixin.Time{},\n\t\t// Or, mixin.CreateTime only for create_time\n\t\t// and mixin.UpdateTime only for update_time.\n\t}\n}\n```",
+      "source_content_hash": "e1c9dc6baf42dad51a7b454d83fca7eefaa73286915b2c33ba1b0931a487a2ce",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_18fb666f"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/schema-mixin.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.660392+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "525ef874483b17f533ecb71e922c8ca914d517378c3ce6102f6d3a8ec19890f9"
+  }
+}

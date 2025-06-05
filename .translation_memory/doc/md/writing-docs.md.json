@@ -1,0 +1,232 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/writing-docs.md",
+  "source_file_content_hash": "ff4ae62f7f44f366f29166b70d6a0e9c17d0eeacdaf9d0cea45cfcabaece1d6b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: writing-docs\ntitle: Writing Docs\n---",
+      "source_content_hash": "b9f13f34e1ea58cc27b3e6972e36b1a3ecc67153613486a616277ce4f76e6f19",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "This document contains guidelines for contributing changes to the Ent documentation website.",
+      "source_content_hash": "d9c3f1193a6daaff3292769163d50b688a74309af07ba7b0180f721aede1dc3a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文档包含为Ent文档网站贡献修改的指南。"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "The Ent documentation website is generated from the project's main [GitHub repo](https://github.com/ent/ent).",
+      "source_content_hash": "8b9b005ba28aebc00e286b8ce45196feeb20690788a0743862303e09296e8559",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent文档网站由项目主仓库[GitHub repo](https://github.com/ent/ent)生成。"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "Follow this short guide to contribute documentation improvements and additions:",
+      "source_content_hash": "d72ed51de655124b12bdbe0df773d89f2e75bf4ce841db3fd65801825e53324a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请遵循以下简短指南贡献文档改进与新增内容："
+      }
+    },
+    {
+      "segment_id": "9fcbdce9",
+      "source_content": "### Setting Up",
+      "source_content_hash": "705914873ea48c5f3d1dbcd92856b552adf5a77f8e41857bcaf4b9990314412f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 环境配置"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "1\\. [Fork and clone locally](https://docs.github.com/en/github/getting-started-with-github/quickstart/fork-a-repo) the\n[main repository](https://github.com/ent/ent).",
+      "source_content_hash": "82cdcd03a5943c2fca5504396afa60c7c2820052376ce345c1084920b9d29f0b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. [Fork并本地克隆](https://docs.github.com/en/github/getting-started-with-github/quickstart/fork-a-repo) \n[主仓库](https://github.com/ent/ent)。"
+      }
+    },
+    {
+      "segment_id": "42ad8e83",
+      "source_content": "2\\. The documentation site uses [Docusaurus](https://docusaurus.io/). To run it you will need [Node.js installed](https://nodejs.org/en/).",
+      "source_content_hash": "87e604e2a063a3a339e7917ad4281e06ff6ee28e8fb63b649651f86289655766",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 文档站点使用[Docusaurus](https://docusaurus.io/)构建，运行需先安装[Node.js](https://nodejs.org/en/)。"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "3\\. Install the dependencies:",
+      "source_content_hash": "5d5f7bc91825895f0117d2554b7e438323a6f08943489ea6259486201504d71b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 安装依赖项："
+      }
+    },
+    {
+      "segment_id": "166426c2",
+      "source_content": "```shell\ncd doc/website && npm install\n```",
+      "source_content_hash": "3c56180a116a6941cc5a163028bcae88c2bc00e4d8f0119fd1e45ae33a4a60b6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_166426c2"
+      }
+    },
+    {
+      "segment_id": "98cfbd53",
+      "source_content": "4\\. Run the website in development mode:",
+      "source_content_hash": "bd58ed24b39d2e973863b2420fb75e7738ade7d95e4ec5d344b7fbe8c7e8fd03",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "4\\. 以开发模式运行网站："
+      }
+    },
+    {
+      "segment_id": "a89b882e",
+      "source_content": "```shell\ncd doc/website && npm start\n```",
+      "source_content_hash": "ce793508d37589011a0f90bdbd3fb63281f625a53d28467f4205ca0c361ab7c3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a89b882e"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "5\\. Open you browser at [http://localhost:3000](http://localhost:3000).",
+      "source_content_hash": "24050fa23d0f60d8e672408232708bf34747da670779141cc3c75e94c261f8da",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "5\\. 在浏览器中访问 [http://localhost:3000](http://localhost:3000)。"
+      }
+    },
+    {
+      "segment_id": "b25f21be",
+      "source_content": "### General Guidelines",
+      "source_content_hash": "7e60b914f8eb8271bacae811806253199af98e770c6ced0126aa332b3e0c26f0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 通用规范"
+      }
+    },
+    {
+      "segment_id": "f2c8a42b",
+      "source_content": "* Documentation files are located in `doc/md`, they are [Markdown-formatted](https://en.wikipedia.org/wiki/Markdown)\n  with \"front-matter\" style annotations at the top. [Read more](https://docusaurus.io/docs/docs-introduction) about\n  Docusaurus's document format.\n* Ent uses [Golang CommitMessage](https://github.com/golang/go/wiki/CommitMessage) formats to keep the repository's\n  history nice and readable. As such, please use a commit message such as:",
+      "source_content_hash": "c2ba4c578e79602da8b59450c8558ff8fc468eb667ba718b81f1c12018af2430",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 文档文件存放于`doc/md`目录，采用[Markdown格式](https://en.wikipedia.org/wiki/Markdown)\n  并包含顶部\"front-matter\"样式注解。详细了解Docusaurus的[文档格式](https://docusaurus.io/docs/docs-introduction)。\n* Ent采用[Golang提交信息](https://github.com/golang/go/wiki/CommitMessage)格式保持仓库历史清晰可读。\n  提交时请使用如下格式的提交信息："
+      }
+    },
+    {
+      "segment_id": "de8f60af",
+      "source_content": "```text\ndoc/md: adding a guide on contribution of docs to ent\n```",
+      "source_content_hash": "538c1cb7be2eb2538b467cb501c7e017a06b4ba5e7b73797caa0b7f43d977684",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de8f60af"
+      }
+    },
+    {
+      "segment_id": "06c0f776",
+      "source_content": "### Adding New Documents",
+      "source_content_hash": "c98d2cd9c4036aef17813077d0fd7456a93e9664e7cf2060b2817a295efb1945",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 添加新文档"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "1\\. Add a new Markdown file in the `doc/md` directory, for example `doc/md/writing-docs.md`.",
+      "source_content_hash": "ad0b541b7ebe233c4dcd252001efe077b6c79c57e7423426152b3cbc186dc838",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 在`doc/md`目录下新建Markdown文件，例如`doc/md/writing-docs.md`。"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "2\\. The file should be formatted as such:",
+      "source_content_hash": "ce572ea6874fe0dc9e07c8df26daf4fccbe3ed40a385a8a5f2a32a3897b85497",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 文件应按如下格式编写："
+      }
+    },
+    {
+      "segment_id": "229d6705",
+      "source_content": "```markdown\n---\nid: writing-docs\ntitle: Writing Docs\n---\n...\n```",
+      "source_content_hash": "c76cc3fc4dbe776cc487287da29defb2e82253e1ecbf092a215e2e898d7e020b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229d6705"
+      }
+    },
+    {
+      "segment_id": "b9aaa519",
+      "source_content": "Where `id` should be a unique identifier for the document, should be the same as the filename without the `.md` suffix,\nand `title` is the title of the document as it will appear in the page itself and any navigation element on the site.",
+      "source_content_hash": "51b2c989bb9e4849523708fc61012e99b5b263ec3cde79de45345c11a0a3073a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "其中`id`应为文档唯一标识符，需与文件名（不含`.md`后缀）保持一致；`title`将作为页面标题显示于网站导航元素中。"
+      }
+    },
+    {
+      "segment_id": "23dfb152",
+      "source_content": "3\\. If you want the page to appear in the documentation website's sidebar, add its `id` to `website/sidebars.js`, for example:",
+      "source_content_hash": "82472566f03e061b9d7fa4dff600d42f00a45ddcc44c2769d46cecaca905beb4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 若需页面显示在文档网站侧边栏，将其`id`添加至`website/sidebars.js`，例如："
+      }
+    },
+    {
+      "segment_id": "3c08ed05",
+      "source_content": "```diff\n{\n      type: 'category',\n      label: 'Misc',\n      items: [\n        'templates',\n        'graphql',\n        'sql-integration',\n        'testing',\n        'faq',\n        'generating-ent-schemas',\n        'feature-flags',\n        'translations',\n        'contributors',\n+       'writing-docs',\n        'slack'\n      ],\n      collapsed: false,\n    },\n```",
+      "source_content_hash": "31ea616d4fb2a01ba752586c95d4d0cc56f12f87abd23e38c15053990b8911cf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3c08ed05"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/writing-docs.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.679895+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "ff4ae62f7f44f366f29166b70d6a0e9c17d0eeacdaf9d0cea45cfcabaece1d6b"
+  }
+}

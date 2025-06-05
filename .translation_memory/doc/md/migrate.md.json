@@ -1,0 +1,442 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/migrate.md",
+  "source_file_content_hash": "3c4ddac30b555b8df70a18c277a0a2f0ca48518e3e10accd6a47517f1a4ac562",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: migrate\ntitle: Automatic Migration\n---",
+      "source_content_hash": "d39a627afcab42c52f0a32d6f98885b31c501e8c0b5ae2ccaf39f78d7c269a94",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "The migration support for `ent` provides the option for keeping the database schema\naligned with the schema objects defined in `ent/migrate/schema.go` under the root of your project.",
+      "source_content_hash": "2df66fd986fa619670dc5bf0bd81f19cacd8dcb974d2423b20fced99339b42db",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent`的迁移功能支持将数据库模式与项目根目录下`ent/migrate/schema.go`中定义的模式对象保持同步。"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "## Auto Migration",
+      "source_content_hash": "09277e8595be46fa28c6b838e73c1156aab7ea08a42460dc0bf569d7ea756d0e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自动迁移"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "Run the auto-migration logic in the initialization of the application:",
+      "source_content_hash": "a9d0d5eda5d8f708189a5b63a377400e49d723590663f7e1e58269a1a87d53dd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在应用程序初始化时运行自动迁移逻辑："
+      }
+    },
+    {
+      "segment_id": "b9c7a144",
+      "source_content": "```go\nif err := client.Schema.Create(ctx); err != nil {\n\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n}\n```",
+      "source_content_hash": "542f829f5b032cbeadba5130c3fc5ae23d9d77cd7ca329359bd2cc14c6cc96bf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b9c7a144"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "`Create` creates all database resources needed for your `ent` project. By default, `Create` works\nin an *\"append-only\"* mode; which means, it only creates new tables and indexes, appends columns to tables or \nextends column types. For example, changing `int` to `bigint`.",
+      "source_content_hash": "6db354aade02a7f6d007b79e3242e3212a52a8e8a84ba97011d710b3c6ef5439",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Create`会为`ent`项目创建所有必需的数据库资源。默认情况下，`Create`工作在*\"仅追加\"*模式下；这意味着它只会创建新表和索引、向表追加列或扩展列类型。例如将`int`改为`bigint`。"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "What about dropping columns or indexes?",
+      "source_content_hash": "3610103eca77024da25685f79e1f31c65598705d7b12df015f04cc6e5b523bd9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "那么如何删除列或索引呢？"
+      }
+    },
+    {
+      "segment_id": "ed7dde9c",
+      "source_content": "## Drop Resources",
+      "source_content_hash": "812de8ba72db8d5716eaef230f6abca5755d46020878c079f6a16e662379bccc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 删除资源"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "`WithDropIndex` and `WithDropColumn` are 2 options for dropping table columns and indexes.",
+      "source_content_hash": "8a733d82e369abccb71fafdca0dd799a5412dafc145b5407f8356c5408cdd157",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`WithDropIndex`和`WithDropColumn`是用于删除表列和索引的两个选项。"
+      }
+    },
+    {
+      "segment_id": "0c911872",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\n\t\"<project>/ent\"\n\t\"<project>/ent/migrate\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed connecting to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\tctx := context.Background()\n\t// Run migration.\n\terr = client.Schema.Create(\n\t\tctx, \n\t\tmigrate.WithDropIndex(true),\n\t\tmigrate.WithDropColumn(true), \n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "9fe1331adc64b09ef992c6dcdf283426305502368e1229e00a7f06d29aae10cc",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0c911872"
+      }
+    },
+    {
+      "segment_id": "23dfb152",
+      "source_content": "In order to run the migration in debug mode (printing all SQL queries), run:",
+      "source_content_hash": "40579fc1e1f79ce9fbc6d5076c3c7e59e75bf4f04d1fb8004aa77b265bcda355",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若需在调试模式下运行迁移（打印所有SQL查询），执行："
+      }
+    },
+    {
+      "segment_id": "c05ad55e",
+      "source_content": "```go\nerr := client.Debug().Schema.Create(\n\tctx, \n\tmigrate.WithDropIndex(true),\n\tmigrate.WithDropColumn(true),\n)\nif err != nil {\n\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n}\n```",
+      "source_content_hash": "87b03807424a3c86722ac82fc0193f2b29a22b19b0dc23e1fc01ad5e4e82fb34",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c05ad55e"
+      }
+    },
+    {
+      "segment_id": "047c2395",
+      "source_content": "## Universal IDs",
+      "source_content_hash": "48db6fd619c262816bb0b1aacb3a9c25909d38e30acec6c56db8e80dc334dfc9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 全局唯一ID"
+      }
+    },
+    {
+      "segment_id": "883231d4",
+      "source_content": "By default, SQL primary-keys start from 1 for each table; which means that multiple entities of different types\ncan share the same ID. Unlike AWS Neptune, where node IDs are UUIDs. [Read this](features.md#globally-unique-id) to \nlearn how to enable universally unique ids when using Ent with a SQL database.",
+      "source_content_hash": "298913034217eacc654e6a2b967ea401e757ac6f186ccadcecef7c4b73a3f67c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，SQL主键从每个表的1开始；这意味着不同类型的多个实体可以共享相同的ID。与AWS Neptune不同，后者的节点ID是UUID。[阅读此文](features.md#globally-unique-id)了解如何在使用Ent与SQL数据库时启用全局唯一ID。"
+      }
+    },
+    {
+      "segment_id": "98355e36",
+      "source_content": "## Offline Mode",
+      "source_content_hash": "6fd1d81b4c790a55a533b49a845b9834e20956bae35f15038b38cf5587bdb35d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 离线模式"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "**With Atlas becoming the default migration engine soon, offline migration will be replaced\nby [versioned migrations](versioned-migrations.mdx).**",
+      "source_content_hash": "4fdaefbf9682dd5c2525cf274204b09c2e10e925170d7c1c88ef4921a6eb4b54",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**随着Atlas即将成为默认迁移引擎，离线迁移将被[版本化迁移](versioned-migrations.mdx)取代。**"
+      }
+    },
+    {
+      "segment_id": "a5c5772a",
+      "source_content": "Offline mode allows you to write the schema changes to an `io.Writer` before executing them on the database.\nIt's useful for verifying the SQL commands before they're executed on the database, or to get an SQL script\nto run manually. ",
+      "source_content_hash": "2689956b82eb424cf61e5f9ab0a9239cd08f5f8482207608294bd36b3f7d51d5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "离线模式允许您在将模式更改执行到数据库之前，将其写入`io.Writer`。这对于在数据库上执行SQL命令前进行验证，或获取要手动运行的SQL脚本非常有用。"
+      }
+    },
+    {
+      "segment_id": "8126f763",
+      "source_content": "**Print changes**",
+      "source_content_hash": "7a66e48b08c845b618b075a89afa80ef077776d55c92b5459cd3381ab9709066",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**打印变更**"
+      }
+    },
+    {
+      "segment_id": "26f7c825",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"os\"\n\t\n\t\"<project>/ent\"\n\t\"<project>/ent/migrate\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed connecting to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\tctx := context.Background()\n\t// Dump migration changes to stdout.\n\tif err := client.Schema.WriteTo(ctx, os.Stdout); err != nil {\n\t\tlog.Fatalf(\"failed printing schema changes: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "f15951acb926e57346a55c697b570e8e6a71675078229fd74327ca5a68be2b37",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_26f7c825"
+      }
+    },
+    {
+      "segment_id": "3c19e221",
+      "source_content": "**Write changes to a file**",
+      "source_content_hash": "a27d9df326cfe0a7d956788d3f4e642d0268273e33c6db9305cf4456731b773c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**将变更写入文件**"
+      }
+    },
+    {
+      "segment_id": "83537d8d",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"os\"\n\t\n\t\"<project>/ent\"\n\t\"<project>/ent/migrate\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed connecting to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\tctx := context.Background()\n\t// Dump migration changes to an SQL script.\n\tf, err := os.Create(\"migrate.sql\")\n\tif err != nil {\n\t\tlog.Fatalf(\"create migrate file: %v\", err)\n\t}\n\tdefer f.Close()\n\tif err := client.Schema.WriteTo(ctx, f); err != nil {\n\t\tlog.Fatalf(\"failed printing schema changes: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "2fe301a175f1a32780e42ec138a5a12ca2c4245c8ec968fed6e0689b573f17b7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_83537d8d"
+      }
+    },
+    {
+      "segment_id": "73776161",
+      "source_content": "## Foreign Keys",
+      "source_content_hash": "98f863407a4eba8959cafdd2239a80ca8052ef2c7d1389f569ac47cda913e448",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 外键"
+      }
+    },
+    {
+      "segment_id": "f7e6e884",
+      "source_content": "By default, `ent` uses foreign-keys when defining relationships (edges) to enforce correctness and consistency on the\ndatabase side.",
+      "source_content_hash": "ec947717f74471d6927433feaf3bfd3c1c1b0f38c0d32fb3a14e49ebddc04589",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，`ent`在定义关系（边）时使用外键来确保数据库端的正确性和一致性。"
+      }
+    },
+    {
+      "segment_id": "ad3e22c6",
+      "source_content": "However, `ent` also provide an option to disable this functionality using the `WithForeignKeys` option.\nYou should note that setting this option to `false`, will tell the migration to not create foreign-keys in the\nschema DDL and the edges validation and clearing must be handled manually by the developer.",
+      "source_content_hash": "b6bc8d215e3d8b8e2f0381484785f11271984844b958bf8e0f960be85e23a7f2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "但`ent`也提供了通过`WithForeignKeys`选项禁用此功能的选项。需注意将此选项设为`false`时，迁移将不会在模式DDL中创建外键，边验证和清理必须由开发人员手动处理。"
+      }
+    },
+    {
+      "segment_id": "4c787c52",
+      "source_content": "We expect to provide a set of hooks for implementing the foreign-key constraints in the application level in the near future.",
+      "source_content_hash": "f80e86c6923518c457e26cdea9fbf4a583821caf06c86f15d3ad7b80d60c3731",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们预计在不久的将来会提供一组钩子，用于在应用层实现外键约束。"
+      }
+    },
+    {
+      "segment_id": "520cfa65",
+      "source_content": "```go\npackage main\n\nimport (\n    \"context\"\n    \"log\"\n\n    \"<project>/ent\"\n    \"<project>/ent/migrate\"\n)\n\nfunc main() {\n    client, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n    if err != nil {\n        log.Fatalf(\"failed connecting to mysql: %v\", err)\n    }\n    defer client.Close()\n    ctx := context.Background()\n    // Run migration.\n    err = client.Schema.Create(\n        ctx,\n        migrate.WithForeignKeys(false), // Disable foreign keys.\n    )\n    if err != nil {\n        log.Fatalf(\"failed creating schema resources: %v\", err)\n    }\n}\n```",
+      "source_content_hash": "fd95ae4b2b70aa7d2d2a7439518543b36050df66981a53d0f1f045e4b3c70da4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_520cfa65"
+      }
+    },
+    {
+      "segment_id": "188a0310",
+      "source_content": "## Migration Hooks",
+      "source_content_hash": "1292bb3594abe898443bb095ac7351413a7a1c3fc533e10cd128858b44de5dd3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 迁移钩子"
+      }
+    },
+    {
+      "segment_id": "5cf1bce4",
+      "source_content": "The framework provides an option to add hooks (middlewares) to the migration phase.\nThis option is ideal for modifying or filtering the tables that the migration is working on,\nor for creating custom resources in the database.",
+      "source_content_hash": "5026ae722c7564718bb8c75812027bfacd1b00e8574cbf9c7c657ea9d4386657",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该框架提供了向迁移阶段添加钩子（中间件）的选项。此选项非常适合修改或过滤迁移正在处理的表，或在数据库中创建自定义资源。"
+      }
+    },
+    {
+      "segment_id": "0152e600",
+      "source_content": "```go\npackage main\n\nimport (\n    \"context\"\n    \"log\"\n\n    \"<project>/ent\"\n    \"<project>/ent/migrate\"\n\n    \"entgo.io/ent/dialect/sql/schema\"\n)\n\nfunc main() {\n    client, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n    if err != nil {\n        log.Fatalf(\"failed connecting to mysql: %v\", err)\n    }\n    defer client.Close()\n    ctx := context.Background()\n    // Run migration.\n    err = client.Schema.Create(\n        ctx,\n        schema.WithHooks(func(next schema.Creator) schema.Creator {\n            return schema.CreateFunc(func(ctx context.Context, tables ...*schema.Table) error {\n                // Run custom code here.\n                return next.Create(ctx, tables...)\n            })\n        }),\n    )\n    if err != nil {\n        log.Fatalf(\"failed creating schema resources: %v\", err)\n    }\n}\n```",
+      "source_content_hash": "e35cd911fb327f76dabc89175c3f5d74b160f7ad40f6b9b3491ca8de1118bc56",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0152e600"
+      }
+    },
+    {
+      "segment_id": "43662a16",
+      "source_content": "## Atlas Integration",
+      "source_content_hash": "7e947e4f424cb6ca3bc2d5dc377625f410dc342d8e20da035fa51aa0264ff226",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## Atlas集成"
+      }
+    },
+    {
+      "segment_id": "85821ad3",
+      "source_content": "Starting with v0.10, Ent supports running migration with [Atlas](https://atlasgo.io), which is a more robust\nmigration framework that covers many features that are not supported by current Ent migrate package. In order\nto execute a migration with the Atlas engine, use the `WithAtlas(true)` option.",
+      "source_content_hash": "3212f176620a12fc438f91684bcf50e00d183b9d3314a7d750cf4fd271245aa6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "从v0.10开始，Ent支持使用[Atlas](https://atlasgo.io)运行迁移，这是一个更强大的迁移框架，涵盖当前Ent迁移包不支持的许多功能。要使用Atlas引擎执行迁移，请使用`WithAtlas(true)`选项。"
+      }
+    },
+    {
+      "segment_id": "d5244955",
+      "source_content": "```go {21}\npackage main\n\nimport (\n    \"context\"\n    \"log\"\n\n    \"<project>/ent\"\n    \"<project>/ent/migrate\"\n\n    \"entgo.io/ent/dialect/sql/schema\"\n)\n\nfunc main() {\n    client, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n    if err != nil {\n        log.Fatalf(\"failed connecting to mysql: %v\", err)\n    }\n    defer client.Close()\n    ctx := context.Background()\n    // Run migration.\n    err = client.Schema.Create(ctx, schema.WithAtlas(true))\n    if err != nil {\n        log.Fatalf(\"failed creating schema resources: %v\", err)\n    }\n}\n```",
+      "source_content_hash": "eb8f340dee7dbc09ea844094f6bc62f9032d9cd43ed33b5106686c76017605f8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d5244955"
+      }
+    },
+    {
+      "segment_id": "9c70c953",
+      "source_content": "In addition to the standard options (e.g. `WithDropColumn`, `WithGlobalUniqueID`), the Atlas integration provides additional\noptions for hooking into schema migration steps.",
+      "source_content_hash": "19584d431488f4f483f523b4913d7a81b2641b0f118f1133403f9302c2b2c6a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "除了标准选项（如`WithDropColumn`、`WithGlobalUniqueID`），Atlas集成还提供了用于挂钩到模式迁移步骤的额外选项。"
+      }
+    },
+    {
+      "segment_id": "715a86e2",
+      "source_content": "![atlas-migration-process](https://entgo.io/images/assets/migrate-atlas-process.png)",
+      "source_content_hash": "2add5817d2213e4279a5df18c58a2f13568ebcca3c8b710f1686428be66472f0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![atlas-migration-process](https://entgo.io/images/assets/migrate-atlas-process.png)"
+      }
+    },
+    {
+      "segment_id": "b1889ce8",
+      "source_content": "#### Atlas `Diff` and `Apply` Hooks",
+      "source_content_hash": "b7f4aa68a0190791a9e2b6240a72be2fc16195a46752a1cd67a529b15c0a6d00",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### Atlas `Diff`和`Apply`钩子"
+      }
+    },
+    {
+      "segment_id": "30aa9816",
+      "source_content": "Here are two examples that show how to hook into the Atlas `Diff` and `Apply` steps.",
+      "source_content_hash": "e115621f495cfa88f1730e1df4115c84e4fbc9e2015ae24d5a81434482e57a87",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下是两个展示如何挂钩到Atlas `Diff`和`Apply`步骤的示例。"
+      }
+    },
+    {
+      "segment_id": "d76894b4",
+      "source_content": "```go\npackage main\n\nimport (\n    \"context\"\n    \"log\"\n\n    \"<project>/ent\"\n    \"<project>/ent/migrate\"\n\n\t\"ariga.io/atlas/sql/migrate\"\n\tatlas \"ariga.io/atlas/sql/schema\"\n\t\"entgo.io/ent/dialect\"\n\t\"entgo.io/ent/dialect/sql/schema\"\n)\n\nfunc main() {\n    client, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n    if err != nil {\n        log.Fatalf(\"failed connecting to mysql: %v\", err)\n    }\n    defer client.Close()\n    ctx := context.Background()\n    // Run migration.\n    err := \tclient.Schema.Create(\n\t\tctx,\n\t\t// Hook into Atlas Diff process.\n\t\tschema.WithDiffHook(func(next schema.Differ) schema.Differ {\n\t\t\treturn schema.DiffFunc(func(current, desired *atlas.Schema) ([]atlas.Change, error) {\n\t\t\t\t// Before calculating changes.\n\t\t\t\tchanges, err := next.Diff(current, desired)\n\t\t\t\tif err != nil {\n\t\t\t\t\treturn nil, err\n\t\t\t\t}\n\t\t\t\t// After diff, you can filter\n\t\t\t\t// changes or return new ones.\n\t\t\t\treturn changes, nil\n\t\t\t})\n\t\t}),\n\t\t// Hook into Atlas Apply process.\n\t\tschema.WithApplyHook(func(next schema.Applier) schema.Applier {\n\t\t\treturn schema.ApplyFunc(func(ctx context.Context, conn dialect.ExecQuerier, plan *migrate.Plan) error {\n\t\t\t\t// Example to hook into the apply process, or implement\n\t\t\t\t// a custom applier. For example, write to a file.\n\t\t\t\t//\n\t\t\t\t//\tfor _, c := range plan.Changes {\n\t\t\t\t//\t\tfmt.Printf(\"%s: %s\", c.Comment, c.Cmd)\n\t\t\t\t//\t\tif err := conn.Exec(ctx, c.Cmd, c.Args, nil); err != nil {\n\t\t\t\t//\t\t\treturn err\n\t\t\t\t//\t\t}\n\t\t\t\t//\t}\n\t\t\t\t//\n\t\t\t\treturn next.Apply(ctx, conn, plan)\n\t\t\t})\n\t\t}),\n\t)\n    if err != nil {\n        log.Fatalf(\"failed creating schema resources: %v\", err)\n    }\n}\n```",
+      "source_content_hash": "5752573217b91211503b7f1a5954ecdb84c973aa4f4af8afc257a40518548b62",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d76894b4"
+      }
+    },
+    {
+      "segment_id": "7901dac3",
+      "source_content": "#### `Diff` Hook Example",
+      "source_content_hash": "50e0ed25a2a09cea8d030b46f102bfb643eb63a425c35f8ba82fde816d0b2bad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### `Diff`钩子示例"
+      }
+    },
+    {
+      "segment_id": "4443801b",
+      "source_content": "In case a field was renamed in the `ent/schema`, Ent won't detect this change as renaming and will propose `DropColumn`\nand `AddColumn` changes in the diff stage. One way to get over this is to use the\n[StorageKey](schema-fields.mdx#storage-key) option on the field and keep the old column name in the database table.\nHowever, using Atlas `Diff` hooks allow replacing the `DropColumn` and `AddColumn` changes with a `RenameColumn` change.",
+      "source_content_hash": "afeda7a31bfe21004817a26a152f544d46cd27ee7bcfaa4bf3e9db8e54068f9a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果在 `ent/schema` 中重命名字段，Ent 不会将此变更识别为重命名操作，而是在差异比对阶段生成 `DropColumn` 和 `AddColumn` 变更。一种解决方案是在字段上使用 [StorageKey](schema-fields.mdx#storage-key) 选项，以保留数据库表中的旧列名。不过，通过 Atlas 的 `Diff` 钩子可以更优雅地将 `DropColumn` 和 `AddColumn` 变更替换为 `RenameColumn` 变更。"
+      }
+    },
+    {
+      "segment_id": "88b052dd",
+      "source_content": "```go\nfunc main() {\n    client, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n    if err != nil {\n        log.Fatalf(\"failed connecting to mysql: %v\", err)\n    }\n    defer client.Close()\n    // ...\n    if err := client.Schema.Create(ctx, schema.WithDiffHook(renameColumnHook)); err != nil {\n        log.Fatalf(\"failed creating schema resources: %v\", err)\n    }\n}\n\nfunc renameColumnHook(next schema.Differ) schema.Differ {\n    return schema.DiffFunc(func(current, desired *atlas.Schema) ([]atlas.Change, error) {\n        changes, err := next.Diff(current, desired)\n        if err != nil {\n            return nil, err\n        }\n        for _, c := range changes {\n            m, ok := c.(*atlas.ModifyTable)\n            // Skip if the change is not a ModifyTable,\n            // or if the table is not the \"users\" table.\n            if !ok || m.T.Name != user.Table {\n                continue\n            }\n            changes := atlas.Changes(m.Changes)\n            switch i, j := changes.IndexDropColumn(\"old_name\"), changes.IndexAddColumn(\"new_name\"); {\n            case i != -1 && j != -1:\n                // Append a new renaming change.\n                changes = append(changes, &atlas.RenameColumn{\n                    From: changes[i].(*atlas.DropColumn).C,\n                    To: changes[j].(*atlas.AddColumn).C,\n                })\n                // Remove the drop and add changes.\n                changes.RemoveIndex(i, j)\n                m.Changes = changes\n            case i != -1 || j != -1:\n                return nil, errors.New(\"old_name and new_name must be present or absent\")\n            }\n        }\n        return changes, nil\n    })\n}\n```",
+      "source_content_hash": "ffb6ba0dc42b2d08dc8d7c7d07cd9382f9c79bc7a13e6e1ce4e953c3a937e273",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_88b052dd"
+      }
+    },
+    {
+      "segment_id": "6b626c2c",
+      "source_content": "#### `Apply` Hook Example",
+      "source_content_hash": "c1d1edc3991a043b33b04aa17b028022897dc21732fab58743b5e58a496e0230",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### `Apply` 钩子示例"
+      }
+    },
+    {
+      "segment_id": "fd40deab",
+      "source_content": "The `Apply` hook allows accessing and mutating the migration plan and its raw changes (SQL statements), but in addition\nto that it is also useful for executing custom SQL statements before or after the plan is applied. For example, changing\na nullable column to non-nullable without a default value is not allowed by default. However, we can work around this\nusing an `Apply` hook that `UPDATE`s all rows that contain `NULL` value in this column:",
+      "source_content_hash": "6adfab91e27e6fb09dae87aceace59c4a1b1949889ad45981ac8e4175201c4ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Apply` 钩子不仅能访问和修改迁移计划及其原始变更（SQL语句），还特别适用于在计划执行前后运行自定义SQL语句。例如，默认情况下不允许将可为空的列直接改为非空且无默认值的列。但我们可以通过 `Apply` 钩子先执行 `UPDATE` 语句，将该列中所有 `NULL` 值更新为非空值，从而绕过此限制："
+      }
+    },
+    {
+      "segment_id": "7329258e",
+      "source_content": "```go\nfunc main() {\n    client, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n    if err != nil {\n        log.Fatalf(\"failed connecting to mysql: %v\", err)\n    }\n    defer client.Close()\n    // ...\n    if err := client.Schema.Create(ctx, schema.WithApplyHook(fillNulls)); err != nil {\n        log.Fatalf(\"failed creating schema resources: %v\", err)\n    }\n}\n\nfunc fillNulls(next schema.Applier) schema.Applier {\n\treturn schema.ApplyFunc(func(ctx context.Context, conn dialect.ExecQuerier, plan *migrate.Plan) error {\n\t\t// There are three ways to UPDATE the NULL values to \"Unknown\" in this stage.\n\t\t// Append a custom migrate.Change to the plan, execute an SQL statement directly\n\t\t// on the dialect.ExecQuerier, or use the ent.Client used by the project.\n\n\t\t// Execute a custom SQL statement.\n\t\tquery, args := sql.Dialect(dialect.MySQL).\n\t\t\tUpdate(user.Table).\n\t\t\tSet(user.FieldDropOptional, \"Unknown\").\n\t\t\tWhere(sql.IsNull(user.FieldDropOptional)).\n\t\t\tQuery()\n\t\tif err := conn.Exec(ctx, query, args, nil); err != nil {\n\t\t\treturn err\n\t\t}\n\n\t\t// Append a custom statement to migrate.Plan.\n\t\t//\n\t\t//  plan.Changes = append([]*migrate.Change{\n\t\t//\t    {\n\t\t//\t\t    Cmd: fmt.Sprintf(\"UPDATE users SET %[1]s = '%[2]s' WHERE %[1]s IS NULL\", user.FieldDropOptional, \"Unknown\"),\n\t\t//\t    },\n\t\t//  }, plan.Changes...)\n\n\t\t// Use the ent.Client used by the project.\n\t\t//\n\t\t//  drv := sql.NewDriver(dialect.MySQL, sql.Conn{ExecQuerier: conn.(*sql.Tx)})\n\t\t//  if err := ent.NewClient(ent.Driver(drv)).\n\t\t//  \tUser.\n\t\t//  \tUpdate().\n\t\t//  \tSetDropOptional(\"Unknown\").\n\t\t//  \tWhere(/* Add predicate to filter only rows with NULL values */).\n\t\t//  \tExec(ctx); err != nil {\n\t\t//  \treturn fmt.Errorf(\"fix default values to uppercase: %w\", err)\n\t\t//  }\n\n\t\treturn next.Apply(ctx, conn, plan)\n\t})\n}\n```",
+      "source_content_hash": "4c3dfbf45298c9b0277025e5937d0432c79d0d0212bf8ef467f58b044890ed1a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7329258e"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/migrate.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.661678+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "3c4ddac30b555b8df70a18c277a0a2f0ca48518e3e10accd6a47517f1a4ac562"
+  }
+}

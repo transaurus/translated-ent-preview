@@ -1,0 +1,342 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2022-04-07-how-twitter-can-implement.md",
+  "source_file_content_hash": "0a149dd039cf4d01844c6464d76e47514d5a2780f912c61b776cf74e5941a4ad",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: How to implement the Twitter edit button with Ent\nauthor: Amit Shani\nauthorURL: \"https://github.com/hedwigz\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/8277210?v=4\"\nauthorTwitter: itsamitush\nimage: \"https://entgo.io/images/assets/enthistory/share.png\"\n---",
+      "source_content_hash": "23ae98d724836151fe8f6c6e02d62e63f263393b426ac0d79cd357b59b8cbfe1",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "Twitter's \"Edit Button\" feature has reached the headlines with Elon Musk's poll tweet asking whether users want the feature or not.",
+      "source_content_hash": "f3e9a81f7dd04077de956bb2c05ef1236a0b8d12ff9d7e999371bb4068787023",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "随着埃隆·马斯克发起投票询问用户是否需要\"编辑按钮\"功能，Twitter的这一特性迅速成为头条新闻。"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "[![Elons Tweet](https://entgo.io/images/assets/enthistory/enthistory2.webp)](https://twitter.com/elonmusk/status/1511143607385874434)",
+      "source_content_hash": "907d3f9af15e66c45a857eb1c364f21631408eb5ab7c2afd675d22a4e7c22e4a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[![埃隆的推文](https://entgo.io/images/assets/enthistory/enthistory2.webp)](https://twitter.com/elonmusk/status/1511143607385874434)"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "Without a doubt, this is one of Twitter's most requested features.",
+      "source_content_hash": "734f6bb93f0fd5d01bf8902a81362f878549d18c14e9c36743f5c56c976d9c46",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "毫无疑问，这是Twitter用户最期待的功能之一。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "As a software developer, I immediately began to think about how I would implement this myself. The tracking/auditing problem is very common in many applications. If you have an entity (say, a `Tweet`) and you want to track changes to one of its fields (say, the `content` field), there are many common solutions. Some databases even have proprietary solutions like Microsoft's change tracking and MariaDB's System Versioned Tables. However, in most use-cases you'd have to \"stitch\" it yourself. Luckily, Ent provides a modular extensions system that lets you plug in features like this with just a few lines of code.",
+      "source_content_hash": "b397e2986b86f445f357586eff3b98514d63332cc35c7f6145721627120eb9cb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "作为一名软件开发人员，我立即开始思考如何自行实现这个功能。变更追踪/审计问题在各类应用中非常普遍。假设你有一个实体（例如`Tweet`），需要追踪其某个字段（例如`content`字段）的变更，存在多种通用解决方案。某些数据库甚至提供专有方案，如微软的变更追踪和MariaDB的系统版本表。但在大多数场景下，开发者需要自行\"缝合\"这些功能。幸运的是，Ent提供的模块化扩展系统让你仅需几行代码就能接入此类功能。"
+      }
+    },
+    {
+      "segment_id": "39b3772c",
+      "source_content": "![Twitter+Edit Button](https://entgo.io/images/assets/enthistory/enthistory3.gif)",
+      "source_content_hash": "9025f02cb610847ebaf94c49e438d4ff66365a15f46f3af94a428828af952737",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![Twitter+编辑按钮](https://entgo.io/images/assets/enthistory/enthistory3.gif)"
+      }
+    },
+    {
+      "segment_id": "95b38f97",
+      "source_content": "### Introduction to Ent",
+      "source_content_hash": "596cbc4941cf655fdac68fc6c2337ff25fc2e9a05f6aab17f3da9d84a25258f8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Ent框架简介"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "Ent is an Entity framework for Go that makes developing large applications a breeze. Ent comes pre-packed with awesome features out of the box, such as:",
+      "source_content_hash": "de6dc8f44a971212f712fc5f0346a5aced997176ccefae4cca5362ce2470efd0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent是一个让大型Go应用开发变得轻松的实体框架，开箱即用提供以下强大特性："
+      }
+    },
+    {
+      "segment_id": "0cc488ed",
+      "source_content": "* Type-safe generated [CRUD API](https://entgo.io/docs/crud)\n* Complex [Graph traversals](https://entgo.io/docs/traversals) (SQL joins made easy)\n* [Paging](https://entgo.io/docs/paging)\n* [Privacy](https://entgo.io/docs/privacy)\n* Safe DB [migrations](https://entgo.io/blog/2022/03/14/announcing-versioned-migrations).",
+      "source_content_hash": "85f1c87c78915b20e31fbb0ec440c032f07e21a2b3c9da7d784aa93096d87143",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 类型安全的[CRUD API](https://entgo.io/docs/crud)生成\n* 复杂的[图遍历](https://entgo.io/docs/traversals)（轻松实现SQL连接）\n* [分页](https://entgo.io/docs/paging)\n* [隐私](https://entgo.io/docs/privacy)控制\n* 安全的数据库[迁移](https://entgo.io/blog/2022/03/14/announcing-versioned-migrations)"
+      }
+    },
+    {
+      "segment_id": "73ab96a3",
+      "source_content": "With Ent's code generation engine and advanced [extensions system](https://entgo.io/blog/2021/09/02/ent-extension-api/), you can easily modularize your Ent's client with advanced features that are usually time-consuming to implement manually. For example:",
+      "source_content_hash": "5e4cd996854bfa9fbea69cccb1cb468837a8f21b51f91b9b73944c1bb09b15f4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "借助Ent的代码生成引擎和高级[扩展系统](https://entgo.io/blog/2021/09/02/ent-extension-api/)，你可以轻松模块化Ent客户端，集成那些通常需要手动耗时实现的高级功能，例如："
+      }
+    },
+    {
+      "segment_id": "cd471e4e",
+      "source_content": "* Generate [REST](https://entgo.io/blog/2022/02/15/generate-rest-crud-with-ent-and-ogen), [gRPC](https://entgo.io/docs/grpc-intro), and [GraphQL](https://entgo.io/docs/graphql) server.\n* [Caching](http://entgo.io/blog/2021/10/14/introducing-entcache)\n* Monitoring with [sqlcommenter](https://entgo.io/blog/2021/10/19/sqlcomment-support-for-ent)",
+      "source_content_hash": "5baeb1443baf6253e50abd8b531d2e95aabe3bbd1bc7db8262c69da3e9ee940f",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 生成[REST](https://entgo.io/blog/2022/02/15/generate-rest-crud-with-ent-and-ogen)、[gRPC](https://entgo.io/docs/grpc-intro)和[GraphQL](https://entgo.io/docs/graphql)服务端\n* [缓存](http://entgo.io/blog/2021/10/14/introducing-entcache)\n* 通过[sqlcommenter](https://entgo.io/blog/2021/10/19/sqlcomment-support-for-ent)实现监控"
+      }
+    },
+    {
+      "segment_id": "3b7478ea",
+      "source_content": "### Enthistory",
+      "source_content_hash": "43524c822d4f5b17a123616551d8badda2925b95bb40bf6e384c16301fc3f0b1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Enthistory扩展"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "`enthistory` is an extension that we started developing when we wanted to add an \"Activity & History\" panel to one of our web services. The panel's role is to show who changed what and when (aka auditing). In [Atlas](https://atlasgo.io/), a tool for managing databases using declarative HCL files, we have an entity called \"schema\" which is essentially a large text blob. Any change to the schema is logged and can later be viewed in the \"Activity & History\" panel.",
+      "source_content_hash": "1a5e46b86cf07b955875acfc53d2b806a86bc504900f0eba0fb99d775b656583",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当我们想为某个Web服务添加\"活动与历史\"面板时，开发了`enthistory`扩展。该面板用于展示\"谁在何时修改了什么\"（即审计功能）。在[Atlas](https://atlasgo.io/)——这个使用声明式HCL文件管理数据库的工具中，我们有个名为\"schema\"的实体，本质上是大型文本块。所有模式变更都会被记录，并可在\"活动与历史\"面板中查看。"
+      }
+    },
+    {
+      "segment_id": "33331f27",
+      "source_content": "![Activity and History](https://entgo.io/images/assets/enthistory/enthistory1.gif)",
+      "source_content_hash": "c363aa5543aeeb48924b967d1b3d670e142652b32d72c51868c00f5645fccfe2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![活动与历史](https://entgo.io/images/assets/enthistory/enthistory1.gif)"
+      }
+    },
+    {
+      "segment_id": "8af76f3d",
+      "source_content": "This feature is very common and can be found in many apps, such as Google docs, GitHub PRs, and Facebook posts, but is unfortunately missing in the very popular and beloved Twitter.",
+      "source_content_hash": "f02970b87340421faed47a36a3dbd7bb6613f7b392e3cdb1991a0e8075b77a15",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这类功能非常普遍，可见于Google文档、GitHub PR和Facebook帖子等应用中，但在广受欢迎的Twitter上却遗憾缺失。"
+      }
+    },
+    {
+      "segment_id": "a9d49f92",
+      "source_content": "Over 3 million people voted in favor of adding the \"edit button\" to Twitter, so let me show you how Twitter can make their users happy without breaking a sweat!",
+      "source_content_hash": "f30fae5f72dee4f2d8ab29b78fd07acbde7d5d49deabe8c567600094e5b7b6df",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "已有超过300万人投票支持Twitter添加\"编辑按钮\"，下面让我展示Twitter如何能毫不费力地满足用户期待！"
+      }
+    },
+    {
+      "segment_id": "a44047a5",
+      "source_content": "With Enthistory, all you have to do is simply annotate your Ent schema like so:",
+      "source_content_hash": "10bc2ffd063b1b55e66f9c98b1b03f77d8c35aa55b51c5ca9df44b5958f3aeb1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用Enthistory时，你只需像这样在Ent模式中添加注解："
+      }
+    },
+    {
+      "segment_id": "64b6f348",
+      "source_content": "```go\nfunc (Tweet) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"content\").\n\t\t\tAnnotations(enthistory.TrackField()),\n\t\tfield.Time(\"created\").\n\t\t\tDefault(time.Now),\n\t}\n}\n```",
+      "source_content_hash": "4f2124ff9347445c2e7aec30c5d49952e221b29732b967889d62c68f4bf39150",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_64b6f348"
+      }
+    },
+    {
+      "segment_id": "8b2a52b1",
+      "source_content": "Enthistory hooks into your Ent client to ensure that every CRUD operation to \"Tweet\" is recorded into the \"tweets_history\" table, with no code modifications and provides an API to consume these records:",
+      "source_content_hash": "37b72ce1054e6a0a4bfcba531eaf64b735e1389b485b54e39047c018749af633",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Enthistory会挂钩到Ent客户端，确保所有对\"Tweet\"的CRUD操作都被记录到\"tweets_history\"表中，无需修改代码，并提供API来消费这些记录："
+      }
+    },
+    {
+      "segment_id": "7a577a50",
+      "source_content": "```go\n// Creating a new Tweet doesn't change. enthistory automatically modifies\n// your transaction on the fly to record this event in the history table\nclient.Tweet.Create().SetContent(\"hello world!\").SaveX(ctx)\n\n// Querying history changes is as easy as querying any other entity's edge.\nt, _ := client.Tweet.Get(ctx, id)\nhs := client.Tweet.QueryHistory(t).WithChanges().AllX(ctx)\n```",
+      "source_content_hash": "e242745804ff17da13a6db3a1a7e2a8fa1f51d9625021b17a320cde2e8b9f833",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7a577a50"
+      }
+    },
+    {
+      "segment_id": "f01228d3",
+      "source_content": "Let's see what you'd have to do if you weren't using Enthistory: For example, consider an app similar to Twitter. It has a table called \"tweets\" and one of its columns is the tweet content.",
+      "source_content_hash": "8ff61189046b30c258329a3bb11893082bed6255db0af16c3ddbc18012f1c04c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果不使用Enthistory，你需要这样做：以类似Twitter的应用为例，它有一个名为\"tweets\"的表，其中一列存储推文内容。"
+      }
+    },
+    {
+      "segment_id": "543d317a",
+      "source_content": "| id      | content | created_at | author_id |\n| ----------- | ----------- | ----------- | ----------- |\n| 1      | Hello Twitter!       | 2022-04-06T13:45:34+00:00       | 123       |\n| 2      | Hello Gophers!       | 2022-04-06T14:03:54+00:00       | 456       |",
+      "source_content_hash": "6cb2163b53ac8f3d35a676ae94c3d39b2acdf2b11f74664957be85f7ec68cc76",
+      "node_type": "table",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_543d317a"
+      }
+    },
+    {
+      "segment_id": "6270d577",
+      "source_content": "Now, assume that we want to allow users to edit the content, and simultaneously display the changes in the frontend. There are several common approaches for solving this problem, each with its own pros and cons, but we will dive into those in another technical post. For now, a possible solution for this is to create a table \"tweets_history\" which records the changes of a tweet:",
+      "source_content_hash": "7776cf95892fc18dcdc4f761e5d914f83979e29da922d1fbd35f0b32fa1fbf10",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在假设我们想允许用户编辑内容，同时在前端展示修改记录。解决这个问题有几种常见方案，各有利弊（我们将在另一篇技术文章中深入探讨）。目前可行的方案是创建\"tweets_history\"表来记录推文变更："
+      }
+    },
+    {
+      "segment_id": "3e4bc1c5",
+      "source_content": "| id      | tweet_id | timestamp | event | content |\n| ----------- | ----------- | ----------- | ----------- | ----------- |\n| 1      | 1       | 2022-04-06T12:30:00+00:00       | CREATED       | hello world!       |\n| 2      | 2       | 2022-04-06T13:45:34+00:00       | UPDATED       | hello Twitter!       |",
+      "source_content_hash": "e58de6dea26751e0adf2c1aade7cc4e7730bebea6bdfbba71783d423f3190f1b",
+      "node_type": "table",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3e4bc1c5"
+      }
+    },
+    {
+      "segment_id": "74dd7937",
+      "source_content": "With a table similar to the one above, we can record changes to the original tweet \"1\" and if requested, we can show that it was originally tweeted at 12:30:00 with the content \"hello world!\" and was modified at 13:45:34 to \"hello Twitter!\".  ",
+      "source_content_hash": "95e583bb8f1b6ef15caba9e7364dde0d52f4de9895a4947c9720b1bdcb363d55",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过类似上表的结构，我们可以记录原始推文\"1\"的变更。当需要时，可以显示该推文最初发布于12:30:00，内容为\"hello world!\"，后在13:45:34修改为\"hello Twitter!\"。"
+      }
+    },
+    {
+      "segment_id": "5803caac",
+      "source_content": "To implement this, we will have to change every `UPDATE` statement for \"tweets\" to include an `INSERT` to \"tweets_history\". For correctness, we will need to wrap both statements in a transaction to avoid corrupting the history. in case the first statement succeeds but the subsequent one fails. We'd also need to make sure every `INSERT` to \"tweets\" is coupled with an `INSERT` to \"tweets_history\"",
+      "source_content_hash": "0ac8c6fdecb53e786aacac7800e8d2b571ed02245042c8a3860db01c8013bb26",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要实现这一点，我们需要修改所有针对\"tweets\"的`UPDATE`语句，使其同时向\"tweets_history\"执行`INSERT`。为确保数据一致性，必须将这两个语句包裹在事务中，防止第一条成功而第二条失败导致历史记录损坏。同时还需确保每次对\"tweets\"的`INSERT`操作都伴随对\"tweets_history\"的插入。"
+      }
+    },
+    {
+      "segment_id": "5782e280",
+      "source_content": "```diff\n# INSERT is logged as \"CREATE\" history event\n- INSERT INTO tweets (`content`) VALUES ('Hello World!');\n+BEGIN;\n+INSERT INTO tweets (`content`) VALUES ('Hello World!');\n+INSERT INTO tweets_history (`content`, `timestamp`, `record_id`, `event`)\n+VALUES ('Hello World!', NOW(), 1, 'CREATE');\n+COMMIT;\n\n# UPDATE is logged as \"UPDATE\" history event\n- UPDATE tweets SET `content` = 'Hello World!' WHERE id = 1;\n+BEGIN;\n+UPDATE tweets SET `content` = 'Hello World!' WHERE id = 1;\n+INSERT INTO tweets_history (`content`, `timestamp`, `record_id`, `event`)\n+VALUES ('Hello World!', NOW(), 1, 'UPDATE');\n+COMMIT;\n```",
+      "source_content_hash": "aeb72354f21ceb0d231633091719a164a6d3769fe83377b0e2cd4233813ec83f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5782e280"
+      }
+    },
+    {
+      "segment_id": "7bc8bb24",
+      "source_content": "This method is nice but you'd have to create another table for different entities (\"comment_history\", \"settings_history\"). To prevent that, Enthistory creates a single \"history\" and a single \"changes\" table and records all the tracked fields there. It also supports many type of fields without needing to add more columns.",
+      "source_content_hash": "b5aef4b0bbf7e727951493909f917a4861453e6093d92ce3f4d5ce12a8c9a093",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这种方法虽然可行，但你需要为不同实体（如\"comment_history\"、\"settings_history\"）创建单独的历史表。为避免这种情况，Enthistory创建了统一的\"history\"和\"changes\"表，将所有追踪字段集中记录，且无需添加额外列就能支持多种字段类型。"
+      }
+    },
+    {
+      "segment_id": "8574d51c",
+      "source_content": "### Pre release",
+      "source_content_hash": "ca4e9017165bb8a1aac43041bcd150d8e358a1212dd318a95374def147f86ecf",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 预发布阶段"
+      }
+    },
+    {
+      "segment_id": "3c19e221",
+      "source_content": "Enthistory is still in early design stages and is being internally tested. Therefore, we haven't released it to open-source yet, though we plan to do so very soon.\nIf you want to play with a pre-release version of Enthistory, I wrote a simple React application with GraphQL+Enthistory to demonstrate how a tweet edit could look like. You can check it out [here](https://github.com/hedwigz/edit-twitter-example-app). Please feel free to share your feedback.",
+      "source_content_hash": "17a1f2cc2bc26d27867aad6f7835eb52b39a1643f7b2877ea8d3053ecb0bc495",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Enthistory仍处于早期设计阶段，正在进行内部测试，因此尚未开源发布，但我们计划很快开放。如果你想体验预发布版本，我编写了一个结合GraphQL+Enthistory的简单React应用来演示推文编辑功能，代码库见[这里](https://github.com/hedwigz/edit-twitter-example-app)，欢迎反馈意见。"
+      }
+    },
+    {
+      "segment_id": "48155948",
+      "source_content": "### Wrapping up",
+      "source_content_hash": "a3785475b5dd9a66ae4506648eaafecb51ead6eb80351473642adc6a4aba69b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "44aaa880",
+      "source_content": "We saw how Ent's modular extension system lets you streamline advanced features as if they were just a package install away. Developing your own extension [is fun, easy and educating](https://entgo.io/blog/2021/12/09/contributing-my-first-feature-to-ent-grpc-plugin)! I invite you to try it yourself!\nIn the future, Enthistory will be used to track changes to Edges (aka foreign-keyed tables), integrate with OpenAPI and GraphQL extensions, and provide more methods for its underlying implementation.",
+      "source_content_hash": "9a930ec886bc8b7116523bb5396b04987b08a5f4ac249a99cad7493c258aaeb1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们看到了Ent的模块化扩展系统如何让你像安装软件包一样轻松实现高级功能。[开发自己的扩展](https://entgo.io/blog/2021/12/09/contributing-my-first-feature-to-ent-grpc-plugin)既有趣又富有教育意义！未来Enthistory将支持追踪边（外键关联表）的变更，与OpenAPI和GraphQL扩展集成，并提供更多底层实现方案。"
+      }
+    },
+    {
+      "segment_id": "0309a88d",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅[新闻简报](https://entgo.substack.com/)\n- 关注[Twitter账号](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2022-04-07-how-twitter-can-implement.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.685354+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "0a149dd039cf4d01844c6464d76e47514d5a2780f912c61b776cf74e5941a4ad"
+  }
+}

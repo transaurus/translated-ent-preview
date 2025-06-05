@@ -1,0 +1,112 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-09-01-ent-joins-the-linux-foundation.md",
+  "source_file_content_hash": "b63840944af796e8ec57de0d263cc0f7e75fbd7d1faaf51d42005aee3978f7b1",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Ent Joins the Linux Foundation\nauthor: Ariel Mashraki\nauthorURL: https://github.com/a8m\nauthorImageURL: https://avatars0.githubusercontent.com/u/7413593\nauthorTwitter: arielmashraki\n---",
+      "source_content_hash": "4ed856fdc3925ac1c067ce5fff783d974eb8e2022aad3c8ad628cfb73f72e6fe",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "Dear community,",
+      "source_content_hash": "860b53dc17d57b540afd06c10c44c5e5f80a697693b3c270c0ac685a82a48b44",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "亲爱的社区成员们，"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "I’m really happy to share something that has been in the works for quite some time.\nYesterday (August 31st), a [press release](https://www.linuxfoundation.org/press-release/ent-joins-the-linux-foundation/)\nwas issued announcing that Ent is joining the Linux Foundation.",
+      "source_content_hash": "5dac1af2ceaa2fd476bfd5ac3fb3f639b832791b678ccb074f804dcf94200030",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我非常高兴地向大家分享一个酝酿已久的消息。昨日（8月31日），[Linux基金会官方公告](https://www.linuxfoundation.org/press-release/ent-joins-the-linux-foundation/)正式宣布Ent项目加入Linux基金会。"
+      }
+    },
+    {
+      "segment_id": "42ad8e83",
+      "source_content": "Ent was open-sourced while I was working on it with my peers at Facebook in 2019. Since then, our community has\ngrown, and we’ve seen the adoption of Ent explode across many organizations of different sizes and sectors. ",
+      "source_content_hash": "0ce95c8458272b05d59e01bb892734c00b71959eabba5c4bf8750042204e3e22",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent最初是我在Facebook与同事合作期间于2019年开源的。自那时起，我们的社区不断壮大，见证了Ent在不同规模、不同领域的组织中迅速普及。"
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "Our goal with moving under the governance of the Linux Foundation is to provide a corporate-neutral environment in\nwhich organizations can more easily contribute code, as we’ve seen with other successful OSS projects such as Kubernetes\nand GraphQL. In addition, the move under the governance of the Linux Foundation positions Ent where we would like it to\nbe, a core, infrastructure technology that organizations can trust because it is guaranteed to be here for a long time.",
+      "source_content_hash": "44be78f8d152384237e6ce54472fb60ee885719ae7fb1b5807d23cecaa076843",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "加入Linux基金会治理体系的目标，是为了提供一个企业中立的环境，让各组织能更便捷地贡献代码——正如我们在Kubernetes和GraphQL等成功开源项目中见证的模式。更重要的是，这一举措将Ent定位为我们期待的核心基础设施技术，其长期稳定性将获得组织级信任背书。"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "In terms of our community, nothing in particular changes, the repository has already moved to [github.com/ent/ent](https://github.com/ent/ent)\na few  months ago, the license remains Apache 2.0, and we are all 100% committed to the success of the project. We’re sure\nthat the Linux Foundation’s strong brand and organizational capabilities will help to build even more confidence in Ent\nand further foster its adoption in the industry.",
+      "source_content_hash": "2ce0eefa26bdc88458d7e65bc70198d21016955d3f44c06ead6822ae92336a11",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对社区而言，这不会带来实质性变化：代码库数月前已迁移至[github.com/ent/ent](https://github.com/ent/ent)，许可证保持Apache 2.0不变，我们全体成员仍将百分百投入项目发展。Linux基金会强大的品牌影响力与组织能力，必将进一步增强业界对Ent的信心并推动更广泛采用。"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "I wanted to express my deep gratitude to the amazing folks at Facebook and the Linux Foundation that have worked hard on\nmaking this change possible and showing trust in our community to keep pushing the state-of-the-art in data access\nframeworks. This is a big achievement for our community, and so I want to take a moment to thank all of you for your \ncontributions, support, and trust in this project. ",
+      "source_content_hash": "5ab0872385ce950b07b7ae7a86b966dd7509dd8684f3b7c79426a01db0235d0c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我要特别感谢Facebook和Linux基金会的杰出团队，正是他们的辛勤工作与对社区的信任，才使数据访问框架领域的这一重要跃迁成为可能。这是我们整个社区的里程碑时刻，在此衷心感谢每一位贡献者的付出、支持与信任。"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "On a personal note, I wanted to share that [Rotem](https://github.com/rotemtam) (a core contributor to Ent)\nand I have founded a new company, [Ariga](https://ariga.io).\nWe’re on a mission to build something that we call an “operational data graph” that is heavily built using Ent, we will\nbe sharing more details on that in the near future. You can expect to see many new exciting features contributed to the\nframework by our team. In addition, Ariga employees will dedicate time and resources to support and foster this wonderful\ncommunity.",
+      "source_content_hash": "5f5868061a619ea186948c52639a4f7a78461f670f22ba7ea9c3b13b54b99e1f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "个人方面，我想分享的是：Ent核心贡献者[Rotem](https://github.com/rotemtam)与我联合创立了新公司[Ariga](https://ariga.io)。我们正基于Ent构建称为\"运营数据图谱\"的创新产品，近期将披露更多细节。大家将会看到我们团队为框架贡献的诸多新特性，同时Ariga员工将持续投入资源支持这个卓越的社区。"
+      }
+    },
+    {
+      "segment_id": "50746522",
+      "source_content": "If you have any questions about this change or have any ideas on how to make it even better, please don’t hesitate to\nreach out to me on our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "e70e9aab79a5b62fc71f23041478bc80879fc92361ecbaeeea5d884db68181a0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若您对此变动有任何疑问或改进建议，欢迎随时通过[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack/)与我联系。"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "Ariel :heart:",
+      "source_content_hash": "e23e42e2710ae4f505d18c59b51c7430780917e98db3d9db0b02b506756cd0b8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ariel :heart:"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-09-01-ent-joins-the-linux-foundation.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.678320+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "b63840944af796e8ec57de0d263cc0f7e75fbd7d1faaf51d42005aee3978f7b1"
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-10-19-sqlcomment-support-for-ent.md",
+  "source_file_content_hash": "6edc889938c7f0e3b66f38760f97f39f8afb4de637717e8a22259f511b24f319",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Introducing sqlcomment - Database Performance Analysis with Ent and Google's Sqlcommenter\nauthor: Amit Shani\nauthorURL: \"https://github.com/hedwigz\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/8277210?v=4\"\nauthorTwitter: itsamitush\nimage: https://entgo.io/images/assets/sqlcomment/share.png\n---",
+      "source_content_hash": "156d34bb40052bb1f1946fc86623493ff6c7da91c1696659eb333af606dd8d78",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "Ent is a powerful Entity framework that helps developers write neat code that is translated into (possibly complex) database queries. As the usage of your application grows, it doesn’t take long until you stumble upon performance issues with your database.\nTroubleshooting database performance issues is notoriously hard, especially when you’re not equipped with the right tools.  ",
+      "source_content_hash": "02ba66f02de744bd94fa669d42362fcf9961a6c71cee2fcfb96d683e3e056a12",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent 是一个强大的实体框架，可帮助开发者编写简洁的代码，这些代码会被转换为（可能是复杂的）数据库查询。随着应用程序使用量的增长，很快就会遇到数据库性能问题。排查数据库性能问题 notoriously 困难，尤其是在没有合适工具的情况下。"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "The following example shows how Ent query code is translated into an SQL query.",
+      "source_content_hash": "68da46b1f3deb530583ea0f437302f405991cde9c3cf80f085babe3fa8af13a5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下示例展示了 Ent 查询代码如何转换为 SQL 查询。"
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "Traditionally, it has been very difficult to correlate between poorly performing database queries and the application code that is generating them. Database performance analysis tools could help point out slow queries by analyzing database server logs, but how could they be traced back to the application?",
+      "source_content_hash": "84b531be0afd33c8ab66f40e5b43d7cd3463698580bee56cb3d62a25a7043c40",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "传统上，将性能不佳的数据库查询与生成它们的应用程序代码关联起来非常困难。数据库性能分析工具可以通过分析数据库服务器日志来指出慢查询，但如何将它们追溯到应用程序呢？"
+      }
+    },
+    {
+      "segment_id": "63622bf0",
+      "source_content": "### Sqlcommenter",
+      "source_content_hash": "f379e52754971b6e44ba82040790054ec40fa72f7f15a8bb2dcf094fdd1847ae",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Sqlcommenter"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "Earlier this year, [Google introduced](https://cloud.google.com/blog/topics/developers-practitioners/introducing-sqlcommenter-open-source-orm-auto-instrumentation-library) Sqlcommenter. Sqlcommenter is ",
+      "source_content_hash": "c406b44be9b5e9eb706d84852f1ae0fbe7f956e51a4b88a04d1c555976037f2e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "今年早些时候，[Google 推出了](https://cloud.google.com/blog/topics/developers-practitioners/introducing-sqlcommenter-open-source-orm-auto-instrumentation-library) Sqlcommenter。Sqlcommenter 是"
+      }
+    },
+    {
+      "segment_id": "f7b50957",
+      "source_content": "> <em>an open source library that addresses the gap between the ORM libraries and understanding database performance. Sqlcommenter gives application developers visibility into which application code is generating slow queries and maps application traces to database query plans</em>",
+      "source_content_hash": "909c8654066d892f27150e5228cf4bcd3c6a51d9ee564352fbeced5c93d358f7",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> <em>一个开源库，旨在弥合 ORM 库与理解数据库性能之间的差距。Sqlcommenter 让应用程序开发者能够看到哪些应用程序代码生成了慢查询，并将应用程序跟踪映射到数据库查询计划</em>"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "In other words, Sqlcommenter adds application context metadata to SQL queries. This information can then be used to provide meaningful insights. It does so by adding [SQL comments](https://en.wikipedia.org/wiki/SQL_syntax#Comments) to the query that carry metadata but are ignored by the database during query execution. \nFor example, the following query contains a comment that carries metadata about the application that issued it (`users-mgr`), which controller and route triggered it (`users` and `user_rename`, respectively), and the database driver that was used (`ent:v0.9.1`):",
+      "source_content_hash": "609a957a790da5d7363c861825792bca929124426cadfd1cddf1144cd80ac573",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "换句话说，Sqlcommenter 向 SQL 查询添加了应用程序上下文元数据。这些信息可用于提供有意义的洞察。它通过在查询中添加 [SQL 注释](https://en.wikipedia.org/wiki/SQL_syntax#Comments)来实现这一点，这些注释携带元数据但在查询执行时被数据库忽略。\n例如，以下查询包含一个注释，该注释携带了发出查询的应用程序信息（`users-mgr`）、触发查询的控制器和路由（`users` 和 `user_rename`），以及使用的数据库驱动（`ent:v0.9.1`）："
+      }
+    },
+    {
+      "segment_id": "b7c3dbd1",
+      "source_content": "```sql\nupdate users set username = ‘hedwigz’ where id = 88\n/*application='users-mgr',controller='users',route='user_rename',db_driver='ent:v0.9.1'*/\n```",
+      "source_content_hash": "f53125dc5ebdef8ae246f8b936ab7240ea8c46ccd24d60f2efabc1464858e877",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b7c3dbd1"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "To get a taste of how the analysis of metadata collected from Sqlcommenter metadata can help us better understand performance issues of our application, consider the following example: Google Cloud recently launched [Cloud SQL Insights](https://cloud.google.com/blog/products/databases/get-ahead-of-database-performance-issues-with-cloud-sql-insights), a cloud-based SQL performance analysis product.  In the image below, we see a screenshot from the Cloud SQL Insights Dashboard that shows that the HTTP route 'api/users' is causing many locks on the database. We can also see that this query got called 16,067 times in the last 6 hours.",
+      "source_content_hash": "9fb9b11524682e4ad46c0816bfc7f5de35f9c65f4caec10874089755da58bf16",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了了解从 Sqlcommenter 元数据中收集的分析如何帮助我们更好地理解应用程序的性能问题，请考虑以下示例：Google Cloud 最近推出了 [Cloud SQL Insights](https://cloud.google.com/blog/products/databases/get-ahead-of-database-performance-issues-with-cloud-sql-insights)，这是一个基于云的 SQL 性能分析产品。在下图中，我们看到 Cloud SQL Insights 仪表板的截图，显示 HTTP 路由 'api/users' 导致数据库上的许多锁。我们还可以看到，该查询在过去 6 小时内被调用了 16,067 次。"
+      }
+    },
+    {
+      "segment_id": "50746522",
+      "source_content": "This is the power of SQL tags - they provide you correlation between your application-level information and your Database monitors.",
+      "source_content_hash": "464b1cf8adb8dc69a7f815a108f7343d5abcd0494904debca80ebc28766f5b93",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这就是 SQL 标签的强大之处——它们提供了应用程序级信息与数据库监控之间的关联。"
+      }
+    },
+    {
+      "segment_id": "54268405",
+      "source_content": "### sqlcomment",
+      "source_content_hash": "d6814e7c9b0fa21bff58b77efb5e7ece53415d78f152a1ac6bc7b7d91d71cb88",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### sqlcomment"
+      }
+    },
+    {
+      "segment_id": "8af76f3d",
+      "source_content": "[sqlcomm**ent**](https://github.com/ariga/sqlcomment) is an Ent driver that adds metadata to SQL queries using comments following the [sqlcommenter specification](https://google.github.io/sqlcommenter/spec/). By wrapping an existing Ent driver with `sqlcomment`,  users can leverage any tool that supports the standard to triage query performance issues.\nWithout further ado, let’s see `sqlcomment` in action.  ",
+      "source_content_hash": "7515d57a1ce25579cbb2c5d5bf67e05a7fe57ca656e2737d5ac875c8066462ee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[sqlcomm**ent**](https://github.com/ariga/sqlcomment) 是一个 Ent 驱动，它遵循 [sqlcommenter 规范](https://google.github.io/sqlcommenter/spec/) 使用注释向 SQL 查询添加元数据。通过用 `sqlcomment` 包装现有的 Ent 驱动，用户可以利用任何支持该标准的工具来排查查询性能问题。\n事不宜迟，让我们看看 `sqlcomment` 的实际应用。"
+      }
+    },
+    {
+      "segment_id": "29528c8d",
+      "source_content": "First, to install sqlcomment run:",
+      "source_content_hash": "cc8dd4d4d1d2a11f078b99dcd285c14bfec25a7dd0b446dacaa09d2f26b06ff7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先，安装 sqlcomment 运行："
+      }
+    },
+    {
+      "segment_id": "95318d95",
+      "source_content": "```bash\ngo get ariga.io/sqlcomment\n```",
+      "source_content_hash": "d9a61ff761bdf744f7c3201af210290a6bc2a201a9a622509bbf2ea0af35fd73",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_95318d95"
+      }
+    },
+    {
+      "segment_id": "b36c6338",
+      "source_content": "`sqlcomment` is wrapping an underlying SQL driver, therefore, we need to open our SQL connection using ent’s `sql` module, instead of Ent's popular helper `ent.Open`.",
+      "source_content_hash": "4bffbc8cad4bed9bf2bb9847e27ceb761481c5e1d91355eea6627c891230dbeb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`sqlcomment` 包装了底层的 SQL 驱动，因此我们需要使用 ent 的 `sql` 模块而不是 Ent 的常用辅助函数 `ent.Open` 来打开 SQL 连接。"
+      }
+    },
+    {
+      "segment_id": "f90b9a6a",
+      "source_content": ":::info\nMake sure to import `entgo.io/ent/dialect/sql` in the following snippet\n:::",
+      "source_content_hash": "a774ac60aa58a727e938eafc94b81acc15967ef624f04c159c9796b59ba4715e",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n确保在以下代码片段中导入 `entgo.io/ent/dialect/sql`\n:::"
+      }
+    },
+    {
+      "segment_id": "3c08ed05",
+      "source_content": "```go\n// Create db driver.\ndb, err := sql.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\nif err != nil {\n\tlog.Fatalf(\"Failed to connect to database: %v\", err)\n}\n\n// Create sqlcomment driver which wraps sqlite driver.\ndrv := sqlcomment.NewDriver(db,\n\tsqlcomment.WithDriverVerTag(),\n\tsqlcomment.WithTags(sqlcomment.Tags{\n\t\tsqlcomment.KeyApplication: \"my-app\",\n\t\tsqlcomment.KeyFramework:   \"net/http\",\n\t}),\n)\n\n// Create and configure ent client.\nclient := ent.NewClient(ent.Driver(drv))\n```",
+      "source_content_hash": "17852346132be4d902bebd561634a72c62c7c4412b10adda84298c96ff36b20e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3c08ed05"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "Now, whenever we execute a query, `sqlcomment` will suffix our SQL query with the tags we set up. If we were to run the following query:",
+      "source_content_hash": "34cf7ac6ab2f065573c4ac6fe01565dfb5c1c2bb72c8ce4e39a458bb5da119f4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在，每当我们执行查询时，`sqlcomment` 都会将我们设置的标签附加到 SQL 查询中。如果我们运行以下查询："
+      }
+    },
+    {
+      "segment_id": "a716abf2",
+      "source_content": "```go\nclient.User.\n\tUpdate().\n\tWhere(\n\t\tuser.Or(\n\t\t\tuser.AgeGT(30),\n\t\t\tuser.Name(\"bar\"),\n\t\t),\n\t\tuser.HasFollowers(),\n\t).\n\tSetName(\"foo\").\n\tSave()\n```",
+      "source_content_hash": "8c6bb78d0f5fcabffb83a9f3682167e35b80890a2f63b9ad5af77d260b6915c0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a716abf2"
+      }
+    },
+    {
+      "segment_id": "a311e967",
+      "source_content": "Ent would output the following commented SQL query:",
+      "source_content_hash": "5c1f0079e5fcb2cb304cf7a21111fa593c26873c6e52efc17e9bd476e44f2489",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent 将输出以下带注释的 SQL 查询："
+      }
+    },
+    {
+      "segment_id": "7fa46732",
+      "source_content": "```sql\nUPDATE `users`\nSET `name` = ?\nWHERE (\n    `users`.`age` > ?\n    OR `users`.`name` = ?\n  )\n  AND `users`.`id` IN (\n    SELECT `user_following`.`follower_id`\n    FROM `user_following`\n  )\n  /*application='my-app',db_driver='ent:v0.9.1',framework='net%2Fhttp'*/\n```",
+      "source_content_hash": "0e7c567bfad1c11bf80a73ec4fd687f820406abeded9020369d3dd8bff500a27",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7fa46732"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "As you can see, Ent outputted an SQL query with a comment at the end, containing all the relevant information associated with that query.  ",
+      "source_content_hash": "bfe5694a3a2c30e16e95fbfdde43feac296e1efebc99c2ba5f200fef28fc5870",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如你所见，Ent 输出了一个带有注释的 SQL 查询，注释包含了与该查询相关的所有信息。"
+      }
+    },
+    {
+      "segment_id": "3c19e221",
+      "source_content": "sqlcomm**ent** supports more tags, and has integrations with [OpenTelemetry](https://opentelemetry.io) and [OpenCensus](https://opencensus.io).\nTo see more examples and scenarios, please visit the [github repo](https://github.com/ariga/sqlcomment).",
+      "source_content_hash": "e66cbcbfb7c541c6a5ed99667f9adb9049d0d1d2b98c9b6d1f398a23b5dd4f95",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "sqlcomm**ent** 支持更多标签，并与 [OpenTelemetry](https://opentelemetry.io) 和 [OpenCensus](https://opencensus.io) 集成。\n如需查看更多示例和场景，请访问 [GitHub 仓库](https://github.com/ariga/sqlcomment)。"
+      }
+    },
+    {
+      "segment_id": "48155948",
+      "source_content": "### Wrapping-Up",
+      "source_content_hash": "e51c02e1e868db054ed8fe119116249bc70d84bac4b2d7c34db05bb4f6f38bb8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "1958bc43",
+      "source_content": "In this post I showed how adding metadata to queries using SQL comments can help correlate between source code and database queries. Next, I introduced `sqlcomment` - an Ent driver that adds SQL tags to all of your queries. Finally, I got to see `sqlcomment` in action, by installing and configuring it with Ent. If you like the code and/or want to contribute - feel free to checkout the [project on GitHub](https://github.com/ariga/sqlcomment).",
+      "source_content_hash": "420af32841e6379c7c27008c8c556347a761add0bc4fe0587e516db2ee62aa70",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文展示了如何通过 SQL 注释为查询添加元数据，从而关联源代码与数据库查询。接着介绍了 `sqlcomment`——一个能为所有查询添加 SQL 标签的 Ent 驱动。最后通过安装和配置 `sqlcomment` 与 Ent 的集成，实际演示了其运作方式。如果您对代码感兴趣或想参与贡献，欢迎访问 [GitHub 项目](https://github.com/ariga/sqlcomment)。"
+      }
+    },
+    {
+      "segment_id": "a8610918",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "d0537932cd96ebc172f07d40432ff073381adb709b3fdc6d263a79438858fef3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有问题需要帮助？欢迎加入我们的 [Discord 服务器](https://discord.gg/qZmPgTE6RX) 或 [Slack 频道](https://entgo.io/docs/slack/)。"
+      }
+    },
+    {
+      "segment_id": "c9cbbb2d",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多 Ent 资讯：]\n\n- 订阅我们的 [新闻通讯](https://entgo.substack.com/)\n- 关注 [Twitter](https://twitter.com/entgo_io)\n- 加入 [Gophers Slack](https://entgo.io/docs/slack) 的 #ent 频道\n- 参与 [Ent Discord 服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-10-19-sqlcomment-support-for-ent.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.663471+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "6edc889938c7f0e3b66f38760f97f39f8afb4de637717e8a22259f511b24f319"
+  }
+}

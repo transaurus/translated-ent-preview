@@ -1,0 +1,42 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/components/_installation_instructions.mdx",
+  "source_file_content_hash": "68140d0afd4c3b2de43fa1d64d5f9281ffcfaff9d49753c47b4fcfcdeadd381c",
+  "segments": [
+    {
+      "segment_id": "a9b642df",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a9b642df"
+      }
+    },
+    {
+      "segment_id": "e9fca2db",
+      "source_content": "To install the latest release of Atlas, simply run one of the following commands in your terminal, or check out the\n[Atlas website](https://atlasgo.io/getting-started#installation):",
+      "source_content_hash": "91fe478801d7b23d6fd4e9e3d94f8e4521445dd22c32a29671b107968e839a49",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要安装最新版本的Atlas，只需在终端中运行以下任一命令，或访问\n[Atlas官网](https://atlasgo.io/getting-started#installation)："
+      }
+    },
+    {
+      "segment_id": "40da63b2",
+      "source_content": "<Tabs\ndefaultValue=\"apple-intel-plain+linux\"\nvalues={[\n{label: 'macOS + Linux', value: 'apple-intel-plain+linux'},\n{label: 'Homebrew', value: 'apple-intel-brew'},\n{label: 'Docker', value: 'docker'},\n{label: 'Windows', value: 'windows'},\n]}>\n<TabItem value=\"apple-intel-plain+linux\">\n\n```shell\ncurl -sSf https://atlasgo.sh | sh\n```\n\n</TabItem>\n<TabItem value=\"apple-intel-brew\">\n\n```shell\nbrew install ariga/tap/atlas\n```\n\n</TabItem>\n<TabItem value=\"docker\">\n\n```shell\ndocker pull arigaio/atlas\ndocker run --rm arigaio/atlas --help\n```\n\nIf the container needs access to the host network or a local directory, use the `--net=host` flag and mount the desired\ndirectory:\n\n```shell\ndocker run --rm --net=host \\\n  -v $(pwd)/migrations:/migrations \\\n  arigaio/atlas migrate apply\n  --url \"mysql://root:pass@:3306/test\"\n```\n\n</TabItem>\n<TabItem value=\"windows\">\n\nDownload the [latest release](https://release.ariga.io/atlas/atlas-windows-amd64-latest.exe) and\nmove the atlas binary to a file location on your system PATH.\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "fdfc5675fec4bfcd947bf05baddfe82d188bc630cb07797d839119f9cbecb6b8",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_40da63b2"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/components/_installation_instructions.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.653853+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "68140d0afd4c3b2de43fa1d64d5f9281ffcfaff9d49753c47b4fcfcdeadd381c"
+  }
+}

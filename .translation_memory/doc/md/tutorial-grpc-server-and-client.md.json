@@ -1,0 +1,192 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-grpc-server-and-client.md",
+  "source_file_content_hash": "2c307d91d30f7e218a1500bd0fb725df198613200cebe07e1331c1d072ffdf7a",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: grpc-server-and-client\ntitle: Creating the Server and Client\nsidebar_label: Server and Client\n---",
+      "source_content_hash": "e110827b2cdf57a563d6d1d7374b0035f7eb794c7c29610d56bb353c36f0986e",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "Getting an automatically generated gRPC service definition is super cool, but we still need to register it to a\nconcrete gRPC server, that listens on some TCP port for traffic and is able to respond to RPC calls. ",
+      "source_content_hash": "264757e6a50637952cfaa352c99d60296a520371a4e155a95d5309cdce61d9f0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "自动生成gRPC服务定义固然很酷，但我们仍需将其注册到具体的gRPC服务器——该服务器需要监听某个TCP端口以接收请求并响应RPC调用。"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "We decided not to generate this part automatically because it typically involves some team/org specific\nbehavior such as wiring in different middlewares. This may change in the future. In the meantime, this section\ndescribes how to create a simple gRPC server that will serve our service code.",
+      "source_content_hash": "c4005282b686d9976c8894ecba98f495a4efc06bc98491832b2134be7bf56d6f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们决定不自动生成这部分代码，因为这通常涉及团队/组织特定的行为（例如集成不同的中间件）。未来可能会改变这一设计。目前本节将描述如何创建一个简单的gRPC服务器来承载我们的服务代码。"
+      }
+    },
+    {
+      "segment_id": "70153c6e",
+      "source_content": "### Creating the Server",
+      "source_content_hash": "1779ab92d308883d8f73a1b7396a84f566adf9433130cebe62b7dcf6013a5446",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 创建服务器"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "Create a new file `cmd/server/main.go` and write:",
+      "source_content_hash": "e051481512d00a57af2ac5cd9004b1c10f4a8c701efd60f5ba77905046f0217e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "新建文件`cmd/server/main.go`并写入："
+      }
+    },
+    {
+      "segment_id": "6e5ba8fb",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"net\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n\t\"ent-grpc-example/ent\"\n\t\"ent-grpc-example/ent/proto/entpb\"\n\t\"google.golang.org/grpc\"\n)\n\nfunc main() {\n\t// Initialize an ent client.\n\tclient, err := ent.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer client.Close()\n\n\t// Run the migration tool (creating tables, etc).\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\n\t// Initialize the generated User service.\n\tsvc := entpb.NewUserService(client)\n\n\t// Create a new gRPC server (you can wire multiple services to a single server).\n\tserver := grpc.NewServer()\n\n\t// Register the User service with the server.\n\tentpb.RegisterUserServiceServer(server, svc)\n\n\t// Open port 5000 for listening to traffic.\n\tlis, err := net.Listen(\"tcp\", \":5000\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed listening: %s\", err)\n\t}\n\n\t// Listen for traffic indefinitely.\n\tif err := server.Serve(lis); err != nil {\n\t\tlog.Fatalf(\"server ended: %s\", err)\n\t}\n}\n```",
+      "source_content_hash": "712ff64d6f045759318233939670b33f87b012a0327fc10f8c610a4249fde4fe",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6e5ba8fb"
+      }
+    },
+    {
+      "segment_id": "0bb95128",
+      "source_content": "Notice that we added an import of `github.com/mattn/go-sqlite3`, so we need to add it to our module:",
+      "source_content_hash": "63a953d6bbe98ae68ce788244d32c86303491a60f8aefab53525379a1032c8a3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意我们添加了`github.com/mattn/go-sqlite3`的导入，因此需要将其加入模块："
+      }
+    },
+    {
+      "segment_id": "29ad5b0e",
+      "source_content": "```console\ngo get -u github.com/mattn/go-sqlite3\n```",
+      "source_content_hash": "82029175dfe9bed8d4d58464cd2202290c288cfa2345abe3dcab576d30a55703",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_29ad5b0e"
+      }
+    },
+    {
+      "segment_id": "eab056be",
+      "source_content": "Next, let's run the server, while we write a client that will communicate with it:",
+      "source_content_hash": "00684a40882a9f41213a42784d2a9d4ac441950885cafbde584297d2be881bf2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着让我们运行服务器，同时编写与之通信的客户端："
+      }
+    },
+    {
+      "segment_id": "9f3b4022",
+      "source_content": "```console\ngo run -mod=mod ./cmd/server\n```",
+      "source_content_hash": "87242a921b6aebf97d5e841d95c267298b96e4a61672017ecf773b469f4cafa9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9f3b4022"
+      }
+    },
+    {
+      "segment_id": "58ed925f",
+      "source_content": "### Creating the Client",
+      "source_content_hash": "d927937e23768a9688213cc3a3dfd2fedebaaedfe400ff4177c9992ea86f7257",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 创建客户端"
+      }
+    },
+    {
+      "segment_id": "463ed165",
+      "source_content": "Let's create a simple client that makes some calls to our server. Create a new file named `cmd/client/main.go` and write:",
+      "source_content_hash": "af8bf0af9b507177a218f3f1368ca6bd90a2e738be5338efafc91b13f4f773ef",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们创建一个调用服务器的简易客户端。新建文件`cmd/client/main.go`并写入："
+      }
+    },
+    {
+      "segment_id": "092b29bb",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"log\"\n\t\"math/rand\"\n\t\"time\"\n\n\t\"ent-grpc-example/ent/proto/entpb\"\n\t\"google.golang.org/grpc\"\n\t\"google.golang.org/grpc/status\"\n)\n\nfunc main() {\n\trand.Seed(time.Now().UnixNano())\n\n\t// Open a connection to the server.\n\tconn, err := grpc.Dial(\":5000\", grpc.WithTransportCredentials(insecure.NewCredentials()))\n\tif err != nil {\n\t\tlog.Fatalf(\"failed connecting to server: %s\", err)\n\t}\n\tdefer conn.Close()\n\n\t// Create a User service Client on the connection.\n\tclient := entpb.NewUserServiceClient(conn)\n\n\t// Ask the server to create a random User.\n\tctx := context.Background()\n\tuser := randomUser()\n\tcreated, err := client.Create(ctx, &entpb.CreateUserRequest{\n\t\tUser: user,\n\t})\n\tif err != nil {\n\t\tse, _ := status.FromError(err)\n\t\tlog.Fatalf(\"failed creating user: status=%s message=%s\", se.Code(), se.Message())\n\t}\n\tlog.Printf(\"user created with id: %d\", created.Id)\n\n\t// On a separate RPC invocation, retrieve the user we saved previously.\n\tget, err := client.Get(ctx, &entpb.GetUserRequest{\n\t\tId: created.Id,\n\t})\n\tif err != nil {\n\t\tse, _ := status.FromError(err)\n\t\tlog.Fatalf(\"failed retrieving user: status=%s message=%s\", se.Code(), se.Message())\n\t}\n\tlog.Printf(\"retrieved user with id=%d: %v\", get.Id, get)\n}\n\nfunc randomUser() *entpb.User {\n\treturn &entpb.User{\n\t\tName:         fmt.Sprintf(\"user_%d\", rand.Int()),\n\t\tEmailAddress: fmt.Sprintf(\"user_%d@example.com\", rand.Int()),\n\t}\n}\n```",
+      "source_content_hash": "c728f5bfc603e9361c4edf19eb817a91ee4aeceec1ecc3b5f7a0f150abe0af66",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_092b29bb"
+      }
+    },
+    {
+      "segment_id": "534ac82e",
+      "source_content": "Our client creates a connection to port 5000, where our server is listening, then issues a `Create`\nrequest to create a new user, and then issues a second `Get` request to retrieve it from the database.\nLet's run our client code:",
+      "source_content_hash": "141c62d95511a4950884cc907f3c6ed3dbf6f6582d2a9445c4f56722d38b3883",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "客户端首先建立与服务器监听端口5000的连接，然后发起`Create`请求创建新用户，再通过`Get`请求从数据库检索该用户。运行客户端代码："
+      }
+    },
+    {
+      "segment_id": "4fe849d4",
+      "source_content": "```console\ngo run ./cmd/client\n```",
+      "source_content_hash": "d5cb164c53f532682d1c15835eaccb372b55c76859d2ea8a8b37dbfeb2fc3fa9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4fe849d4"
+      }
+    },
+    {
+      "segment_id": "17b50e81",
+      "source_content": "Observe the output:",
+      "source_content_hash": "1733d10e08b33987e395d70d0debf1d4025eb3ce6ae62b378e74cfac38dee6b5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察输出结果："
+      }
+    },
+    {
+      "segment_id": "3ad9440a",
+      "source_content": "```console\n2021/03/18 10:42:58 user created with id: 1\n2021/03/18 10:42:58 retrieved user with id=1: id:1 name:\"user_730811260095307266\" email_address:\"user_7338662242574055998@example.com\"\n```",
+      "source_content_hash": "1c643892b8aaac5894f11cd1522f5d3754e0f67478e39988aac96ce9e2ecfd53",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ad9440a"
+      }
+    },
+    {
+      "segment_id": "63565425",
+      "source_content": "Hooray! We have successfully created a real gRPC client to talk to our real gRPC server! In the next sections, we will\nsee how the ent/gRPC integration deals with more advanced ent schema definitions.",
+      "source_content_hash": "34113a739ab82d43ea2a2db380a2c020df1225b99528de159cb15b183ae007f4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了！我们成功创建了能与真实gRPC服务器通信的客户端！后续章节将探讨ent/gRPC集成如何处理更高级的ent模式定义。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-grpc-server-and-client.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.668366+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "2c307d91d30f7e218a1500bd0fb725df198613200cebe07e1331c1d072ffdf7a"
+  }
+}

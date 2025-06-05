@@ -1,0 +1,259 @@
+---
+id: paging
+title: Paging And Ordering
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## 限制查询结果
+
+`Limit` 方法将查询结果限制为 `n` 条实体记录。
+
+```go
+users, err := client.User.
+	Query().
+	Limit(n).
+	All(ctx)
+```
+
+## 偏移量
+
+`Offset` 方法设置查询返回的起始记录位置。
+
+```go
+users, err := client.User.
+	Query().
+	Offset(10).
+	All(ctx)
+```
+
+## 排序
+
+`Order` 方法按一个或多个字段值对实体进行排序。注意：若指定字段不是有效列或外键，将返回错误。
+
+```go
+users, err := client.User.Query().
+	Order(ent.Asc(user.FieldName)).
+	All(ctx)
+```
+
+自 `v0.12.0` 版本起，Ent 会为字段和边生成类型安全的排序函数。以下示例演示如何使用这些生成函数：
+
+```go
+// Get all users sorted by their name (and nickname) in ascending order.
+users, err := client.User.Query().
+	Order(
+		// highlight-start
+		user.ByName(),
+		user.ByNickname(),
+		// highlight-end
+	).
+	All(ctx)
+
+// Get all users sorted by their nickname in descending order.
+users, err := client.User.Query().
+	Order(
+		// highlight-start
+		user.ByNickname(
+			sql.OrderDesc(),
+		),
+		// highlight-end
+	).
+	All(ctx)
+```
+
+## 按关联边数量排序
+
+`Order` 也可基于实体拥有的边数量进行排序。例如，以下查询返回所有用户并按他们拥有的帖子数量排序：
+
+```go
+users, err := client.User.Query().
+	Order(
+		// highlight-start
+		// Users without posts are sorted first.
+		user.ByPostsCount(),
+		// highlight-end
+	).
+	All(ctx)
+
+users, err := client.User.Query().
+	Order(
+		// highlight-start
+		// Users without posts are sorted last.
+		user.ByPostsCount(
+			sql.OrderDesc(),
+		),
+		// highlight-end
+	).
+	All(ctx)
+```
+
+## 按关联边字段排序
+
+实体也可按关联边的字段值排序。例如，以下查询返回所有帖子并按作者姓名排序：
+
+```go
+// Posts are sorted by their author's name in ascending
+// order with NULLs first unless otherwise specified.
+posts, err := client.Post.Query().
+	Order(
+		// highlight-next-line
+		post.ByAuthorField(user.FieldName),
+	).
+	All(ctx)
+
+posts, err := client.Post.Query().
+	Order(
+		// highlight-start
+		post.ByAuthorField(
+			user.FieldName,
+			sql.OrderDesc(),
+			sql.OrderNullsFirst(),
+		),
+		// highlight-end
+	).
+	All(ctx)
+```
+
+## 自定义边条件排序
+
+生成的边排序函数支持自定义条件。例如，以下查询返回所有用户并按他们帖子点赞数与浏览量的总和排序：
+
+```go
+// Ascending order.
+posts, err := client.User.Query().
+	Order(
+		// highlight-start
+		user.ByPosts(
+			sql.OrderBySum(post.FieldNumLikes),
+			sql.OrderBySum(post.FieldNumViews),
+		),
+		// highlight-end
+	).
+	All(ctx)
+
+// Descending order.
+posts, err := client.User.Query().
+	Order(
+		// highlight-start
+		user.ByPosts(
+			sql.OrderBySum(
+				post.FieldNumLikes,
+				sql.OrderDesc(),
+			),
+			sql.OrderBySum(
+				post.FieldNumViews,
+				sql.OrderDesc(),
+			),
+		),
+		// highlight-end
+	).
+	All(ctx)
+```
+
+## 选择排序条件
+
+像 `SUM()` 和 `COUNT()` 这样的聚合排序条件并未在模式中定义，因此不会出现在生成的实体上。但有时需要获取这些信息用于用户展示或实现基于游标的分页。每个实体上定义的 `Value` 方法允许在查询中选择排序条件时获取其值：
+
+```go
+// Define the alias for the order term.
+const as = "pets_count"
+
+// Query users sorted by the number of pets
+// they have and select the order term.
+users := client.User.Query().
+	Order(
+		user.ByPetsCount(
+			sql.OrderDesc(),
+			// highlight-next-line
+			sql.OrderSelectAs(as),
+		),
+		user.ByID(),
+	).
+	AllX(ctx)
+
+// Retrieve the order term value.
+for _, u := range users {
+	// highlight-next-line
+	fmt.Println(u.Value(as))
+}
+```
+
+## 自定义排序
+
+当需要编写特定存储逻辑时，自定义排序函数会非常有用。
+
+```go
+names, err := client.Pet.Query().
+	Order(func(s *sql.Selector) {
+		// Logic goes here.
+	}).
+	Select(pet.FieldName).
+	Strings(ctx)
+```
+
+#### 按JSON字段排序
+
+[`sqljson`](https://pkg.go.dev/entgo.io/ent/dialect/sql/sqljson) 包支持基于JSON对象值轻松排序数据：
+
+<Tabs>
+<TabItem value="value" label="By Value" default>
+
+```go {3}
+users := client.User.Query().
+    Order(
+        sqljson.OrderValue(user.FieldData, sqljson.Path("key1", "key2")),
+    ).
+    AllX(ctx)
+```
+
+</TabItem>
+<TabItem value="length" label="By Length">
+
+```go {3}
+users := client.User.Query().
+    Order(
+        sqljson.OrderLen(user.FieldData, sqljson.Path("key1", "key2")),
+    ).
+    AllX(ctx)
+```
+
+</TabItem>
+<TabItem value="desc" label="Descending">
+
+```go {3,9}
+users := client.User.Query().
+    Order(
+        sqljson.OrderValueDesc(user.FieldData, sqljson.Path("key1", "key2")),
+    ).
+    AllX(ctx)
+
+pets := client.Pet.Query().
+    Order(
+        sqljson.OrderLenDesc(pet.FieldData, sqljson.Path("key1", "key2")),
+    ).
+    AllX(ctx)
+```
+
+</TabItem>
+</Tabs>
+
+<details>
+<summary>PostgreSQL limitation on <code>ORDER BY</code> expressions with <code>SELECT DISTINCT</code></summary>
+<div>
+
+PostgreSQL does not support `ORDER BY` expressions with `SELECT DISTINCT`. Thus, the `Unique` modifier should be set
+to `false`. However, keep in mind that this may result in duplicate results when performing graph traversals.
+
+```diff
+users := client.User.Query().
+    Order(
+        sqljson.OrderValue(user.FieldData, sqljson.Path("key1", "key2")),
+    ).
++   Unique(false).
+    AllX(ctx)
+```
+
+</div>
+</details>

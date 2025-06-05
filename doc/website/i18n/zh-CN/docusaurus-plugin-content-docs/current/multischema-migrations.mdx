@@ -1,0 +1,156 @@
+---
+id: multischema-migrations
+title: Multi-Schema Migration
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import InstallationInstructions from './components/_installation_instructions.mdx';
+
+使用 [Atlas](https://atlasgo.io) 迁移引擎，可以跨多个数据库模式定义和管理 Ent 模式。本指南通过三个简单步骤实现这一目标：
+
+:::info[[Atlas Pro 功能](https://atlasgo.io/features#pro-plan)]
+_多模式迁移_功能已在 Atlas CLI 中完整实现，需登录后使用：
+```
+atlas login
+```
+:::
+
+## 安装 Atlas
+
+<InstallationInstructions />
+
+## 登录 Atlas
+
+```shell
+$ atlas login a8m
+//highlight-next-line-info
+You are now connected to "a8m" on Atlas Cloud.
+```
+
+## 注解您的 Ent 模式
+
+`entsql` 包允许用数据库模式名称注解 Ent 模式。例如：
+
+```go
+// Annotations of the User.
+func (User) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.Schema("db3"),
+	}
+}
+```
+
+要在多个 Ent 模式间共享相同的模式配置，您可以使用 `ent.Mixin` 或定义并嵌入一个_基础_模式：
+
+<Tabs>
+<TabItem value="mixin" label="Mixin schema">
+
+```go title="mixin.go"
+// Mixin holds the default configuration for most schemas in this package.
+type Mixin struct {
+	mixin.Schema
+}
+
+// Annotations of the Mixin.
+func (Mixin) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.Schema("db1"),
+	}
+}
+```
+
+```go title="user.go"
+// User holds the edge schema definition of the User entity.
+type User struct {
+	ent.Schema
+}
+
+// Mixin defines the schemas that mixed into this schema.
+func (User) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+//highlight-next-line
+		Mixin{},
+	}
+}
+```
+
+</TabItem>
+<TabItem value="base" label="Base schema">
+
+```go title="base.go"
+// base holds the default configuration for most schemas in this package.
+type base struct {
+	ent.Schema
+}
+
+// Annotations of the base schema.
+func (base) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.Schema("db1"),
+	}
+}
+```
+
+```go title="user.go"
+// User holds the edge schema definition of the User entity.
+type User struct {
+//highlight-next-line
+    base
+}
+```
+
+</TabItem>
+</Tabs>
+
+## 生成迁移
+
+使用 `atlas migrate diff` 命令生成迁移。例如：
+
+<Tabs
+defaultValue="mysql"
+values={[
+{label: 'MySQL', value: 'mysql'},
+{label: 'MariaDB', value: 'maria'},
+{label: 'PostgreSQL', value: 'postgres'},
+]}>
+<TabItem value="mysql">
+
+```shell
+atlas migrate diff \
+  --to "ent://ent/schema" \
+  --dev-url "docker://mysql/8"
+```
+
+</TabItem>
+<TabItem value="maria">
+
+```shell
+atlas migrate diff \
+  --to "ent://ent/schema" \
+  --dev-url "docker://maria/8"
+```
+
+</TabItem>
+<TabItem value="postgres">
+
+```shell
+atlas migrate diff \
+  --to "ent://ent/schema" \
+  --dev-url "docker://postgres/15/dev"
+```
+
+</TabItem>
+</Tabs>
+
+:::note
+默认情况下，`migrate diff` 命令会生成无缩进的 SQL 语句列表。如需生成带缩进的 SQL 语句，请使用 `--format` 标志。例如：
+
+```shell
+atlas migrate diff \
+  --to "ent://ent/schema" \
+  --dev-url "docker://postgres/15/dev" \
+// highlight-next-line
+  --format "{{ sql . \"  \" }}"
+```
+:::

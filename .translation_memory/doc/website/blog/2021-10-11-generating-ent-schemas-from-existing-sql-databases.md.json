@@ -1,0 +1,858 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-10-11-generating-ent-schemas-from-existing-sql-databases.md",
+  "source_file_content_hash": "5eab7aa373ea5bb078e6c17a84733a5dd7ff5caa9f3bb6e5f8a13b2c98656669",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Generating Ent Schemas from Existing SQL Databases \nauthor: Zeev Manilovich\nauthorURL: \"https://github.com/zeevmoney\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/7361100?v=4\"\n---",
+      "source_content_hash": "75d8f044420820f38bce96396948400813115d5b870a5cab68f5cb23d6e004fc",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "A few months ago the Ent project announced\nthe [Schema Import Initiative](https://entgo.io/blog/2021/05/04/announcing-schema-imports), its goal is to help support\nmany use cases for generating Ent schemas from external resources. Today, I'm happy to share a project I’ve been working\non: **entimport** - an _importent_ (pun intended) command line tool designed to create Ent schemas from existing SQL\ndatabases. This is a feature that has been requested by the community for some time, so I hope many people find it\nuseful. It can help ease the transition of an existing setup from another language or ORM to Ent. It can also help with\nuse cases where you would like to access the same data from different platforms (such as to automatically sync between\nthem).  \nThe first version supports both MySQL and PostgreSQL databases, with some limitations described below. Support for other\nrelational databases such as SQLite is in the works.",
+      "source_content_hash": "bb0d6462738835e073dfb09ae1e75a35ca2a5073d93d1a5c4eb8dfdb8d4b878f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "数月前，Ent项目发布了[Schema Import Initiative](https://entgo.io/blog/2021/05/04/announcing-schema-imports)，旨在支持从外部资源生成Ent模式的各种用例。今天，我很高兴分享我一直在开发的项目：**entimport**——一个双关语命名（importent）的命令行工具，用于从现有SQL数据库创建Ent模式。这是社区期待已久的功能，希望能帮助更多人。它可以简化从其他语言或ORM迁移到Ent的过程，也能实现跨平台数据自动同步等场景。  \n当前版本支持MySQL和PostgreSQL数据库（存在部分限制），对其他关系型数据库如SQLite的支持正在开发中。"
+      }
+    },
+    {
+      "segment_id": "aee0e40d",
+      "source_content": "## Getting Started",
+      "source_content_hash": "c6144136c5fdde00c066bed01a81aecaf8f239036f9ecabc432e5386d5b7a49a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 快速开始"
+      }
+    },
+    {
+      "segment_id": "f5f6d2ce",
+      "source_content": "To give you an idea of how `entimport` works, I want to share a quick example of end to end usage with a MySQL database.\nOn a high-level, this is what we’re going to do:",
+      "source_content_hash": "7914c89530354eeb11fb7dbb5fb591eab481d4043c99115b2ae87eabbda6ed5c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为演示`entimport`的工作原理，我将通过MySQL数据库展示端到端的使用流程。整体步骤如下："
+      }
+    },
+    {
+      "segment_id": "8cf6d045",
+      "source_content": "1. Create a Database and Schema - we want to show how `entimport` can generate an Ent schema for an existing database.\n   We will first create a database, then define some tables in it that we can import into Ent.\n2. Initialize an Ent Project - we will use the Ent CLI to create the needed directory structure and an Ent schema\n   generation script.\n3. Install `entimport`\n4. Run `entimport` against our demo database - next, we will import the database schema that we’ve created into our Ent\n   project.\n5. Explain how to use Ent with our generated schemas.  ",
+      "source_content_hash": "31eb0dad0227274073437649365faf2e0d5f53d9ec30a61f288f528d46659f5c",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 创建数据库和模式 - 首先构建一个现有数据库环境，定义可供导入Ent的数据表结构  \n2. 初始化Ent项目 - 使用Ent CLI创建目录结构和模式生成脚本  \n3. 安装`entimport`  \n4. 对演示数据库运行`entimport` - 将已创建的数据库模式导入Ent项目  \n5. 讲解如何配合生成的模式使用Ent"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "Let's get started.",
+      "source_content_hash": "ee37657c9cbf0bf1d3f6102b1843607f6452e723eb268e5e657b13e70ecc61d4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在开始逐步操作。"
+      }
+    },
+    {
+      "segment_id": "f422383e",
+      "source_content": "### Create a Database",
+      "source_content_hash": "30bf47d51cd0f8cbc6ae629a2a033001267b03c09b4b8adbeaeca3aac61ac588",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 创建数据库"
+      }
+    },
+    {
+      "segment_id": "97ae4a01",
+      "source_content": "We’re going to start by creating a database. The way I prefer to do it is to use\na [Docker](https://docs.docker.com/get-docker/) container. We will use a `docker-compose` which will automatically pass\nall needed parameters to the MySQL container.",
+      "source_content_hash": "5d5b9c4f1e1cbd0351b6d29d074b893b7c72d74ac5f5d2b1be6e5c3098217492",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将使用[Docker](https://docs.docker.com/get-docker/)容器创建数据库环境。通过`docker-compose`文件自动配置MySQL容器参数。  \n\n在新建的`entimport-example`目录中创建`docker-compose.yaml`文件，内容如下："
+      }
+    },
+    {
+      "segment_id": "3cfe6286",
+      "source_content": "Start the project in a new directory called `entimport-example`. Create a file named `docker-compose.yaml` and paste the\nfollowing content inside:",
+      "source_content_hash": "4c7e7518115494c73173e4b93bf96834de8405541a7ac81e5179c80497e99cbf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "45022e4f",
+      "source_content": "```yaml\nversion: \"3.7\"\n\nservices:\n\n  mysql8:\n    platform: linux/amd64\n    image: mysql\n    environment:\n      MYSQL_DATABASE: entimport\n      MYSQL_ROOT_PASSWORD: pass\n    healthcheck:\n      test: mysqladmin ping -ppass\n    ports:\n      - \"3306:3306\"\n```",
+      "source_content_hash": "9b1229569fe16d88788bc0db0dedc9415a7210df82be842383774c07d91d6439",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_45022e4f"
+      }
+    },
+    {
+      "segment_id": "1131ef75",
+      "source_content": "This file contains the service configuration for a MySQL docker container. Run it with the following command:",
+      "source_content_hash": "90edc965bdf9f22129f3ab7c1f47f241b30253caaacc79b9e9eb3ea1880df0b4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该文件包含MySQL容器的服务配置，通过以下命令启动："
+      }
+    },
+    {
+      "segment_id": "750e2f7e",
+      "source_content": "```shell\ndocker-compose up -d\n```",
+      "source_content_hash": "04515c5aff72701189e6530e527f7657fb754b623e42977ee1efcb5c759b691b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_750e2f7e"
+      }
+    },
+    {
+      "segment_id": "0bb95128",
+      "source_content": "Next, we will create a simple schema. For this example we will use a relation between two entities:",
+      "source_content_hash": "ba975445c4b960cec86b5bd1670b39fd8fae5cecf7291dff90502a22d489a013",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来创建包含两个实体关系的简单模式："
+      }
+    },
+    {
+      "segment_id": "a4bd3cfc",
+      "source_content": "- User\n- Car",
+      "source_content_hash": "2db3781a8fa6f13e96fd357f4b1b89164f3b30134fcd2bc08718b617431cabb4",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 用户(User)  \n- 汽车(Car)"
+      }
+    },
+    {
+      "segment_id": "147e8550",
+      "source_content": "Connect to the database using MySQL shell, you can do it with the following command:",
+      "source_content_hash": "69f435ab0375b47912b0287cbed3d971a32746571bfb793b1c684518b64c7e48",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用MySQL shell连接数据库（确保在项目根目录执行）："
+      }
+    },
+    {
+      "segment_id": "3b2a0fd3",
+      "source_content": "> Make sure you run it from the root project directory",
+      "source_content_hash": "ecc984f842e071b0da350ae8864c3e5decc1029cd7936a1ce23e2b66cacda567",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 注意需在项目根目录运行"
+      }
+    },
+    {
+      "segment_id": "9f3b4022",
+      "source_content": "```shell\ndocker-compose exec mysql8 mysql --database=entimport -ppass\n```",
+      "source_content_hash": "4368531a9669b9d39985674c5b6ebe6fd5d1c464d1530d193957db7c004a58d3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9f3b4022"
+      }
+    },
+    {
+      "segment_id": "a89f84e1",
+      "source_content": "```sql\ncreate table users\n(\n    id        bigint auto_increment primary key,\n    age       bigint       not null,\n    name      varchar(255) not null,\n    last_name varchar(255) null comment 'surname'\n);\n\ncreate table cars\n(\n    id          bigint auto_increment primary key,\n    model       varchar(255) not null,\n    color       varchar(255) not null,\n    engine_size mediumint    not null,\n    user_id     bigint       null,\n    constraint cars_owners foreign key (user_id) references users (id) on delete set null\n);\n```",
+      "source_content_hash": "9df05a7235a30e51d1f21bfc228b2f7814e1673afe2d1747cc43aeb6fb63385e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a89f84e1"
+      }
+    },
+    {
+      "segment_id": "2822251a",
+      "source_content": "Let's validate that we've created the tables mentioned above, in your MySQL shell, run:",
+      "source_content_hash": "c14939bbe27dc039934d09b5d7ba9f0f6eb17c2cdd9fb4d15ff7bdf8aba48438",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "验证是否成功创建表结构，在MySQL shell中执行："
+      }
+    },
+    {
+      "segment_id": "efbe5e3f",
+      "source_content": "```sql\nshow tables;\n+---------------------+\n| Tables_in_entimport |\n+---------------------+\n| cars                |\n| users               |\n+---------------------+\n```",
+      "source_content_hash": "6d509cbc703a5f0bbe835c3fb8f24efa2f69a9f58a3533af20586782a04ccbd5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_efbe5e3f"
+      }
+    },
+    {
+      "segment_id": "7bc8bb24",
+      "source_content": "We should see two tables: `users` & `cars`",
+      "source_content_hash": "5d36e60aa13f28cd69ff7a51f5b080f5da9955d38d7e3dbc82b0718abc1a230e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "应看到`users`和`cars`两张表。"
+      }
+    },
+    {
+      "segment_id": "8574d51c",
+      "source_content": "### Initialize Ent Project",
+      "source_content_hash": "92fcd83c0856b350f390dab845ef5164100dd76608408a9e05400ce92f5ac3e0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 初始化Ent项目"
+      }
+    },
+    {
+      "segment_id": "e9313fef",
+      "source_content": "Now that we've created our database, and a baseline schema to demonstrate our example, we need to create\na [Go](https://golang.org/doc/install) project with Ent. In this phase I will explain how to do it. Since eventually we\nwould like to use our imported schema, we need to create the Ent directory structure.",
+      "source_content_hash": "071e9fb26ed05e0afdd4ff99504bc4d160c0b99311ac073e3598c5e9ed2b2d95",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成数据库准备后，我们需要创建包含Ent的[Go](https://golang.org/doc/install)项目。此阶段将建立Ent目录结构以适配后续导入的模式。  \n\n在`entimport-example`目录初始化Go项目："
+      }
+    },
+    {
+      "segment_id": "1958bc43",
+      "source_content": "Initialize a new Go project inside a directory called `entimport-example`",
+      "source_content_hash": "62375686718895e004aabd07e76011c14981f68d9494abe2bf1107f2eb130b6f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "1a63b635",
+      "source_content": "```shell\ngo mod init entimport-example\n```",
+      "source_content_hash": "4ee9bb068d5066d21afa983046d0c91727adee5d5ad7c85e06e464ded8dd4171",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1a63b635"
+      }
+    },
+    {
+      "segment_id": "b6152880",
+      "source_content": "Run Ent Init:",
+      "source_content_hash": "27fc930b490017dec95428cd4072a62a4fd32df12902789d75b86c188ea5402b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行Ent初始化命令："
+      }
+    },
+    {
+      "segment_id": "4e583d18",
+      "source_content": "```shell\ngo run -mod=mod entgo.io/ent/cmd/ent new \n```",
+      "source_content_hash": "6a81eee41c6309522570997a75d7579a4ca7a2602931ccb8c247916b50d1f3f8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4e583d18"
+      }
+    },
+    {
+      "segment_id": "53aa2b95",
+      "source_content": "The project should look like this:",
+      "source_content_hash": "b7167a08e64d1e6973143d96ffd746bb53f753235487e5a03f5254ff73b1b592",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "项目结构应如下所示："
+      }
+    },
+    {
+      "segment_id": "18fb666f",
+      "source_content": "```\n├── docker-compose.yaml\n├── ent\n│   ├── generate.go\n│   └── schema\n└── go.mod\n```",
+      "source_content_hash": "86de4de3a5d48dd344606e3a3bfceedc137a28a69f2f8b07af2d09ead211c806",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_18fb666f"
+      }
+    },
+    {
+      "segment_id": "fff17ff8",
+      "source_content": "### Install entimport",
+      "source_content_hash": "2c7376289beaa04950803dec540017833cda2b662450be874bb7d97641080c06",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 安装entimport"
+      }
+    },
+    {
+      "segment_id": "8664ed0b",
+      "source_content": "OK, now the fun begins! We are finally ready to install `entimport` and see it in action.  \nLet’s start by running `entimport`:",
+      "source_content_hash": "e393778472d9983bd4a2294b91b97674cae445e5a3dc357c814c950eb6193159",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "好了，现在有趣的部分开始了！我们终于可以安装 `entimport` 并见证它的实际运作了。  \n首先运行 `entimport`："
+      }
+    },
+    {
+      "segment_id": "4fe849d4",
+      "source_content": "```shell\ngo run -mod=mod ariga.io/entimport/cmd/entimport -h\n```",
+      "source_content_hash": "461c8f0889bb41268e3f57f657d41fe0450a3023c4c171dfe86a4a296807e1bf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4fe849d4"
+      }
+    },
+    {
+      "segment_id": "17b50e81",
+      "source_content": "`entimport` will be downloaded and the command will print:",
+      "source_content_hash": "cc0bfd7055b416b2a0c8057a14f569b27db45d7ba42b03de4f7045876585b7f4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entimport` 将被下载，命令行会输出："
+      }
+    },
+    {
+      "segment_id": "3ad9440a",
+      "source_content": "```\nUsage of entimport:\n  -dialect string\n        database dialect (default \"mysql\")\n  -dsn string\n        data source name (connection information)\n  -schema-path string\n        output path for ent schema (default \"./ent/schema\")\n  -tables value\n        comma-separated list of tables to inspect (all if empty)\n```",
+      "source_content_hash": "07a44c5842f40330c44338d22fdec701767684b92d1f5e3dba1b39587ab3b1d0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ad9440a"
+      }
+    },
+    {
+      "segment_id": "d4eab4a6",
+      "source_content": "### Run entimport",
+      "source_content_hash": "180e945f64a4e7342228c4eb1d0c56848fbc6f7ee92767558a28267d8dd0ed18",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 运行 entimport"
+      }
+    },
+    {
+      "segment_id": "0ddaa835",
+      "source_content": "We are now ready to import our MySQL schema to Ent!",
+      "source_content_hash": "b2bbff34a8a28cf939f9f839e24a7990f5751fdf005b5213aeb896984c64a50c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们可以将 MySQL 数据库模式导入到 Ent 了！"
+      }
+    },
+    {
+      "segment_id": "fd7ed056",
+      "source_content": "We will do it with the following command:",
+      "source_content_hash": "22f2e8a2f7c5e189ad4ec0ee9cf5f176d6c81bdaa5acab48a15f85f833431a83",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用以下命令完成导入："
+      }
+    },
+    {
+      "segment_id": "18f3d343",
+      "source_content": "> This command will import all tables in our schema, you can also limit to specific tables using `-tables` flag.",
+      "source_content_hash": "5f7a5ad5f66bc632860200bfc6ac327c21b806827bca4b3d0b6cf98901d6d20d",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 该命令会导入模式中的所有表，也可以通过 `-tables` 标志指定特定表。"
+      }
+    },
+    {
+      "segment_id": "8ecb92db",
+      "source_content": "```shell\ngo run ariga.io/entimport/cmd/entimport -dialect mysql -dsn \"root:pass@tcp(localhost:3306)/entimport\"\n```",
+      "source_content_hash": "de1f598f28b8c0eb3f16ecc88c7836938d06506920fd29435f68e6ee903b112c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8ecb92db"
+      }
+    },
+    {
+      "segment_id": "89cf7bac",
+      "source_content": "Like many unix tools, `entimport` doesn't print anything on a successful run. To verify that it ran properly, we will\ncheck the file system, and more specifically `ent/schema` directory.",
+      "source_content_hash": "c64dd1c62d2f8e04a4bf9a66c2edac398915aa4f3b330a84faa4f91d12341607",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "与许多 Unix 工具类似，`entimport` 在成功运行时不会输出任何信息。要验证其是否正常运行，我们需要检查文件系统，特别是 `ent/schema` 目录。"
+      }
+    },
+    {
+      "segment_id": "9bc650e1",
+      "source_content": "```console {5-6}\n├── docker-compose.yaml\n├── ent\n│   ├── generate.go\n│   └── schema\n│       ├── car.go\n│       └── user.go\n├── go.mod\n└── go.sum\n```",
+      "source_content_hash": "0c38dd2a568ca004afb5145ada5bec0112bc2b8be708ad8792620edac9d16f67",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9bc650e1"
+      }
+    },
+    {
+      "segment_id": "b49a7009",
+      "source_content": "Let’s see what this gives us - remember that we had two schemas: the `users` schema and the `cars` schema with a one to\nmany relationship. Let’s see how `entimport` performed.",
+      "source_content_hash": "9d5db7d9e254c5601b49e2e3e38c75d2beb8ed4d64e1a6047bf3859152206b44",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们看看结果——记得我们有两个模式：`users` 模式和 `cars` 模式，它们之间存在一对多关系。现在来看看 `entimport` 的表现。"
+      }
+    },
+    {
+      "segment_id": "0152e600",
+      "source_content": "```go title=\"entimport-example/ent/schema/user.go\"\ntype User struct {\n\tent.Schema\n}\n\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{field.Int(\"id\"), field.Int(\"age\"), field.String(\"name\"), field.String(\"last_name\").Optional().Comment(\"surname\")}\n}\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{edge.To(\"cars\", Car.Type)}\n}\nfunc (User) Annotations() []schema.Annotation {\n\treturn nil\n}\n```",
+      "source_content_hash": "bc1bc9f540bdf9702fc68746b60ae12c494150911c62e328478787e17d517104",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0152e600"
+      }
+    },
+    {
+      "segment_id": "a4a54521",
+      "source_content": "```go title=\"entimport-example/ent/schema/car.go\"\ntype Car struct {\n\tent.Schema\n}\n\nfunc (Car) Fields() []ent.Field {\n\treturn []ent.Field{field.Int(\"id\"), field.String(\"model\"), field.String(\"color\"), field.Int32(\"engine_size\"), field.Int(\"user_id\").Optional()}\n}\nfunc (Car) Edges() []ent.Edge {\n\treturn []ent.Edge{edge.From(\"user\", User.Type).Ref(\"cars\").Unique().Field(\"user_id\")}\n}\nfunc (Car) Annotations() []schema.Annotation {\n\treturn nil\n}\n```",
+      "source_content_hash": "8cb3523b3c2d358e28edde467e317a4d7e55f41e4fbe459b6a050c23757ecd96",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a4a54521"
+      }
+    },
+    {
+      "segment_id": "ae57bcef",
+      "source_content": "> **`entimport` successfully created entities and their relation!**",
+      "source_content_hash": "4c1ca0653b5f4d2221f383244e6d82813e48e4cc9e330b7aded94b9103ada981",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> **`entimport` 成功创建了实体及其关系！**"
+      }
+    },
+    {
+      "segment_id": "61e5dad6",
+      "source_content": "So far looks good, now let’s actually try them out. First we must generate the Ent schema. We do it because Ent is a\n**schema first** ORM that [generates](https://entgo.io/docs/code-gen) Go code for interacting with different databases.",
+      "source_content_hash": "4c1cb758d226641e58e9320bd79046342dd27da2db69c43ab1c8941e7359bb56",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "目前看来一切顺利，现在让我们实际试用一下。首先需要生成 Ent 模式。之所以这样做，是因为 Ent 是一个**模式优先**的 ORM，它会为不同数据库[生成](https://entgo.io/docs/code-gen)用于交互的 Go 代码。"
+      }
+    },
+    {
+      "segment_id": "01902900",
+      "source_content": "To run the Ent code generation:",
+      "source_content_hash": "ac12b218fe1d85bd87e232cfeb9a8a9e32d72e22a056ffbe4d56cf1432ca1468",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行 Ent 代码生成："
+      }
+    },
+    {
+      "segment_id": "4d54a1e8",
+      "source_content": "```shell\ngo generate ./ent\n```",
+      "source_content_hash": "e3fe1a1fe124e029be6f03ec396c7ed683beda64bf76722f622232165874d886",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d54a1e8"
+      }
+    },
+    {
+      "segment_id": "d73903fc",
+      "source_content": "Let's see our `ent` directory:",
+      "source_content_hash": "a174420f2f83d9a483c92c0624974d3f5008e6e3072815c02cfb4dc9330a8325",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "查看 `ent` 目录："
+      }
+    },
+    {
+      "segment_id": "d01e871e",
+      "source_content": "```\n...\n├── ent\n│   ├── car\n│   │   ├── car.go\n│   │   └── where.go\n...\n│   ├── schema\n│   │   ├── car.go\n│   │   └── user.go\n...\n│   ├── user\n│   │   ├── user.go\n│   │   └── where.go\n...\n```",
+      "source_content_hash": "3b8b7942786e5c04b93c0cb2efc7b338f1fbf6095a09e619819613a6c2e2b6cc",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d01e871e"
+      }
+    },
+    {
+      "segment_id": "f7d4d765",
+      "source_content": "### Ent Example",
+      "source_content_hash": "336d0ae613239bad2fcf88da2d1e412fd545083f4cd6c417eb998e52289ca093",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Ent 示例"
+      }
+    },
+    {
+      "segment_id": "13440cd7",
+      "source_content": "Let’s run a quick example to verify that our schema works:",
+      "source_content_hash": "c056862ac6dff3cf1f9eff2a83939574b04cf67faf6c9f17544aca39d908975b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "快速运行一个示例来验证我们的模式是否正常工作："
+      }
+    },
+    {
+      "segment_id": "5d3138c7",
+      "source_content": "Create a file named `example.go` in the root of the project, with the following content:",
+      "source_content_hash": "cd0a4e1a2227096ecb9deb4bb990272ee996449810d470e523117c008c59af95",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在项目根目录创建名为 `example.go` 的文件，内容如下："
+      }
+    },
+    {
+      "segment_id": "c01ebfaa",
+      "source_content": "> This part of the example can be found [here](https://github.com/zeevmoney/entimport-example/blob/master/part1/example.go)",
+      "source_content_hash": "260cb8114fa0d1622e49d08ef1d1910056196163d76531c23d90993663518b18",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 这部分示例可在[此处](https://github.com/zeevmoney/entimport-example/blob/master/part1/example.go)找到"
+      }
+    },
+    {
+      "segment_id": "1ee98bc6",
+      "source_content": "```go title=\"entimport-example/example.go\"\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"log\"\n\n\t\"entimport-example/ent\"\n\n\t\"entgo.io/ent/dialect\"\n\t_ \"github.com/go-sql-driver/mysql\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(dialect.MySQL, \"root:pass@tcp(localhost:3306)/entimport?parseTime=True\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\tctx := context.Background()\n\texample(ctx, client)\n}\n```",
+      "source_content_hash": "509a62941ac6b0cc5b45a1c4630dea24c06437bfb4b91e64ce0f332aa4b0b685",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1ee98bc6"
+      }
+    },
+    {
+      "segment_id": "e3bf03eb",
+      "source_content": "Let's try to add a user, write the following code at the end of the file:",
+      "source_content_hash": "ad513861ca463ce84e098c254e1d908c43738b19211755347ae65d675c4497ab",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "尝试添加用户，在文件末尾写入以下代码："
+      }
+    },
+    {
+      "segment_id": "eb13dcb2",
+      "source_content": "```go title=\"entimport-example/example.go\"\nfunc example(ctx context.Context, client *ent.Client) {\n\t// Create a User.\n\tzeev := client.User.\n\t\tCreate().\n\t\tSetAge(33).\n\t\tSetName(\"Zeev\").\n\t\tSetLastName(\"Manilovich\").\n\t\tSaveX(ctx)\n\tfmt.Println(\"User created:\", zeev)\n}\n```",
+      "source_content_hash": "83236c4482fcb0cf708895025a1d7de8e5dbe2021ea63c20fdde77e7f47b4343",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eb13dcb2"
+      }
+    },
+    {
+      "segment_id": "4786f22b",
+      "source_content": "Then run:",
+      "source_content_hash": "074f7d59fccc36ec08479fd51c051012b7c5812b85dc53d4561c410ffa02996f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后运行："
+      }
+    },
+    {
+      "segment_id": "999199d1",
+      "source_content": "```shell\ngo run example.go\n```",
+      "source_content_hash": "ba021c9dfea431aa67c50d9c220570a0dd9922fc26cdc3db90b423f7999f5bf3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_999199d1"
+      }
+    },
+    {
+      "segment_id": "d1996877",
+      "source_content": "This should output:",
+      "source_content_hash": "ddd154f0637c369575faf28c70a768097aae8cdc11f9018519cf1ae47dac979b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "输出应为："
+      }
+    },
+    {
+      "segment_id": "95b3e282",
+      "source_content": "`# User created: User(id=1, age=33, name=Zeev, last_name=Manilovich)`",
+      "source_content_hash": "5220e51af5b15f3b92556a88b505112309a20344da24536e1983988d624381d6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`# 用户已创建: User(id=1, age=33, name=Zeev, last_name=Manilovich)`"
+      }
+    },
+    {
+      "segment_id": "1f92e934",
+      "source_content": "Let's check with the database if the user was really added",
+      "source_content_hash": "2d02ae99093c710676450d0874adb2a26d30fbf9d071d13bdcaf4e179b8a9bae",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "检查数据库确认用户是否真的被添加"
+      }
+    },
+    {
+      "segment_id": "bdb6a28d",
+      "source_content": "```sql\nSELECT *\nFROM users\nWHERE name = 'Zeev';\n\n+--+---+----+----------+\n|id|age|name|last_name |\n+--+---+----+----------+\n|1 |33 |Zeev|Manilovich|\n+--+---+----+----------+\n```",
+      "source_content_hash": "387416b820ecc72d40052a34dbd435b8e4129af4db0dfe30542a3aad1eae1828",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bdb6a28d"
+      }
+    },
+    {
+      "segment_id": "7e031d10",
+      "source_content": "Great! now let's play a little more with Ent and add some relations, add the following code at the end of\nthe `example()` func:",
+      "source_content_hash": "e682ccc33f22daf267ffe1cd3487f8b022d3935ad192638fc328448492307160",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "很好！现在让我们进一步使用 Ent 并添加一些关系，在 `example()` 函数末尾添加以下代码："
+      }
+    },
+    {
+      "segment_id": "e6533cf0",
+      "source_content": "> make sure you add `\"entimport-example/ent/user\"` to the import() declaration",
+      "source_content_hash": "66647c3fedba0d77f0bdeb7b9481c1db7fcb5f945ebe6ce8db76a5bab611fb9f",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 确保在 import() 声明中添加 `\"entimport-example/ent/user\"`"
+      }
+    },
+    {
+      "segment_id": "9b899126",
+      "source_content": "```go title=\"entimport-example/example.go\"\n// Create Car.\nvw := client.Car.\n    Create().\n    SetModel(\"volkswagen\").\n    SetColor(\"blue\").\n    SetEngineSize(1400).\n    SaveX(ctx)\nfmt.Println(\"First car created:\", vw)\n\n// Update the user - add the car relation.\nclient.User.Update().Where(user.ID(zeev.ID)).AddCars(vw).SaveX(ctx)\n\n// Query all cars that belong to the user.\ncars := zeev.QueryCars().AllX(ctx)\nfmt.Println(\"User cars:\", cars)\n\n// Create a second Car.\ndelorean := client.Car.\n    Create().\n    SetModel(\"delorean\").\n    SetColor(\"silver\").\n    SetEngineSize(9999).\n    SaveX(ctx)\nfmt.Println(\"Second car created:\", delorean)\n\n// Update the user - add another car relation.\nclient.User.Update().Where(user.ID(zeev.ID)).AddCars(delorean).SaveX(ctx)\n\n// Traverse the sub-graph.\ncars = delorean.\n    QueryUser().\n    QueryCars().\n    AllX(ctx)\nfmt.Println(\"User cars:\", cars)\n```",
+      "source_content_hash": "ec0a59c41be0d6558484d876b48e83e35f9f8487ec7216fa5179973123e868b6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9b899126"
+      }
+    },
+    {
+      "segment_id": "e2e3308b",
+      "source_content": "> This part of the example can be found [here](https://github.com/zeevmoney/entimport-example/blob/master/part2/example.go)",
+      "source_content_hash": "24759505ee40eb43b52e65a1cb285a22d1246c0061792032f0739db384e3adbc",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 这部分示例可在[此处](https://github.com/zeevmoney/entimport-example/blob/master/part2/example.go)找到"
+      }
+    },
+    {
+      "segment_id": "56f32447",
+      "source_content": "Now do: `go run example.go`.  \nAfter Running the code above, the database should hold a user with 2 cars in a O2M relation.",
+      "source_content_hash": "4e70e0b70fb92988485d258f3d472bbb3e43176c073bcbb5270b8abd477918aa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在执行：`go run example.go`。  \n运行上述代码后，数据库中将存在一个用户与两辆汽车的 O2M（一对多）关系。"
+      }
+    },
+    {
+      "segment_id": "0c4de445",
+      "source_content": "```sql\nSELECT *\nFROM users;\n\n+--+---+----+----------+\n|id|age|name|last_name |\n+--+---+----+----------+\n|1 |33 |Zeev|Manilovich|\n+--+---+----+----------+\n\nSELECT *\nFROM cars;\n\n+--+----------+------+-----------+-------+\n|id|model     |color |engine_size|user_id|\n+--+----------+------+-----------+-------+\n|1 |volkswagen|blue  |1400       |1      |\n|2 |delorean  |silver|9999       |1      |\n+--+----------+------+-----------+-------+\n```",
+      "source_content_hash": "98c3bfaca561b120e250d8cd34f908988edb2e16fc2a61c2114bcbc9381376bf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0c4de445"
+      }
+    },
+    {
+      "segment_id": "1ddee520",
+      "source_content": "### Syncing DB changes",
+      "source_content_hash": "104edda0d8f82f7b251627492114d180e937081d06940d379dae82fcecef908d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 同步数据库变更"
+      }
+    },
+    {
+      "segment_id": "c4d69fe4",
+      "source_content": "Since we want to keep the database in sync, we want `entimport` to be able to change the schema after the database was\nchanged. Let's see how it works.",
+      "source_content_hash": "d51368c46b1e1b7a15a55194f66f77557795c4f2261b635eb1a072ae2608354f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了保持数据库同步，我们需要让 `entimport` 能够在数据库变更后更新模式。下面演示其工作方式。"
+      }
+    },
+    {
+      "segment_id": "639926e9",
+      "source_content": "Run the following SQL code to add a `phone` column with a `unique` index to the `users` table:",
+      "source_content_hash": "2fc789bf8b9e3d618b1e9b6e4a6564dda6f620312e63d94e0a5e0fa1dd79c49a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下 SQL 代码，向 `users` 表添加带有 `unique` 索引的 `phone` 列："
+      }
+    },
+    {
+      "segment_id": "59d40c48",
+      "source_content": "```sql\nalter table users\n    add phone varchar(255) null;\n\ncreate unique index users_phone_uindex\n    on users (phone);\n```",
+      "source_content_hash": "dc35726150ae7db1330621d625e16ec9c070a61fe5eea053d94c14d2275bee42",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_59d40c48"
+      }
+    },
+    {
+      "segment_id": "ff95ec03",
+      "source_content": "The table should look like this:",
+      "source_content_hash": "7642a8be9e5209ddf7a00e62b12b3cd5e98971435e6e304a88bc5b98449c3225",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "表结构应变为："
+      }
+    },
+    {
+      "segment_id": "7d792611",
+      "source_content": "```sql\ndescribe users;\n+-----------+--------------+------+-----+---------+----------------+\n| Field     | Type         | Null | Key | Default | Extra          |\n+-----------+--------------+------+-----+---------+----------------+\n| id        | bigint       | NO   | PRI | NULL    | auto_increment |\n| age       | bigint       | NO   |     | NULL    |                |\n| name      | varchar(255) | NO   |     | NULL    |                |\n| last_name | varchar(255) | YES  |     | NULL    |                |\n| phone     | varchar(255) | YES  | UNI | NULL    |                |\n+-----------+--------------+------+-----+---------+----------------+\n```",
+      "source_content_hash": "112cf14d8918de34a04047dda2ee769fb4613c1d6a3fe23f23fa9743c9d4790f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7d792611"
+      }
+    },
+    {
+      "segment_id": "ca714988",
+      "source_content": "Now let's run `entimport` again to get the latest schema from our database:",
+      "source_content_hash": "4800485ae8e5b16d3abdcb3484bd57b290e8bde83839aa886ec6704706186f23",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在让我们再次运行`entimport`以从数据库获取最新架构："
+      }
+    },
+    {
+      "segment_id": "5de6a9e7",
+      "source_content": "```shell\ngo run -mod=mod ariga.io/entimport/cmd/entimport -dialect mysql -dsn \"root:pass@tcp(localhost:3306)/entimport\"\n```",
+      "source_content_hash": "7bdd8763c4237fcfad37c454e5165d1a49f4006a02fa58e88bdefa5ab6d00d0a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5de6a9e7"
+      }
+    },
+    {
+      "segment_id": "7e0b49a3",
+      "source_content": "We can see that the `user.go` file was changed:",
+      "source_content_hash": "4860147dc47057c19e503b7cacf35b1916325b4df8f6a57d1d2324de87d97723",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到`user.go`文件已被修改："
+      }
+    },
+    {
+      "segment_id": "c34e4bdd",
+      "source_content": "```go title=\"entimport-example/ent/schema/user.go\"\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{field.Int(\"id\"), ..., field.String(\"phone\").Optional().Unique()}\n}\n```",
+      "source_content_hash": "540686ae240c228693b03ce3afb86243cfb5b71cbbab01ecf1af21fe1926bfdc",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c34e4bdd"
+      }
+    },
+    {
+      "segment_id": "ac7dd250",
+      "source_content": "Now we can run `go generate ./ent` again and use the new schema to add a `phone` to the User entity.",
+      "source_content_hash": "93185445173ee94b754dd019db9319ebd6af49332db431c9f6da578483f299e1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们可以再次运行`go generate ./ent`，并使用新架构为User实体添加`phone`字段。"
+      }
+    },
+    {
+      "segment_id": "489e5683",
+      "source_content": "## Future Plans",
+      "source_content_hash": "05b255bce7f654160fb5a4c3c5167fc4f21811da7abc90bc24da7755d7294733",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 未来计划"
+      }
+    },
+    {
+      "segment_id": "a1cac8e0",
+      "source_content": "As mentioned above this initial version supports MySQL and PostgreSQL databases.  \nIt also supports all types of SQL relations. I have plans to further upgrade the tool and add features such as missing\nPostgreSQL fields, default values, and more.",
+      "source_content_hash": "5b5360348830f12689d79674e3c5b20e0d7fe47723ae916312238cad68938f08",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如上所述，初始版本支持MySQL和PostgreSQL数据库。  \n同时支持所有类型的SQL关系。我计划进一步升级该工具，添加缺失的PostgreSQL字段、默认值等功能。"
+      }
+    },
+    {
+      "segment_id": "634bf78c",
+      "source_content": "## Wrapping Up",
+      "source_content_hash": "dc533fa3abac0a15278b57966ef5b6e93caedcacdabf427025129b40ad1d497f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 总结"
+      }
+    },
+    {
+      "segment_id": "1230856c",
+      "source_content": "In this post, I presented `entimport`, a tool that was anticipated and requested many times by the Ent community. I\nshowed an example of how to use it with Ent. This tool is another addition to Ent schema import tools, which are\ndesigned to make the integration of ent even easier. For discussion and\nsupport, [open an issue](https://github.com/ariga/entimport/issues/new). The full example can be\nfound [in here](https://github.com/zeevmoney/entimport-example). I hope you found this blog post useful!",
+      "source_content_hash": "48827f551ec660bb63d28837ed279930babab0c9b1b1a36837d98befbf98f2e7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文介绍了Ent社区期待已久的`entimport`工具，并通过示例展示了如何将其与Ent结合使用。该工具是Ent架构导入工具集的又一补充，旨在简化Ent的集成流程。如需讨论或支持，请[提交issue](https://github.com/ariga/entimport/issues/new)。完整示例可[在此处获取](https://github.com/zeevmoney/entimport-example)。希望本文对您有所帮助！"
+      }
+    },
+    {
+      "segment_id": "b3991d3f",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter账号](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-10-11-generating-ent-schemas-from-existing-sql-databases.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.663680+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "5eab7aa373ea5bb078e6c17a84733a5dd7ff5caa9f3bb6e5f8a13b2c98656669"
+  }
+}

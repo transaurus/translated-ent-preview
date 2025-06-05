@@ -1,0 +1,744 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/privacy.mdx",
+  "source_file_content_hash": "2d8d54c33c344d07fb247272cc82fe5eab6c532ee5a2f6886b28ab58ddec0483",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: privacy\ntitle: Privacy\n---",
+      "source_content_hash": "d6eeb5cd31f843a7890c0b69eea61bc49b22dc75c214f71a0e2a24c823e7650e",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "The `Policy` option in the schema allows configuring privacy policy for queries and mutations of entities in the database.",
+      "source_content_hash": "ba0cbe099c30209d433126a721ccb65d2323561135ccd760fe6690fb6b7d1560",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`schema`中的`Policy`选项允许为数据库实体的查询和变更操作配置隐私策略。"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "![gopher-privacy](https://entgo.io/images/assets/gopher-privacy-opacity.png)",
+      "source_content_hash": "a93e4cdc6b7cef8442d13c46a759ec783ed0d2b22b700e2b1d683b93146f9b19",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![gopher-privacy](https://entgo.io/images/assets/gopher-privacy-opacity.png)"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "The main advantage of the privacy layer is that, you write the privacy policy **once** (in the schema), and it is **always**\nevaluated. No matter where queries and mutations are performed in your codebase, it will always go through the privacy layer.",
+      "source_content_hash": "a8e98cc168934e6f052b54474826289c7b5190d8183ee467921c3150f4df002d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "隐私层的主要优势在于，您只需在**schema中编写一次**隐私策略，即可**始终生效**。无论代码库中在何处执行查询和变更操作，都会经过隐私层的校验。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "In this tutorial, we will start by going over the basic terms we use in the framework, continue with a section for configuring\nthe policy feature to your project, and finish with a few examples.",
+      "source_content_hash": "8d8e5b15191407882ce6a28eb559906939621829e2eb9687f9b7d28195c4bf8a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程将首先介绍框架中使用的基本术语，接着讲解如何为项目配置策略功能，最后通过几个示例进行演示。"
+      }
+    },
+    {
+      "segment_id": "aee0e40d",
+      "source_content": "## Basic Terms",
+      "source_content_hash": "d3a9788a2ba9e8f7f47d1f9eaa5f000776f5e9a724e44b64dea051e47473761a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 基本术语"
+      }
+    },
+    {
+      "segment_id": "418617bd",
+      "source_content": "### Policy ",
+      "source_content_hash": "f9c0517f546a9a2321db16f164cd044c803e0b713ebd7da3ca188c94c0747c78",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 策略"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "The `ent.Policy` interface contains two methods: `EvalQuery` and `EvalMutation`. The first defines the read-policy, and\nthe second defines the write-policy. A policy contains zero or more privacy rules (see below). These rules are evaluated\nin the same order they are declared in the schema.",
+      "source_content_hash": "fdb0d5fef09d7fa3559920b304f547cde305236153e0301b452e1876c639d791",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent.Policy`接口包含两个方法：`EvalQuery`和`EvalMutation`。前者定义读取策略，后者定义写入策略。策略包含零个或多个隐私规则（见下文）。这些规则会按照在schema中声明的顺序依次执行。"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "If all rules are evaluated without returning an error, the evaluation finishes successfully, and the executed operation \ngets access to the target nodes.",
+      "source_content_hash": "f6a120304da24427cd0a133c17cf09b4b6db4720589bf4d0530e11fb88290968",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果所有规则都执行完毕且未返回错误，则评估成功完成，执行的操作将获得对目标节点的访问权限。"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "![privacy-rules](https://entgo.io/images/assets/permission_1.png)",
+      "source_content_hash": "2399b8a6bbf8565ad969f21c10cf369c974b4e92fbb801fbd0c491c76ee1b366",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![privacy-rules](https://entgo.io/images/assets/permission_1.png)"
+      }
+    },
+    {
+      "segment_id": "73ab96a3",
+      "source_content": "However, if one of the evaluated rules returns an error or a `privacy.Deny` decision (see below), the executed operation\nreturns an error, and it is cancelled.",
+      "source_content_hash": "af97e53802b00113daac6c6ef548fa62cab274ac8fe875d2721a4e485b5b4d69",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "但如果某个规则返回错误或`privacy.Deny`决策（见下文），则执行的操作会返回错误并被取消。"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "![privacy-deny](https://entgo.io/images/assets/permission_2.png)",
+      "source_content_hash": "d427627e073fd4cd3ff07df54d9f8f944ae0eab37dcd8bb168f6202af704f470",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![privacy-deny](https://entgo.io/images/assets/permission_2.png)"
+      }
+    },
+    {
+      "segment_id": "3b7478ea",
+      "source_content": "### Privacy Rules",
+      "source_content_hash": "1ca9d81b19f9232cac3ba785be7d741050f8d4ca269bb062413a5a310a31aa32",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 隐私规则"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "Each policy (mutation or query) includes one or more privacy rules. The function signature for these rules is as follows:",
+      "source_content_hash": "9d8bd56d12e599804347b157530ffb7ee36e0ea59fd6ed35714c33dec47695bd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "每个策略（变更或查询）包含一个或多个隐私规则。这些规则的函数签名如下："
+      }
+    },
+    {
+      "segment_id": "bca33820",
+      "source_content": "```go\n// EvalQuery defines the a read-policy rule.\nfunc(Policy) EvalQuery(context.Context, Query) error\n\n// EvalMutation defines the a write-policy rule.\nfunc(Policy) EvalMutation(context.Context, Mutation) error\n```",
+      "source_content_hash": "3568c0be5a7e77163298a1015910aed9049aa594b9ebe771adbb703ee7f478ed",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "6f930b2f",
+      "source_content": "### Privacy Decisions",
+      "source_content_hash": "2397d61da59620386e9082557264d881d85c3a47595a91fd8cebcf8ef0d56457",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 隐私决策"
+      }
+    },
+    {
+      "segment_id": "c504c207",
+      "source_content": "There are three types of decision that can help you control the privacy rules evaluation.",
+      "source_content_hash": "aa25bb35964b61eaf8691ee6b8dd5704df4e8fc5d5afd2df22c9782225f100a4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有三种决策类型可帮助控制隐私规则的评估流程："
+      }
+    },
+    {
+      "segment_id": "310e47b7",
+      "source_content": "- `privacy.Allow` - If returned from a privacy rule, the evaluation stops (next rules will be skipped), and the executed\n   operation (query or mutation) gets access to the target nodes.\n   \n- `privacy.Deny` - If returned from a privacy rule, the evaluation stops (next rules will be skipped), and the executed\n  operation is cancelled. This equivalent to returning any error. \n  \n- `privacy.Skip` - Skip the current rule, and jump to the next privacy rule. This equivalent to returning a `nil` error.",
+      "source_content_hash": "3524c3afcab6e6659828279e867be2e6bf088fa55ed9b1f420752324b0db111a",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- `privacy.Allow` - 若隐私规则返回此决策，则停止评估（跳过后续规则），执行的操作（查询或变更）获得对目标节点的访问权限。\n  \n- `privacy.Deny` - 若隐私规则返回此决策，则停止评估（跳过后续规则），执行的操作被取消。等效于返回任意错误。\n  \n- `privacy.Skip` - 跳过当前规则，继续执行下一条隐私规则。等效于返回`nil`错误。"
+      }
+    },
+    {
+      "segment_id": "1131ef75",
+      "source_content": "![privacy-allow](https://entgo.io/images/assets/permission_3.png)",
+      "source_content_hash": "98398c1ca61d7e5147c6e1d0e93ef93e2c57a60823662726ffea7384c716997b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![privacy-allow](https://entgo.io/images/assets/permission_3.png)"
+      }
+    },
+    {
+      "segment_id": "8b2a52b1",
+      "source_content": "Now that we’ve covered the basic terms, let’s start writing some code.",
+      "source_content_hash": "c04248a495fe8fb42e1fe30157f3f023904399e120a135bdb534a6655fde8b8c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "了解基本术语后，我们开始编写具体代码。"
+      }
+    },
+    {
+      "segment_id": "126950d7",
+      "source_content": "## Configuration",
+      "source_content_hash": "37f210b46aa9013050eaa3d7a439965867d73a7f632cdfce2001f865b525946e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 配置"
+      }
+    },
+    {
+      "segment_id": "0bb95128",
+      "source_content": "In order to enable the privacy option in your code generation, enable the `privacy` feature with one of two options:",
+      "source_content_hash": "fb4c92ff7cb41c2022061c9db4a501f90e125d19d750798b525db77670a69304",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要启用代码生成中的隐私功能，可通过以下两种方式之一开启`privacy`特性："
+      }
+    },
+    {
+      "segment_id": "3a0902ca",
+      "source_content": "<Tabs>\n<TabItem value=\"cli\" label=\"CLI\" default>\n\nIf you are using the default go generate config, add `--feature privacy` option to the `ent/generate.go` file as follows:\n\n```go title=\"ent/generate.go\"\npackage ent\n\n//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature privacy ./schema\n```\n\nIt is recommended to add the [`schema/snapshot`](features.md#auto-solve-merge-conflicts) feature-flag along with the\n`privacy` flag to enhance the development experience, for example:\n\n```go\n//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature privacy,schema/snapshot ./schema\n```\n\n</TabItem>\n<TabItem value=\"entc\" label=\"Go\">\n\nIf you are using the configuration from the GraphQL documentation, add the feature flag as follows:\n\n```go\n// +build ignore\n\npackage main\n\n\nimport (\n    \"log\"\n\n    \"entgo.io/ent/entc\"\n    \"entgo.io/ent/entc/gen\"\n)\n\nfunc main() {\n\topts := []entc.Option{\n        entc.FeatureNames(\"privacy\"),\n\t}\n    if err := entc.Generate(\"./schema\", &gen.Config{}, opts...); err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```\n\n\nIt is recommended to add the [`schema/snapshot`](features.md#auto-solve-merge-conflicts) feature-flag along with the\n`privacy` flag to enhance the development experience, for example:\n\n```diff\nopts := []entc.Option{\n-    entc.FeatureNames(\"privacy\"),\n+    entc.FeatureNames(\"privacy\", \"schema/snapshot\"),\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "4eb9c474056708dd5b823869450f69672b6c5ac664b35129eba2c5ec70e829f0",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "2bb63d77",
+      "source_content": "#### Privacy Policy Registration",
+      "source_content_hash": "b87edc9a5af9377aff7f42ed834585c2c2a54214c29f0db55aa0da8b8275fe53",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 隐私策略注册"
+      }
+    },
+    {
+      "segment_id": "5d8b9012",
+      "source_content": ":::important\nYou should notice that similar to [schema hooks](hooks.md#hooks-registration), if you use the **`Policy`** option in your schema,\nyou **MUST** add the following import in the main package, because a circular import is possible between the schema package,\nand the generated ent package:\n\n```go\nimport _ \"<project>/ent/runtime\"\n```\n:::",
+      "source_content_hash": "7e5181192faad18f1420c1023ab42125b19dbec95e434ef0bfd98827401ebbd2",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::重要\n请注意，与[schema钩子](hooks.md#hooks-registration)类似，如果在schema中使用**`Policy`**选项，则**必须**在主包中添加以下导入语句，因为schema包与生成的ent包之间可能存在循环引用：\n\n```go\nimport _ \"<project>/ent/runtime\"\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "fff17ff8",
+      "source_content": "## Examples",
+      "source_content_hash": "0d19ab46319785768005536313f02bd3b9b779aaed82eeac5bf7a7f796ad3ef1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 示例"
+      }
+    },
+    {
+      "segment_id": "734d40d8",
+      "source_content": "### Admin Only",
+      "source_content_hash": "3384a652cc6de02e4ce778626477cbf2cc8182c5f196445ae14e1ab2cd4f630e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 仅限管理员"
+      }
+    },
+    {
+      "segment_id": "9e90a9b3",
+      "source_content": "We start with a simple example of an application that lets any user read any data, and accepts mutations only from users\nwith admin role. We will create 2 additional packages for the purpose of the examples:",
+      "source_content_hash": "0dcdc3b9215ade6c29670d7bb9de75473ee1a66edf1c9b2e1b50af8926e9faad",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们从一个简单示例开始：该应用允许所有用户读取数据，但仅允许具有管理员角色的用户执行变更操作。为此我们将创建两个附加包："
+      }
+    },
+    {
+      "segment_id": "6b304caa",
+      "source_content": "- `rule` - for holding the different privacy rules in our schema.\n- `viewer` - for getting and setting the user/viewer who's executing the operation. In this simple example, it can be\n   either a normal user or an admin.",
+      "source_content_hash": "7ed6e329b3fe89727435c6d64a9dba6dcfceef79110b279aababa1b8345a2c90",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- `rule` - 用于存放schema中的各类隐私规则\n- `viewer` - 用于获取/设置当前执行操作的用户/查看者。在本简单示例中，查看者可以是普通用户或管理员。"
+      }
+    },
+    {
+      "segment_id": "719d3997",
+      "source_content": "After running the code-generation (with the feature-flag for privacy), we add the `Policy` method with 2 generated policy rules.",
+      "source_content_hash": "f14776fa410131bbb20b0bb888f1ce68b6a3a7489a0a60ff1e6eb88ed2f66197",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行代码生成（启用隐私功能标志后），我们添加了带有2条生成策略规则的`Policy`方法。"
+      }
+    },
+    {
+      "segment_id": "5d30fd9b",
+      "source_content": "```go title=\"examples/privacyadmin/ent/schema/user.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/examples/privacyadmin/ent/privacy\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Policy defines the privacy policy of the User.\nfunc (User) Policy() ent.Policy {\n\treturn privacy.Policy{\n\t\tMutation: privacy.MutationPolicy{\n            // Deny if not set otherwise. \n\t\t\tprivacy.AlwaysDenyRule(),\n\t\t},\n\t\tQuery: privacy.QueryPolicy{\n            // Allow any viewer to read anything.\n\t\t\tprivacy.AlwaysAllowRule(),\n\t\t},\n\t}\n}\n```",
+      "source_content_hash": "18bcdf5451f51c23dc5dd335b41ef0f576557a0d5586c6b41a2ef61e3c3025f8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5d30fd9b"
+      }
+    },
+    {
+      "segment_id": "9ef42155",
+      "source_content": "We defined a policy that rejects any mutation and accepts any query. However, as mentioned above, in this example,\nwe accept mutations only from viewers with admin role. Let's create 2 privacy rules to enforce this:",
+      "source_content_hash": "d542f8e238b72ccccdb2df930687e5cc332ae0ed0e5b51613cb9be81fe75fa7e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们定义了一个拒绝所有变更操作但接受所有查询操作的策略。但如前所述，在此示例中，我们仅允许具有管理员角色的查看者执行变更操作。为此创建两条隐私规则："
+      }
+    },
+    {
+      "segment_id": "44ecd2e3",
+      "source_content": "```go title=\"examples/privacyadmin/rule/rule.go\"\npackage rule\n\nimport (\n\t\"context\"\n\n\t\"entgo.io/ent/examples/privacyadmin/ent/privacy\"\n\t\"entgo.io/ent/examples/privacyadmin/viewer\"\n)\n\n// DenyIfNoViewer is a rule that returns Deny decision if the viewer is\n// missing in the context.\nfunc DenyIfNoViewer() privacy.QueryMutationRule {\n\treturn privacy.ContextQueryMutationRule(func(ctx context.Context) error {\n\t\tview := viewer.FromContext(ctx)\n\t\tif view == nil {\n\t\t\treturn privacy.Denyf(\"viewer-context is missing\")\n\t\t}\n\t\t// Skip to the next privacy rule (equivalent to returning nil).\n\t\treturn privacy.Skip\n\t})\n}\n\n// AllowIfAdmin is a rule that returns Allow decision if the viewer is admin.\nfunc AllowIfAdmin() privacy.QueryMutationRule {\n\treturn privacy.ContextQueryMutationRule(func(ctx context.Context) error {\n\t\tview := viewer.FromContext(ctx)\n\t\tif view.Admin() {\n\t\t\treturn privacy.Allow\n\t\t}\n\t\t// Skip to the next privacy rule (equivalent to returning nil).\n\t\treturn privacy.Skip\n\t})\n}\n```",
+      "source_content_hash": "49d0fc9e63493b1da0613a68dd337403decb46075e82d64c519a20d0cfcefa62",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_44ecd2e3"
+      }
+    },
+    {
+      "segment_id": "5eedf0a1",
+      "source_content": "As you can see, the first rule `DenyIfNoViewer`, makes sure every operation has a viewer in its context,\notherwise, the operation rejected. The second rule `AllowIfAdmin`, accepts any operation from viewer with\nadmin role. Let's add them to the schema, and run the code-generation:",
+      "source_content_hash": "719d4a0a5598f7ddd9be77a4e1671a9d6441b53482c9fb71b9a0ee6cc6326ddf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如您所见，第一条规则`DenyIfNoViewer`确保每个操作上下文中都存在查看者，否则拒绝操作。第二条规则`AllowIfAdmin`允许具有管理员角色的查看者执行任何操作。将这些规则添加到模式中并运行代码生成："
+      }
+    },
+    {
+      "segment_id": "1be6af7b",
+      "source_content": "```go title=\"examples/privacyadmin/ent/schema/user.go\"\n// Policy defines the privacy policy of the User.\nfunc (User) Policy() ent.Policy {\n\treturn privacy.Policy{\n\t\tMutation: privacy.MutationPolicy{\n\t\t\trule.DenyIfNoViewer(),\n\t\t\trule.AllowIfAdmin(),\n\t\t\tprivacy.AlwaysDenyRule(),\n\t\t},\n\t\tQuery: privacy.QueryPolicy{\n\t\t\tprivacy.AlwaysAllowRule(),\n\t\t},\n\t}\n}\n```",
+      "source_content_hash": "0ff68a5654a54c02435eae6ebe9cbca0bbddfe844a020cc34a74da3956eb8db3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1be6af7b"
+      }
+    },
+    {
+      "segment_id": "8f4e752e",
+      "source_content": "Since we define the `DenyIfNoViewer` first, it will be executed before all other rules, and accessing the \n`viewer.Viewer` object is safe in the `AllowIfAdmin` rule.",
+      "source_content_hash": "7b8e775a12c72ce4f794074fac2e2e09118908f40bfc74ac74d47bd1cb6e218b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于我们首先定义`DenyIfNoViewer`，它会在其他所有规则之前执行，因此在`AllowIfAdmin`规则中安全访问`viewer.Viewer`对象。"
+      }
+    },
+    {
+      "segment_id": "dfb6fc67",
+      "source_content": "After adding the rules above and running the code-generation, we expect the privacy-layer logic to be applied on\n`ent.Client` operations.",
+      "source_content_hash": "293cdca9cbe98d1c3dbcf7c7938ffde24c31763532c78ecdbc31fd91b92533e9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "添加上述规则并运行代码生成后，隐私层逻辑将应用于`ent.Client`操作。"
+      }
+    },
+    {
+      "segment_id": "cdbe4894",
+      "source_content": "```go title=\"examples/privacyadmin/example_test.go\"\nfunc Do(ctx context.Context, client *ent.Client) error {\n\t// Expect operation to fail, because viewer-context\n\t// is missing (first mutation rule check).\n\tif err := client.User.Create().Exec(ctx); !errors.Is(err, privacy.Deny) {\n\t\treturn fmt.Errorf(\"expect operation to fail, but got %w\", err)\n\t}\n\t// Apply the same operation with \"Admin\" role.\n\tadmin := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.Admin})\n\tif err := client.User.Create().Exec(admin); err != nil {\n\t\treturn fmt.Errorf(\"expect operation to pass, but got %w\", err)\n\t}\n\t// Apply the same operation with \"ViewOnly\" role.\n\tviewOnly := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.View})\n\tif err := client.User.Create().Exec(viewOnly); !errors.Is(err, privacy.Deny) {\n\t\treturn fmt.Errorf(\"expect operation to fail, but got %w\", err)\n\t}\n\t// Allow all viewers to query users.\n\tfor _, ctx := range []context.Context{ctx, viewOnly, admin} {\n\t\t// Operation should pass for all viewers.\n\t\tcount := client.User.Query().CountX(ctx)\n\t\tfmt.Println(count)\n\t}\n\treturn nil\n}\n```",
+      "source_content_hash": "e5b3dc7cf0d54c4ba8d734b45e33b1e8d56d14ff18df01959df490ad9576a84d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cdbe4894"
+      }
+    },
+    {
+      "segment_id": "16efe6ee",
+      "source_content": "### Decision Context",
+      "source_content_hash": "f9c1a7984f28ce73f7751680763d7c23982e23ced30f78d992258ae7941f31d0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 决策上下文"
+      }
+    },
+    {
+      "segment_id": "590d1cd9",
+      "source_content": "Sometimes, we want to bind a specific privacy decision to the `context.Context`. In cases like this, we\ncan use the `privacy.DecisionContext` function to create a new context with a privacy decision attached to it.",
+      "source_content_hash": "1c6db59d06ae367eca8565f9fc915c27a6f6054776f7d1e079da4db9c0031c2b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有时我们需要将特定隐私决策绑定到`context.Context`。这种情况下，可以使用`privacy.DecisionContext`函数创建附加隐私决策的新上下文。"
+      }
+    },
+    {
+      "segment_id": "d1748707",
+      "source_content": "```go title=\"examples/privacyadmin/example_test.go\"\nfunc Do(ctx context.Context, client *ent.Client) error {\n\t// Bind a privacy decision to the context (bypass all other rules).\n\tallow := privacy.DecisionContext(ctx, privacy.Allow)\n\tif err := client.User.Create().Exec(allow); err != nil {\n\t\treturn fmt.Errorf(\"expect operation to pass, but got %w\", err)\n\t}\n    return nil\n}\n```",
+      "source_content_hash": "ae10709545cd41f79d620c5afe07f07606edb33a6ac639fe7d7260bfe4b8888d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d1748707"
+      }
+    },
+    {
+      "segment_id": "aa705b4d",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/privacyadmin).",
+      "source_content_hash": "b8c5e657078bcdf79d5b9561d188825bc8598364adba0affa07090feb5d9486c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例参见[GitHub](https://github.com/ent/ent/tree/master/examples/privacyadmin)。"
+      }
+    },
+    {
+      "segment_id": "f996c0b9",
+      "source_content": "### Multi Tenancy",
+      "source_content_hash": "a6b865a5960941fa289e0981c8be5318f01a38dd0e6c271fa7d8759d9725d4b4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 多租户"
+      }
+    },
+    {
+      "segment_id": "4e994fc3",
+      "source_content": "In this example, we're going to create a schema with 3 entity types - `Tenant`, `User` and `Group`.\nThe helper packages `viewer` and `rule` (as mentioned above) also exist in this example to help us structure the application.",
+      "source_content_hash": "fea9f59abccef49c198d6f862bc5318d09302cd2a7e3e8a492ccb9b97c83e5be",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本示例将创建包含三种实体类型（`Tenant`、`User`和`Group`）的模式。辅助包`viewer`和`rule`（如前所述）也存在于本示例中。"
+      }
+    },
+    {
+      "segment_id": "c95293b9",
+      "source_content": "![tenant-example](https://entgo.io/images/assets/tenant_medium.png)",
+      "source_content_hash": "c09012976ca463d1368ccb2c1595c0172ede5e9f82f39fcaca26c1e96fc11666",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![tenant-example](https://entgo.io/images/assets/tenant_medium.png)"
+      }
+    },
+    {
+      "segment_id": "7ed923ee",
+      "source_content": "Let's start building this application piece by piece. We begin by creating 3 different schemas (see the full code [here](https://github.com/ent/ent/tree/master/examples/privacytenant/ent/schema)),\nand since we want to share some logic between them, we create another [mixed-in schema](schema-mixin.md) and add it to all other schemas as follows:",
+      "source_content_hash": "443328c54dfdd1ad4d92d9819d6e5affd59668aa6173025f287bc0d3b78ecd64",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们逐步构建这个应用。首先创建三个不同的模式（完整代码参见[此处](https://github.com/ent/ent/tree/master/examples/privacytenant/ent/schema)），由于需要在模式间共享逻辑，我们创建了[mixed-in schema](schema-mixin.md)并将其添加到所有其他模式中："
+      }
+    },
+    {
+      "segment_id": "be1986a6",
+      "source_content": "```go title=\"examples/privacytenant/ent/schema/mixin.go\"\n// BaseMixin for all schemas in the graph.\ntype BaseMixin struct {\n\tmixin.Schema\n}\n\n// Policy defines the privacy policy of the BaseMixin.\nfunc (BaseMixin) Policy() ent.Policy {\n\treturn privacy.Policy{\n\t\tQuery: privacy.QueryPolicy{\n\t\t\t// Deny any query operation in case\n\t\t\t// there is no \"viewer context\".\n\t\t\trule.DenyIfNoViewer(),\n\t\t\t// Allow admins to query any information.\n\t\t\trule.AllowIfAdmin(),\n\t\t},\n\t\tMutation: privacy.MutationPolicy{\n\t\t\t// Deny any mutation operation in case\n\t\t\t// there is no \"viewer context\".\n\t\t\trule.DenyIfNoViewer(),\n\t\t},\n\t}\n}\n```",
+      "source_content_hash": "659c028e9727b3dc07310ee7d83ecd58aad4f929a68fb20b041b779a461929dc",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be1986a6"
+      }
+    },
+    {
+      "segment_id": "03aa621a",
+      "source_content": "```go title=\"examples/privacytenant/ent/schema/tenant.go\"\n// Mixin of the Tenant schema.\nfunc (Tenant) Mixin() []ent.Mixin {\n\treturn []ent.Mixin{\n\t\tBaseMixin{},\n\t}\n}\n```",
+      "source_content_hash": "a96b0a7964badfa9024e51b64f1497caeb4353ddd655b70ac397e7110b74ebcd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_03aa621a"
+      }
+    },
+    {
+      "segment_id": "4443801b",
+      "source_content": "As explained in the first example, the `DenyIfNoViewer` privacy rule, denies the operation if the `context.Context` does not\ncontain the `viewer.Viewer` information.",
+      "source_content_hash": "2b4f66ba93eb466326ccbe89681a331f02b25944247b1ae7a5cbc01dba045ac2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如第一个示例所述，隐私规则`DenyIfNoViewer`会在`context.Context`不包含`viewer.Viewer`信息时拒绝操作。"
+      }
+    },
+    {
+      "segment_id": "c1e7eaab",
+      "source_content": "Similar to the previous example, we want to add a constraint that only admin users can create tenants (and deny otherwise).\nWe do it by copying the `AllowIfAdmin` rule from above, and adding it to the `Policy` of the `Tenant` schema:",
+      "source_content_hash": "b252689b85a5f05562ee8e7f68066ffded14465dd55b01e3ff8c68b3e7a5739a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "与前一示例类似，我们需要添加约束：仅管理员用户可以创建租户（否则拒绝）。通过复制上述的`AllowIfAdmin`规则并将其添加到`Tenant`模式的`Policy`中实现："
+      }
+    },
+    {
+      "segment_id": "8996d346",
+      "source_content": "```go title=\"examples/privacytenant/ent/schema/tenant.go\"\n// Policy defines the privacy policy of the User.\nfunc (Tenant) Policy() ent.Policy {\n\treturn privacy.Policy{\n\t\tMutation: privacy.MutationPolicy{\n\t\t\t// For Tenant type, we only allow admin users to mutate\n\t\t\t// the tenant information and deny otherwise.\n\t\t\trule.AllowIfAdmin(),\n\t\t\tprivacy.AlwaysDenyRule(),\n\t\t},\n\t}\n}\n```",
+      "source_content_hash": "1479ab7dbed5157f3f7181cf941b3f3d66241e3f16b577d260c153845a48c5f9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8996d346"
+      }
+    },
+    {
+      "segment_id": "5b98f6e2",
+      "source_content": "Then, we expect the following code to run successfully:",
+      "source_content_hash": "a8a46bcb2d5ad5a552821f0d87908d65156b98d9c0335664a229e459b4ffc1c7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时预期以下代码能成功运行："
+      }
+    },
+    {
+      "segment_id": "fa7da7df",
+      "source_content": "```go title=\"examples/privacytenant/example_test.go\"\n\nfunc Example_CreateTenants(ctx context.Context, client *ent.Client) {\n\t// Expect operation to fail in case viewer-context is missing.\n\t// First mutation privacy policy rule defined in BaseMixin.\n\tif err := client.Tenant.Create().Exec(ctx); !errors.Is(err, privacy.Deny) {\n\t\tlog.Fatal(\"expect tenant creation to fail, but got:\", err)\n\t}\n\n\t// Expect operation to fail in case the ent.User in the viewer-context\n\t// is not an admin user. Privacy policy defined in the Tenant schema.\n\tviewCtx := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.View})\n\tif err := client.Tenant.Create().Exec(viewCtx); !errors.Is(err, privacy.Deny) {\n\t\tlog.Fatal(\"expect tenant creation to fail, but got:\", err)\n\t}\n\n\t// Operations should pass successfully as the user in the viewer-context\n\t// is an admin user. First mutation privacy policy in Tenant schema.\n\tadminCtx := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.Admin})\n\thub, err := client.Tenant.Create().SetName(\"GitHub\").Save(adminCtx)\n\tif err != nil {\n\t\tlog.Fatal(\"expect tenant creation to pass, but got:\", err)\n\t}\n\tfmt.Println(hub)\n\n\tlab, err := client.Tenant.Create().SetName(\"GitLab\").Save(adminCtx)\n\tif err != nil {\n\t\tlog.Fatal(\"expect tenant creation to pass, but got:\", err)\n\t}\n\tfmt.Println(lab)\n\t\n\t// Output:\n\t// Tenant(id=1, name=GitHub)\n\t// Tenant(id=2, name=GitLab)\n}\n```",
+      "source_content_hash": "1e5f0b3b53aa272aabdbe851a99a779b9bd93203d259779aab3a291f4f9cb351",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fa7da7df"
+      }
+    },
+    {
+      "segment_id": "c4d69fe4",
+      "source_content": "We continue by adding the rest of the edges in our data-model (see image above), and since both `User` and `Group` have\nan edge to the `Tenant` schema, we create a shared [mixed-in schema](schema-mixin.md) named `TenantMixin` for this:",
+      "source_content_hash": "343763ae74bd0c84c86edf3db042e41b594b4872f6d731d2ca3db76be7df6d58",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们继续在数据模型中添加其余边关系（见上图）。由于`User`和`Group`都有指向`Tenant`模式的边，为此创建名为`TenantMixin`的共享[mixed-in schema](schema-mixin.md)："
+      }
+    },
+    {
+      "segment_id": "b4a9057a",
+      "source_content": "```go title=\"examples/privacytenant/ent/schema/mixin.go\"\n// TenantMixin for embedding the tenant info in different schemas.\ntype TenantMixin struct {\n\tmixin.Schema\n}\n\n// Fields for all schemas that embed TenantMixin.\nfunc (TenantMixin) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"tenant_id\").\n\t\t    Immutable(),\n\t}\n}\n\n// Edges for all schemas that embed TenantMixin.\nfunc (TenantMixin) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"tenant\", Tenant.Type).\n\t\t\tField(\"tenant_id\").\n\t\t\tUnique().\n\t\t\tRequired().\n\t\t\tImmutable(),\n\t}\n}\n```",
+      "source_content_hash": "0b0f3a70020708e07273fde0de9128fa01fb78cb28ec30068b509bad61e1fe19",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b4a9057a"
+      }
+    },
+    {
+      "segment_id": "a29cafe0",
+      "source_content": "#### Filter Rules",
+      "source_content_hash": "069f129c60886e234dc7d6b220b1adb07dba6f37c8eaef12fcb3773b20e9edb5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 过滤规则"
+      }
+    },
+    {
+      "segment_id": "033308da",
+      "source_content": "Next, we may want to enforce a rule that will limit viewers to only query groups and users that are connected to the tenant they belong to.\nFor use cases like this, Ent has an additional type of privacy rule named `Filter`.\nWe can use `Filter` rules to filter out entities based on the identity of the viewer.\nUnlike the rules we previously discussed, `Filter` rules can limit the scope of the queries a viewer can make, in addition to returning privacy decisions. ",
+      "source_content_hash": "f5dc86740d542ffedb4febdab3a6f8972f55ce72eead1496411f6147f0cd36d2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来可能需要强制实施规则：限制查看者只能查询与其所属租户相关联的组和用户。针对此类场景，Ent提供名为`Filter`的特殊隐私规则类型。该规则可根据查看者身份过滤实体。与之前讨论的规则不同，`Filter`规则除了返回隐私决策外，还能限制查看者的查询范围。"
+      }
+    },
+    {
+      "segment_id": "f7fb494e",
+      "source_content": ":::info[Note]\nThe privacy filtering option needs to be enabled using the [`entql`](features.md#entql-filtering) feature-flag (see instructions [above](#configuration)).\n:::",
+      "source_content_hash": "aa680c5190f3ce5264808de1d0fbc04b4336f9ad251eebc48685e472aee3069e",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[注意]\n隐私过滤功能需要通过 [`entql`](features.md#entql-filtering) 特性标志启用（参见[上文配置说明](#configuration)）。\n:::"
+      }
+    },
+    {
+      "segment_id": "2be9fcf6",
+      "source_content": "```go title=\"examples/privacytenant/rule/rule.go\"\n// FilterTenantRule is a query/mutation rule that filters out entities that are not in the tenant.\nfunc FilterTenantRule() privacy.QueryMutationRule {\n\t// TenantsFilter is an interface to wrap WhereHasTenantWith()\n\t// predicate that is used by both `Group` and `User` schemas.\n\ttype TenantsFilter interface {\n\t\tWhereTenantID(entql.IntP)\n\t}\n\treturn privacy.FilterFunc(func(ctx context.Context, f privacy.Filter) error {\n\t\tview := viewer.FromContext(ctx)\n\t\ttid, ok := view.Tenant()\n\t\tif !ok {\n\t\t\treturn privacy.Denyf(\"missing tenant information in viewer\")\n\t\t}\n\t\ttf, ok := f.(TenantsFilter)\n\t\tif !ok {\n\t\t\treturn privacy.Denyf(\"unexpected filter type %T\", f)\n\t\t}\n\t\t// Make sure that a tenant reads only entities that have an edge to it.\n\t\ttf.WhereTenantID(entql.IntEQ(tid))\n\t\t// Skip to the next privacy rule (equivalent to return nil).\n\t\treturn privacy.Skip\n\t})\n}\n```",
+      "source_content_hash": "6588de6480bbaa3065f8c467a809bdee7c0b4ea5fe20b887e980e076fd22b267",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2be9fcf6"
+      }
+    },
+    {
+      "segment_id": "24d24e6d",
+      "source_content": "After creating the `FilterTenantRule` privacy rule, we add it to the `TenantMixin` to make sure **all schemas**\nthat use this mixin, will also have this privacy rule.",
+      "source_content_hash": "68dcb6e32bc5bc614455285cd5a89372ddfd001e579b16c93f8d353430d968bd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "创建完 `FilterTenantRule` 隐私规则后，我们将其添加到 `TenantMixin` 中，以确保**所有使用该混合模式**的架构都会继承此隐私规则。"
+      }
+    },
+    {
+      "segment_id": "a949b2e2",
+      "source_content": "```go title=\"examples/privacytenant/ent/schema/mixin.go\"\n// Policy for all schemas that embed TenantMixin.\nfunc (TenantMixin) Policy() ent.Policy {\n\treturn rule.FilterTenantRule()\n}\n```",
+      "source_content_hash": "3a0a6ef11d2b9482b0b5d35035727e603fd0eeca9a3d18e3bfc856ea551c90fb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a949b2e2"
+      }
+    },
+    {
+      "segment_id": "c829cc4b",
+      "source_content": "Then, after running the code-generation, we expect the privacy-rules to take effect on the client operations.",
+      "source_content_hash": "6f3796216d9b3dc08cbd4e70ad9ea90df91edaf9d88c2029a52f1173e1550913",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "随后运行代码生成，预期隐私规则将在客户端操作中生效。"
+      }
+    },
+    {
+      "segment_id": "d27cbc80",
+      "source_content": "```go title=\"examples/privacytenant/example_test.go\"\n\nfunc Example_TenantView(ctx context.Context, client *ent.Client) {\n\t// Operations should pass successfully as the user in the viewer-context\n\t// is an admin user. First mutation privacy policy in Tenant schema.\n\tadminCtx := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.Admin})\n\thub := client.Tenant.Create().SetName(\"GitHub\").SaveX(adminCtx)\n\tlab := client.Tenant.Create().SetName(\"GitLab\").SaveX(adminCtx)\n\n\t// Create 2 tenant-specific viewer contexts.\n\thubView := viewer.NewContext(ctx, viewer.UserViewer{T: hub})\n\tlabView := viewer.NewContext(ctx, viewer.UserViewer{T: lab})\n\n\t// Create 2 users in each tenant.\n\thubUsers := client.User.CreateBulk(\n\t\tclient.User.Create().SetName(\"a8m\").SetTenant(hub),\n\t\tclient.User.Create().SetName(\"nati\").SetTenant(hub),\n\t).SaveX(hubView)\n\tfmt.Println(hubUsers)\n\n\tlabUsers := client.User.CreateBulk(\n\t\tclient.User.Create().SetName(\"foo\").SetTenant(lab),\n\t\tclient.User.Create().SetName(\"bar\").SetTenant(lab),\n\t).SaveX(labView)\n\tfmt.Println(labUsers)\n\n\t// Query users should fail in case viewer-context is missing.\n\tif _, err := client.User.Query().Count(ctx); !errors.Is(err, privacy.Deny) {\n\t\tlog.Fatal(\"expect user query to fail, but got:\", err)\n\t}\n\n\t// Ensure each tenant can see only its users.\n\t// First and only rule in TenantMixin.\n\tfmt.Println(client.User.Query().Select(user.FieldName).StringsX(hubView))\n\tfmt.Println(client.User.Query().CountX(hubView))\n\tfmt.Println(client.User.Query().Select(user.FieldName).StringsX(labView))\n\tfmt.Println(client.User.Query().CountX(labView))\n\n\t// Expect admin users to see everything. First\n\t// query privacy policy defined in BaseMixin.\n\tfmt.Println(client.User.Query().CountX(adminCtx)) // 4\n\n\t// Update operation with specific tenant-view should update\n\t// only the tenant in the viewer-context.\n\tclient.User.Update().SetFoods([]string{\"pizza\"}).SaveX(hubView)\n\tfmt.Println(client.User.Query().AllX(hubView))\n\tfmt.Println(client.User.Query().AllX(labView))\n\n\t// Delete operation with specific tenant-view should delete\n\t// only the tenant in the viewer-context.\n\tclient.User.Delete().ExecX(labView)\n\tfmt.Println(\n\t\tclient.User.Query().CountX(hubView), // 2\n\t\tclient.User.Query().CountX(labView), // 0\n\t)\n\n\t// DeleteOne with wrong viewer-context is nop.\n\tclient.User.DeleteOne(hubUsers[0]).ExecX(labView)\n\tfmt.Println(client.User.Query().CountX(hubView)) // 2\n\n\t// Unlike queries, admin users are not allowed to mutate tenant specific data.\n\tif err := client.User.DeleteOne(hubUsers[0]).Exec(adminCtx); !errors.Is(err, privacy.Deny) {\n\t\tlog.Fatal(\"expect user deletion to fail, but got:\", err)\n\t}\n\n\t// Output:\n\t// [User(id=1, tenant_id=1, name=a8m, foods=[]) User(id=2, tenant_id=1, name=nati, foods=[])]\n\t// [User(id=3, tenant_id=2, name=foo, foods=[]) User(id=4, tenant_id=2, name=bar, foods=[])]\n\t// [a8m nati]\n\t// 2\n\t// [foo bar]\n\t// 2\n\t// 4\n\t// [User(id=1, tenant_id=1, name=a8m, foods=[pizza]) User(id=2, tenant_id=1, name=nati, foods=[pizza])]\n\t// [User(id=3, tenant_id=2, name=foo, foods=[]) User(id=4, tenant_id=2, name=bar, foods=[])]\n\t// 2 0\n\t// 2\n}\n```",
+      "source_content_hash": "0f2f9b9fa22d34cdccfa21ac61bf4a6512d8035db0ef3f36c88252104fa0c823",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d27cbc80"
+      }
+    },
+    {
+      "segment_id": "17b95bd5",
+      "source_content": "We finish our example with another privacy-rule named `DenyMismatchedTenants` on the `Group` schema.\nThe `DenyMismatchedTenants` rule rejects group creation if the associated users do not belong to\nthe same tenant as the group.",
+      "source_content_hash": "877ab0b66c24c75647c4101dc44a1501800633fe4de6c9e77f7ce30f3874747f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们通过为 `Group` 架构添加名为 `DenyMismatchedTenants` 的隐私规则来完善示例。该规则会拒绝创建关联用户与群组不属于同一租户的情况。"
+      }
+    },
+    {
+      "segment_id": "79094e7f",
+      "source_content": "```go title=\"examples/privacytenant/rule/rule.go\"\n// DenyMismatchedTenants is a rule that runs only on create operations and returns a deny\n// decision if the operation tries to add users to groups that are not in the same tenant.\nfunc DenyMismatchedTenants() privacy.MutationRule {\n\treturn privacy.GroupMutationRuleFunc(func(ctx context.Context, m *ent.GroupMutation) error {\n\t\ttid, exists := m.TenantID()\n\t\tif !exists {\n\t\t\treturn privacy.Denyf(\"missing tenant information in mutation\")\n\t\t}\n\t\tusers := m.UsersIDs()\n\t\t// If there are no users in the mutation, skip this rule-check.\n\t\tif len(users) == 0 {\n\t\t\treturn privacy.Skip\n\t\t}\n\t\t// Query the tenant-ids of all attached users. Expect all users to be connected to the same tenant\n\t\t// as the group. Note, we use privacy.DecisionContext to skip the FilterTenantRule defined above.\n\t\tids, err := m.Client().User.Query().Where(user.IDIn(users...)).Select(user.FieldTenantID).Ints(privacy.DecisionContext(ctx, privacy.Allow))\n\t\tif err != nil {\n\t\t\treturn privacy.Denyf(\"querying the tenant-ids %v\", err)\n\t\t}\n\t\tif len(ids) != len(users) {\n\t\t\treturn privacy.Denyf(\"one the attached users is not connected to a tenant %v\", err)\n\t\t}\n\t\tfor _, id := range ids {\n\t\t\tif id != tid {\n\t\t\t\treturn privacy.Denyf(\"mismatch tenant-ids for group/users %d != %d\", tid, id)\n\t\t\t}\n\t\t}\n\t\t// Skip to the next privacy rule (equivalent to return nil).\n\t\treturn privacy.Skip\n\t})\n}\n```",
+      "source_content_hash": "d8d85cf51d98bbd9cd8f4ba911b0263d7c568f8bc6fcd4704192ec9f55fad3d5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_79094e7f"
+      }
+    },
+    {
+      "segment_id": "37090b28",
+      "source_content": "We add this rule to the `Group` schema and run code-generation.",
+      "source_content_hash": "a72ff9f9bd9f652b92f91b47c7b3e8cb08c694371c54d16101a5dc1865a06fa6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "将此规则添加至 `Group` 架构后运行代码生成。"
+      }
+    },
+    {
+      "segment_id": "778ec23a",
+      "source_content": "```go title=\"examples/privacytenant/ent/schema/group.go\"\n// Policy defines the privacy policy of the Group.\nfunc (Group) Policy() ent.Policy {\n\treturn privacy.Policy{\n\t\tMutation: privacy.MutationPolicy{\n\t\t\t// Limit DenyMismatchedTenants only for\n\t\t\t// Create operation\n\t\t\tprivacy.OnMutationOperation(\n\t\t\t\trule.DenyMismatchedTenants(),\n\t\t\t\tent.OpCreate,\n\t\t\t),\n\t\t},\n\t}\n}\n```",
+      "source_content_hash": "91ede2e802f2557082e418db89c4921a8490f5b35ad2f841ddee0d8d73d8e02b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_778ec23a"
+      }
+    },
+    {
+      "segment_id": "9136f816",
+      "source_content": "Again, we expect the privacy-rules to take effect on the client operations.",
+      "source_content_hash": "3b8be3f70e5a1912324a941e69161fb5467a68eaa79742b4472aa3e9f48eef58",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "同样地，预期隐私规则将在客户端操作中生效。"
+      }
+    },
+    {
+      "segment_id": "2c71ed3c",
+      "source_content": "```go title=\"examples/privacytenant/example_test.go\"\nfunc Example_DenyMismatchedTenants(ctx context.Context, client *ent.Client) {\n\t// Operation should pass successfully as the user in the viewer-context\n\t// is an admin user. First mutation privacy policy in Tenant schema.\n\tadminCtx := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.Admin})\n\thub := client.Tenant.Create().SetName(\"GitHub\").SaveX(adminCtx)\n\tlab := client.Tenant.Create().SetName(\"GitLab\").SaveX(adminCtx)\n\n\t// Create 2 tenant-specific viewer contexts.\n\thubView := viewer.NewContext(ctx, viewer.UserViewer{T: hub})\n\tlabView := viewer.NewContext(ctx, viewer.UserViewer{T: lab})\n\n\t// Create 2 users in each tenant.\n\thubUsers := client.User.CreateBulk(\n\t\tclient.User.Create().SetName(\"a8m\").SetTenant(hub),\n\t\tclient.User.Create().SetName(\"nati\").SetTenant(hub),\n\t).SaveX(hubView)\n\tfmt.Println(hubUsers)\n\n\tlabUsers := client.User.CreateBulk(\n\t\tclient.User.Create().SetName(\"foo\").SetTenant(lab),\n\t\tclient.User.Create().SetName(\"bar\").SetTenant(lab),\n\t).SaveX(labView)\n\tfmt.Println(labUsers)\n\n\t// Expect operation to fail as the DenyMismatchedTenants rule makes\n\t// sure the group and the users are connected to the same tenant.\n\tif err := client.Group.Create().SetName(\"entgo.io\").SetTenant(hub).AddUsers(labUsers...).Exec(hubView); !errors.Is(err, privacy.Deny) {\n\t\tlog.Fatal(\"expect operation to fail, since labUsers are not connected to the same tenant\")\n\t}\n\tif err := client.Group.Create().SetName(\"entgo.io\").SetTenant(hub).AddUsers(hubUsers[0], labUsers[0]).Exec(hubView); !errors.Is(err, privacy.Deny) {\n\t\tlog.Fatal(\"expect operation to fail, since labUsers[0] is not connected to the same tenant\")\n\t}\n\t// Expect mutation to pass as all users belong to the same tenant as the group.\n\tentgo := client.Group.Create().SetName(\"entgo.io\").SetTenant(hub).AddUsers(hubUsers...).SaveX(hubView)\n\tfmt.Println(entgo)\n\n\t// Output:\n\t// [User(id=1, tenant_id=1, name=a8m, foods=[]) User(id=2, tenant_id=1, name=nati, foods=[])]\n\t// [User(id=3, tenant_id=2, name=foo, foods=[]) User(id=4, tenant_id=2, name=bar, foods=[])]\n\t// Group(id=1, tenant_id=1, name=entgo.io)\n}\n```",
+      "source_content_hash": "ceb3af0add2c608ed67cdb63b8ad1bea50e35c98209a2d51fe2492f323a18775",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2c71ed3c"
+      }
+    },
+    {
+      "segment_id": "6ecf4565",
+      "source_content": "In some cases, we want to reject user operations on entities that do not belong to their tenant **without loading\nthese entities from the database** (unlike the `DenyMismatchedTenants` example above).\nTo achieve this, we rely on the `FilterTenantRule` rule to add its filtering on mutations as well, and expect\noperations to fail with `NotFoundError` in case the `tenant_id` column does not match the one stored in the\nviewer-context.",
+      "source_content_hash": "52dc561d4503da49f5d9e9a886437f208f6154d83f4bf5014002f3ce112feea5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "某些场景下，我们希望在不从数据库加载实体的前提下（不同于上述 `DenyMismatchedTenants` 示例），直接拒绝用户操作不属于其租户的实体。为此，我们依赖 `FilterTenantRule` 规则在变更操作中添加过滤条件，当 `tenant_id` 列与查看器上下文中存储的值不匹配时，操作将因 `NotFoundError` 而失败。"
+      }
+    },
+    {
+      "segment_id": "2fdd31e1",
+      "source_content": "```go title=\"examples/privacytenant/example_test.go\"\nfunc Example_DenyMismatchedView(ctx context.Context, client *ent.Client) {\n\t// Continuation of the code above.\n\t\n\t// Expect operation to fail, because the FilterTenantRule rule makes sure\n\t// that tenants can update and delete only their groups.\n\tif err := entgo.Update().SetName(\"fail.go\").Exec(labView); !ent.IsNotFound(err) {\n\t\tlog.Fatal(\"expect operation to fail, since the group (entgo) is managed by a different tenant (hub), but got:\", err)\n\t}\n\n\t// Operation should pass in case it was applied with the right viewer-context.\n\tentgo = entgo.Update().SetName(\"entgo\").SaveX(hubView)\n\tfmt.Println(entgo)\n\n\t// Output:\n\t// Group(id=1, tenant_id=1, name=entgo)\n}\n```",
+      "source_content_hash": "ba89dcdb2700f6ba63d1b755e80d7908c376ef100f2c4419ea86b6af96f63a16",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2fdd31e1"
+      }
+    },
+    {
+      "segment_id": "89663107",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/privacytenant).",
+      "source_content_hash": "0bf09d6d9b1f4b28cac1e9b431b4da330f80b8c94ee108e8db205ec717952fff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例参见 [GitHub](https://github.com/ent/ent/tree/master/examples/privacytenant)。"
+      }
+    },
+    {
+      "segment_id": "d730ea8c",
+      "source_content": "Please note that this documentation is under active development.",
+      "source_content_hash": "b0a1ff4ce755528c5ec4ecbcdc8087453447d6b7ad8b8902fe979b2eac23bf62",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请注意本文档正在积极开发中。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/privacy.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.673175+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "2d8d54c33c344d07fb247272cc82fe5eab6c532ee5a2f6886b28ab58ddec0483"
+  }
+}

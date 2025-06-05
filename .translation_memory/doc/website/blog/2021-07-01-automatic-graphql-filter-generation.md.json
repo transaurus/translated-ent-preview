@@ -1,0 +1,512 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-07-01-automatic-graphql-filter-generation.md",
+  "source_file_content_hash": "85a81fd24fd51c8cda7926b6381a7194677ac99916810854fecd899374e061f6",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Automatic GraphQL Filter Generation\nauthor: Ariel Mashraki\nauthorURL: \"https://github.com/a8m\"\nauthorImageURL: \"https://avatars0.githubusercontent.com/u/7413593\"\nauthorTwitter: arielmashraki\n---",
+      "source_content_hash": "ef4ca8e764a8d78e956ae527d0e505c039fbbfafd4ae96d01a6db4539ee3c6dd",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "#### TL;DR",
+      "source_content_hash": "de98dc82f7684c1b10d3973d5f42398d6906e974db798cef51a296aeb882a42b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 内容提要"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "We added a new integration to the Ent GraphQL extension that generates type-safe GraphQL filters (i.e. `Where` predicates)\nfrom an `ent/schema`, and allows users to seamlessly map GraphQL queries to Ent queries.",
+      "source_content_hash": "da104c5cde450890a8f9250f18ba2088c407ec4edb7f692e37f7712bdc172690",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们为Ent GraphQL扩展新增了一项集成功能，能够根据`ent/schema`自动生成类型安全的GraphQL过滤器（即`Where`谓词），并支持用户将GraphQL查询无缝映射到Ent查询。"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "For example, to get all `COMPLETED` todo items, we can execute the following:",
+      "source_content_hash": "a4a632e1e6649c374adf747b703ca1ee24f9930e32c738c7c5d43a3ccb8ac2ac",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "例如，要获取所有状态为`COMPLETED`的待办事项，可执行以下查询："
+      }
+    },
+    {
+      "segment_id": "41ad46a6",
+      "source_content": "````graphql\nquery QueryAllCompletedTodos {\n  todos(\n    where: {\n      status: COMPLETED,\n    },\n  ) {\n    edges {\n      node {\n        id\n      }\n    }\n  }\n}\n````",
+      "source_content_hash": "336be1ea24b7c395c95f8029e89c10324c4ff42167e50d5daa0265ad1ea4d867",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_41ad46a6"
+      }
+    },
+    {
+      "segment_id": "73ab96a3",
+      "source_content": "The generated GraphQL filters follow the Ent syntax. This means, the following query is also valid:",
+      "source_content_hash": "0c77aef5f300e50d0b4a2706a3d35efd5ab633dcdb6dd1272dcf2a1d97d6f966",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的GraphQL过滤器遵循Ent语法规范。这意味着以下查询同样有效："
+      }
+    },
+    {
+      "segment_id": "6543a19e",
+      "source_content": "```graphql\nquery FilterTodos {\n  todos(\n    where: {\n      or: [\n        {\n          hasParent: false,\n          status: COMPLETED,\n        },\n        {\n          status: IN_PROGRESS,\n          hasParentWith: {\n            priorityLT: 1,\n            statusNEQ: COMPLETED,\n          },\n        }\n      ]\n    },\n  ) {\n    edges {\n      node {\n        id\n      }\n    }\n  }\n}\n```",
+      "source_content_hash": "677cf3537ddb234f6b71c0cc896b754687c4bd9244bb4581f204f7ada07a2497",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6543a19e"
+      }
+    },
+    {
+      "segment_id": "c431704b",
+      "source_content": "### Background",
+      "source_content_hash": "80c4d2e5840fa279ee61144ea5027ecdefdb59389b3dc3b7132418c8406d0f83",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 背景"
+      }
+    },
+    {
+      "segment_id": "79ad944d",
+      "source_content": "Many libraries that deal with data in Go choose the path of passing around empty interface instances\n(`interface{}`) and use reflection at runtime to figure out how to map data to struct fields. Aside from the\nperformance penalty of using reflection everywhere, the big negative impact on teams is the\nloss of type-safety. ",
+      "source_content_hash": "703818ad7abd5b050f50bdb3a1516f2ee3ef59cc793257ffed4e8870b3d5f95b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "许多处理Go数据的库选择使用空接口实例（`interface{}`）并通过运行时反射来映射数据结构。除了反射带来的性能损耗外，这种方式对开发团队最大的负面影响在于类型安全的缺失。"
+      }
+    },
+    {
+      "segment_id": "657c2b20",
+      "source_content": "When APIs are explicit, known at compile-time (or even as we type), the feedback a developer receives around a \nlarge class of errors is almost immediate. Many defects are found early, and development is also much more fun!",
+      "source_content_hash": "3cb2f9d4b0972dc99b15681bbb557c93977e3f450154600578ec123226bf42ab",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当API具备显式声明、编译时可知（甚至能在编码时感知）的特性时，开发者能即时获得关于大量错误的反馈。许多缺陷得以早期发现，开发过程也会更加高效愉悦。"
+      }
+    },
+    {
+      "segment_id": "147e8550",
+      "source_content": "Ent was designed to provide an excellent developer experience for teams working on applications with\nlarge data-models. To facilitate this, we decided early on that one of the core design principles\nof Ent is \"statically typed and explicit API using code generation\". This means, that for every\nentity a developer defines in their `ent/schema`, explicit, type-safe code is generated for the\ndeveloper to efficiently interact with their data. For example, In the\n[Filesystem Example in the ent repository](https://github.com/ent/ent/blob/master/examples/fs/), you will\nfind a schema named `File`:",
+      "source_content_hash": "4a373fb764bad5d3fc57986be3103f9e14e4037fabdb7df4d8dfa22047905078",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent的设计初衷是为处理大型数据模型的团队提供卓越的开发体验。为此我们早期就确立了一个核心设计原则：\"通过代码生成实现静态类型化且显式的API\"。这意味着开发者定义的每个`ent/schema`实体都会生成显式、类型安全的代码。例如在[Ent代码库的文件系统示例](https://github.com/ent/ent/blob/master/examples/fs/)中，可以看到名为`File`的模式定义："
+      }
+    },
+    {
+      "segment_id": "7b2110d8",
+      "source_content": "```go\n// File holds the schema definition for the File entity.\ntype File struct {\n\tent.Schema\n}\n// Fields of the File.\nfunc (File) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.Bool(\"deleted\").\n\t\t\tDefault(false),\n\t\tfield.Int(\"parent_id\").\n\t\t\tOptional(),\n\t}\n}\n```",
+      "source_content_hash": "155624ced719a09f916d171cb7d3e888eb51f1096e28fd5f8eed2afcd6888529",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7b2110d8"
+      }
+    },
+    {
+      "segment_id": "a311e967",
+      "source_content": "When the Ent code-gen runs, it will generate many predicate functions. For example, the following function which\ncan be used to filter `File`s by their `name` field:",
+      "source_content_hash": "b741128682635a5ccfc5abe7869f30c63b70a3b5c02b5989b988994b5b9aed9d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent代码生成器运行时会产生大量谓词函数。例如以下用于按`name`字段过滤`File`的函数："
+      }
+    },
+    {
+      "segment_id": "890e01bc",
+      "source_content": "```go\npackage file\n// .. truncated ..\n\n// Name applies the EQ predicate on the \"name\" field.\nfunc Name(v string) predicate.File {\n\treturn predicate.File(func(s *sql.Selector) {\n\t\ts.Where(sql.EQ(s.C(FieldName), v))\n\t})\n}\n```",
+      "source_content_hash": "92a67fd59ccbe145646e806ab4b8561dd839a9fa9fa2744b7f6eedcd70c133b2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_890e01bc"
+      }
+    },
+    {
+      "segment_id": "7bc8bb24",
+      "source_content": "[GraphQL](https://graphql.org) is a query language for APIs originally created at Facebook. Similar to Ent,\nGraphQL models data in graph concepts and facilitates type-safe queries. Around a year ago, we\nreleased an integration between Ent and GraphQL. Similar to the [gRPC Integration](2021-06-28-gprc-ready-for-use.md),\nthe goal for this integration is to allow developers to easily create API servers that map to Ent, to mutate\nand query data in their databases.",
+      "source_content_hash": "948c050fb2dcb657f5af33cd1dd1c32e51446a58e548c620a80e2bac69ae7e32",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[GraphQL](https://graphql.org)是Facebook创建的API查询语言。与Ent类似，GraphQL采用图数据模型并支持类型安全查询。约一年前，我们发布了Ent与GraphQL的集成方案。与[gRPC集成](2021-06-28-gprc-ready-for-use.md)类似，该集成旨在帮助开发者轻松创建与Ent对接的API服务，实现对数据库数据的增删改查。"
+      }
+    },
+    {
+      "segment_id": "48155948",
+      "source_content": "### Automatic GraphQL Filters Generation",
+      "source_content_hash": "ed57ddbff65c2fc2d2f8050f1e9d11c7d467483dd1d664677209c46722fe04cc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 自动生成GraphQL过滤器"
+      }
+    },
+    {
+      "segment_id": "1958bc43",
+      "source_content": "In a recent community survey, the Ent + GraphQL integration was mentioned as one of the most\nloved features of the Ent project. Until today, the integration allowed users to perform useful, albeit\nbasic queries against their data. Today, we announce the release of a feature that we think will\nopen up many interesting new use cases for Ent users: \"Automatic GraphQL Filters Generation\".",
+      "source_content_hash": "066b6c59b35a0a7afca1595c5c42b0f7bdbab3039a7497959307887234ac5ed1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在最近的社区调研中，Ent+GraphQL集成被列为最受用户欢迎的功能之一。此前该集成仅支持基础数据查询功能。今天我们宣布发布的新特性将开启更多应用场景：\"GraphQL过滤器自动生成\"。"
+      }
+    },
+    {
+      "segment_id": "f38d1cb0",
+      "source_content": "As we have seen above, the Ent code-gen maintains for us a suite of predicate functions in our Go codebase\nthat allow us to easily and explicitly filter data from our database tables. This power was,\nuntil recently, not available (at least not automatically) to users of the Ent + GraphQL integration.\nWith automatic GraphQL filter generation, by making a single-line configuration change, developers\ncan now add to their GraphQL schema a complete set of \"Filter Input Types\" that can be used as predicates in their\nGraphQL queries. In addition, the implementation provides runtime code that parses these predicates and maps them into\nEnt queries. Let's see this in action:",
+      "source_content_hash": "89b1939c3c5e7971e34d4eb8912724c5edaf3001daab79c7ad8b3c90c18239d6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如前所述，Ent代码生成器会为Go代码库维护一套谓词函数，用于显式高效地过滤数据库表数据。但这项能力此前并未（至少未自动化地）提供给Ent+GraphQL集成用户。通过自动生成GraphQL过滤器，开发者只需单行配置变更，即可在GraphQL模式中获得完整的\"过滤输入类型\"，这些类型可作为谓词用于GraphQL查询。系统还提供运行时代码来解析这些谓词并将其映射为Ent查询。具体示例如下："
+      }
+    },
+    {
+      "segment_id": "47cd8dd6",
+      "source_content": "### Generating Filter Input Types",
+      "source_content_hash": "5f1eb51b5ed1e8013e83cd326718ca85cc17986dd37d12fd2a41e18f550f6bc5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 生成过滤输入类型"
+      }
+    },
+    {
+      "segment_id": "692c6053",
+      "source_content": "In order to generate input filters (e.g. `TodoWhereInput`) for each type in your `ent/schema` package,\nedit the `ent/entc.go` configuration file as follows:",
+      "source_content_hash": "22384297d83f336554bc602b390e92113a7b8f2d19b15dfa14a0952366940156",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要为`ent/schema`中的每个类型生成过滤输入类型（如`TodoWhereInput`），按以下方式编辑`ent/entc.go`配置文件："
+      }
+    },
+    {
+      "segment_id": "f2f9d525",
+      "source_content": "```go\n// +build ignore\n\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/contrib/entgql\"\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n)\n\nfunc main() {\n\tex, err := entgql.NewExtension(\n\t\tentgql.WithWhereFilters(true),\n\t\tentgql.WithConfigPath(\"../gqlgen.yml\"),\n\t\tentgql.WithSchemaPath(\"<PATH-TO-GRAPHQL-SCHEMA>\"),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"creating entgql extension: %v\", err)\n\t}\n\terr = entc.Generate(\"./schema\", &gen.Config{}, entc.Extensions(ex))\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "5a5318cd8b58fc17d59179cb2882b1a2118587070b90cf9d09c81e5022666d7b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f2f9d525"
+      }
+    },
+    {
+      "segment_id": "0ddaa835",
+      "source_content": "If you're new to Ent and GraphQL, please follow the [Getting Started Tutorial](https://entgo.io/docs/tutorial-todo-gql).",
+      "source_content_hash": "d68e6ef5185ba3ab1f57b4cc0d44ab5d93b46ee5cf55a00482b5183966a8d644",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若您初次接触Ent和GraphQL，请参考[入门教程](https://entgo.io/docs/tutorial-todo-gql)。"
+      }
+    },
+    {
+      "segment_id": "fd7ed056",
+      "source_content": "Next, run `go generate ./ent/...`. Observe that Ent has generated `<T>WhereInput` for each type in your schema. Ent\nwill update the GraphQL schema as well, so you don't need to `autobind` them to `gqlgen` manually. For example:",
+      "source_content_hash": "019be03b5268577661e2f1ef01cd7ce2d0b4bc586dfc371bb06ad733a9ecc64a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着运行 `go generate ./ent/...`。您会注意到Ent已为schema中的每个类型生成了`<T>WhereInput`。Ent会自动更新GraphQL schema，因此您无需手动将它们`autobind`到`gqlgen`。例如："
+      }
+    },
+    {
+      "segment_id": "8ecb92db",
+      "source_content": "```go title=\"ent/where_input.go\"\n// TodoWhereInput represents a where input for filtering Todo queries.\ntype TodoWhereInput struct {\n\tNot *TodoWhereInput   `json:\"not,omitempty\"`\n\tOr  []*TodoWhereInput `json:\"or,omitempty\"`\n\tAnd []*TodoWhereInput `json:\"and,omitempty\"`\n\n\t// \"created_at\" field predicates.\n\tCreatedAt      *time.Time  `json:\"createdAt,omitempty\"`\n\tCreatedAtNEQ   *time.Time  `json:\"createdAtNEQ,omitempty\"`\n\tCreatedAtIn    []time.Time `json:\"createdAtIn,omitempty\"`\n\tCreatedAtNotIn []time.Time `json:\"createdAtNotIn,omitempty\"`\n\tCreatedAtGT    *time.Time  `json:\"createdAtGT,omitempty\"`\n\tCreatedAtGTE   *time.Time  `json:\"createdAtGTE,omitempty\"`\n\tCreatedAtLT    *time.Time  `json:\"createdAtLT,omitempty\"`\n\tCreatedAtLTE   *time.Time  `json:\"createdAtLTE,omitempty\"`\n\n\t// \"status\" field predicates.\n\tStatus      *todo.Status  `json:\"status,omitempty\"`\n\tStatusNEQ   *todo.Status  `json:\"statusNEQ,omitempty\"`\n\tStatusIn    []todo.Status `json:\"statusIn,omitempty\"`\n\tStatusNotIn []todo.Status `json:\"statusNotIn,omitempty\"`\n\n    // .. truncated ..\n}\n```",
+      "source_content_hash": "b890cec559dbdc48502068cd6c167ec44bfbd592364945f0da679be49c23fcf3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8ecb92db"
+      }
+    },
+    {
+      "segment_id": "96831bda",
+      "source_content": "```graphql title=\"todo.graphql\"\n\"\"\"\nTodoWhereInput is used for filtering Todo objects.\nInput was generated by ent.\n\"\"\"\ninput TodoWhereInput {\n  not: TodoWhereInput\n  and: [TodoWhereInput!]\n  or: [TodoWhereInput!]\n  \n  \"\"\"created_at field predicates\"\"\"\n  createdAt: Time\n  createdAtNEQ: Time\n  createdAtIn: [Time!]\n  createdAtNotIn: [Time!]\n  createdAtGT: Time\n  createdAtGTE: Time\n  createdAtLT: Time\n  createdAtLTE: Time\n  \n  \"\"\"status field predicates\"\"\"\n  status: Status\n  statusNEQ: Status\n  statusIn: [Status!]\n  statusNotIn: [Status!]\n    \n  # .. truncated ..\n}\n```",
+      "source_content_hash": "5f7016d7a4ea3ded94d633a8b1dff28471f1892caa4a5d3519916bae4423405d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_96831bda"
+      }
+    },
+    {
+      "segment_id": "18ca7861",
+      "source_content": "Next, to complete the integration we need to make two more changes:",
+      "source_content_hash": "b5dd2a221653063d560a8e1d72f03130865fc7dff3375cbf2f0078e7b9044ac6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，要完成集成还需要进行两项更改："
+      }
+    },
+    {
+      "segment_id": "85821ad3",
+      "source_content": "1\\. Edit the GraphQL schema to accept the new filter types:",
+      "source_content_hash": "1c1213ba0d22f792b5b29fb5b68643296dc9cf57669ccbad15d6425786ddd138",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 编辑GraphQL schema以接受新的过滤器类型："
+      }
+    },
+    {
+      "segment_id": "4d54a1e8",
+      "source_content": "```graphql {8}\ntype Query {\n  todos(\n    after: Cursor,\n    first: Int,\n    before: Cursor,\n    last: Int,\n    orderBy: TodoOrder,\n    where: TodoWhereInput,\n  ): TodoConnection!\n}\n```",
+      "source_content_hash": "5b782d700b5b271e1904fc05dad53fb42007c7950cfb187e973d495a08f23004",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d54a1e8"
+      }
+    },
+    {
+      "segment_id": "dfb6fc67",
+      "source_content": "2\\. Use the new filter types in GraphQL resolvers:",
+      "source_content_hash": "2c4b1186252b002c8153f37a6c1b5d737d03ed34836744c3659a171556ba68a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在GraphQL解析器中使用新的过滤器类型："
+      }
+    },
+    {
+      "segment_id": "03859cae",
+      "source_content": "```go {5}\nfunc (r *queryResolver) Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error) {\n\treturn r.client.Todo.Query().\n\t\tPaginate(ctx, after, first, before, last,\n\t\t\tent.WithTodoOrder(orderBy),\n\t\t\tent.WithTodoFilter(where.Filter),\n\t\t)\n}\n```",
+      "source_content_hash": "7f0edb1c67208a5bb109daa5e3accd50a0faf9a6febef5ae7e40379163298ed4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_03859cae"
+      }
+    },
+    {
+      "segment_id": "6beaa586",
+      "source_content": "### Filter Specification",
+      "source_content_hash": "1ef5e652a1b4828e4f2ec5526ea66dfe0f2b2b784bc5a19fa8ed21add71f2416",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 过滤器规范"
+      }
+    },
+    {
+      "segment_id": "41e7f712",
+      "source_content": "As mentioned above, with the new GraphQL filter types, you can express the same Ent filters you use in your \nGo code.",
+      "source_content_hash": "ce59fffb81ebe72fc7a7b857b8d5330b19a947584118727234d6994d89f23e21",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如上所述，通过新的GraphQL过滤器类型，您可以表达与Go代码中相同的Ent过滤器。"
+      }
+    },
+    {
+      "segment_id": "cb2e9dbf",
+      "source_content": "#### Conjunction, disjunction and negation",
+      "source_content_hash": "443eb0988762e3fdfea6fd5a3b6795647bc9f9fdce6ce10c5bf3ce12f685ecf7",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 逻辑与、或及非"
+      }
+    },
+    {
+      "segment_id": "9c70c953",
+      "source_content": "The `Not`, `And` and `Or` operators can be added using the `not`, `and` and `or` fields. For example:",
+      "source_content_hash": "82d94ff363e2d3cb4c0d92811804132c0644aad93e478a12d1a0c0537278c900",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过`not`、`and`和`or`字段添加`Not`、`And`和`Or`运算符。例如："
+      }
+    },
+    {
+      "segment_id": "d5f63a23",
+      "source_content": "```graphql\n{\n  or: [\n    {\n      status: COMPLETED,\n    },\n    {\n      not: {\n        hasParent: true,\n        status: IN_PROGRESS,\n      }\n    }\n  ]\n}\n```",
+      "source_content_hash": "fe8d0f012cddd1e8f3b0152d34793e25d34d15aa1bebe16152ccd662ffc41291",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d5f63a23"
+      }
+    },
+    {
+      "segment_id": "2f8456b2",
+      "source_content": "When multiple filter fields are provided, Ent implicitly adds the `And` operator.",
+      "source_content_hash": "2bbfb83c0a11d2221d25235083c80a7c29dedc1e1a9ee2acecd417bbbdc27e65",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当提供多个过滤字段时，Ent会隐式添加`And`运算符。"
+      }
+    },
+    {
+      "segment_id": "37cbaa50",
+      "source_content": "```graphql\n{\n  status: COMPLETED,\n  textHasPrefix: \"GraphQL\",\n}\n```",
+      "source_content_hash": "98b65525e02a5adcaea6b5aa14d7f99ca68249017cd3d32e7ded7e317f9f812d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_37cbaa50"
+      }
+    },
+    {
+      "segment_id": "66e62938",
+      "source_content": "The above query will produce the following Ent query:",
+      "source_content_hash": "f2b59306dd6fcfc5f32ae0e3611e9e67b32a6a79088ec66403ebac97493be882",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述查询将生成以下Ent查询："
+      }
+    },
+    {
+      "segment_id": "525af061",
+      "source_content": "```go\nclient.Todo.\n\tQuery().\n\tWhere(\n\t\ttodo.And(\n\t\t\ttodo.StatusEQ(todo.StatusCompleted),\n\t\t\ttodo.TextHasPrefix(\"GraphQL\"),\n\t\t)\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "aa8ee31275e91701ace1e691bf80bfefc3eb2e6e26c48eb9c84f78912c6d3a42",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_525af061"
+      }
+    },
+    {
+      "segment_id": "0b7ed806",
+      "source_content": "#### Edge/Relation filters",
+      "source_content_hash": "a6055b178cfc380791cbc649f4f070de343e2f2d3329d65505786c3eadfbd9a2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 边/关系过滤器"
+      }
+    },
+    {
+      "segment_id": "8517ac25",
+      "source_content": "[Edge (relation) predicates](https://entgo.io/docs/predicates#edge-predicates) can be expressed in the same Ent syntax:",
+      "source_content_hash": "de5948d8512e1630546c09b0e1180dfe0d465ae12e58c2e411cec3b69e6ce2e4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[边(关系)谓词](https://entgo.io/docs/predicates#edge-predicates)可以用相同的Ent语法表达："
+      }
+    },
+    {
+      "segment_id": "9b048e5d",
+      "source_content": "```graphql\n{\n  hasParent: true,\n  hasChildrenWith: {\n    status: IN_PROGRESS,\n  }\n}\n```",
+      "source_content_hash": "e4ff7087889cb9c014ef9709afd81cd336e1e04ebab96abcfdb0e6d6e7ecf4e8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9b048e5d"
+      }
+    },
+    {
+      "segment_id": "d83b50df",
+      "source_content": "The above query will produce the following Ent query:",
+      "source_content_hash": "f2b59306dd6fcfc5f32ae0e3611e9e67b32a6a79088ec66403ebac97493be882",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述查询将生成以下Ent查询："
+      }
+    },
+    {
+      "segment_id": "d7bc17bf",
+      "source_content": "```go\nclient.Todo.\n\tQuery().\n\tWhere(\n\t\ttodo.HasParent(),\n\t\ttodo.HasChildrenWith(\n\t\t\ttodo.StatusEQ(todo.StatusInProgress),\n\t\t),\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "76604b0ad53934ff74b4bf44ba2b2681e6f1364a8e3dc536cba15d58a2419db4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d7bc17bf"
+      }
+    },
+    {
+      "segment_id": "8dfbc79d",
+      "source_content": "### Implementation Example",
+      "source_content_hash": "4bea681801a625d3f14045ed8c98a9b0ee5fc82f9adeaf9c25954cf3e405a1e1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 实现示例"
+      }
+    },
+    {
+      "segment_id": "0302cdc1",
+      "source_content": "A working example exists in [github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example). ",
+      "source_content_hash": "971008116b744cf0919baf3a595cd7b5f2e7cdace97f829dd06e42d9cf387ae6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例参见[github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example)。"
+      }
+    },
+    {
+      "segment_id": "7f6f3173",
+      "source_content": "### Wrapping Up",
+      "source_content_hash": "6df1295c536bdf3cf58241755891051d109001c784cced5b33a00f70983bc553",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "e9a0d59a",
+      "source_content": "As we've discussed earlier, Ent has set creating a \"statically typed and explicit API using code generation\"\nas a core design principle. With automatic GraphQL filter generation, we are doubling down on this\nidea to provide developers with the same explicit, type-safe development experience on the RPC layer as well. ",
+      "source_content_hash": "88746616d296da1cd47759278ee40d917b3eaa8973f1eee665ea5c09b301a071",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "正如前文所述，Ent将\"通过代码生成创建静态类型化且显式的API\"作为核心设计原则。通过自动生成GraphQL过滤器，我们进一步强化了这一理念，为开发者在RPC层也提供同样显式、类型安全的开发体验。"
+      }
+    },
+    {
+      "segment_id": "c1e7eaab",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack).",
+      "source_content_hash": "c9a304bbab527f6a8ff57bc7a55c7c8b10de5afa0fb48b699d78eb43fe1e203a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有问题？需要入门帮助？欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack)。"
+      }
+    },
+    {
+      "segment_id": "7a00f47c",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 加入[Ent Discord服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-07-01-automatic-graphql-filter-generation.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.685583+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "85a81fd24fd51c8cda7926b6381a7194677ac99916810854fecd899374e061f6"
+  }
+}

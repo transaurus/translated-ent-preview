@@ -1,0 +1,302 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/extension.md",
+  "source_file_content_hash": "4e51769fb467dacfc6c26b187c54feb7eb344cd48c9fb02fa9a3a2e40b8c9f86",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: extensions\ntitle: Extensions\n---",
+      "source_content_hash": "e1928739eb933f2c3cee697a993510ecb554ebfb854b21ce5a0e6e67f6cf65fd",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "### Introduction",
+      "source_content_hash": "38f0a690b4a59ffeaa99c29a7cae0ea0687f87cf878b65da65ef34b9c27c3420",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 简介"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "The Ent [Extension API](https://pkg.go.dev/entgo.io/ent/entc#Extension)\nfacilitates the creation of code-generation extensions that bundle together [codegen hooks](code-gen.md#code-generation-hooks),\n[templates](templates.md) and [annotations](templates.md#annotations) to create reusable components\nthat add new rich functionality to Ent's core. For example, Ent's [entgql plugin](https://pkg.go.dev/entgo.io/contrib/entgql#Extension)\nexposes an `Extension` that automatically generates GraphQL servers from an Ent schema.",
+      "source_content_hash": "1492a004d7e1e6d361af6029d36f435aa5bb00cc922baa43d3eb0bf4b4b84e3d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent的[扩展API](https://pkg.go.dev/entgo.io/ent/entc#Extension)提供了创建代码生成扩展的能力，这些扩展将[代码生成钩子](code-gen.md#code-generation-hooks)、[模板](templates.md)和[注解](templates.md#annotations)捆绑在一起，形成可复用的组件，为Ent核心功能增添新的丰富特性。例如，Ent的[entgql插件](https://pkg.go.dev/entgo.io/contrib/entgql#Extension)就提供了一个`Extension`，能够从Ent模式自动生成GraphQL服务器。"
+      }
+    },
+    {
+      "segment_id": "70153c6e",
+      "source_content": "### Defining a New Extension",
+      "source_content_hash": "c0b2f4d71c17ec8ab228e74c96d60a908afec26131cffe71d972c40bc5dea00e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 定义新扩展"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "All extension's must implement the [Extension](https://pkg.go.dev/entgo.io/ent/entc#Extension) interface:",
+      "source_content_hash": "40a87f6349d26c24c9e9fee1c7d2f3e35a3a1f1c79a642bd264002c2b55ecb51",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "所有扩展都必须实现[Extension](https://pkg.go.dev/entgo.io/ent/entc#Extension)接口："
+      }
+    },
+    {
+      "segment_id": "6e5ba8fb",
+      "source_content": "```go\ntype Extension interface {\n\t// Hooks holds an optional list of Hooks to apply\n\t// on the graph before/after the code-generation.\n\tHooks() []gen.Hook\n\n\t// Annotations injects global annotations to the gen.Config object that\n\t// can be accessed globally in all templates. Unlike schema annotations,\n\t// being serializable to JSON raw value is not mandatory.\n\t//\n\t//\t{{- with $.Config.Annotations.GQL }}\n\t//\t\t{{/* Annotation usage goes here. */}}\n\t//\t{{- end }}\n\t//\n\tAnnotations() []Annotation\n\n\t// Templates specifies a list of alternative templates\n\t// to execute or to override the default.\n\tTemplates() []*gen.Template\n\n\t// Options specifies a list of entc.Options to evaluate on\n\t// the gen.Config before executing the code generation.\n\tOptions() []Option\n}\n```",
+      "source_content_hash": "95222f74e1886b6e915f937800bc35c6c33bc44f2dcca841007fce231e6a0c42",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6e5ba8fb"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "To simplify the development of new extensions, developers can embed [entc.DefaultExtension](https://pkg.go.dev/entgo.io/ent/entc#DefaultExtension)\nto create extensions  without implementing all methods:",
+      "source_content_hash": "e253ea305db443795ff5e561ef9ba5021b952214646fc11c4a0cba148b91c860",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了简化新扩展的开发，开发者可以嵌入[entc.DefaultExtension](https://pkg.go.dev/entgo.io/ent/entc#DefaultExtension)，这样无需实现所有方法即可创建扩展："
+      }
+    },
+    {
+      "segment_id": "4ec2920d",
+      "source_content": "```go\npackage hello\n\n// GreetExtension implements entc.Extension.\ntype GreetExtension struct {\n\tentc.DefaultExtension\n}\n```",
+      "source_content_hash": "688b8be495e04bb1f39d5dfd32e2b5fdcee4daa247b90f5d14cd6e1b92ac71ae",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4ec2920d"
+      }
+    },
+    {
+      "segment_id": "af52d59d",
+      "source_content": "### Adding Templates",
+      "source_content_hash": "88960f21b97b915b676341dcd2ec68f35ad8a9712f1f795c006430f48f69a670",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 添加模板"
+      }
+    },
+    {
+      "segment_id": "4d52a261",
+      "source_content": "Ent supports adding [external templates](templates.md) that will be rendered during\ncode generation. To bundle such external templates on an extension, implement the `Templates`\nmethod:",
+      "source_content_hash": "ad8855c58f35ac0c391c3c793cad5a1acf5e2141f3cc08e21f6b688226f3c2f9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent支持添加[外部模板](templates.md)，这些模板将在代码生成过程中被渲染。要将此类外部模板捆绑到扩展中，需实现`Templates`方法："
+      }
+    },
+    {
+      "segment_id": "3c08ed05",
+      "source_content": "```gotemplate title=\"templates/greet.tmpl\"\n{{/* Tell Intellij/GoLand to enable the autocompletion based on the *gen.Graph type. */}}\n{{/* gotype: entgo.io/ent/entc/gen.Graph */}}\n\n{{ define \"greet\" }}\n\n{{/* Add the base header for the generated file */}}\n{{ $pkg := base $.Config.Package }}\n{{ template \"header\" $ }}\n\n{{/* Loop over all nodes and add the Greet method */}}\n{{ range $n := $.Nodes }}\n    {{ $receiver := $n.Receiver }}\n    func ({{ $receiver }} *{{ $n.Name }}) Greet() string {\n\t\treturn \"Hello, {{ $n.Name }}\"\n    }\n{{ end }}\n\n{{ end }}\n```",
+      "source_content_hash": "4e8635291a5fe7eb20481acad9b34958ce52c0a3ea21b7e623a5d776d554e149",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3c08ed05"
+      }
+    },
+    {
+      "segment_id": "7b2110d8",
+      "source_content": "```go\nfunc (*GreetExtension) Templates() []*gen.Template {\n\treturn []*gen.Template{\n\t\tgen.MustParse(gen.NewTemplate(\"greet\").ParseFiles(\"templates/greet.tmpl\")),\n\t}\n}\n```",
+      "source_content_hash": "2fc78f8a1b7e8928212ce84efd8d71e8ec7fe5628a79266d0c2e50d13444ed7c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7b2110d8"
+      }
+    },
+    {
+      "segment_id": "2e771fd0",
+      "source_content": "### Adding Global Annotations",
+      "source_content_hash": "0d7c07cc23820aa9952656370974e3d6c71732f23628ddf7738daa3686831150",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 添加全局注解"
+      }
+    },
+    {
+      "segment_id": "0750bfa1",
+      "source_content": "Annotations are a convenient way to supply users of our extension with an API \nto modify the behavior of code generation. To add annotations to our extension,\nimplement the `Annotations` method. Let's say in our `GreetExtension` we want\nto provide users with the ability to configure the greeting word in the generated\ncode:",
+      "source_content_hash": "5b11ec4f7aee47257bdfd13602a10a60481d66a05370aaaa2295613c36650d5b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注解是一种便捷的方式，可以为扩展的用户提供API，以修改代码生成的行为。要向扩展添加注解，需实现`Annotations`方法。假设在我们的`GreetExtension`中，我们希望为用户提供配置生成代码中问候语的能力："
+      }
+    },
+    {
+      "segment_id": "19913a56",
+      "source_content": "```go\n// GreetingWord implements entc.Annotation.\ntype GreetingWord string\n\n// Name of the annotation. Used by the codegen templates.\nfunc (GreetingWord) Name() string {\n\treturn \"GreetingWord\"\n}\n```",
+      "source_content_hash": "777690d0f21af8bb114236069ea95589b187be3b2587f72ffce60f25243ee884",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_19913a56"
+      }
+    },
+    {
+      "segment_id": "2838eb68",
+      "source_content": "Then add it to the `GreetExtension` struct:",
+      "source_content_hash": "070dc5e7cbf5295686e1c1ceed0fa181c6efcceb0f921a1efab2bf5d7cf7fbd9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后将其添加到`GreetExtension`结构体中："
+      }
+    },
+    {
+      "segment_id": "d44e4104",
+      "source_content": "```go\ntype GreetExtension struct {\n\tentc.DefaultExtension\n\tword GreetingWord\n}\n```",
+      "source_content_hash": "08ebd5c924feb81ff420a710f868ce690d6762afcfbbda236e17042256ca0cd0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d44e4104"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "Next, implement the `Annotations` method:",
+      "source_content_hash": "d87bf4c1df848339f9c68d0da51129dc32f872472d0689f5ceca944863ffca17",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，实现`Annotations`方法："
+      }
+    },
+    {
+      "segment_id": "f39e109c",
+      "source_content": "```go\nfunc (s *GreetExtension) Annotations() []entc.Annotation {\n\treturn []entc.Annotation{\n\t\ts.word,\n\t}\n}\n```",
+      "source_content_hash": "694767c5d8250b38cba94cecae550eeb8ddb0fb3cbf77974d88a523c5741351d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f39e109c"
+      }
+    },
+    {
+      "segment_id": "396efb28",
+      "source_content": "Now, from within your templates you can access the `GreetingWord` annotation:",
+      "source_content_hash": "227f115294872231130b78a71dc9e09f9891fc5a93215a58e7b42f8828fe3676",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在，你可以在模板中访问`GreetingWord`注解："
+      }
+    },
+    {
+      "segment_id": "1a63b635",
+      "source_content": "```gotemplate\nfunc ({{ $receiver }} *{{ $n.Name }}) Greet() string {\n    return \"{{ $.Annotations.GreetingWord }}, {{ $n.Name }}\"\n}\n```",
+      "source_content_hash": "617c8f1e3b021a8236845b2e225aaddbf20b7e2d3ba383c610e6e511711af388",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1a63b635"
+      }
+    },
+    {
+      "segment_id": "23b96cc0",
+      "source_content": "### Adding Hooks",
+      "source_content_hash": "18772145326d9022836e9b0a40dbad5fe696c9b0b01f171fce815c3519043be1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 添加钩子"
+      }
+    },
+    {
+      "segment_id": "8fcdd6d4",
+      "source_content": "The entc package provides an option to add a list of [hooks](code-gen.md#code-generation-hooks)\n(middlewares) to the code-generation phase. This option is ideal for adding custom validators for the\nschema, or for generating additional assets using the graph schema. To bundle\ncode generation hooks with your extension, implement the `Hooks` method:",
+      "source_content_hash": "bc83ed0fb7dcf265970cf97bc74f92ba2430378512406e5380b8b3a9f2844b6c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "entc包提供了向代码生成阶段添加一系列[钩子](code-gen.md#code-generation-hooks)（中间件）的选项。这一选项非常适合为模式添加自定义验证器，或使用图模式生成额外资源。要将代码生成钩子捆绑到扩展中，需实现`Hooks`方法："
+      }
+    },
+    {
+      "segment_id": "136818ce",
+      "source_content": "```go\nfunc (s *GreetExtension) Hooks() []gen.Hook {\n    return []gen.Hook{\n        DisallowTypeName(\"Shalom\"),\n    }\n}\n\n// DisallowTypeName ensures there is no ent.Schema with the given name in the graph.\nfunc DisallowTypeName(name string) gen.Hook {\n\treturn func(next gen.Generator) gen.Generator {\n\t\treturn gen.GenerateFunc(func(g *gen.Graph) error {\n\t\t\tfor _, node := range g.Nodes {\n\t\t\t\tif node.Name == name {\n\t\t\t\t\treturn fmt.Errorf(\"entc: validation failed, type named %q not allowed\", name)\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn next.Generate(g)\n\t\t})\n\t}\n}\n```",
+      "source_content_hash": "838cd819335958ec54c6de609ad1cb36ee38d5784dde6adb04945d431e61b899",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_136818ce"
+      }
+    },
+    {
+      "segment_id": "2f2d5f01",
+      "source_content": "### Using an Extension in Code Generation",
+      "source_content_hash": "f167a8dbc990059cecacb892774e709d2ec643adc8f3f56e9d9601dceba4c931",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 在代码生成中使用扩展"
+      }
+    },
+    {
+      "segment_id": "44285072",
+      "source_content": "To use an extension in our code-generation configuration, use `entc.Extensions`, a helper\nmethod that returns an `entc.Option` that applies our chosen extensions:",
+      "source_content_hash": "301fc38b43bc878dc5c903c90faeb866722c819d8b82520685e9f8e064dd5312",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要在代码生成配置中使用扩展，可使用`entc.Extensions`，这是一个辅助方法，返回一个`entc.Option`，用于应用我们选择的扩展："
+      }
+    },
+    {
+      "segment_id": "b68d496b",
+      "source_content": "```go title=\"ent/entc.go\"\n//+build ignore\n\npackage main\n\nimport (\n\t\"fmt\"\n\t\"log\"\n\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n)\n\nfunc main() {\n\terr := entc.Generate(\"./schema\",\n\t\t&gen.Config{},\n\t\tentc.Extensions(&GreetExtension{\n\t\t\tword: GreetingWord(\"Shalom\"),\n\t\t}),\n\t)\n\tif err != nil {\n\t\tlog.Fatal(\"running ent codegen:\", err)\n\t}\n}\n```",
+      "source_content_hash": "63c7e07464db0554726842b2d144b33ceb07bec39e3f0199b7e900aea7f54257",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b68d496b"
+      }
+    },
+    {
+      "segment_id": "c4ac6a6f",
+      "source_content": "### Community Extensions",
+      "source_content_hash": "c9fb34820828868bdaca0fc637d1d143e6d084511b25bec51f63a9be63e940d3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 社区扩展"
+      }
+    },
+    {
+      "segment_id": "fc7b5b3c",
+      "source_content": "- **[entoas](https://github.com/ent/contrib/tree/master/entoas)**\n  `entoas` is an extension that originates from `elk` and was ported into its own extension and is now the official\n  generator for and opinionated OpenAPI Specification document. You can use this to rapidly develop and document a\n  RESTful HTTP server. There will be a new extension released soon providing a generated implementation integrating for\n  the document provided by `entoas` using `ent`.\n\n- **[entrest](https://github.com/lrstanley/entrest)**\n  `entrest` is an alternative to `entoas`(+ `ogent`) and `elk` (before it was discontinued). entrest generates a compliant,\n  efficient, and feature-complete OpenAPI specification from your Ent schema, along with a functional RESTful API server\n  implementation. The highlight features include: toggleable pagination, advanced filtering/querying capabilities, sorting\n  (even through relationships), eager-loading edges, and a bunch more.\n\n- **[entgql](https://github.com/ent/contrib/tree/master/entgql)**  \n  This extension helps users build [GraphQL](https://graphql.org/) servers from Ent schemas. `entgql` integrates\n  with [gqlgen](https://github.com/99designs/gqlgen), a popular, schema-first Go library for building GraphQL servers.\n  The extension includes the generation of type-safe GraphQL filters, which enable users to effortlessly map GraphQL\n  queries to Ent queries.   \n  Follow [this tutorial](https://entgo.io/docs/tutorial-todo-gql) to get started.\n\n- **[entproto](https://github.com/ent/contrib/tree/master/entproto)**  \n  `entproto` generates Protobuf message definitions and gRPC service definitions from Ent schemas. The project also\n  includes `protoc-gen-entgrpc`, a `protoc` (Protobuf compiler) plugin that is used to generate a working implementation\n  of the gRPC service definition generated by Entproto. In this manner, we can easily create a gRPC server that can\n  serve requests to our service without writing any code (aside from defining the Ent schema)!  \n  To learn how to use and set up `entproto`, read [this tutorial](https://entgo.io/docs/grpc-intro). For more background\n  you can read [this blog post](https://entgo.io/blog/2021/03/18/generating-a-grpc-server-with-ent),\n  or [this blog post](https://entgo.io/blog/2021/06/28/gprc-ready-for-use/) discussing more `entproto` features.\n\n- **[elk (discontinued)](https://github.com/masseelch/elk)**  \n  `elk` is an extension that generates RESTful API endpoints from Ent schemas. The extension generates HTTP CRUD\n  handlers from the Ent schema, as well as an OpenAPI JSON file. By using it, you can easily build a RESTful HTTP server\n  for your application. **Please note, that `elk` has been discontinued in favor of `entoas`**. An implementation generator\n  is in the works.\n  Read [this blog post](https://entgo.io/blog/2021/07/29/generate-a-fully-working-go-crud-http-api-with-ent) on how to\n  work with `elk`, and [this blog post](https://entgo.io/blog/2021/09/10/openapi-generator) on how to generate\n  an [OpenAPI Specification](https://swagger.io/resources/open-api/).\n\n- **[entviz (discontinued)](https://github.com/hedwigz/entviz)**  \n  `entviz` is an extension that generates visual diagrams from Ent schemas. These diagrams visualize the schema in a web\n  browser, and stay updated as we continue coding. `entviz` can be configured in such a way that every time we\n  regenerate the schema, the diagram is automatically updated, making it easy to view the changes being made.  \n  Learn how to integrate `entviz` in your project\n  in [this blog post](https://entgo.io/blog/2021/08/26/visualizing-your-data-graph-using-entviz). **This extension has been\n  archived by the maintainer as of 2023-09-16**.",
+      "source_content_hash": "af2d894b78eec372c611cbc546eac9d5cd4d56b378ece0d9d5d0a15f53771901",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- **[entoas](https://github.com/ent/contrib/tree/master/entoas)**\n  `entoas` 是一个源自 `elk` 项目的扩展，现已独立成为官方 OpenAPI 规范文档生成器。通过该扩展可快速开发并生成符合 RESTful 规范的 HTTP 服务接口文档。未来将发布配套扩展，基于 `entoas` 生成的文档自动实现服务端集成。\n\n- **[entrest](https://github.com/lrstanley/entrest)**\n  `entrest` 是 `entoas`（及 `ogent`）和已停更 `elk` 的替代方案。它能从 Ent 模式生成符合标准的 OpenAPI 规范及功能完备的 RESTful API 服务实现，核心特性包括：可开关的分页功能、高级过滤/查询能力、跨关联排序、边数据预加载等。\n\n- **[entgql](https://github.com/ent/contrib/tree/master/entgql)**  \n  该扩展可将 Ent 模式转换为 [GraphQL](https://graphql.org/) 服务，深度集成流行框架 [gqlgen](https://github.com/99designs/gqlgen)。其特色功能包括自动生成类型安全的 GraphQL 过滤器，实现 GraphQL 查询到 Ent 查询的无缝映射。  \n  参考[本教程](https://entgo.io/docs/tutorial-todo-gql)快速入门。\n\n- **[entproto](https://github.com/ent/contrib/tree/master/entproto)**  \n  `entproto` 能从 Ent 模式生成 Protobuf 消息定义和 gRPC 服务定义。配套工具 `protoc-gen-entgrpc` 作为 Protobuf 编译器插件，可自动生成 gRPC 服务的完整实现，开发者仅需定义 Ent 模式即可构建 gRPC 服务。  \n  学习使用方式请参阅[基础教程](https://entgo.io/docs/grpc-intro)，更多背景可阅读[功能原理介绍](https://entgo.io/blog/2021/03/18/generating-a-grpc-server-withent)或[进阶特性解析](https://entgo.io/blog/2021/06/28/gprc-ready-for-use/)。\n\n- **[elk (已停更)](https://github.com/masseelch/elk)**  \n  该扩展可根据 Ent 模式生成 RESTful API 端点，包含 HTTP CRUD 处理器和 OpenAPI JSON 文件。**注意：本项目已停止维护，由 `entoas` 替代**，配套实现生成器正在开发中。  \n  历史技术细节可参考[CRUD接口实现指南](https://entgo.io/blog/2021/07/29/generate-a-fully-working-go-crud-http-api-with-ent)和[OpenAPI生成原理](https://entgo.io/blog/2021/09/10/openapi-generator)。\n\n- **[entviz (已停更)](https://github.com/hedwigz/entviz)**  \n  该扩展可将 Ent 模式可视化为浏览器交互式图表，并随代码变更自动更新。通过配置可实现模式重新生成时自动刷新图表，实时呈现数据结构变化。  \n  集成方法详见[可视化方案介绍](https://entgo.io/blog/2021/08/26/visualizing-your-data-graph-using-entviz)。**维护者已于2023-09-16归档此项目**。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/extension.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.681601+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "4e51769fb467dacfc6c26b187c54feb7eb344cd48c9fb02fa9a3a2e40b8c9f86"
+  }
+}

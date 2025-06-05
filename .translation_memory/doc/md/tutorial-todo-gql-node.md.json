@@ -1,0 +1,232 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-gql-node.md",
+  "source_file_content_hash": "fd00b9d2842792e85bdc8136c820013c81eee0249f2d6a73fe3897e2f4b6e318",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-gql-node\ntitle: Relay Node Interface\nsidebar_label: Relay Node Interface\n---",
+      "source_content_hash": "3889bb03414c49c1607c2ce3b6d80de545ee6909e7f8a9dc8313db287ef3b386",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "In this section, we continue the [GraphQL example](tutorial-todo-gql.mdx) by explaining how to implement the\n[Relay Node Interface](https://relay.dev/graphql/objectidentification.htm). If you're not familiar with the\nNode interface, read the following paragraphs that were taken from [relay.dev](https://relay.dev/graphql/objectidentification.htm#sel-DABDDBAADLA0Cl0c):",
+      "source_content_hash": "6a305ad8d7e49c9149db7a45ade27c4d4d5bc92a92204a728db6974d5e95d0b1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节我们将延续[GraphQL示例](tutorial-todo-gql.mdx)，讲解如何实现[Relay节点接口](https://relay.dev/graphql/objectidentification.htm)。若您不熟悉节点接口，请阅读以下摘自[relay.dev](https://relay.dev/graphql/objectidentification.htm#sel-DABDDBAADLA0Cl0c)的说明："
+      }
+    },
+    {
+      "segment_id": "c8518a04",
+      "source_content": "> To provide options for GraphQL clients to elegantly handle for caching and data refetching GraphQL servers need to expose object identifiers in a standardized way. In the query, the schema should provide a standard mechanism for asking for an object by ID. In the response, the schema provides a standard way of providing these IDs.\n>\n> We refer to objects with identifiers as “nodes”. An example of both of those is the following query:\n>\n>  ```graphql\n>   {\n>       node(id: \"4\") {\n>           id\n>          ... on User {\n>               name\n>           }\n>       }\n>   }\n> ```",
+      "source_content_hash": "b3b140cacb2b790555d7afd5fb50e4b8a73c0dd0b8b4d0dfec7452b7e74ab27e",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 为便于GraphQL客户端优雅处理缓存和数据重取，GraphQL服务需以标准化方式暴露对象标识符。在查询中，模式应提供通过ID请求对象的标准机制；在响应中，模式需标准化提供这些ID。\n>\n> 我们将具有标识符的对象称为\"节点\"。以下查询展示了这两种情况：\n>\n>  ```graphql\n>   {\n>       node(id: \"4\") {\n>           id\n>          ... on User {\n>               name\n>           }\n>       }\n>   }\n> ```"
+      }
+    },
+    {
+      "segment_id": "79b2d0b9",
+      "source_content": "#### Clone the code (optional)",
+      "source_content_hash": "b068b18a91c2d1cb5709786f96baae783976def17ac4580a202a72c3f85fa808",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 克隆代码（可选）"
+      }
+    },
+    {
+      "segment_id": "d9172fa4",
+      "source_content": "The code for this tutorial is available under [github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example), \nand tagged (using Git) in each step. If you want to skip the basic setup and start with the initial version of the GraphQL\nserver, you can clone the repository as follows:",
+      "source_content_hash": "d2069c98642d6ebc68a2dd114ebe37ed46738e9764d84b5bef890f08de632266",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程代码托管于[github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example)，每个步骤都对应Git标签。若想跳过基础配置直接使用GraphQL服务器的初始版本，可按如下方式克隆仓库："
+      }
+    },
+    {
+      "segment_id": "b017063d",
+      "source_content": "```console\ngit clone git@github.com:a8m/ent-graphql-example.git\ncd ent-graphql-example \ngo run ./cmd/todo/\n```",
+      "source_content_hash": "2fa40aa0226f164db69ac24b995a3ed9a55deb1c19c3ff3ea6301a27aaf46a06",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b017063d"
+      }
+    },
+    {
+      "segment_id": "80d9e13c",
+      "source_content": "## Implementation",
+      "source_content_hash": "50c313341b980c0f861db01385155da7ac362302c5a3c801b6aec6838064699d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 实现方案"
+      }
+    },
+    {
+      "segment_id": "33331f27",
+      "source_content": "Ent supports the Node interface through its GraphQL integration. By following a few simple steps you can add support\nfor it in your application. We start by telling `gqlgen` that Ent provides the `Node` interface by editing the\n`gqlgen.yaml` file as follows:",
+      "source_content_hash": "bbbbafc0b58f07201b272b59e742760bfd6ed1f1991d08cf4c271efd591b2cd9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent通过其GraphQL集成支持节点接口。只需几个简单步骤即可在应用中添加支持。首先我们通过编辑`gqlgen.yaml`文件告知`gqlgen`：Ent提供了`Node`接口："
+      }
+    },
+    {
+      "segment_id": "45022e4f",
+      "source_content": "```diff title=\"gqlgen.yml\" {7-9}\n# This section declares type mapping between the GraphQL and Go type systems.\nmodels:\n  # Defines the ID field as Go 'int'.\n  ID:\n    model:\n      - github.com/99designs/gqlgen/graphql.IntID\n  Node:\n    model:\n      - todo/ent.Noder\n```",
+      "source_content_hash": "2a6c5439f9c0a59b3a5d9e9ccfa4550aed1674b37962f64aee361c0365a326af",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_45022e4f"
+      }
+    },
+    {
+      "segment_id": "b9aaa519",
+      "source_content": "To apply these changes, we rerun the code generation:",
+      "source_content_hash": "7cbf5d8ae6880641d7677ef54d7ad19d743055ff77aa383bb360351421b57c3f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为应用这些变更，我们需要重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "ef0d086d",
+      "source_content": "```console\ngo generate .\n```",
+      "source_content_hash": "65b390e439640c248a3f07585790149d3fbc532f31c916907186dbec65eb332c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ef0d086d"
+      }
+    },
+    {
+      "segment_id": "6ea4c715",
+      "source_content": "Like before, we need to implement the GraphQL resolvers in `ent.resolvers.go`. With a one-liner change, we can\nimplement those by replacing the generated `gqlgen` code with the following:",
+      "source_content_hash": "4fdef6e63d6b9e6940a1161227d26e6e69573cc0374213a54360a362c2c63051",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "与之前类似，我们需要在`ent.resolvers.go`中实现GraphQL解析器。只需单行代码修改，即可用以下实现替换生成的`gqlgen`代码："
+      }
+    },
+    {
+      "segment_id": "7a577a50",
+      "source_content": "```diff title=\"ent.resolvers.go\"\nfunc (r *queryResolver) Node(ctx context.Context, id int) (ent.Noder, error) {\n-\tpanic(fmt.Errorf(\"not implemented: Node - node\"))\n+\treturn r.client.Noder(ctx, id)\n}\n\nfunc (r *queryResolver) Nodes(ctx context.Context, ids []int) ([]ent.Noder, error) {\n-\tpanic(fmt.Errorf(\"not implemented: Nodes - nodes\"))\n+\treturn r.client.Noders(ctx, ids)\n}\n```",
+      "source_content_hash": "ac3cffa98f057738501a36a55d70809cb8e6c44318c9af6f339a509571cfee47",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7a577a50"
+      }
+    },
+    {
+      "segment_id": "93028a4e",
+      "source_content": "## Query Nodes",
+      "source_content_hash": "9d60972fded71b1cfb0ae4094651f5b23310cb90078287070d482e3b23a72544",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 查询节点"
+      }
+    },
+    {
+      "segment_id": "e8e162a9",
+      "source_content": "Now, we're ready to test our new GraphQL resolvers. Let's start with creating a few todo items by running this\nquery multiple times (changing variables is optional):",
+      "source_content_hash": "4f80687508488de5815d68b614e389b37a5790176a52d0ac2ec95f3f1d48ff27",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们可以测试新的GraphQL解析器了。首先通过多次运行以下查询创建几个待办事项（修改变量可选）："
+      }
+    },
+    {
+      "segment_id": "a716abf2",
+      "source_content": "```graphql\nmutation CreateTodo($input: CreateTodoInput!) {\n    createTodo(input: $input) {\n        id\n        text\n        createdAt\n        priority\n        parent {\n            id\n        }\n    }\n}\n\n# Query Variables: { \"input\": { \"text\":\"Create GraphQL Example\", \"status\": \"IN_PROGRESS\", \"priority\": 1 } }\n# Output: { \"data\": { \"createTodo\": { \"id\": \"2\", \"text\": \"Create GraphQL Example\", \"createdAt\": \"2021-03-10T15:02:18+02:00\", \"priority\": 1, \"parent\": null } } }\n```",
+      "source_content_hash": "1bc8790b7d729d457e761e49878fd7b6aa80896673e5b5d4e4f706f12bb4a7ee",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a716abf2"
+      }
+    },
+    {
+      "segment_id": "2822251a",
+      "source_content": "Running the **Node** API on one of the todo items will return:",
+      "source_content_hash": "675fc959690de98eae5f8bfaaa3256fb552503207f64ae1492e76829d6fa2c3b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对某个待办事项运行**Node**接口将返回："
+      }
+    },
+    {
+      "segment_id": "efbe5e3f",
+      "source_content": "````graphql\nquery {\n  node(id: 1) {\n    id\n    ... on Todo {\n      text\n    }\n  }\n}\n\n# Output: { \"data\": { \"node\": { \"id\": \"1\", \"text\": \"Create GraphQL Example\" } } }\n````",
+      "source_content_hash": "6c1ba4bf18107bc9646463ff2041341ac0e0a0fea239fc858b7e9ff852246e32",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_efbe5e3f"
+      }
+    },
+    {
+      "segment_id": "3c19e221",
+      "source_content": "Running the **Nodes** API on one of the todo items will return:",
+      "source_content_hash": "59aafa3c6924f6608edcc17d32898d2d21b3d29049e6765b900ec87115e0de06",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对某个待办事项运行**Nodes**接口将返回："
+      }
+    },
+    {
+      "segment_id": "f155ef1e",
+      "source_content": "```graphql\nquery {\n  nodes(ids: [1, 2]) {\n    id\n    ... on Todo {\n      text\n    }\n  }\n}\n\n# Output: { \"data\": { \"nodes\": [ { \"id\": \"1\", \"text\": \"Create GraphQL Example\" }, { \"id\": \"2\", \"text\": \"Create Tracing Example\" } ] } }\n```",
+      "source_content_hash": "c83f226e330ee19d07a2f3f41da8a3b534a4fa8f4675243f828771852d29f3e5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f155ef1e"
+      }
+    },
+    {
+      "segment_id": "566c958b",
+      "source_content": "---",
+      "source_content_hash": "cb3f91d54eee30e53e35b2b99905f70f169ed549fd78909d3dac2defc9ed8d3b",
+      "node_type": "thematicBreak",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "---"
+      }
+    },
+    {
+      "segment_id": "53aa2b95",
+      "source_content": "Well done! As you can see, by changing a few lines of code our application now implements the Relay Node Interface. \nIn the next section, we will show how to implement the Relay Cursor Connections spec using Ent, which is very useful \nif we want our application to support slicing and pagination of query results.",
+      "source_content_hash": "74c3490345fa14e9d4b0789a5301f353621c53cbfb76686b03f1a0504c964dcd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成！如您所见，通过少量代码修改，我们的应用现已实现Relay节点接口。下一节我们将展示如何使用Ent实现Relay游标连接规范，这对于支持查询结果的分片与分页非常有用。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-gql-node.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.680894+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "fd00b9d2842792e85bdc8136c820013c81eee0249f2d6a73fe3897e2f4b6e318"
+  }
+}

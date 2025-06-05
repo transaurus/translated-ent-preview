@@ -1,0 +1,292 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2022-01-20-announcing-new-migration-engine.md",
+  "source_file_content_hash": "71456426f7304f95286eec2eb1d947b824c42303224c46104f7cccdf14c23446",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: \"Announcing v0.10: Ent gets a brand-new migration engine\"\nauthor: Ariel Mashraki\nauthorURL: https://github.com/a8m\nauthorImageURL: https://avatars0.githubusercontent.com/u/7413593\nauthorTwitter: arielmashraki\n---",
+      "source_content_hash": "26e7f4b3115b6414df4aaab991659ce7437d98fbccbf62d90ae68a41e4935cc3",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "Dear community, ",
+      "source_content_hash": "99e0286accbe1bebbaa1f9744c90bf87c29aa118437254430cd9b3ec59be5ebd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "亲爱的社区成员们，"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "I'm very happy to announce the release of the next version of Ent: v0.10. It has been \nalmost six months since v0.9.1, so naturally there's a ton of new stuff in this release.\nStill, I wanted to take the time to discuss one major improvement we have been working\non for the past few months: a brand-new migration engine. ",
+      "source_content_hash": "7d797d7727a7640f88f214d4229cbc65b24d7a3b721a47197aa79ba4b1150fe3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我非常高兴地宣布Ent下一个版本v0.10的发布。距离v0.9.1版本已有近六个月时间，因此这个版本自然包含了大量新功能。不过，我想特别花时间讨论我们过去几个月重点开发的一项重大改进：全新的迁移引擎。"
+      }
+    },
+    {
+      "segment_id": "e14c9928",
+      "source_content": "### Enter: [Atlas](https://github.com/ariga/atlas)",
+      "source_content_hash": "ca616e5534890ef79130c1193db40c1d7214bbbd2ebea34ab64c8a9375c6d4d1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 隆重推出：[Atlas](https://github.com/ariga/atlas)"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "Ent's current migration engine is great, and it does some pretty neat stuff which our\ncommunity has been using in production for years now, but as time went on issues\nwhich we could not resolve with the existing architecture started piling up. In addition,\nwe feel that existing database migration frameworks leave much to be desired. We have \nlearned so much as an industry about safely managing changes to production systems in \nthe past decade with principles such as Infrastructure-as-Code and declarative configuration\nmanagement, that simply did not exist when most of these projects were conceived. ",
+      "source_content_hash": "c67b48ddae8f211b84e5e976c4971b7860d2b29466629680b4f3284a24040bed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent当前的迁移引擎非常优秀，社区多年来在生产环境中使用它实现了许多巧妙的功能。但随着时间推移，现有架构无法解决的问题开始堆积。此外，我们认为现有的数据库迁移框架存在诸多不足。过去十年间，整个行业在安全管理生产系统变更方面积累了丰富经验（如基础设施即代码和声明式配置管理等原则），而这些理念在大多数迁移框架诞生时尚未形成。"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "Seeing that these problems were fairly generic and relevant to application regardless of the framework\nor programming language it was written in, we saw the opportunity to fix them as common\ninfrastructure that any project could use. For this reason, instead of just rewriting\nEnt's migration engine, we decided to extract the solution to a new open-source project, \n[Atlas](https://atlasgo.io) ([GitHub](https://ariga.io/atlas)).",
+      "source_content_hash": "3989e7debfe2d7d2b0b951671088b996a6ed63f48359eb2c1361c7f97e54e44a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "鉴于这些问题具有普适性，且与应用程序使用的框架或编程语言无关，我们意识到可以将其作为通用基础设施来解决。因此，我们没有简单重写Ent的迁移引擎，而是决定将解决方案提取到一个新的开源项目——[Atlas](https://atlasgo.io)（[GitHub](https://ariga.io/atlas)）。"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "Atlas is distributed as a CLI tool that uses a new [DDL](https://atlasgo.io/ddl/intro) based\non HCL (similar to Terraform), but can also be used as a [Go package](https://pkg.go.dev/ariga.io/atlas).\nJust as Ent, Atlas is licensed under the [Apache License 2.0](https://github.com/ariga/atlas/blob/master/LICENSE).",
+      "source_content_hash": "2f85bb871ef01921d2be7b06aa821b453bbc52d221689571785722f0739f6303",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas以CLI工具形式分发，采用基于HCL（类似Terraform）的[新DDL](https://atlasgo.io/ddl/intro)，也可作为[Go包](https://pkg.go.dev/ariga.io/atlas)使用。与Ent相同，Atlas采用[Apache License 2.0](https://github.com/ariga/atlas/blob/master/LICENSE)许可。"
+      }
+    },
+    {
+      "segment_id": "97ae4a01",
+      "source_content": "Finally, after much work and testing, the Atlas integration for Ent is finally ready to use.  This is\ngreat news to many of our users who opened issues (such as [#1652](https://github.com/ent/ent/issues/1652), \n[#1631](https://github.com/ent/ent/issues/1631), [#1625](https://github.com/ent/ent/issues/1625), \n[#1546](https://github.com/ent/ent/issues/1546) and [#1845](https://github.com/ent/ent/issues/1845)) \nthat could not be well addressed  using the existing migration system, but are now resolved using the Atlas engine.",
+      "source_content_hash": "cee334f2af087311024a76fd1763cbf90204ff7ab6b408567edf5a5e90e591fb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "经过大量开发和测试，Atlas与Ent的集成终于可以投入使用。这对于提出[#1652](https://github.com/ent/ent/issues/1652)、[#1631](https://github.com/ent/ent/issues/1631)、[#1625](https://github.com/ent/ent/issues/1625)、[#1546](https://github.com/ent/ent/issues/1546)和[#1845](https://github.com/ent/ent/issues/1845)等问题的用户是个好消息——这些问题在原有迁移系统中难以妥善解决，现在通过Atlas引擎得以解决。"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "As with any substantial change, using Atlas as the migration engine for your project is currently opt-in.\nIn the near future, we will switch to an opt-out mode, and finally deprecate the existing engine. \nNaturally, this transition will be made slowly, and we will progress as we get positive indications \nfrom the community.",
+      "source_content_hash": "963f05f7af77a073740dd5ec5c3edb026043ab5b4842bfeecfe47d85c1f2f5c9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "考虑到这是重大变更，目前Atlas迁移引擎采用自愿启用模式。未来我们将逐步转为自愿禁用模式，最终淘汰现有引擎。这个过渡过程会循序渐进，我们将根据社区反馈稳步推进。"
+      }
+    },
+    {
+      "segment_id": "c674e260",
+      "source_content": "### Getting started with Atlas migrations for Ent",
+      "source_content_hash": "a7acfd91182ad22d549275e1e6e98dd513695cacf50cb7a941646d3f9acb653e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 开始使用Atlas迁移引擎"
+      }
+    },
+    {
+      "segment_id": "a44047a5",
+      "source_content": "First, upgrade to the latest version of Ent:",
+      "source_content_hash": "19e12b52f07136894948cddba9a6fcdc57e76106b5f8a5b352e61a620e1e2488",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先升级至Ent最新版本："
+      }
+    },
+    {
+      "segment_id": "64b6f348",
+      "source_content": "```shell\ngo get entgo.io/ent@v0.10.0\n```",
+      "source_content_hash": "975518643c2121df6ba9b29f0c5e63f135f2a23cdd708f3e51d9744f4b29cfd2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_64b6f348"
+      }
+    },
+    {
+      "segment_id": "b9aaa519",
+      "source_content": "Next, in order to execute a migration with the Atlas engine, use the `WithAtlas(true)` option.",
+      "source_content_hash": "7ce5ed0c583b6f6d7bfb27cac337f7667c0e3df21cc58d5fc887e6897ba6fa35",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着，使用`WithAtlas(true)`选项即可通过Atlas引擎执行迁移："
+      }
+    },
+    {
+      "segment_id": "ef0d086d",
+      "source_content": "```go {17}\npackage main\nimport (\n    \"context\"\n    \"log\"\n    \"<project>/ent\"\n    \"<project>/ent/migrate\"\n    \"entgo.io/ent/dialect/sql/schema\"\n)\nfunc main() {\n    client, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n    if err != nil {\n        log.Fatalf(\"failed connecting to mysql: %v\", err)\n    }\n    defer client.Close()\n    ctx := context.Background()\n    // Run migration.\n    err = client.Schema.Create(ctx, schema.WithAtlas(true))\n    if err != nil {\n        log.Fatalf(\"failed creating schema resources: %v\", err)\n    }\n}\n```",
+      "source_content_hash": "bdbf821f3d37c7a169c4e6682402b4f51c372732ac7528a4b454ebb8f07ad2d5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ef0d086d"
+      }
+    },
+    {
+      "segment_id": "463ed165",
+      "source_content": "And that's it! ",
+      "source_content_hash": "9bdeece337632979133e7ef6ec4ee2a592187f815d9e8b8f9626741eaab3d3f9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "就这么简单！"
+      }
+    },
+    {
+      "segment_id": "a5c5772a",
+      "source_content": "One of the great improvements of the Atlas engine over the existing Ent code,\nis it's layered structure, that cleanly separates between ***inspection*** (understanding \nthe current state of a database), ***diffing*** (calculating the difference between the \ncurrent and desired state), ***planning*** (calculating a concrete plan for remediating\nthe diff), and ***applying***. This diagram demonstrates the way Ent uses Atlas:",
+      "source_content_hash": "a60968363ad24abe81f1a9045bd30b9f544d12cdecb93908983caaba959f71c3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas引擎相比现有Ent代码的重大改进在于其分层架构，清晰分离了以下阶段：***检测***（理解数据库当前状态）、***差异分析***（计算当前状态与目标状态的差异）、***规划***（制定具体的差异修复方案）和***应用***。下图展示了Ent使用Atlas的工作流程："
+      }
+    },
+    {
+      "segment_id": "74dd7937",
+      "source_content": "![atlas-migration-process](https://entgo.io/images/assets/migrate-atlas-process.png)",
+      "source_content_hash": "2add5817d2213e4279a5df18c58a2f13568ebcca3c8b710f1686428be66472f0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![atlas-migration-process](https://entgo.io/images/assets/migrate-atlas-process.png)"
+      }
+    },
+    {
+      "segment_id": "5803caac",
+      "source_content": "In addition to the standard options (e.g. `WithDropColumn`, \n`WithGlobalUniqueID`), the Atlas integration provides additional options for \nhooking into schema migration steps.",
+      "source_content_hash": "99900e5ada2ab39f977161e884bb4cc02111f1e3b3b75338d3cfa74b662a1da5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "除标准选项（如`WithDropColumn`、`WithGlobalUniqueID`）外，Atlas集成还提供了用于接入模式迁移步骤的额外选项。"
+      }
+    },
+    {
+      "segment_id": "785750ac",
+      "source_content": "Here are two examples that show how to hook into the Atlas `Diff` and `Apply` steps.",
+      "source_content_hash": "e115621f495cfa88f1730e1df4115c84e4fbc9e2015ae24d5a81434482e57a87",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下两个示例展示了如何接入Atlas的`Diff`和`Apply`步骤："
+      }
+    },
+    {
+      "segment_id": "ec99e704",
+      "source_content": "```go\npackage main\nimport (\n    \"context\"\n    \"log\"\n    \"<project>/ent\"\n    \"<project>/ent/migrate\"\n\t\"ariga.io/atlas/sql/migrate\"\n\tatlas \"ariga.io/atlas/sql/schema\"\n\t\"entgo.io/ent/dialect\"\n\t\"entgo.io/ent/dialect/sql/schema\"\n)\nfunc main() {\n    client, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n    if err != nil {\n        log.Fatalf(\"failed connecting to mysql: %v\", err)\n    }\n    defer client.Close()\n    ctx := context.Background()\n    // Run migration.\n    err := \tclient.Schema.Create(\n\t\tctx,\n\t\t// Hook into Atlas Diff process.\n\t\tschema.WithDiffHook(func(next schema.Differ) schema.Differ {\n\t\t\treturn schema.DiffFunc(func(current, desired *atlas.Schema) ([]atlas.Change, error) {\n\t\t\t\t// Before calculating changes.\n\t\t\t\tchanges, err := next.Diff(current, desired)\n\t\t\t\tif err != nil {\n\t\t\t\t\treturn nil, err\n\t\t\t\t}\n\t\t\t\t// After diff, you can filter\n\t\t\t\t// changes or return new ones.\n\t\t\t\treturn changes, nil\n\t\t\t})\n\t\t}),\n\t\t// Hook into Atlas Apply process.\n\t\tschema.WithApplyHook(func(next schema.Applier) schema.Applier {\n\t\t\treturn schema.ApplyFunc(func(ctx context.Context, conn dialect.ExecQuerier, plan *migrate.Plan) error {\n\t\t\t\t// Example to hook into the apply process, or implement\n\t\t\t\t// a custom applier. For example, write to a file.\n\t\t\t\t//\n\t\t\t\t//\tfor _, c := range plan.Changes {\n\t\t\t\t//\t\tfmt.Printf(\"%s: %s\", c.Comment, c.Cmd)\n\t\t\t\t//\t\tif err := conn.Exec(ctx, c.Cmd, c.Args, nil); err != nil {\n\t\t\t\t//\t\t\treturn err\n\t\t\t\t//\t\t}\n\t\t\t\t//\t}\n\t\t\t\t//\n\t\t\t\treturn next.Apply(ctx, conn, plan)\n\t\t\t})\n\t\t}),\n\t)\n    if err != nil {\n        log.Fatalf(\"failed creating schema resources: %v\", err)\n    }\n}\n```",
+      "source_content_hash": "ba969cceb7fe8dba4c383c24bfd7619d91e172c53aa729ebca1ac5bf1eb4a2f6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ec99e704"
+      }
+    },
+    {
+      "segment_id": "55dc794c",
+      "source_content": "### What's next: v0.11",
+      "source_content_hash": "c22b03578c28b5bba26c64424fb4af0bc613e4889254e473fa5ba2f041b6983d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 下一步计划：v0.11版本"
+      }
+    },
+    {
+      "segment_id": "63565425",
+      "source_content": "I know we took a while to get this release out the door, but the next one is right around\nthe corner. Here's what's in store for v0.11:",
+      "source_content_hash": "d5c21ed8960f24ad7960099420ac45ab076c4b63cef3a1fb9407bd70aaf4fc07",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "虽然本次版本发布周期较长，但下一个版本即将到来。以下是v0.11版本的主要规划："
+      }
+    },
+    {
+      "segment_id": "6ffcaeb2",
+      "source_content": "* [Add support for edge/relation schemas](https://github.com/ent/ent/issues/1949) - supporting attaching metadata fields to relations. \n* Reimplementing the GraphQL integration to be fully compatible with the Relay spec. \n  Supporting generating GraphQL assets (schemas or full servers) from Ent schemas.\n* Adding support for \"Migration Authoring\": the Atlas libraries have infrastructure for creating \"versioned\" \n  migration directories, as is commonly used in many migration frameworks (such as Flyway, Liquibase, go-migrate, etc.).\n  Many users have built solutions for integrating with these kinds of systems, and we plan to use Atlas to provide solid \n  infrastructure for these flows. \n* Query hooks (interceptors) - currently hooks are only supported for [Mutations](https://entgo.io/docs/hooks/#hooks).\n  Many users have requested adding support for read operations as well.  \n* Polymorphic edges - The issue about adding support for polymorphism has been [open for over a year](https://github.com/ent/ent/issues/1048).\n  With Go Generic Types support landing in 1.18, we want to re-open the discussion about a possible implementation using\n  them.",
+      "source_content_hash": "44fd3c10921deea90f31c0e576476dbab226d207328f2e9c3ab60b844d78ee3f",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* [支持边/关系模式](https://github.com/ent/ent/issues/1949) - 允许为关系附加元数据字段\n* 重构GraphQL集成以完全兼容Relay规范，支持从Ent模式生成GraphQL资源（模式或完整服务端）\n* 新增\"迁移编写\"功能：Atlas库提供创建\"版本化\"迁移目录的基础设施（类似Flyway/Liquibase/go-migrate等框架的常见做法）。许多用户已构建了与此类系统的集成方案，我们将基于Atlas为其提供更完善的基础支持\n* 查询钩子（拦截器） - 当前钩子仅支持[变更操作](https://entgo.io/docs/hooks/#hooks)，大量用户要求扩展支持读取操作\n* 多态边 - 关于多态支持的[议题已开放超一年](https://github.com/ent/ent/issues/1048)。随着Go 1.18泛型特性的落地，我们将重新讨论基于泛型的可能实现方案"
+      }
+    },
+    {
+      "segment_id": "6ffd1ebe",
+      "source_content": "### Wrapping up",
+      "source_content_hash": "a3785475b5dd9a66ae4506648eaafecb51ead6eb80351473642adc6a4aba69b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "89cf7bac",
+      "source_content": "Aside from the exciting announcement about the new migration engine, this release is huge\nin size and contents, featuring [199 commits from 42 unique contributors](https://github.com/ent/ent/releases/tag/v0.10.0). Ent is a community\neffort and keeps getting better every day thanks to all of you. So here's huge thanks and infinite\nkudos to everyone who took part in this release (alphabetically sorted):",
+      "source_content_hash": "36054bbb3e5d5554b4dc3d7ca52d5ea83927b6a39d8b497bc4c949ad25c1bdb2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "除了全新迁移引擎的激动消息外，本次发布在体量和内容上都堪称重磅，包含[42位贡献者提交的199个 commits](https://github.com/ent/ent/releases/tag/v0.10.0)。Ent作为社区协作的成果，正因为大家的参与而日益精进。在此向所有参与本次版本贡献的成员致以衷心感谢（按字母排序）："
+      }
+    },
+    {
+      "segment_id": "674abb31",
+      "source_content": "[attackordie](https://github.com/attackordie),\n[bbkane](https://github.com/bbkane),\n[bodokaiser](https://github.com/bodokaiser),\n[cjraa](https://github.com/cjraa),\n[dakimura](https://github.com/dakimura),\n[dependabot](https://github.com/dependabot),\n[EndlessIdea](https://github.com/EndlessIdea),\n[ernado](https://github.com/ernado),\n[evanlurvey](https://github.com/evanlurvey),\n[freb](https://github.com/freb),\n[genevieve](https://github.com/genevieve),\n[giautm](https://github.com/giautm),\n[grevych](https://github.com/grevych),\n[hedwigz](https://github.com/hedwigz),\n[heliumbrain](https://github.com/heliumbrain),\n[hilakashai](https://github.com/hilakashai),\n[HurSungYun](https://github.com/HurSungYun),\n[idc77](https://github.com/idc77),\n[isoppp](https://github.com/isoppp),\n[JeremyV2014](https://github.com/JeremyV2014),\n[Laconty](https://github.com/Laconty),\n[lenuse](https://github.com/lenuse),\n[masseelch](https://github.com/masseelch),\n[mattn](https://github.com/mattn),\n[mookjp](https://github.com/mookjp),\n[msal4](https://github.com/msal4),\n[naormatania](https://github.com/naormatania),\n[odeke-em](https://github.com/odeke-em),\n[peanut-cc](https://github.com/peanut-cc),\n[posener](https://github.com/posener),\n[RiskyFeryansyahP](https://github.com/RiskyFeryansyahP),\n[rotemtam](https://github.com/rotemtam),\n[s-takehana](https://github.com/s-takehana),\n[sadmansakib](https://github.com/sadmansakib),\n[sashamelentyev](https://github.com/sashamelentyev),\n[seiichi1101](https://github.com/seiichi1101),\n[sivchari](https://github.com/sivchari),\n[storyicon](https://github.com/storyicon),\n[tarrencev](https://github.com/tarrencev),\n[ThinkontrolSY](https://github.com/ThinkontrolSY),\n[timoha](https://github.com/timoha),\n[vecpeng](https://github.com/vecpeng),\n[yonidavidson](https://github.com/yonidavidson), and\n[zeevmoney](https://github.com/zeevmoney).",
+      "source_content_hash": "62c458cba8b5ac05bc3b01e9a37c2ff4a9297b8206abc0e83e815b02337fadbd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[attackordie](https://github.com/attackordie),\n[bbkane](https://github.com/bbkane),\n[bodokaiser](https://github.com/bodokaiser),\n[cjraa](https://github.com/cjraa),\n[dakimura](https://github.com/dakimura),\n[dependabot](https://github.com/dependabot),\n[EndlessIdea](https://github.com/EndlessIdea),\n[ernado](https://github.com/ernado),\n[evanlurvey](https://github.com/evanlurvey),\n[freb](https://github.com/freb),\n[genevieve](https://github.com/genevieve),\n[giautm](https://github.com/giautm),\n[grevych](https://github.com/grevych),\n[hedwigz](https://github.com/hedwigz),\n[heliumbrain](https://github.com/heliumbrain),\n[hilakashai](https://github.com/hilakashai),\n[HurSungYun](https://github.com/HurSungYun),\n[idc77](https://github.com/idc77),\n[isoppp](https://github.com/isoppp),\n[JeremyV2014](https://github.com/JeremyV2014),\n[Laconty](https://github.com/Laconty),\n[lenuse](https://github.com/lenuse),\n[masseelch](https://github.com/masseelch),\n[mattn](https://github.com/mattn),\n[mookjp](https://github.com/mookjp),\n[msal4](https://github.com/msal4),\n[naormatania](https://github.com/naormatania),\n[odeke-em](https://github.com/odeke-em),\n[peanut-cc](https://github.com/peanut-cc),\n[posener](https://github.com/posener),\n[RiskyFeryansyahP](https://github.com/RiskyFeryansyahP),\n[rotemtam](https://github.com/rotemtam),\n[s-takehana](https://github.com/s-takehana),\n[sadmansakib](https://github.com/sadmansakib),\n[sashamelentyev](https://github.com/sashamelentyev),\n[seiichi1101](https://github.com/seiichi1101),\n[sivchari](https://github.com/sivchari),\n[storyicon](https://github.com/storyicon),\n[tarrencev](https://github.com/tarrencev),\n[ThinkontrolSY](https://github.com/ThinkontrolSY),\n[timoha](https://github.com/timoha),\n[vecpeng](https://github.com/vecpeng),\n[yonidavidson](https://github.com/yonidavidson), 以及\n[zeevmoney](https://github.com/zeevmoney)。"
+      }
+    },
+    {
+      "segment_id": "9ede513a",
+      "source_content": "Best,\nAriel",
+      "source_content_hash": "aff6211dba100948be54317ce79ada00dddd8b64dd90b5ce5854c5543cc1e8b6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此致，\nAriel"
+      }
+    },
+    {
+      "segment_id": "78bd731b",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯与更新：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 在[Twitter](https://twitter.com/entgo_io)上关注我们\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 加入[Ent Discord服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2022-01-20-announcing-new-migration-engine.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.669306+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "71456426f7304f95286eec2eb1d947b824c42303224c46104f7cccdf14c23446"
+  }
+}

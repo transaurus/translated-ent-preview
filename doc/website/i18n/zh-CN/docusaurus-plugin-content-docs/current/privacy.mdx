@@ -1,0 +1,649 @@
+---
+id: privacy
+title: Privacy
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+`schema`中的`Policy`选项允许为数据库实体的查询和变更操作配置隐私策略。
+
+![gopher-privacy](https://entgo.io/images/assets/gopher-privacy-opacity.png)
+
+隐私层的主要优势在于，您只需在**schema中编写一次**隐私策略，即可**始终生效**。无论代码库中在何处执行查询和变更操作，都会经过隐私层的校验。
+
+本教程将首先介绍框架中使用的基本术语，接着讲解如何为项目配置策略功能，最后通过几个示例进行演示。
+
+## 基本术语
+
+### 策略
+
+`ent.Policy`接口包含两个方法：`EvalQuery`和`EvalMutation`。前者定义读取策略，后者定义写入策略。策略包含零个或多个隐私规则（见下文）。这些规则会按照在schema中声明的顺序依次执行。
+
+如果所有规则都执行完毕且未返回错误，则评估成功完成，执行的操作将获得对目标节点的访问权限。
+
+![privacy-rules](https://entgo.io/images/assets/permission_1.png)
+
+但如果某个规则返回错误或`privacy.Deny`决策（见下文），则执行的操作会返回错误并被取消。
+
+![privacy-deny](https://entgo.io/images/assets/permission_2.png)
+
+### 隐私规则
+
+每个策略（变更或查询）包含一个或多个隐私规则。这些规则的函数签名如下：
+
+```go
+// EvalQuery defines the a read-policy rule.
+func(Policy) EvalQuery(context.Context, Query) error
+
+// EvalMutation defines the a write-policy rule.
+func(Policy) EvalMutation(context.Context, Mutation) error
+```
+
+### 隐私决策
+
+有三种决策类型可帮助控制隐私规则的评估流程：
+
+- `privacy.Allow` - 若隐私规则返回此决策，则停止评估（跳过后续规则），执行的操作（查询或变更）获得对目标节点的访问权限。
+  
+- `privacy.Deny` - 若隐私规则返回此决策，则停止评估（跳过后续规则），执行的操作被取消。等效于返回任意错误。
+  
+- `privacy.Skip` - 跳过当前规则，继续执行下一条隐私规则。等效于返回`nil`错误。
+
+![privacy-allow](https://entgo.io/images/assets/permission_3.png)
+
+了解基本术语后，我们开始编写具体代码。
+
+## 配置
+
+要启用代码生成中的隐私功能，可通过以下两种方式之一开启`privacy`特性：
+
+<Tabs>
+<TabItem value="cli" label="CLI" default>
+
+If you are using the default go generate config, add `--feature privacy` option to the `ent/generate.go` file as follows:
+
+```go title="ent/generate.go"
+package ent
+
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature privacy ./schema
+```
+
+It is recommended to add the [`schema/snapshot`](features.md#auto-solve-merge-conflicts) feature-flag along with the
+`privacy` flag to enhance the development experience, for example:
+
+```go
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature privacy,schema/snapshot ./schema
+```
+
+</TabItem>
+<TabItem value="entc" label="Go">
+
+If you are using the configuration from the GraphQL documentation, add the feature flag as follows:
+
+```go
+// +build ignore
+
+package main
+
+
+import (
+    "log"
+
+    "entgo.io/ent/entc"
+    "entgo.io/ent/entc/gen"
+)
+
+func main() {
+	opts := []entc.Option{
+        entc.FeatureNames("privacy"),
+	}
+    if err := entc.Generate("./schema", &gen.Config{}, opts...); err != nil {
+		log.Fatalf("running ent codegen: %v", err)
+	}
+}
+```
+
+
+It is recommended to add the [`schema/snapshot`](features.md#auto-solve-merge-conflicts) feature-flag along with the
+`privacy` flag to enhance the development experience, for example:
+
+```diff
+opts := []entc.Option{
+-    entc.FeatureNames("privacy"),
++    entc.FeatureNames("privacy", "schema/snapshot"),
+}
+```
+
+</TabItem>
+</Tabs>
+
+#### 隐私策略注册
+
+:::重要
+请注意，与[schema钩子](hooks.md#hooks-registration)类似，如果在schema中使用**`Policy`**选项，则**必须**在主包中添加以下导入语句，因为schema包与生成的ent包之间可能存在循环引用：
+
+```go
+import _ "<project>/ent/runtime"
+```
+:::
+
+## 示例
+
+### 仅限管理员
+
+我们从一个简单示例开始：该应用允许所有用户读取数据，但仅允许具有管理员角色的用户执行变更操作。为此我们将创建两个附加包：
+
+- `rule` - 用于存放schema中的各类隐私规则
+- `viewer` - 用于获取/设置当前执行操作的用户/查看者。在本简单示例中，查看者可以是普通用户或管理员。
+
+运行代码生成（启用隐私功能标志后），我们添加了带有2条生成策略规则的`Policy`方法。
+
+```go title="examples/privacyadmin/ent/schema/user.go"
+package schema
+
+import (
+	"entgo.io/ent"
+	"entgo.io/ent/examples/privacyadmin/ent/privacy"
+)
+
+// User holds the schema definition for the User entity.
+type User struct {
+	ent.Schema
+}
+
+// Policy defines the privacy policy of the User.
+func (User) Policy() ent.Policy {
+	return privacy.Policy{
+		Mutation: privacy.MutationPolicy{
+            // Deny if not set otherwise. 
+			privacy.AlwaysDenyRule(),
+		},
+		Query: privacy.QueryPolicy{
+            // Allow any viewer to read anything.
+			privacy.AlwaysAllowRule(),
+		},
+	}
+}
+```
+
+我们定义了一个拒绝所有变更操作但接受所有查询操作的策略。但如前所述，在此示例中，我们仅允许具有管理员角色的查看者执行变更操作。为此创建两条隐私规则：
+
+```go title="examples/privacyadmin/rule/rule.go"
+package rule
+
+import (
+	"context"
+
+	"entgo.io/ent/examples/privacyadmin/ent/privacy"
+	"entgo.io/ent/examples/privacyadmin/viewer"
+)
+
+// DenyIfNoViewer is a rule that returns Deny decision if the viewer is
+// missing in the context.
+func DenyIfNoViewer() privacy.QueryMutationRule {
+	return privacy.ContextQueryMutationRule(func(ctx context.Context) error {
+		view := viewer.FromContext(ctx)
+		if view == nil {
+			return privacy.Denyf("viewer-context is missing")
+		}
+		// Skip to the next privacy rule (equivalent to returning nil).
+		return privacy.Skip
+	})
+}
+
+// AllowIfAdmin is a rule that returns Allow decision if the viewer is admin.
+func AllowIfAdmin() privacy.QueryMutationRule {
+	return privacy.ContextQueryMutationRule(func(ctx context.Context) error {
+		view := viewer.FromContext(ctx)
+		if view.Admin() {
+			return privacy.Allow
+		}
+		// Skip to the next privacy rule (equivalent to returning nil).
+		return privacy.Skip
+	})
+}
+```
+
+如您所见，第一条规则`DenyIfNoViewer`确保每个操作上下文中都存在查看者，否则拒绝操作。第二条规则`AllowIfAdmin`允许具有管理员角色的查看者执行任何操作。将这些规则添加到模式中并运行代码生成：
+
+```go title="examples/privacyadmin/ent/schema/user.go"
+// Policy defines the privacy policy of the User.
+func (User) Policy() ent.Policy {
+	return privacy.Policy{
+		Mutation: privacy.MutationPolicy{
+			rule.DenyIfNoViewer(),
+			rule.AllowIfAdmin(),
+			privacy.AlwaysDenyRule(),
+		},
+		Query: privacy.QueryPolicy{
+			privacy.AlwaysAllowRule(),
+		},
+	}
+}
+```
+
+由于我们首先定义`DenyIfNoViewer`，它会在其他所有规则之前执行，因此在`AllowIfAdmin`规则中安全访问`viewer.Viewer`对象。
+
+添加上述规则并运行代码生成后，隐私层逻辑将应用于`ent.Client`操作。
+
+```go title="examples/privacyadmin/example_test.go"
+func Do(ctx context.Context, client *ent.Client) error {
+	// Expect operation to fail, because viewer-context
+	// is missing (first mutation rule check).
+	if err := client.User.Create().Exec(ctx); !errors.Is(err, privacy.Deny) {
+		return fmt.Errorf("expect operation to fail, but got %w", err)
+	}
+	// Apply the same operation with "Admin" role.
+	admin := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.Admin})
+	if err := client.User.Create().Exec(admin); err != nil {
+		return fmt.Errorf("expect operation to pass, but got %w", err)
+	}
+	// Apply the same operation with "ViewOnly" role.
+	viewOnly := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.View})
+	if err := client.User.Create().Exec(viewOnly); !errors.Is(err, privacy.Deny) {
+		return fmt.Errorf("expect operation to fail, but got %w", err)
+	}
+	// Allow all viewers to query users.
+	for _, ctx := range []context.Context{ctx, viewOnly, admin} {
+		// Operation should pass for all viewers.
+		count := client.User.Query().CountX(ctx)
+		fmt.Println(count)
+	}
+	return nil
+}
+```
+
+### 决策上下文
+
+有时我们需要将特定隐私决策绑定到`context.Context`。这种情况下，可以使用`privacy.DecisionContext`函数创建附加隐私决策的新上下文。
+
+```go title="examples/privacyadmin/example_test.go"
+func Do(ctx context.Context, client *ent.Client) error {
+	// Bind a privacy decision to the context (bypass all other rules).
+	allow := privacy.DecisionContext(ctx, privacy.Allow)
+	if err := client.User.Create().Exec(allow); err != nil {
+		return fmt.Errorf("expect operation to pass, but got %w", err)
+	}
+    return nil
+}
+```
+
+完整示例参见[GitHub](https://github.com/ent/ent/tree/master/examples/privacyadmin)。
+
+### 多租户
+
+本示例将创建包含三种实体类型（`Tenant`、`User`和`Group`）的模式。辅助包`viewer`和`rule`（如前所述）也存在于本示例中。
+
+![tenant-example](https://entgo.io/images/assets/tenant_medium.png)
+
+让我们逐步构建这个应用。首先创建三个不同的模式（完整代码参见[此处](https://github.com/ent/ent/tree/master/examples/privacytenant/ent/schema)），由于需要在模式间共享逻辑，我们创建了[mixed-in schema](schema-mixin.md)并将其添加到所有其他模式中：
+
+```go title="examples/privacytenant/ent/schema/mixin.go"
+// BaseMixin for all schemas in the graph.
+type BaseMixin struct {
+	mixin.Schema
+}
+
+// Policy defines the privacy policy of the BaseMixin.
+func (BaseMixin) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: privacy.QueryPolicy{
+			// Deny any query operation in case
+			// there is no "viewer context".
+			rule.DenyIfNoViewer(),
+			// Allow admins to query any information.
+			rule.AllowIfAdmin(),
+		},
+		Mutation: privacy.MutationPolicy{
+			// Deny any mutation operation in case
+			// there is no "viewer context".
+			rule.DenyIfNoViewer(),
+		},
+	}
+}
+```
+
+```go title="examples/privacytenant/ent/schema/tenant.go"
+// Mixin of the Tenant schema.
+func (Tenant) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		BaseMixin{},
+	}
+}
+```
+
+如第一个示例所述，隐私规则`DenyIfNoViewer`会在`context.Context`不包含`viewer.Viewer`信息时拒绝操作。
+
+与前一示例类似，我们需要添加约束：仅管理员用户可以创建租户（否则拒绝）。通过复制上述的`AllowIfAdmin`规则并将其添加到`Tenant`模式的`Policy`中实现：
+
+```go title="examples/privacytenant/ent/schema/tenant.go"
+// Policy defines the privacy policy of the User.
+func (Tenant) Policy() ent.Policy {
+	return privacy.Policy{
+		Mutation: privacy.MutationPolicy{
+			// For Tenant type, we only allow admin users to mutate
+			// the tenant information and deny otherwise.
+			rule.AllowIfAdmin(),
+			privacy.AlwaysDenyRule(),
+		},
+	}
+}
+```
+
+此时预期以下代码能成功运行：
+
+```go title="examples/privacytenant/example_test.go"
+
+func Example_CreateTenants(ctx context.Context, client *ent.Client) {
+	// Expect operation to fail in case viewer-context is missing.
+	// First mutation privacy policy rule defined in BaseMixin.
+	if err := client.Tenant.Create().Exec(ctx); !errors.Is(err, privacy.Deny) {
+		log.Fatal("expect tenant creation to fail, but got:", err)
+	}
+
+	// Expect operation to fail in case the ent.User in the viewer-context
+	// is not an admin user. Privacy policy defined in the Tenant schema.
+	viewCtx := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.View})
+	if err := client.Tenant.Create().Exec(viewCtx); !errors.Is(err, privacy.Deny) {
+		log.Fatal("expect tenant creation to fail, but got:", err)
+	}
+
+	// Operations should pass successfully as the user in the viewer-context
+	// is an admin user. First mutation privacy policy in Tenant schema.
+	adminCtx := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.Admin})
+	hub, err := client.Tenant.Create().SetName("GitHub").Save(adminCtx)
+	if err != nil {
+		log.Fatal("expect tenant creation to pass, but got:", err)
+	}
+	fmt.Println(hub)
+
+	lab, err := client.Tenant.Create().SetName("GitLab").Save(adminCtx)
+	if err != nil {
+		log.Fatal("expect tenant creation to pass, but got:", err)
+	}
+	fmt.Println(lab)
+	
+	// Output:
+	// Tenant(id=1, name=GitHub)
+	// Tenant(id=2, name=GitLab)
+}
+```
+
+我们继续在数据模型中添加其余边关系（见上图）。由于`User`和`Group`都有指向`Tenant`模式的边，为此创建名为`TenantMixin`的共享[mixed-in schema](schema-mixin.md)：
+
+```go title="examples/privacytenant/ent/schema/mixin.go"
+// TenantMixin for embedding the tenant info in different schemas.
+type TenantMixin struct {
+	mixin.Schema
+}
+
+// Fields for all schemas that embed TenantMixin.
+func (TenantMixin) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int("tenant_id").
+		    Immutable(),
+	}
+}
+
+// Edges for all schemas that embed TenantMixin.
+func (TenantMixin) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.To("tenant", Tenant.Type).
+			Field("tenant_id").
+			Unique().
+			Required().
+			Immutable(),
+	}
+}
+```
+
+#### 过滤规则
+
+接下来可能需要强制实施规则：限制查看者只能查询与其所属租户相关联的组和用户。针对此类场景，Ent提供名为`Filter`的特殊隐私规则类型。该规则可根据查看者身份过滤实体。与之前讨论的规则不同，`Filter`规则除了返回隐私决策外，还能限制查看者的查询范围。
+
+:::info[注意]
+隐私过滤功能需要通过 [`entql`](features.md#entql-filtering) 特性标志启用（参见[上文配置说明](#configuration)）。
+:::
+
+```go title="examples/privacytenant/rule/rule.go"
+// FilterTenantRule is a query/mutation rule that filters out entities that are not in the tenant.
+func FilterTenantRule() privacy.QueryMutationRule {
+	// TenantsFilter is an interface to wrap WhereHasTenantWith()
+	// predicate that is used by both `Group` and `User` schemas.
+	type TenantsFilter interface {
+		WhereTenantID(entql.IntP)
+	}
+	return privacy.FilterFunc(func(ctx context.Context, f privacy.Filter) error {
+		view := viewer.FromContext(ctx)
+		tid, ok := view.Tenant()
+		if !ok {
+			return privacy.Denyf("missing tenant information in viewer")
+		}
+		tf, ok := f.(TenantsFilter)
+		if !ok {
+			return privacy.Denyf("unexpected filter type %T", f)
+		}
+		// Make sure that a tenant reads only entities that have an edge to it.
+		tf.WhereTenantID(entql.IntEQ(tid))
+		// Skip to the next privacy rule (equivalent to return nil).
+		return privacy.Skip
+	})
+}
+```
+
+创建完 `FilterTenantRule` 隐私规则后，我们将其添加到 `TenantMixin` 中，以确保**所有使用该混合模式**的架构都会继承此隐私规则。
+
+```go title="examples/privacytenant/ent/schema/mixin.go"
+// Policy for all schemas that embed TenantMixin.
+func (TenantMixin) Policy() ent.Policy {
+	return rule.FilterTenantRule()
+}
+```
+
+随后运行代码生成，预期隐私规则将在客户端操作中生效。
+
+```go title="examples/privacytenant/example_test.go"
+
+func Example_TenantView(ctx context.Context, client *ent.Client) {
+	// Operations should pass successfully as the user in the viewer-context
+	// is an admin user. First mutation privacy policy in Tenant schema.
+	adminCtx := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.Admin})
+	hub := client.Tenant.Create().SetName("GitHub").SaveX(adminCtx)
+	lab := client.Tenant.Create().SetName("GitLab").SaveX(adminCtx)
+
+	// Create 2 tenant-specific viewer contexts.
+	hubView := viewer.NewContext(ctx, viewer.UserViewer{T: hub})
+	labView := viewer.NewContext(ctx, viewer.UserViewer{T: lab})
+
+	// Create 2 users in each tenant.
+	hubUsers := client.User.CreateBulk(
+		client.User.Create().SetName("a8m").SetTenant(hub),
+		client.User.Create().SetName("nati").SetTenant(hub),
+	).SaveX(hubView)
+	fmt.Println(hubUsers)
+
+	labUsers := client.User.CreateBulk(
+		client.User.Create().SetName("foo").SetTenant(lab),
+		client.User.Create().SetName("bar").SetTenant(lab),
+	).SaveX(labView)
+	fmt.Println(labUsers)
+
+	// Query users should fail in case viewer-context is missing.
+	if _, err := client.User.Query().Count(ctx); !errors.Is(err, privacy.Deny) {
+		log.Fatal("expect user query to fail, but got:", err)
+	}
+
+	// Ensure each tenant can see only its users.
+	// First and only rule in TenantMixin.
+	fmt.Println(client.User.Query().Select(user.FieldName).StringsX(hubView))
+	fmt.Println(client.User.Query().CountX(hubView))
+	fmt.Println(client.User.Query().Select(user.FieldName).StringsX(labView))
+	fmt.Println(client.User.Query().CountX(labView))
+
+	// Expect admin users to see everything. First
+	// query privacy policy defined in BaseMixin.
+	fmt.Println(client.User.Query().CountX(adminCtx)) // 4
+
+	// Update operation with specific tenant-view should update
+	// only the tenant in the viewer-context.
+	client.User.Update().SetFoods([]string{"pizza"}).SaveX(hubView)
+	fmt.Println(client.User.Query().AllX(hubView))
+	fmt.Println(client.User.Query().AllX(labView))
+
+	// Delete operation with specific tenant-view should delete
+	// only the tenant in the viewer-context.
+	client.User.Delete().ExecX(labView)
+	fmt.Println(
+		client.User.Query().CountX(hubView), // 2
+		client.User.Query().CountX(labView), // 0
+	)
+
+	// DeleteOne with wrong viewer-context is nop.
+	client.User.DeleteOne(hubUsers[0]).ExecX(labView)
+	fmt.Println(client.User.Query().CountX(hubView)) // 2
+
+	// Unlike queries, admin users are not allowed to mutate tenant specific data.
+	if err := client.User.DeleteOne(hubUsers[0]).Exec(adminCtx); !errors.Is(err, privacy.Deny) {
+		log.Fatal("expect user deletion to fail, but got:", err)
+	}
+
+	// Output:
+	// [User(id=1, tenant_id=1, name=a8m, foods=[]) User(id=2, tenant_id=1, name=nati, foods=[])]
+	// [User(id=3, tenant_id=2, name=foo, foods=[]) User(id=4, tenant_id=2, name=bar, foods=[])]
+	// [a8m nati]
+	// 2
+	// [foo bar]
+	// 2
+	// 4
+	// [User(id=1, tenant_id=1, name=a8m, foods=[pizza]) User(id=2, tenant_id=1, name=nati, foods=[pizza])]
+	// [User(id=3, tenant_id=2, name=foo, foods=[]) User(id=4, tenant_id=2, name=bar, foods=[])]
+	// 2 0
+	// 2
+}
+```
+
+我们通过为 `Group` 架构添加名为 `DenyMismatchedTenants` 的隐私规则来完善示例。该规则会拒绝创建关联用户与群组不属于同一租户的情况。
+
+```go title="examples/privacytenant/rule/rule.go"
+// DenyMismatchedTenants is a rule that runs only on create operations and returns a deny
+// decision if the operation tries to add users to groups that are not in the same tenant.
+func DenyMismatchedTenants() privacy.MutationRule {
+	return privacy.GroupMutationRuleFunc(func(ctx context.Context, m *ent.GroupMutation) error {
+		tid, exists := m.TenantID()
+		if !exists {
+			return privacy.Denyf("missing tenant information in mutation")
+		}
+		users := m.UsersIDs()
+		// If there are no users in the mutation, skip this rule-check.
+		if len(users) == 0 {
+			return privacy.Skip
+		}
+		// Query the tenant-ids of all attached users. Expect all users to be connected to the same tenant
+		// as the group. Note, we use privacy.DecisionContext to skip the FilterTenantRule defined above.
+		ids, err := m.Client().User.Query().Where(user.IDIn(users...)).Select(user.FieldTenantID).Ints(privacy.DecisionContext(ctx, privacy.Allow))
+		if err != nil {
+			return privacy.Denyf("querying the tenant-ids %v", err)
+		}
+		if len(ids) != len(users) {
+			return privacy.Denyf("one the attached users is not connected to a tenant %v", err)
+		}
+		for _, id := range ids {
+			if id != tid {
+				return privacy.Denyf("mismatch tenant-ids for group/users %d != %d", tid, id)
+			}
+		}
+		// Skip to the next privacy rule (equivalent to return nil).
+		return privacy.Skip
+	})
+}
+```
+
+将此规则添加至 `Group` 架构后运行代码生成。
+
+```go title="examples/privacytenant/ent/schema/group.go"
+// Policy defines the privacy policy of the Group.
+func (Group) Policy() ent.Policy {
+	return privacy.Policy{
+		Mutation: privacy.MutationPolicy{
+			// Limit DenyMismatchedTenants only for
+			// Create operation
+			privacy.OnMutationOperation(
+				rule.DenyMismatchedTenants(),
+				ent.OpCreate,
+			),
+		},
+	}
+}
+```
+
+同样地，预期隐私规则将在客户端操作中生效。
+
+```go title="examples/privacytenant/example_test.go"
+func Example_DenyMismatchedTenants(ctx context.Context, client *ent.Client) {
+	// Operation should pass successfully as the user in the viewer-context
+	// is an admin user. First mutation privacy policy in Tenant schema.
+	adminCtx := viewer.NewContext(ctx, viewer.UserViewer{Role: viewer.Admin})
+	hub := client.Tenant.Create().SetName("GitHub").SaveX(adminCtx)
+	lab := client.Tenant.Create().SetName("GitLab").SaveX(adminCtx)
+
+	// Create 2 tenant-specific viewer contexts.
+	hubView := viewer.NewContext(ctx, viewer.UserViewer{T: hub})
+	labView := viewer.NewContext(ctx, viewer.UserViewer{T: lab})
+
+	// Create 2 users in each tenant.
+	hubUsers := client.User.CreateBulk(
+		client.User.Create().SetName("a8m").SetTenant(hub),
+		client.User.Create().SetName("nati").SetTenant(hub),
+	).SaveX(hubView)
+	fmt.Println(hubUsers)
+
+	labUsers := client.User.CreateBulk(
+		client.User.Create().SetName("foo").SetTenant(lab),
+		client.User.Create().SetName("bar").SetTenant(lab),
+	).SaveX(labView)
+	fmt.Println(labUsers)
+
+	// Expect operation to fail as the DenyMismatchedTenants rule makes
+	// sure the group and the users are connected to the same tenant.
+	if err := client.Group.Create().SetName("entgo.io").SetTenant(hub).AddUsers(labUsers...).Exec(hubView); !errors.Is(err, privacy.Deny) {
+		log.Fatal("expect operation to fail, since labUsers are not connected to the same tenant")
+	}
+	if err := client.Group.Create().SetName("entgo.io").SetTenant(hub).AddUsers(hubUsers[0], labUsers[0]).Exec(hubView); !errors.Is(err, privacy.Deny) {
+		log.Fatal("expect operation to fail, since labUsers[0] is not connected to the same tenant")
+	}
+	// Expect mutation to pass as all users belong to the same tenant as the group.
+	entgo := client.Group.Create().SetName("entgo.io").SetTenant(hub).AddUsers(hubUsers...).SaveX(hubView)
+	fmt.Println(entgo)
+
+	// Output:
+	// [User(id=1, tenant_id=1, name=a8m, foods=[]) User(id=2, tenant_id=1, name=nati, foods=[])]
+	// [User(id=3, tenant_id=2, name=foo, foods=[]) User(id=4, tenant_id=2, name=bar, foods=[])]
+	// Group(id=1, tenant_id=1, name=entgo.io)
+}
+```
+
+某些场景下，我们希望在不从数据库加载实体的前提下（不同于上述 `DenyMismatchedTenants` 示例），直接拒绝用户操作不属于其租户的实体。为此，我们依赖 `FilterTenantRule` 规则在变更操作中添加过滤条件，当 `tenant_id` 列与查看器上下文中存储的值不匹配时，操作将因 `NotFoundError` 而失败。
+
+```go title="examples/privacytenant/example_test.go"
+func Example_DenyMismatchedView(ctx context.Context, client *ent.Client) {
+	// Continuation of the code above.
+	
+	// Expect operation to fail, because the FilterTenantRule rule makes sure
+	// that tenants can update and delete only their groups.
+	if err := entgo.Update().SetName("fail.go").Exec(labView); !ent.IsNotFound(err) {
+		log.Fatal("expect operation to fail, since the group (entgo) is managed by a different tenant (hub), but got:", err)
+	}
+
+	// Operation should pass in case it was applied with the right viewer-context.
+	entgo = entgo.Update().SetName("entgo").SaveX(hubView)
+	fmt.Println(entgo)
+
+	// Output:
+	// Group(id=1, tenant_id=1, name=entgo)
+}
+```
+
+完整示例参见 [GitHub](https://github.com/ent/ent/tree/master/examples/privacytenant)。
+
+请注意本文档正在积极开发中。

@@ -1,0 +1,842 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/features.md",
+  "source_file_content_hash": "e228f37dd4922e224607ba5d3bb8204519a21e1f0a52fd3ec1b1912153121d21",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: feature-flags\ntitle: Feature Flags\nsidebar_label: Feature Flags\n---",
+      "source_content_hash": "9cc96d6c0970cecfc3c561ceb49bf818712396cc5afcb139cba4bd1034f349ac",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "The framework provides a collection of code-generation features that be added or removed using flags.",
+      "source_content_hash": "13819501b34d063caebb203e9ecef26f2a6278bed8e9559e79e132031d23698e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该框架提供了一系列可通过标志位添加或移除的代码生成特性。"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用方式"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "Feature flags can be provided either by CLI flags or as arguments to the `gen` package. ",
+      "source_content_hash": "70d73f28b4b05e096bdf21af38b74aeef447c7c7be35408f32a8d0f703535cb5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "功能标志可通过CLI参数或作为`gen`包的参数提供。"
+      }
+    },
+    {
+      "segment_id": "ba4f48ff",
+      "source_content": "#### CLI",
+      "source_content_hash": "50ed15208747a7d506614a84e71bf275de73f2954ba430b1ee2b12dfec2af677",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 命令行"
+      }
+    },
+    {
+      "segment_id": "4b395385",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent generate --feature privacy,entql ./ent/schema\n```",
+      "source_content_hash": "781a740c913d7f267c087472a55bfa9bf0fd527a2000bd49949fd56cdbc24b98",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4b395385"
+      }
+    },
+    {
+      "segment_id": "aee0e40d",
+      "source_content": "#### Go",
+      "source_content_hash": "d7c62f4df575ba4a35d6fb0ff602fd636515e1d0309ec9266b95f0d3a7c767b5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### Go代码"
+      }
+    },
+    {
+      "segment_id": "cbbebf8e",
+      "source_content": "```go\n// +build ignore\n\npackage main\n\nimport (\n\t\"log\"\n\t\"text/template\"\n\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n)\n\nfunc main() {\n\terr := entc.Generate(\"./schema\", &gen.Config{\n\t\tFeatures: []gen.Feature{\n\t\t\tgen.FeaturePrivacy,\n\t\t\tgen.FeatureEntQL,\n\t\t},\n\t\tTemplates: []*gen.Template{\n\t\t\tgen.MustParse(gen.NewTemplate(\"static\").\n\t\t\t\tFuncs(template.FuncMap{\"title\": strings.ToTitle}).\n\t\t\t\tParseFiles(\"template/static.tmpl\")),\n\t\t},\n\t})\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "27380b09ff04fb5df898b70da31a8ac53cf351b09a7c53be69b3383e7514f8c8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cbbebf8e"
+      }
+    },
+    {
+      "segment_id": "cb5b269c",
+      "source_content": "## List of Features",
+      "source_content_hash": "3743b6c590879f3f1c15c836fe460e66769881a24935c333d500790ba73af4cf",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 功能列表"
+      }
+    },
+    {
+      "segment_id": "60410af6",
+      "source_content": "### Auto-Solve Merge Conflicts",
+      "source_content_hash": "d99e4984b01e2f443a668733c6c363106358d3863f401988c04e4be875de171f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 自动解决合并冲突"
+      }
+    },
+    {
+      "segment_id": "b9aaa519",
+      "source_content": "The `schema/snapshot` option tells `entc` (ent codegen) to store a snapshot of the latest schema in an internal package,\nand use it to automatically solve merge conflicts when user's schema can't be built.",
+      "source_content_hash": "f466c1bee4d7edf6a05a1e3db07d343810b8e747d0e9d785c6a998ac71be2a28",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`schema/snapshot`选项指示ent代码生成器(entc)将最新模式的快照存储到内部包中，并在用户模式无法构建时自动解决合并冲突。"
+      }
+    },
+    {
+      "segment_id": "23dfb152",
+      "source_content": "This option can be added to a project using the `--feature schema/snapshot` flag, but please see\n[ent/ent/issues/852](https://github.com/ent/ent/issues/852) to get more context about it.",
+      "source_content_hash": "094f5c2aa97f5f9692613c33d053ac53b64db9136d4b7eb39ce3fb1e5bd6ab47",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过`--feature schema/snapshot`标志启用此功能，详情请参阅[ent/ent/issues/852](https://github.com/ent/ent/issues/852)。"
+      }
+    },
+    {
+      "segment_id": "c431704b",
+      "source_content": "### Privacy Layer",
+      "source_content_hash": "32294998dca1c8d4bf6fb8866a92037ec9099c4b8437e360bc7858dd8845f1f0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 隐私层"
+      }
+    },
+    {
+      "segment_id": "79ad944d",
+      "source_content": "The privacy layer allows configuring privacy policy for queries and mutations of entities in the database.",
+      "source_content_hash": "5bad8a81556d162a6a5cc4547a64fab245bc3a9c47d03874cfaa9ace5c385cb2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "隐私层支持为数据库实体的查询和变更配置隐私策略。"
+      }
+    },
+    {
+      "segment_id": "531437ca",
+      "source_content": "This option can be added to a project using the `--feature privacy` flag, and you can learn more about in the\n[privacy](privacy.mdx) documentation.",
+      "source_content_hash": "bb4b1c1d1e4433ecde3250b0d6182ee5f18db4d10844d026d730c97f04f3be7d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`--feature privacy`标志启用，详见[隐私文档](privacy.mdx)。"
+      }
+    },
+    {
+      "segment_id": "3ef18741",
+      "source_content": "### EntQL Filtering",
+      "source_content_hash": "7045bf0997c30fe22270348fcc3820bedbc6a1146ac3582da622cfda0fb15309",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### EntQL过滤"
+      }
+    },
+    {
+      "segment_id": "e7772088",
+      "source_content": "The `entql` option provides a generic and dynamic filtering capability at runtime for the different query builders.",
+      "source_content_hash": "87f3fa6010eaf61cdd5ff8532e12c5d4e9cab33d6d85dae5f40fe2e3a53eff61",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entql`选项为不同查询构建器提供运行时通用动态过滤能力。"
+      }
+    },
+    {
+      "segment_id": "eab056be",
+      "source_content": "This option can be added to a project using the `--feature entql` flag, and you can learn more about in the\n[privacy](privacy.mdx#multi-tenancy) documentation.",
+      "source_content_hash": "a304b772beedf53d60f01c1b02966f825e3d89d85c70a4f0134c8a50f7d32e3a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`--feature entql`标志启用，详见[隐私文档](privacy.mdx#multi-tenancy)。"
+      }
+    },
+    {
+      "segment_id": "b051b70c",
+      "source_content": "### Named Edges",
+      "source_content_hash": "1be8fd99ddbf614d1271b30b476806d158b1a4942084748ec3ce73955d00f23c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 命名边"
+      }
+    },
+    {
+      "segment_id": "d0dd855b",
+      "source_content": "The `namedges` option provides an API for preloading edges with custom names.",
+      "source_content_hash": "256a3ca53051a4e3086b91a4f57d73b5fabfa5b22dc03b8f65e39e9bcd6a0c2c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`namedges`选项提供通过自定义名称预加载边的API。"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "This option can be added to a project using the `--feature namedges` flag, and you can learn more about in the\n[Eager Loading](eager-load.mdx) documentation.",
+      "source_content_hash": "15226ce6809e6ac376ca6b8b8b8d3d39b05df80dbe0225c626cf5714bda1b89c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`--feature namedges`标志启用，详见[预加载文档](eager-load.mdx)。"
+      }
+    },
+    {
+      "segment_id": "66819c78",
+      "source_content": "### Bidirectional Edge Refs",
+      "source_content_hash": "1a34b2c5d393e8c029d384bb3a62637b71054dde5bf86612807c871f954b78db",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 双向边引用"
+      }
+    },
+    {
+      "segment_id": "fbc2db85",
+      "source_content": "The `bidiedges` option guides Ent to set two-way references when eager-loading (O2M/O2O) edges.",
+      "source_content_hash": "cc92675293cd41a3d951e2812f781abf7872f2681cf08c19fd97a524c60682ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`bidiedges`选项指导Ent在预加载(O2M/O2O)边时设置双向引用。"
+      }
+    },
+    {
+      "segment_id": "8126f763",
+      "source_content": "This option can be added to a project using the `--feature bidiedges` flag.",
+      "source_content_hash": "8319aed3057d9806f3380dc0b1c7619cdc09eea2af537f8e511be2284873f56b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`--feature bidiedges`标志启用。"
+      }
+    },
+    {
+      "segment_id": "09f6e084",
+      "source_content": ":::note\nUsers that use the standard encoding/json.MarshalJSON should detach the circular references before calling `json.Marshal`.\n:::",
+      "source_content_hash": "8a83e0d0e68e4eb0068efe0030078de575bd886c5a9527307266f4e3535e7873",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n使用标准encoding/json.MarshalJSON的用户应在调用`json.Marshal`前解除循环引用。\n:::"
+      }
+    },
+    {
+      "segment_id": "39db08de",
+      "source_content": "### Schema Config",
+      "source_content_hash": "40e04950ebea82605f8810e149fc88af173191100d33c483e76d256a4fe9edbe",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 模式配置"
+      }
+    },
+    {
+      "segment_id": "785750ac",
+      "source_content": "The `sql/schemaconfig` option lets you pass alternate SQL database names to models. This is useful when your models don't all live under one database and are spread out across different schemas.",
+      "source_content_hash": "0364bc0e4ad630e92f4d6f767d4b3bf3d22521133101b51a30456cab25799021",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`sql/schemaconfig`选项允许为模型传递备用SQL数据库名称，适用于模型分散在不同数据库的场景。"
+      }
+    },
+    {
+      "segment_id": "82e90254",
+      "source_content": "This option can be added to a project using the `--feature sql/schemaconfig` flag. Once you generate the code, you can now use a new option as such: ",
+      "source_content_hash": "ac9563bd8b57fa7ac4caf51ca907b4e7505d220b17c43c1799c3905db4dd4fa9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`--feature sql/schemaconfig`标志启用后，可使用新选项如下："
+      }
+    },
+    {
+      "segment_id": "890e01bc",
+      "source_content": "```go\nc, err := ent.Open(dialect, conn, ent.AlternateSchema(ent.SchemaConfig{\n\tUser: \"usersdb\",\n\tCar: \"carsdb\",\n}))\nc.User.Query().All(ctx) // SELECT * FROM `usersdb`.`users`\nc.Car.Query().All(ctx) \t// SELECT * FROM `carsdb`.`cars`\n```",
+      "source_content_hash": "29d473c79b4527cc8b26af9b81b66d0a6440bcf97720dfa92bce2d3fc9bda0cf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_890e01bc"
+      }
+    },
+    {
+      "segment_id": "1f4b3b94",
+      "source_content": "### Row-level Locks",
+      "source_content_hash": "7259b984f95f26c47833477339c8027715bc647ec6a823d8210ac8b07a3f565d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 行级锁"
+      }
+    },
+    {
+      "segment_id": "a81544fd",
+      "source_content": "The `sql/lock` option lets configure row-level locking using the SQL `SELECT ... FOR {UPDATE | SHARE}` syntax.",
+      "source_content_hash": "4680cf356bcd556b1b6b7ddfa2dd49af8a63ee9ad8482113dde3ce289d485a15",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`sql/lock`选项支持使用SQL`SELECT ... FOR {UPDATE | SHARE}`语法配置行级锁定。"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "This option can be added to a project using the `--feature sql/lock` flag.",
+      "source_content_hash": "d89db0e8f355ff40d2be46b5b09f6e0ee7dc112e56b2f1341329eb351b24e0e4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`--feature sql/lock`标志启用。"
+      }
+    },
+    {
+      "segment_id": "99070903",
+      "source_content": "```go\ntx, err := client.Tx(ctx)\nif err != nil {\n\tlog.Fatal(err)\n}\n\ntx.Pet.Query().\n\tWhere(pet.Name(name)).\n\tForUpdate().\n\tOnly(ctx)\n\ntx.Pet.Query().\n\tWhere(pet.ID(id)).\n\tForShare(\n\t\tsql.WithLockTables(pet.Table),\n\t\tsql.WithLockAction(sql.NoWait),\n\t).\n\tOnly(ctx)\n```",
+      "source_content_hash": "ea0b30e8b96069cca0f41a30f44abcc6c026f56dab14d35fed16f68bd43be0b2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_99070903"
+      }
+    },
+    {
+      "segment_id": "8f1c1cd6",
+      "source_content": "### Custom SQL Modifiers",
+      "source_content_hash": "f19f29d5190dae2caba9dc17cbf10b58115289d88582c0c74423b624e9d231d9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 自定义SQL修饰器"
+      }
+    },
+    {
+      "segment_id": "383fbdd2",
+      "source_content": "The `sql/modifier` option lets add custom SQL modifiers to the builders and mutate the statements before they are executed.",
+      "source_content_hash": "04b02a4d0fd870862daf09edafad2b73b142dd43cbf7db64d38089cde154a677",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`sql/modifier`选项允许向构建器添加自定义SQL修饰器，在执行前修改语句。"
+      }
+    },
+    {
+      "segment_id": "14bc6b75",
+      "source_content": "This option can be added to a project using the `--feature sql/modifier` flag.",
+      "source_content_hash": "a6c131382ad961c99f5c086c232e2dcb7f6cf7f1ce32dfc1011b166996575cf9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`--feature sql/modifier`标志启用。"
+      }
+    },
+    {
+      "segment_id": "5dba1427",
+      "source_content": "#### Modify Example 1",
+      "source_content_hash": "0efc259d7abfb96d9601a06edcb8eee57a424ad687f66b43a3b5683ef54ecf86",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 修改示例1"
+      }
+    },
+    {
+      "segment_id": "e908327f",
+      "source_content": "```go\nclient.Pet.\n\tQuery().\n\tModify(func(s *sql.Selector) {\n\t\ts.Select(\"SUM(LENGTH(name))\")\n\t}).\n\tIntX(ctx)\n```",
+      "source_content_hash": "818fba62ee8982cad2e28f4416ee427164f51d222e99fcaaebf56f988e998188",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e908327f"
+      }
+    },
+    {
+      "segment_id": "ad3e22c6",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成如下SQL查询："
+      }
+    },
+    {
+      "segment_id": "cf5bbc3b",
+      "source_content": "```sql\nSELECT SUM(LENGTH(name)) FROM `pet`\n```",
+      "source_content_hash": "07e0abe6a8c316002d2c7135fa023715ed70bcda6fef1288575c048cbde4059f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cf5bbc3b"
+      }
+    },
+    {
+      "segment_id": "b50cf7ff",
+      "source_content": "#### Select and Scan Dynamic Values",
+      "source_content_hash": "5d2a04531c4d6364ed3f30190dc6963bf8b74598e73a30c1593ca708159284c4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 选择并扫描动态值"
+      }
+    },
+    {
+      "segment_id": "1496ef51",
+      "source_content": "If you work with SQL modifiers and need to scan dynamic values not present in your Ent schema definition, such as\naggregation or custom ordering, you can apply `AppendSelect`/`AppendSelectAs` to the `sql.Selector`. You can later\naccess their values using the `Value` method defined on each entity:",
+      "source_content_hash": "984c230625bc983c64c14b58188f09cf832343d8faaddcee861445cc69ee83d5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若需处理SQL修饰符并扫描Ent模式定义中未包含的动态值（如聚合或自定义排序），可对`sql.Selector`应用`AppendSelect`/`AppendSelectAs`方法，随后通过实体上的`Value`方法访问这些值："
+      }
+    },
+    {
+      "segment_id": "0029045f",
+      "source_content": "```go {6,11}\nconst as = \"name_length\"\n\n// Query the entity with the dynamic value.\np := client.Pet.Query().\n\tModify(func(s *sql.Selector) {\n\t\ts.AppendSelectAs(\"LENGTH(name)\", as)\n\t}).\n\tFirstX(ctx)\n\n// Read the value from the entity.\nn, err := p.Value(as)\nif err != nil {\n    log.Fatal(err)\n}\nfmt.Println(\"Name length: %d == %d\", n, len(p.Name))\n```",
+      "source_content_hash": "7b7aeaa282e99815deef388ccfbcdfe5513914dea4f61ba3ad63844e6603c466",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0029045f"
+      }
+    },
+    {
+      "segment_id": "2b5df263",
+      "source_content": "#### Modify Example 2",
+      "source_content_hash": "04e062877ee1ab3f12ed8cf870a31840718314ca9f6f905590088b5dba7d8cc1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 修改示例2"
+      }
+    },
+    {
+      "segment_id": "b26685f5",
+      "source_content": "```go\nvar p1 []struct {\n\tent.Pet\n\tNameLength int `sql:\"length\"`\n}\n\nclient.Pet.Query().\n\tOrder(ent.Asc(pet.FieldID)).\n\tModify(func(s *sql.Selector) {\n\t\ts.AppendSelect(\"LENGTH(name)\")\n\t}).\n\tScanX(ctx, &p1)\n```",
+      "source_content_hash": "11594222017b8a9732fd5554f4b0edc421d59bf78ef095c80de3a69b471966f0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b26685f5"
+      }
+    },
+    {
+      "segment_id": "c5e0bb3d",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成如下SQL查询："
+      }
+    },
+    {
+      "segment_id": "03af811a",
+      "source_content": "```sql\nSELECT `pet`.*, LENGTH(name) FROM `pet` ORDER BY `pet`.`id` ASC\n```",
+      "source_content_hash": "b01229883f4c0539a3d13fe38bfadfc749d17765ebbf50b69d73efdc3244d791",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_03af811a"
+      }
+    },
+    {
+      "segment_id": "6ac93c98",
+      "source_content": "#### Modify Example 3",
+      "source_content_hash": "1d40a048f8fac0b39d4d1350e1154e32330c61aa6d75a583517bea6bc805e95a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 修改示例3"
+      }
+    },
+    {
+      "segment_id": "117486ca",
+      "source_content": "```go\nvar v []struct {\n\tCount     int       `json:\"count\"`\n\tPrice     int       `json:\"price\"`\n\tCreatedAt time.Time `json:\"created_at\"`\n}\n\nclient.User.\n\tQuery().\n\tWhere(\n        user.CreatedAtGT(x),\n        user.CreatedAtLT(y),\n\t).\n\tModify(func(s *sql.Selector) {\n\t\ts.Select(\n\t\t\tsql.As(sql.Count(\"*\"), \"count\"),\n\t\t\tsql.As(sql.Sum(\"price\"), \"price\"),\n\t\t\tsql.As(\"DATE(created_at)\", \"created_at\"),\n\t\t).\n\t\tGroupBy(\"DATE(created_at)\").\n\t\tOrderBy(sql.Desc(\"DATE(created_at)\"))\n\t}).\n\tScanX(ctx, &v)\n```",
+      "source_content_hash": "015155672b52c49dffefa18766863bd2a9c6ffca993392bac5cd932373e5c9f9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_117486ca"
+      }
+    },
+    {
+      "segment_id": "85821ad3",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成如下SQL查询："
+      }
+    },
+    {
+      "segment_id": "7b2a4831",
+      "source_content": "```sql\nSELECT\n    COUNT(*) AS `count`,\n    SUM(`price`) AS `price`,\n    DATE(created_at) AS `created_at`\nFROM\n    `users`\nWHERE\n    `created_at` > x AND `created_at` < y\nGROUP BY\n    DATE(created_at)\nORDER BY\n    DATE(created_at) DESC\n```",
+      "source_content_hash": "06b6746f2581a719a26258f427ee9e31ddddbab584e6b9223c846233f31f1dc8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7b2a4831"
+      }
+    },
+    {
+      "segment_id": "936707a1",
+      "source_content": "#### Modify Example 4",
+      "source_content_hash": "df62cb6f5f8c65b1bfaada0a0cad8923914986b6e419f802166efa74b855dd3f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 修改示例4"
+      }
+    },
+    {
+      "segment_id": "fa8763ec",
+      "source_content": "```go\nvar gs []struct {\n\tent.Group\n\tUsersCount int `sql:\"users_count\"`\n}\n\nclient.Group.Query().\n\tOrder(ent.Asc(group.FieldID)).\n\tModify(func(s *sql.Selector) {\n\t\tt := sql.Table(group.UsersTable)\n\t\ts.LeftJoin(t).\n\t\t\tOn(\n\t\t\t\ts.C(group.FieldID),\n\t\t\t\tt.C(group.UsersPrimaryKey[1]),\n\t\t\t).\n\t\t\t// Append the \"users_count\" column to the selected columns.\n\t\t\tAppendSelect(\n\t\t\t\tsql.As(sql.Count(t.C(group.UsersPrimaryKey[1])), \"users_count\"),\n\t\t\t).\n\t\t\tGroupBy(s.C(group.FieldID))\n\t}).\n\tScanX(ctx, &gs)\n```",
+      "source_content_hash": "75fc0885006479d7cba26c726a4f275574eb9e346db0bc8649deb9018ef932f8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fa8763ec"
+      }
+    },
+    {
+      "segment_id": "f4b938fe",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成如下SQL查询："
+      }
+    },
+    {
+      "segment_id": "229a037e",
+      "source_content": "```sql\nSELECT\n    `groups`.*,\n    COUNT(`t1`.`group_id`) AS `users_count`\nFROM\n    `groups` LEFT JOIN `user_groups` AS `t1`\nON\n    `groups`.`id` = `t1`.`group_id`\nGROUP BY\n    `groups`.`id`\nORDER BY\n    `groups`.`id` ASC\n```",
+      "source_content_hash": "97d1d34d6a8bc6daa77553ab30354165253c63f4d6dde468f351c4a9a3de55a1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229a037e"
+      }
+    },
+    {
+      "segment_id": "fbbade7d",
+      "source_content": "#### Modify Example 5",
+      "source_content_hash": "507113541d550ca0a28c1a538f7a158e6b81d36bd5a9d196b07d2380b0161392",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 修改示例5"
+      }
+    },
+    {
+      "segment_id": "bd678245",
+      "source_content": "```go\nclient.User.Update().\n\tModify(func(s *sql.UpdateBuilder) {\n\t\ts.Set(user.FieldName, sql.Expr(fmt.Sprintf(\"UPPER(%s)\", user.FieldName)))\n\t}).\n\tExecX(ctx)\n```",
+      "source_content_hash": "8251153f224d2be62689248acedad83c3375d380d3124b041ce2d315b55433b8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bd678245"
+      }
+    },
+    {
+      "segment_id": "c9e08343",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成如下SQL查询："
+      }
+    },
+    {
+      "segment_id": "be1986a6",
+      "source_content": "```sql\nUPDATE `users` SET `name` = UPPER(`name`)\n```",
+      "source_content_hash": "6a126dd1c42966ca4a5481cee648617636154f59e2c1a6bce5d6f8ee105e33ce",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be1986a6"
+      }
+    },
+    {
+      "segment_id": "ca32a808",
+      "source_content": "#### Modify Example 6",
+      "source_content_hash": "33d249c2cb6bd7e29bdc73d6d8a91495ad3cab63d4de3bb172fa6b73415297eb",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 修改示例6"
+      }
+    },
+    {
+      "segment_id": "7a5ad31f",
+      "source_content": "```go\nclient.User.Update().\n\tModify(func(u *sql.UpdateBuilder) {\n\t\tu.Set(user.FieldID, sql.ExprFunc(func(b *sql.Builder) {\n\t\t\tb.Ident(user.FieldID).WriteOp(sql.OpAdd).Arg(1)\n\t\t}))\n\t\tu.OrderBy(sql.Desc(user.FieldID))\n\t}).\n\tExecX(ctx)\n```",
+      "source_content_hash": "83126a78bff18433d535eacd6559456c85a2ff1c428fd6bd9201edfc1bb90f5c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7a5ad31f"
+      }
+    },
+    {
+      "segment_id": "27f3a471",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成如下SQL查询："
+      }
+    },
+    {
+      "segment_id": "20bc07ce",
+      "source_content": "```sql\nUPDATE `users` SET `id` = `id` + 1 ORDER BY `id` DESC\n```",
+      "source_content_hash": "cc0836409271f74135e7a86a455e6d8cebe372fb40fc3b0e43be34aa35f54bee",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_20bc07ce"
+      }
+    },
+    {
+      "segment_id": "89da6bb6",
+      "source_content": "#### Modify Example 7",
+      "source_content_hash": "6ad12f1d4c5231a406d85572f347f2129ff8bdc5b0f0aeb6a27f75c204d359dc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 修改示例7"
+      }
+    },
+    {
+      "segment_id": "e8bf4d18",
+      "source_content": "Append elements to the `values` array in a JSON column:",
+      "source_content_hash": "03810f5424d61122ade9bd7d9ed30855383b68e0ad8aeef0cd9d507136bbc2e1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "向JSON列中的`values`数组追加元素："
+      }
+    },
+    {
+      "segment_id": "010b0953",
+      "source_content": "```go\nclient.User.Update().\n\tModify(func(u *sql.UpdateBuilder) {\n        sqljson.Append(u, user.FieldTags, []string{\"tag1\", \"tag2\"}, sqljson.Path(\"values\"))\n\t}).\n\tExecX(ctx)\n```",
+      "source_content_hash": "01d73442c3275148eea79225c302d75c14de53c3bd382fb5be8dee6e7e1cf9a2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_010b0953"
+      }
+    },
+    {
+      "segment_id": "a6efb0d1",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成如下SQL查询："
+      }
+    },
+    {
+      "segment_id": "ac3ddfe5",
+      "source_content": "```sql\nUPDATE `users` SET `tags` = CASE\n    WHEN (JSON_TYPE(JSON_EXTRACT(`tags`, '$.values')) IS NULL OR JSON_TYPE(JSON_EXTRACT(`tags`, '$.values')) = 'NULL')\n    THEN JSON_SET(`tags`, '$.values', JSON_ARRAY(?, ?))\n    ELSE JSON_ARRAY_APPEND(`tags`, '$.values', ?, '$.values', ?) END\n    WHERE `id` = ?\n```",
+      "source_content_hash": "db1536d2617a046725b58de70fbbaea8426a7731d78d2a2c8ef7a6a1e150ca47",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ac3ddfe5"
+      }
+    },
+    {
+      "segment_id": "fb020fb7",
+      "source_content": "### SQL Raw API",
+      "source_content_hash": "5570c843fce8423f4a01869ba50afcf75d6ffdfbcf93fcac350933fcfb773dd3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### SQL原生API"
+      }
+    },
+    {
+      "segment_id": "dbd18971",
+      "source_content": "The `sql/execquery` option allows executing statements using the `ExecContext`/`QueryContext` methods of the underlying\ndriver. For full documentation, see: [DB.ExecContext](https://pkg.go.dev/database/sql#DB.ExecContext), and\n[DB.QueryContext](https://pkg.go.dev/database/sql#DB.QueryContext).",
+      "source_content_hash": "d7f668561d8e2f9f4c3f10137a86a9279846fe5fa8d4b23bd2c4195e3de0b798",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`sql/execquery`选项支持通过底层驱动的`ExecContext`/`QueryContext`方法执行语句。完整文档参见：[DB.ExecContext](https://pkg.go.dev/database/sql#DB.ExecContext)与[DB.QueryContext](https://pkg.go.dev/database/sql#DB.QueryContext)。"
+      }
+    },
+    {
+      "segment_id": "606e259f",
+      "source_content": "```go\n// From ent.Client.\nif _, err := client.ExecContext(ctx, \"TRUNCATE t1\"); err != nil {\n\treturn err\n}\n\n// From ent.Tx.\ntx, err := client.Tx(ctx)\nif err != nil {\n\treturn err\n}\nif err := tx.User.Create().Exec(ctx); err != nil {\n\treturn err\n}\nif _, err := tx.ExecContext(\"SAVEPOINT user_created\"); err != nil {\n\treturn err\n}\n// ...\n```",
+      "source_content_hash": "09013a0de35ed60b0ab8362cbe02ae2777c746e41e0c0d6795450664a859d7db",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_606e259f"
+      }
+    },
+    {
+      "segment_id": "324aaccc",
+      "source_content": ":::warning[Note]\nStatements executed using `ExecContext`/`QueryContext` do not go through Ent, and may skip fundamental layers in your\napplication such as hooks, privacy (authorization), and validators.\n:::",
+      "source_content_hash": "55901f7dd171e756f9fa1d3ec8cd4138fb349df86cdcd5a777e5abdbe17c38f6",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::warning[注意]\n通过`ExecContext`/`QueryContext`执行的语句不会经过Ent处理，可能绕过应用程序的基础层（如钩子、隐私鉴权、验证器等）。\n:::"
+      }
+    },
+    {
+      "segment_id": "c713fcdf",
+      "source_content": "### Upsert",
+      "source_content_hash": "53ea181f9cdc4608ca7ca10c309e1354a4e7d140026b6e52dac3212076fb6777",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 原子更新插入"
+      }
+    },
+    {
+      "segment_id": "ebea2db8",
+      "source_content": "The `sql/upsert` option lets configure upsert and bulk-upsert logic using the SQL `ON CONFLICT` / `ON DUPLICATE KEY`\nsyntax. For full documentation, go to the [Upsert API](crud.mdx#upsert-one).",
+      "source_content_hash": "adb58600564b838e4cb4ca49937bf9b315723f3deb22f2ab0e043b55729ee28e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`sql/upsert`选项支持使用SQL的`ON CONFLICT`/`ON DUPLICATE KEY`语法配置更新插入与批量更新插入逻辑。完整文档参见：[更新插入API](crud.mdx#upsert-one)。"
+      }
+    },
+    {
+      "segment_id": "475959f2",
+      "source_content": "This option can be added to a project using the `--feature sql/upsert` flag.",
+      "source_content_hash": "e9d833bc36b7a7754b212e8dda19baf624307b9dd71d803820f7caf72145216b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过`--feature sql/upsert`标志为项目启用此功能。"
+      }
+    },
+    {
+      "segment_id": "99727f95",
+      "source_content": "```go\n// Use the new values that were set on create.\nid, err := client.User.\n\tCreate().\n\tSetAge(30).\n\tSetName(\"Ariel\").\n\tOnConflict().\n\tUpdateNewValues().\n\tID(ctx)\n\n// In PostgreSQL, the conflict target is required.\nerr := client.User.\n\tCreate().\n\tSetAge(30).\n\tSetName(\"Ariel\").\n\tOnConflictColumns(user.FieldName).\n\tUpdateNewValues().\n\tExec(ctx)\n\n// Bulk upsert is also supported.\nclient.User.\n\tCreateBulk(builders...).\n\tOnConflict(\n\t\tsql.ConflictWhere(...),\n\t\tsql.UpdateWhere(...),\n\t).\n\tUpdateNewValues().\n\tExec(ctx)\n\n// INSERT INTO \"users\" (...) VALUES ... ON CONFLICT WHERE ... DO UPDATE SET ... WHERE ...\n```",
+      "source_content_hash": "865c2cffe8ec5a580143b0c9da66782a2a42def5acc1304e80947e825e645154",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_99727f95"
+      }
+    },
+    {
+      "segment_id": "53edfb3e",
+      "source_content": "### Globally Unique ID",
+      "source_content_hash": "4f423668ec5f9856d1a12d126303154a82f88340287aa27460881a0c65646b16",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 全局唯一ID"
+      }
+    },
+    {
+      "segment_id": "0273ea32",
+      "source_content": "By default, SQL primary-keys start from 1 for each table; which means that multiple entities of different types\ncan share the same ID. Unlike AWS Neptune, where node IDs are UUIDs.",
+      "source_content_hash": "a141d27983289172fb8e94ed3ffba3df05297dde75e16112df77543388fa379d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，SQL主键从每张表的1开始递增，这意味着不同类型的实体可能共享相同ID。这与AWS Neptune（节点ID采用UUID）不同。"
+      }
+    },
+    {
+      "segment_id": "250c20ca",
+      "source_content": "This does not work well if you work with [GraphQL](https://graphql.org/learn/schema/#scalar-types), which requires \nthe object ID to be unique.",
+      "source_content_hash": "dc4880087edb118242ed6878942bbc36f25958b167937d008831ffd7e51e4c16",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此机制不适用于需要对象ID全局唯一的[GraphQL](https://graphql.org/learn/schema/#scalar-types)场景。"
+      }
+    },
+    {
+      "segment_id": "2fc2d2cf",
+      "source_content": "To enable the Universal-IDs support for your project, simply use the `--feature sql/globalid` flag.",
+      "source_content_hash": "48233bfb8ec3548e001aa83b920c6256d472bb9832c807440fcce6171f4b9b34",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "启用全局ID支持只需使用`--feature sql/globalid`标志。"
+      }
+    },
+    {
+      "segment_id": "733c9dfa",
+      "source_content": ":::warning[Note]\nIf you have used the `migrate.WithGlobalUniqueID(true)` migration option in the past, please read \n[this guide](globalid-migrate) before you switch your project to use the new globalid feature.\n:::",
+      "source_content_hash": "cd3c3055ba34232a88a58c97f462cc1341887e7d456bfc59da1eb5fd69770c8a",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::warning[注意]\n若曾使用过`migrate.WithGlobalUniqueID(true)`迁移选项，在切换至新globalid功能前请阅读[本指南](globalid-migrate)。\n:::"
+      }
+    },
+    {
+      "segment_id": "ac91a2d7",
+      "source_content": "**How does it work?** `ent` migration allocates a 1<<32 range for the IDs of each entity (table),\nand store this information alongside your generated code (`internal/globalid.go`). For example, type `A` will have the \nrange of `[1,4294967296)` for its IDs, and type `B` will have the range of `[4294967296,8589934592)`, etc.",
+      "source_content_hash": "88a9cb9ab37c325f66af3fcfdb21ba168d2313c31b8bf8fef99f137c2a70dbbd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**实现原理**：Ent迁移为每个实体类型（表）分配1<<32的ID区间，并将该信息存储在生成代码中（`internal/globalid.go`）。例如类型`A`的ID区间为`[1,4294967296)`，类型`B`为`[4294967296,8589934592)`，以此类推。"
+      }
+    },
+    {
+      "segment_id": "c15f089c",
+      "source_content": "Note that if this option is enabled, the maximum number of possible tables is **65535**. ",
+      "source_content_hash": "03ceb242b1e73e2a6972095558e13cc71d2439e3023dc827512036ce38324569",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请注意，若启用此选项，最大支持的表数量为**65535**。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/features.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.651670+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "e228f37dd4922e224607ba5d3bb8204519a21e1f0a52fd3ec1b1912153121d21"
+  }
+}

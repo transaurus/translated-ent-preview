@@ -1,0 +1,686 @@
+---
+id: getting-started
+title: Quick Introduction
+sidebar_label: Quick Introduction
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import AtlasMigrateDiff from './components/_atlas_migrate_diff.mdx';
+import AtlasMigrateApply from './components/_atlas_migrate_apply.mdx';
+import InstallationInstructions from './components/_installation_instructions.mdx';
+
+**ent** 是一个简洁而强大的 Go 语言实体框架，它遵循以下原则，使得构建和维护具有大型数据模型的应用变得简单：
+
+- 轻松将数据库模式建模为图结构
+- 通过编程式 Go 代码定义模式
+- 基于代码生成的静态类型系统
+- 简化的数据库查询与图遍历编写
+- 使用 Go 模板轻松扩展和定制
+
+![gopher-schema-as-code](https://entgo.io/images/assets/gopher-schema-as-code.png)
+
+## 配置 Go 环境
+
+若您的项目目录不在 [GOPATH](https://github.com/golang/go/wiki/GOPATH) 中或不熟悉 GOPATH，请按以下方式设置 [Go Modules](https://github.com/golang/go/wiki/Modules#quick-start) 项目：
+
+```console
+go mod init entdemo
+```
+
+## 创建第一个模式
+
+进入项目根目录并运行：
+
+```console
+go run -mod=mod entgo.io/ent/cmd/ent new User
+```
+
+上述命令将在 `entdemo/ent/schema/` 目录下生成 `User` 模式：
+
+```go title="entdemo/ent/schema/user.go"
+
+package schema
+
+import "entgo.io/ent"
+
+// User holds the schema definition for the User entity.
+type User struct {
+	ent.Schema
+}
+
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return nil
+}
+
+// Edges of the User.
+func (User) Edges() []ent.Edge {
+	return nil
+}
+
+```
+
+为 `User` 模式添加两个字段：
+
+```go title="entdemo/ent/schema/user.go"
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int("age").
+			Positive(),
+		field.String("name").
+			Default("unknown"),
+	}
+}
+```
+
+从项目根目录运行以下命令：
+
+```go
+go generate ./ent
+```
+
+这将生成以下文件：
+
+```console {12-20}
+ent
+├── client.go
+├── config.go
+├── context.go
+├── ent.go
+├── generate.go
+├── mutation.go
+... truncated
+├── schema
+│   └── user.go
+├── tx.go
+├── user
+│   ├── user.go
+│   └── where.go
+├── user.go
+├── user_create.go
+├── user_delete.go
+├── user_query.go
+└── user_update.go
+```
+
+## 创建第一个实体
+
+首先创建新的 `Client` 来执行模式迁移并与实体交互：
+
+<Tabs
+defaultValue="sqlite"
+values={[
+{label: 'SQLite', value: 'sqlite'},
+{label: 'PostgreSQL', value: 'postgres'},
+{label: 'MySQL (MariaDB)', value: 'mysql'},
+]}>
+<TabItem value="sqlite">
+
+```go title="entdemo/start.go"
+package main
+
+import (
+	"context"
+	"log"
+
+    "entdemo/ent"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+func main() {
+	client, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	if err != nil {
+		log.Fatalf("failed opening connection to sqlite: %v", err)
+	}
+	defer client.Close()
+	// Run the auto migration tool.
+	// highlight-start
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+	// highlight-end
+}
+```
+
+</TabItem>
+<TabItem value="postgres">
+
+```go title="entdemo/start.go"
+package main
+
+import (
+	"context"
+	"log"
+
+    "entdemo/ent"
+
+	_ "github.com/lib/pq"
+)
+
+func main() {
+	client, err := ent.Open("postgres","host=<host> port=<port> user=<user> dbname=<database> password=<pass>")
+	if err != nil {
+		log.Fatalf("failed opening connection to postgres: %v", err)
+	}
+	defer client.Close()
+	// Run the auto migration tool.
+	// highlight-start
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+	// highlight-end
+}
+```
+
+</TabItem>
+<TabItem value="mysql">
+
+```go title="entdemo/start.go"
+package main
+
+import (
+	"context"
+	"log"
+
+	"entdemo/ent"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	client, err := ent.Open("mysql", "<user>:<pass>@tcp(<host>:<port>)/<database>?parseTime=True")
+	if err != nil {
+		log.Fatalf("failed opening connection to mysql: %v", err)
+	}
+	defer client.Close()
+	// Run the auto migration tool.
+	// highlight-start
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+	// highlight-end
+}
+```
+
+</TabItem>
+</Tabs>
+
+完成模式迁移后，即可创建用户。为此示例创建名为 _CreateUser_ 的函数：
+
+```go title="entdemo/start.go"
+func CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
+	u, err := client.User.
+		Create().
+		SetAge(30).
+		SetName("a8m").
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating user: %w", err)
+	}
+	log.Println("user was created: ", u)
+	return u, nil
+}
+```
+
+## 查询实体
+
+`ent` 会为每个实体模式生成包含谓词、默认值、验证器以及存储元素信息（列名、主键等）的包。
+
+```go title="entdemo/start.go"
+func QueryUser(ctx context.Context, client *ent.Client) (*ent.User, error) {
+	u, err := client.User.
+		Query().
+		Where(user.Name("a8m")).
+		// `Only` fails if no user found,
+		// or more than 1 user returned.
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying user: %w", err)
+	}
+	log.Println("user returned: ", u)
+	return u, nil
+}
+```
+
+## 添加第一条边（关系）
+
+本教程部分将声明模式中到其他实体的边（关系）。  
+我们使用 `ent` CLI 创建两个名为 `Car` 和 `Group` 的新实体并添加若干字段：
+
+```console
+go run -mod=mod entgo.io/ent/cmd/ent new Car Group
+```
+
+然后手动添加其余字段：
+
+```go title="entdemo/ent/schema/car.go"
+// Fields of the Car.
+func (Car) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("model"),
+		field.Time("registered_at"),
+	}
+}
+```
+
+```go title="entdemo/ent/schema/group.go"
+// Fields of the Group.
+func (Group) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name").
+			// Regexp validation for group name.
+			Match(regexp.MustCompile("[a-zA-Z_]+$")),
+	}
+}
+```
+
+定义第一个关系：从 `User` 到 `Car` 的边，表示一个用户可以**拥有多辆**汽车，但每辆汽车**仅属于一个**所有者（一对多关系）。
+
+![er-user-cars](https://entgo.io/images/assets/re_user_cars.png)
+
+将 `"cars"` 边添加至 `User` 模式，并运行 `go generate ./ent`：
+
+```go title="entdemo/ent/schema/user.go"
+// Edges of the User.
+func (User) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.To("cars", Car.Type),
+	}
+}
+```
+
+继续示例：创建两辆汽车并将其关联到用户
+
+```go title="entdemo/start.go"
+func CreateCars(ctx context.Context, client *ent.Client) (*ent.User, error) {
+	// Create a new car with model "Tesla".
+	tesla, err := client.Car.
+		Create().
+		SetModel("Tesla").
+		SetRegisteredAt(time.Now()).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating car: %w", err)
+	}
+	log.Println("car was created: ", tesla)
+
+	// Create a new car with model "Ford".
+	ford, err := client.Car.
+		Create().
+		SetModel("Ford").
+		SetRegisteredAt(time.Now()).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating car: %w", err)
+	}
+	log.Println("car was created: ", ford)
+
+	// Create a new user, and add it the 2 cars.
+	a8m, err := client.User.
+		Create().
+		SetAge(30).
+		SetName("a8m").
+		AddCars(tesla, ford).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating user: %w", err)
+	}
+	log.Println("user was created: ", a8m)
+	return a8m, nil
+}
+```
+
+如何查询 `cars` 边（关系）？操作如下：
+
+```go title="entdemo/start.go"
+func QueryCars(ctx context.Context, a8m *ent.User) error {
+	cars, err := a8m.QueryCars().All(ctx)
+	if err != nil {
+		return fmt.Errorf("failed querying user cars: %w", err)
+	}
+	log.Println("returned cars:", cars)
+
+	// What about filtering specific cars.
+	ford, err := a8m.QueryCars().
+		Where(car.Model("Ford")).
+		Only(ctx)
+	if err != nil {
+		return fmt.Errorf("failed querying user cars: %w", err)
+	}
+	log.Println(ford)
+	return nil
+}
+```
+
+## 添加第一条反向边（反向引用）
+
+假设我们有一个 `Car` 对象，想要获取其所有者（该汽车所属的用户）。为此可使用另一种称为"反向边"的边类型，通过 `edge.From` 函数定义。
+
+![er-cars-owner](https://entgo.io/images/assets/re_cars_owner.png)
+
+图中新创建的边呈现半透明效果，旨在强调我们并未在数据库中实际创建新边，而仅是对真实边（关系）的反向引用。
+
+让我们在`Car`模式中添加名为`owner`的反向边，将其关联至`User`模式中的`cars`边，并执行`go generate ./ent`。
+
+```go title="entdemo/ent/schema/car.go"
+// Edges of the Car.
+func (Car) Edges() []ent.Edge {
+	return []ent.Edge{
+		// Create an inverse-edge called "owner" of type `User`
+	 	// and reference it to the "cars" edge (in User schema)
+	 	// explicitly using the `Ref` method.
+	 	edge.From("owner", User.Type).
+	 		Ref("cars").
+			// setting the edge to unique, ensure
+			// that a car can have only one owner.
+			Unique(),
+	}
+}
+```
+
+我们将继续通过查询反向边来扩展上述用户/汽车的示例。
+
+```go title="entdemo/start.go"
+func QueryCarUsers(ctx context.Context, a8m *ent.User) error {
+	cars, err := a8m.QueryCars().All(ctx)
+	if err != nil {
+		return fmt.Errorf("failed querying user cars: %w", err)
+	}
+	// Query the inverse edge.
+	for _, c := range cars {
+		owner, err := c.QueryOwner().Only(ctx)
+		if err != nil {
+			return fmt.Errorf("failed querying car %q owner: %w", c.Model, err)
+		}
+		log.Printf("car %q owner: %q\n", c.Model, owner.Name)
+	}
+	return nil
+}
+```
+
+## 可视化模式
+
+若已完成前述步骤，您已成功执行模式迁移并在数据库中创建了若干实体。要查看Ent为数据库生成的SQL模式，请安装[Atlas](https://github.com/ariga/atlas)并运行以下命令：
+
+#### 安装Atlas
+
+<InstallationInstructions />
+
+<Tabs>
+<TabItem value="ERD Schema">
+
+#### Inspect The Ent Schema
+
+```bash
+atlas schema inspect \
+  -u "ent://ent/schema" \
+  --dev-url "sqlite://file?mode=memory&_fk=1" \
+  -w
+```
+
+#### ERD and SQL Schema
+
+[![erd](https://atlasgo.io/uploads/erd-example.png)](https://gh.atlasgo.cloud/explore/40d83919)
+
+</TabItem>
+<TabItem value="SQL Schema">
+
+#### Inspect The Ent Schema
+
+```bash
+atlas schema inspect \
+  -u "ent://ent/schema" \
+  --dev-url "sqlite://file?mode=memory&_fk=1" \
+  --format '{{ sql . "  " }}'
+```
+
+#### SQL Output
+
+```sql
+-- Create "cars" table
+CREATE TABLE `cars` (
+  `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+  `model` text NOT NULL,
+  `registered_at` datetime NOT NULL,
+  `user_cars` integer NULL,
+  CONSTRAINT `cars_users_cars` FOREIGN KEY (`user_cars`) REFERENCES `users` (`id`) ON DELETE SET NULL
+);
+
+-- Create "users" table
+CREATE TABLE `users` (
+  `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+  `age` integer NOT NULL,
+  `name` text NOT NULL DEFAULT 'unknown'
+);
+```
+
+</TabItem>
+</Tabs>
+
+## 创建第二条边
+
+我们将通过创建用户与组之间的多对多（M2M）关系来继续示例。
+
+![er-group-users](https://entgo.io/images/assets/re_group_users.png)
+
+如图所示，每个组实体可**包含多个**用户，而用户可**关联至多个**组——这是典型的多对多关系。图中`Group`模式是`users`边（关系）的拥有者，`User`实体则通过名为`groups`的反向边引用该关系。让我们在模式中定义此关系：
+
+```go title="entdemo/ent/schema/group.go"
+// Edges of the Group.
+func (Group) Edges() []ent.Edge {
+   return []ent.Edge{
+       edge.To("users", User.Type),
+   }
+}
+```
+
+```go title="entdemo/ent/schema/user.go"
+// Edges of the User.
+func (User) Edges() []ent.Edge {
+   return []ent.Edge{
+       edge.To("cars", Car.Type),
+       // Create an inverse-edge called "groups" of type `Group`
+       // and reference it to the "users" edge (in Group schema)
+       // explicitly using the `Ref` method.
+       edge.From("groups", Group.Type).
+           Ref("users"),
+   }
+}
+```
+
+我们在模式目录上运行`ent`以重新生成资源。
+
+```console
+go generate ./ent
+```
+
+## 执行首次图遍历
+
+要执行首次图遍历，需先创建一些数据（节点和边，即实体和关系）。让我们使用框架构建以下图结构：
+
+![re-graph](https://entgo.io/images/assets/re_graph_getting_started.png)
+
+```go title="entdemo/start.go"
+func CreateGraph(ctx context.Context, client *ent.Client) error {
+	// First, create the users.
+	a8m, err := client.User.
+		Create().
+		SetAge(30).
+		SetName("Ariel").
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	neta, err := client.User.
+		Create().
+		SetAge(28).
+		SetName("Neta").
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+	// Then, create the cars, and attach them to the users created above.
+	err = client.Car.
+		Create().
+		SetModel("Tesla").
+		SetRegisteredAt(time.Now()).
+		// Attach this car to Ariel.
+		SetOwner(a8m).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+	err = client.Car.
+		Create().
+		SetModel("Mazda").
+		SetRegisteredAt(time.Now()).
+		// Attach this car to Ariel.
+		SetOwner(a8m).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+	err = client.Car.
+		Create().
+		SetModel("Ford").
+		SetRegisteredAt(time.Now()).
+		// Attach this car to Neta.
+		SetOwner(neta).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+	// Create the groups, and add their users in the creation.
+	err = client.Group.
+		Create().
+		SetName("GitLab").
+		AddUsers(neta, a8m).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+	err = client.Group.
+		Create().
+		SetName("GitHub").
+		AddUsers(a8m).
+		Exec(ctx)
+	if err != nil {
+		return err
+	}
+	log.Println("The graph was created successfully")
+	return nil
+}
+```
+
+当数据图构建完成后，即可对其运行若干查询：
+
+1. 获取名为 "GitHub" 的群组中所有用户的汽车：
+
+	```go title="entdemo/start.go"
+	func QueryGithub(ctx context.Context, client *ent.Client) error {
+		cars, err := client.Group.
+			Query().
+			Where(group.Name("GitHub")). // (Group(Name=GitHub),)
+			QueryUsers().                // (User(Name=Ariel, Age=30),)
+			QueryCars().                 // (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Mazda, RegisteredAt=<Time>),)
+			All(ctx)
+		if err != nil {
+			return fmt.Errorf("failed getting cars: %w", err)
+		}
+		log.Println("cars returned:", cars)
+		// Output: (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Mazda, RegisteredAt=<Time>),)
+		return nil
+	}
+	```
+
+2. 修改上述查询，使遍历的源头为用户 *Ariel*：
+   
+	```go title="entdemo/start.go"
+	func QueryArielCars(ctx context.Context, client *ent.Client) error {
+		// 从先前步骤获取 "Ariel"。
+		a8m := client.User.
+			Query().
+			Where(
+				user.HasCars(),
+				user.Name("Ariel"),
+			).
+			OnlyX(ctx)
+		cars, err := a8m. 						// 获取 a8m 所属的群组：
+				QueryGroups(). 					// (Group(Name=GitHub), Group(Name=GitLab),)
+				QueryUsers().  					// (User(Name=Ariel, Age=30), User(Name=Neta, Age=28),)
+				QueryCars().   					//
+				Where(         					//
+					car.Not( 					//	获取 Neta 和 Ariel 的汽车，但过滤掉
+						car.Model("Mazda"),		//	名为 "Mazda" 的汽车
+					), 							//
+				). 								//
+				All(ctx)
+		if err != nil {
+			return fmt.Errorf("failed getting cars: %w", err)
+		}
+		log.Println("cars returned:", cars)
+		// Output: (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Ford, RegisteredAt=<Time>),)
+		return nil
+	}
+	```
+
+3. 获取所有拥有用户的群组（使用旁路谓词查询）：
+
+	```go title="entdemo/start.go"
+	func QueryGroupWithUsers(ctx context.Context, client *ent.Client) error {
+    	groups, err := client.Group.
+    		Query().
+    		Where(group.HasUsers()).
+    		All(ctx)
+    	if err != nil {
+    		return fmt.Errorf("failed getting groups: %w", err)
+    	}
+    	log.Println("groups returned:", groups)
+    	// Output: (Group(Name=GitHub), Group(Name=GitLab),)
+    	return nil
+    }
+    ```
+
+## 模式迁移
+
+Ent 提供了两种运行模式迁移的方法：[自动迁移](/docs/migrate)和
+[版本化迁移](/docs/versioned-migrations)。以下是每种方法的简要概述：
+
+### 自动迁移
+
+使用自动迁移时，用户可以通过以下 API 保持数据库模式与生成的 SQL 模式 `ent/migrate/schema.go` 中定义的模式对象一致：
+
+```go
+if err := client.Schema.Create(ctx); err != nil {
+    log.Fatalf("failed creating schema resources: %v", err)
+}
+```
+
+这种方法主要用于原型设计、开发或测试。因此，对于关键生产环境，建议使用
+_版本化迁移_ 方法。通过版本化迁移，用户可以预先了解数据库将应用哪些更改，并根据需要轻松调整这些更改。
+
+有关此方法的更多信息，请参阅 [自动迁移](/docs/migrate) 文档。
+
+### 版本化迁移
+
+与 _自动迁移_ 不同，_版本化迁移_ 方法使用 Atlas 自动生成一组迁移
+文件，其中包含迁移数据库所需的 SQL 语句。这些文件可以根据特定需求进行编辑，
+并使用现有的迁移工具（如 Atlas、golang-migrate、Flyway 和 Liquibase）进行应用。此方法的 API
+主要涉及两个步骤。
+
+#### 生成迁移
+
+<AtlasMigrateDiff/>
+
+#### 应用迁移
+
+<AtlasMigrateApply/>
+
+有关此方法的更多信息，请参阅[版本化迁移](/docs/versioned-migrations)文档。
+
+## 完整示例
+
+完整示例可在[GitHub](https://github.com/ent/ent/tree/master/examples/start)上查看。

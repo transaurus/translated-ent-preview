@@ -1,0 +1,262 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2023-08-13-visualize-with-atlas.md",
+  "source_file_content_hash": "52e51952a5828369d0f5081689686f77141ffc71a8c633bbc51ec88d1262eafe",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: \"Quickly Generate ERDs from your Ent Schemas (Updated)\" \nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\nimage: \"https://atlasgo.io/uploads/ent/inspect/entviz.png\"\n---",
+      "source_content_hash": "6e43def98a24aaca25f141d0117b814ee9407e8f773156be5d5471aef91a5d88",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "1cc03ec8",
+      "source_content": "### TL;DR",
+      "source_content_hash": "216375cfd413556232ef4b112b7b069b33f020b9b60abe44f9d205111340c7b9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 内容提要"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "Create a visualization of your Ent schema with one command:",
+      "source_content_hash": "5e73005d24b1228b505405f0d441a938e21c43ca384f370a096664ba975a7e98",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "只需一条命令即可生成Ent架构的可视化图表："
+      }
+    },
+    {
+      "segment_id": "5564d81d",
+      "source_content": "```\natlas schema inspect \\\n  -u ent://ent/schema \\\n  --dev-url \"sqlite://demo?mode=memory&_fk=1\" \\\n  --visualize\n```",
+      "source_content_hash": "99c4de435f4b4aa2a741669da9cc504058b73a413a47b348904835b4ce3da3d4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5564d81d"
+      }
+    },
+    {
+      "segment_id": "f5f6d2ce",
+      "source_content": "![](https://entgo.io/images/assets/erd/edges-quick-summary.png)",
+      "source_content_hash": "1e180abb86cac2370c919fd51cb4d389b5062ef14f32706da998507bd26702da",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![](https://entgo.io/images/assets/erd/edges-quick-summary.png)"
+      }
+    },
+    {
+      "segment_id": "98cfbd53",
+      "source_content": "Hi Everyone!",
+      "source_content_hash": "ec1a5ae9ccd2fccfbe2cbc9c45c401513445f9f4cf8b7c25ab7ea05ff33d2629",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "大家好！"
+      }
+    },
+    {
+      "segment_id": "ccc88b4c",
+      "source_content": "A few months ago, we shared [entviz](/blog/2023/01/26/visualizing-with-entviz), a cool\ntool that enables you to visualize your Ent schemas. Due to its success and popularity,\nwe decided to integrate it directly into [Atlas](https://atlasgo.io), the migration engine\nthat Ent uses. ",
+      "source_content_hash": "d3d8238de8a30b1ace806fcb3ea18c97c566af0cad532cd313c2e44a1cccec4f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "数月前我们发布了[entviz](/blog/2023/01/26/visualizing-with-entviz)——这个酷炫工具能帮助您可视化Ent数据模型。由于其出色的反响，我们决定将其直接集成至Ent使用的迁移引擎[Atlas](https://atlasgo.io)中。"
+      }
+    },
+    {
+      "segment_id": "dfe931a2",
+      "source_content": "Since the release of [v0.13.0](https://atlasgo.io/blog/2023/08/06/atlas-v-0-13) of Atlas,\nyou can now visualize your Ent schemas directly from Atlas without needing to install an\nadditional tool.",
+      "source_content_hash": "1e10c877805c3b177bfce70cbae9607948a9a3cabefc1f46482265d7551417dd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "自Atlas [v0.13.0](https://atlasgo.io/blog/2023/08/06/atlas-v-0-13)版本起，您无需安装额外工具即可直接通过Atlas可视化Ent数据模型。"
+      }
+    },
+    {
+      "segment_id": "f422383e",
+      "source_content": "### Private vs. Public Visualizations",
+      "source_content_hash": "850434d33ada871d2c47b3f220632a150ef122cfad3365bdb4cda41b86698ccb",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 私有与公开可视化"
+      }
+    },
+    {
+      "segment_id": "97ae4a01",
+      "source_content": "Previously, you could only share a visualization of your schema to the\n[Atlas Public Playground](https://gh.atlasgo.cloud/explore). While this is convenient\nfor sharing your schema with others, it is not acceptable for many teams who maintain\nschemas that themselves are sensitive and cannot be shared publicly.",
+      "source_content_hash": "ef89a1d580ab562ea5a4905f1909adfa3925f0d8e686f3067cd3ecc40c1088ca",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此前您只能将架构可视化图表分享至[Atlas公共沙盒](https://gh.atlasgo.cloud/explore)。虽然便于协作，但许多团队的敏感架构数据并不适合公开分享。"
+      }
+    },
+    {
+      "segment_id": "50746522",
+      "source_content": "With this new release, you can easily publish your schema directly to your private\nworkspace on [Atlas Cloud](https://atlasgo.cloud). This means that only you and your\nteam can access the visualization of your schema.",
+      "source_content_hash": "1828a9529101c39aaa06b3c2f0fb5aca25cdf6eb3526483e4d5c8a1e73f4e435",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "新版本支持将架构直接发布至[Atlas云平台](https://atlasgo.cloud)的私有工作区，确保仅您和团队成员可访问可视化图表。"
+      }
+    },
+    {
+      "segment_id": "8bddee80",
+      "source_content": "### Visualizing your Ent Schema with Atlas",
+      "source_content_hash": "0b1dfea56ed82121c75c47855b0c4e95d901862b9644dabf89cf15a4ebeb620a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 使用Atlas可视化Ent架构"
+      }
+    },
+    {
+      "segment_id": "a9d49f92",
+      "source_content": "To visualize your Ent schema with Atlas, first install its latest version:",
+      "source_content_hash": "b387ae6134a7b3547f4f200fffee34fb254031375ac7b212fa6f9f569908c01f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先安装最新版Atlas："
+      }
+    },
+    {
+      "segment_id": "95318d95",
+      "source_content": "```\ncurl -sSfL https://atlasgo.io/install.sh | sh\n```",
+      "source_content_hash": "44ee1af6001f258936625bc0c483199c585f1fdc7f4b7d372f86c212cadf4f3e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_95318d95"
+      }
+    },
+    {
+      "segment_id": "98d26038",
+      "source_content": "For other installation options, see the [Atlas installation docs](https://atlasgo.io/getting-started#installation).",
+      "source_content_hash": "f7efba46ecc1486ea3248dd5d3c22870d0ef6922c6bdfc7d5bc772da42757386",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "其他安装方式请参阅[Atlas安装文档](https://atlasgo.io/getting-started#installation)。"
+      }
+    },
+    {
+      "segment_id": "d3649a1e",
+      "source_content": "Next, run the following command to generate a visualization of your Ent schema:",
+      "source_content_hash": "877cfaa247cddc41cc23a8b87b5b983077b7006d76d70f04438001524fddeaeb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令生成Ent架构可视化："
+      }
+    },
+    {
+      "segment_id": "c3955998",
+      "source_content": "```\natlas schema inspect \\\n  -u ent://ent/schema \\\n  --dev-url \"sqlite://demo?mode=memory&_fk=1\" \\\n  --visualize\n```",
+      "source_content_hash": "99c4de435f4b4aa2a741669da9cc504058b73a413a47b348904835b4ce3da3d4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c3955998"
+      }
+    },
+    {
+      "segment_id": "79ad944d",
+      "source_content": "Let's break this command down:",
+      "source_content_hash": "5898f78f013d789e36911bcb5e5ea63bad419ff67bef109efdf2633794c6c7c4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "命令解析："
+      }
+    },
+    {
+      "segment_id": "35f6931b",
+      "source_content": "* `atlas schema inspect` - this command can be used to inspect schemas from a variety of sources and outputs\n  them in various formats. In this case, we are using it to inspect an Ent schema.\n* `-u ent://ent/schema` - this is the URL to the Ent schema we want to inspect. In this case, we are using the\n  `ent://` schema loader to point to a local Ent schema in the `./ent/schema` directory.\n* `--dev-url \"sqlite://demo?mode=memory&_fk=1\"` - Atlas relies on having an empty database called the\n  [Dev Database](https://atlasgo.io/concepts/dev-database) to normalize schemas and make various calculations.\nIn this case, we are using an in memory SQLite database; but, if you are using a different driver, you can use\n  `docker://mysql/8/dev` (for MySQL) or `docker://postgres/15/?search_path=public` (for PostgreSQL).",
+      "source_content_hash": "95965f495bd84c1ea94330fc9ccf243263d08054b1e9b4f8b991e508f7edd723",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* `atlas schema inspect` - 该命令支持从多数据源检查架构并以多种格式输出，此处用于检查Ent架构\n* `-u ent://ent/schema` - 指定本地Ent架构路径（`./ent/schema`目录）\n* `--dev-url \"sqlite://demo?mode=memory&_fk=1\"` - Atlas需要借助[开发数据库](https://atlasgo.io/concepts/dev-database)进行架构标准化计算。本例使用内存SQLite数据库，若使用其他驱动可替换为`docker://mysql/8/dev`（MySQL）或`docker://postgres/15/?search_path=public`（PostgreSQL）"
+      }
+    },
+    {
+      "segment_id": "883231d4",
+      "source_content": "Once you run this command, you should see the following output:",
+      "source_content_hash": "6c0411208473ca14170cd8de37a0e10af367cbdf898f3f4f2815f7376a87ee53",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行后将看到如下输出："
+      }
+    },
+    {
+      "segment_id": "468b36ba",
+      "source_content": "```text\nUse the arrow keys to navigate: ↓ ↑ → ←\n? Where would you like to share your schema visualization?:\n  ▸ Publicly (gh.atlasgo.cloud)\n    Your personal workspace (requires 'atlas login')\n```",
+      "source_content_hash": "13fe7ca44a7ce82f12019d56768cdd778f18efee5be3f6cd1ae5fa584099cf5d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_468b36ba"
+      }
+    },
+    {
+      "segment_id": "a5c5772a",
+      "source_content": "If you want to share your schema publicly, you can select the first option. If you want to share it privately, you\ncan select the second option and then run `atlas login` to log in to your (free) Atlas account.",
+      "source_content_hash": "3292bcbc8d2f12705d735f011189f371e5cc410e42856110f4657ebb3268f043",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "选择第一项可公开分享架构，选择第二项并通过`atlas login`登录（免费）Atlas账户可私有分享。"
+      }
+    },
+    {
+      "segment_id": "1c598ecd",
+      "source_content": "### Wrapping up",
+      "source_content_hash": "a3785475b5dd9a66ae4506648eaafecb51ead6eb80351473642adc6a4aba69b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 结语"
+      }
+    },
+    {
+      "segment_id": "2547a6bb",
+      "source_content": "In this post, we showed how you can easily visualize your Ent schema with Atlas. We hope you find this feature useful\nand we look forward to hearing your feedback!",
+      "source_content_hash": "88aef3bb95c884922cfa90005de92ae511310a06e9467a7af952f98d5d11d9a5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文演示了如何通过Atlas便捷可视化Ent架构。期待该功能为您带来便利，欢迎反馈使用体验！"
+      }
+    },
+    {
+      "segment_id": "e5f21fd3",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2023-08-13-visualize-with-atlas.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.689380+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "52e51952a5828369d0f5081689686f77141ffc71a8c633bbc51ec88d1262eafe"
+  }
+}

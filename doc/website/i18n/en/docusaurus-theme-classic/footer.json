@@ -1,0 +1,86 @@
+{
+  "link.title.Docs": {
+    "message": "Docs",
+    "description": "The title of the footer links column with title=Docs in the footer"
+  },
+  "link.title.Community": {
+    "message": "Community",
+    "description": "The title of the footer links column with title=Community in the footer"
+  },
+  "link.title.Legal": {
+    "message": "Legal",
+    "description": "The title of the footer links column with title=Legal in the footer"
+  },
+  "link.title.Social": {
+    "message": "Social",
+    "description": "The title of the footer links column with title=Social in the footer"
+  },
+  "link.item.label.Getting Started": {
+    "message": "Getting Started",
+    "description": "The label of footer link with label=Getting Started linking to /docs/getting-started"
+  },
+  "link.item.label.Schema Guide": {
+    "message": "Schema Guide",
+    "description": "The label of footer link with label=Schema Guide linking to /docs/schema-def"
+  },
+  "link.item.label.Code Generation": {
+    "message": "Code Generation",
+    "description": "The label of footer link with label=Code Generation linking to /docs/code-gen"
+  },
+  "link.item.label.GraphQL Integration": {
+    "message": "GraphQL Integration",
+    "description": "The label of footer link with label=GraphQL Integration linking to /docs/graphql"
+  },
+  "link.item.label.Schema Migration": {
+    "message": "Schema Migration",
+    "description": "The label of footer link with label=Schema Migration linking to /docs/migrate"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub linking to https://github.com/ent/ent"
+  },
+  "link.item.label.Slack": {
+    "message": "Slack",
+    "description": "The label of footer link with label=Slack linking to /docs/community#slack"
+  },
+  "link.item.label.Discord": {
+    "message": "Discord",
+    "description": "The label of footer link with label=Discord linking to https://discord.gg/qZmPgTE6RX"
+  },
+  "link.item.label.Newsletter": {
+    "message": "Newsletter",
+    "description": "The label of footer link with label=Newsletter linking to https://entgo.substack.com/"
+  },
+  "link.item.label.Discussions": {
+    "message": "Discussions",
+    "description": "The label of footer link with label=Discussions linking to https://github.com/ent/ent/discussions"
+  },
+  "link.item.label.Twitter": {
+    "message": "Twitter",
+    "description": "The label of footer link with label=Twitter linking to https://twitter.com/entgo_io"
+  },
+  "link.item.label.Privacy": {
+    "message": "Privacy",
+    "description": "The label of footer link with label=Privacy linking to https://opensource.facebook.com/legal/privacy/"
+  },
+  "link.item.label.Terms": {
+    "message": "Terms",
+    "description": "The label of footer link with label=Terms linking to https://opensource.facebook.com/legal/terms/"
+  },
+  "link.item.label.Data Policy": {
+    "message": "Data Policy",
+    "description": "The label of footer link with label=Data Policy linking to https://opensource.facebook.com/legal/data-policy/"
+  },
+  "link.item.label.Cookie Policy": {
+    "message": "Cookie Policy",
+    "description": "The label of footer link with label=Cookie Policy linking to https://opensource.facebook.com/legal/cookie-policy/"
+  },
+  "copyright": {
+    "message": "\n      Copyright © 2025 Facebook, Inc.\n      The Go gopher was designed by <a href=\"http://reneefrench.blogspot.com/\">Renee French</a>.\n      <br/>\n      The design is licensed under the Creative Commons 3.0 Attributions license. Read this \n      <a href=\"https://go.dev/blog/gopher\">article</a> for more details.\n      <br/>\n      Design by Moriah Rich, illustration by Ariel Mashraki.\n      ",
+    "description": "The footer copyright"
+  },
+  "logo.alt": {
+    "message": "Facebook Open Source Logo",
+    "description": "The alt text of footer logo"
+  }
+}

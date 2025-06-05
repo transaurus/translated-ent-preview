@@ -1,0 +1,552 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-09-02-ent-extension-api.md",
+  "source_file_content_hash": "f6e67b9298cd91f0e10392017bbc631d6f01a3f08774627abd2336f6e7bae53b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Extending Ent with the Extension API\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\n---",
+      "source_content_hash": "9ac26ecaf34ecfd6d415257b9849ab3c6685778c76aa91ca76795fd5bcce772c",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "A few months ago, [Ariel](https://github.com/a8m) made a silent but highly-impactful contribution\nto Ent's core, the [Extension API](https://entgo.io/docs/extensions). While Ent has had extension capabilities (such as [Code-gen Hooks](https://entgo.io/docs/code-gen/#code-generation-hooks),\n[External Templates](https://entgo.io/docs/templates/), and [Annotations](https://entgo.io/docs/templates/#annotations))\nfor a long time, there wasn't a convenient way to bundle together all of these moving parts into a \ncoherent, self-contained component. The [Extension API](https://entgo.io/docs/extensions) which we \ndiscuss in the post does exactly that. ",
+      "source_content_hash": "d60a784cee341200a2c01987d4f51e3180d47a8cd576702c370cb9ddf0facbca",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "数月前，[Ariel](https://github.com/a8m) 为 Ent 核心代码提交了一个静默但影响深远的贡献——[扩展 API](https://entgo.io/docs/extensions)。虽然 Ent 长期支持扩展能力（如[代码生成钩子](https://entgo.io/docs/code-gen/#code-generation-hooks)、[外部模板](https://entgo.io/docs/templates/)和[注解](https://entgo.io/docs/templates/#annotations)），但此前缺乏将所有这些组件打包成连贯、自包含模块的便捷方式。本文讨论的[扩展 API](https://entgo.io/docs/extensions)正是为此而生。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "Many open-source ecosystems thrive specifically because they excel at providing developers an\neasy and structured way to extend a small, core system. Much criticism has been made of the \nNode.js ecosystem (even by its [original creator Ryan Dahl](https://www.youtube.com/watch?v=M3BM9TB-8yA))\nbut it is very hard to argue that the ease of publishing and consuming new `npm` modules\nfacilitated the explosion in its popularity. I've discussed on my personal blog how \n[protoc's plugin system works](https://rotemtam.com/2021/03/22/creating-a-protoc-plugin-to-gen-go-code/) \nand how that made the Protobuf ecosystem thrive. In short, ecosystems are only created under\nmodular designs. ",
+      "source_content_hash": "807df3baf2c4fd66cc7a6b44481ee76cfb94ce1c4d51afeee6c8051c46c60062",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "许多开源生态的繁荣，恰恰源于它们为开发者提供了扩展小型核心系统的结构化捷径。Node.js 生态虽饱受争议（甚至被[其创始人 Ryan Dahl 批评](https://www.youtube.com/watch?v=M3BM9TB-8yA)），但不可否认 npm 模块极低的发布与使用门槛极大推动了其流行。我在个人博客中分析过[protoc 插件系统](https://rotemtam.com/2021/03/22/creating-a-protoc-plugin-to-gen-go-code/)如何催生 Protobuf 生态繁荣。简言之，唯有模块化设计才能孕育生态。"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "In our post today, we will explore Ent's `Extension` API by building a toy example. ",
+      "source_content_hash": "bea950682b3a100bdf07d98784419985bb493985ce14095b7ed3f0e8e0558894",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文将通过构建示例项目来探索 Ent 的 `Extension` API。"
+      }
+    },
+    {
+      "segment_id": "fa430ad4",
+      "source_content": "### Getting Started",
+      "source_content_hash": "4467215509db0bd0e0f61cf6ee2efa3316c8285b2a46d4449ff85f9ef85923d9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 快速开始"
+      }
+    },
+    {
+      "segment_id": "4b1d2d7d",
+      "source_content": "The Extension API only works for projects use Ent's code-generation [as a Go package](https://entgo.io/docs/code-gen/#use-entc-as-a-package).\nTo set that up, after initializing your project, create a new file named `ent/entc.go`:",
+      "source_content_hash": "7a867601e443d97e55c34992879c2cdcc929ea1774725cf88cd0fa30262ad7b7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "扩展 API 仅适用于以 [Go 包形式](https://entgo.io/docs/code-gen/#use-entc-as-a-package)使用 Ent 代码生成的项目。初始化项目后，创建 `ent/entc.go` 文件："
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```go title=ent/entc.go\n//+build ignore\n\npackage main\n\nimport (\n    \"log\"\n\n    \"entgo.io/ent/entc\"\n    \"entgo.io/ent/entc/gen\"\n    \"entgo.io/ent/schema/field\"\n)\n\nfunc main() {\n    err := entc.Generate(\"./schema\", &gen.Config{})\n    if err != nil {\n        log.Fatal(\"running ent codegen:\", err)\n    }\n}\n```",
+      "source_content_hash": "ec89bf81765863f8dbaf3c804191be2ccc1146d784a3d1648f6361c4cbb89d68",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cb57d798"
+      }
+    },
+    {
+      "segment_id": "c504c207",
+      "source_content": "Next, modify `ent/generate.go` to invoke our `entc` file:",
+      "source_content_hash": "f2aaf627bcb391b9e2f52432f82bd594104bdea1deb10df5289cc339e60a331b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着修改 `ent/generate.go` 来调用我们的 `entc` 文件："
+      }
+    },
+    {
+      "segment_id": "64b6f348",
+      "source_content": "```go title=ent/generate.go\npackage ent\n\n//go:generate go run entc.go\n```",
+      "source_content_hash": "7c9248e0386e04da865f54da277bbcc44b9ed8770b8a2a86e5cb5ded75848cc5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_64b6f348"
+      }
+    },
+    {
+      "segment_id": "1a316f80",
+      "source_content": "### Creating our Extension",
+      "source_content_hash": "b20c2d251ff5aaa0978dcf43458456e631b99743c7e08a92245ccbd062e40bef",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 创建扩展"
+      }
+    },
+    {
+      "segment_id": "40158b4b",
+      "source_content": "All extension's must implement the [Extension](https://pkg.go.dev/entgo.io/ent/entc#Extension) interface:",
+      "source_content_hash": "40a87f6349d26c24c9e9fee1c7d2f3e35a3a1f1c79a642bd264002c2b55ecb51",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "所有扩展必须实现 [Extension](https://pkg.go.dev/entgo.io/ent/entc#Extension) 接口："
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```go\ntype Extension interface {\n\t// Hooks holds an optional list of Hooks to apply\n\t// on the graph before/after the code-generation.\n\tHooks() []gen.Hook\n\t// Annotations injects global annotations to the gen.Config object that\n\t// can be accessed globally in all templates. Unlike schema annotations,\n\t// being serializable to JSON raw value is not mandatory.\n\t//\n\t//\t{{- with $.Config.Annotations.GQL }}\n\t//\t\t{{/* Annotation usage goes here. */}}\n\t//\t{{- end }}\n\t//\n\tAnnotations() []Annotation\n\t// Templates specifies a list of alternative templates\n\t// to execute or to override the default.\n\tTemplates() []*gen.Template\n\t// Options specifies a list of entc.Options to evaluate on\n\t// the gen.Config before executing the code generation.\n\tOptions() []Option\n}\n```",
+      "source_content_hash": "5fc7646955cc066ba024aa9019cea76c5291b94745bf20266c6422bafbed06bd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "a1fa5396",
+      "source_content": "To simplify the development of new extensions, developers can embed [entc.DefaultExtension](https://pkg.go.dev/entgo.io/ent/entc#DefaultExtension)\nto create extensions without implementing all methods. In `entc.go`, add: ",
+      "source_content_hash": "14dbd82fc93c9f51e3e1939bde9b5b0a99022bd2fc5e8ae82e158140e6b3f075",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为简化扩展开发，开发者可嵌入 [entc.DefaultExtension](https://pkg.go.dev/entgo.io/ent/entc#DefaultExtension) 来避免实现所有方法。在 `entc.go` 中添加："
+      }
+    },
+    {
+      "segment_id": "8c3563d3",
+      "source_content": "```go title=ent/entc.go\n// ...\n\n// GreetExtension implements entc.Extension.\ntype GreetExtension {\n\tentc.DefaultExtension\n}\n```",
+      "source_content_hash": "c6058e41da429bb90b344631a1a13cc7f2fd145dc4a715a23374e9f20467f664",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8c3563d3"
+      }
+    },
+    {
+      "segment_id": "785750ac",
+      "source_content": "Currently, our extension doesn't do anything. Next, let's connect it to our code-generation config.\nIn `entc.go`, add our new extension to the `entc.Generate` invocation:",
+      "source_content_hash": "ec0580b31983f6033fb52d1cd9caa7bda9bccb6ede20fed8a5b0977140004870",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当前扩展尚未实现功能。接下来将其接入代码生成配置，在 `entc.go` 的 `entc.Generate` 调用中添加扩展："
+      }
+    },
+    {
+      "segment_id": "7fa46732",
+      "source_content": "```go\nerr := entc.Generate(\"./schema\", &gen.Config{}, entc.Extensions(&GreetExtension{})\n```",
+      "source_content_hash": "6cee5c5b219c0eb1924c4636abb9ffb6e8ebbcee52c4ec8afa143b5ab9655e82",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7fa46732"
+      }
+    },
+    {
+      "segment_id": "a138e327",
+      "source_content": "### Adding Templates",
+      "source_content_hash": "88960f21b97b915b676341dcd2ec68f35ad8a9712f1f795c006430f48f69a670",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 添加模板"
+      }
+    },
+    {
+      "segment_id": "a2c0166e",
+      "source_content": "External templates can be bundled into extensions to enhance Ent's core code-generation\nfunctionality. With our toy example, our goal is to add to each entity a generated method\nname `Greet` that returns a greeting with the type's name when invoked. We're aiming for something \nlike:",
+      "source_content_hash": "e5640d2a691303268352e79493b52725498c73a20d0479d67b285df09d5bd975",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "外部模板可打包到扩展中，以增强 Ent 的核心代码生成功能。本示例目标是为每个实体生成名为 `Greet` 的方法，调用时返回包含类型名称的问候语。预期效果如下："
+      }
+    },
+    {
+      "segment_id": "c9873cf8",
+      "source_content": "```go\nfunc (u *User) Greet() string {\n    return \"Greetings, User\"\n}\n```",
+      "source_content_hash": "6f5cc42db7c99b9bf9eff42075ae42347db8d926ee6e5796706e0613590bb25d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c9873cf8"
+      }
+    },
+    {
+      "segment_id": "e9313fef",
+      "source_content": "To do this, let's add a new external template file and place it in `ent/templates/greet.tmpl`:",
+      "source_content_hash": "f5c0d8a28df62ab9f91b7044fceb0bee937df2c3d471db5e09f93e748a261997",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为此，我们在 `ent/templates/greet.tmpl` 中添加新模板文件："
+      }
+    },
+    {
+      "segment_id": "f155ef1e",
+      "source_content": "```gotemplate title=\"ent/templates/greet.tmpl\"\n{{ define \"greet\" }}\n\n    {{/* Add the base header for the generated file */}}\n    {{ $pkg := base $.Config.Package }}\n    {{ template \"header\" $ }}\n\n    {{/* Loop over all nodes and add the Greet method */}}\n    {{ range $n := $.Nodes }}\n        {{ $receiver := $n.Receiver }}\n        func ({{ $receiver }} *{{ $n.Name }}) Greet() string {\n            return \"Greetings, {{ $n.Name }}\"\n        }\n    {{ end }}\n{{ end }}\n```",
+      "source_content_hash": "808a6f56e19f9a56b6ef256e6bfd2f216d32a52a8641c7b0226456a1fee5d31d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f155ef1e"
+      }
+    },
+    {
+      "segment_id": "9c9e2b64",
+      "source_content": "Next, let's implement the `Templates` method:",
+      "source_content_hash": "c33587fb5201e9a4ecb69e8ecae0fe927021e8b5f21f18ee8bef348c3632ab40",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着实现 `Templates` 方法："
+      }
+    },
+    {
+      "segment_id": "43cca4d3",
+      "source_content": "```go title=\"ent/entc.go\"\nfunc (*GreetExtension) Templates() []*gen.Template {\n\treturn []*gen.Template{\n\t\tgen.MustParse(gen.NewTemplate(\"greet\").ParseFiles(\"templates/greet.tmpl\")),\n\t}\n}\n```",
+      "source_content_hash": "663407b7b2602faa3c6d6d5e0096a771e3ffde4b34f359e16d3d5d82d408f70c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_43cca4d3"
+      }
+    },
+    {
+      "segment_id": "8664ed0b",
+      "source_content": "Next, let's kick the tires on our extension. Add a new schema for the `User` type in a file\nnamed `ent/schema/user.go`:",
+      "source_content_hash": "04a3aec619f9a0b21f355c8fe96f008b03ad47035cfc7ef23672577b299fd095",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在测试扩展功能。在 `ent/schema/user.go` 中创建 `User` 类型的模式："
+      }
+    },
+    {
+      "segment_id": "4fe849d4",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"email_address\").\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "567918bf39ef61e59bce18390aa6de698cc8719a08bd4cc0ea6a50fb48ab3e04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4fe849d4"
+      }
+    },
+    {
+      "segment_id": "fd7ed056",
+      "source_content": "Next, run:",
+      "source_content_hash": "8190fbac75d62a2f9d131fb0166cc3d69bcdd869d6659e0ee9fa2bf3c1d1fe40",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行命令："
+      }
+    },
+    {
+      "segment_id": "71969be5",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_71969be5"
+      }
+    },
+    {
+      "segment_id": "62d066b0",
+      "source_content": "Observe that a new file, `ent/greet.go`, was created, it contains:",
+      "source_content_hash": "bf5230a1980f860774b919fe56028ed6ce08ecb856bf342caa0c3b492da5fd03",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到新生成了 `ent/greet.go` 文件，内容如下："
+      }
+    },
+    {
+      "segment_id": "7eccd6ba",
+      "source_content": "```go title=\"ent/greet.go\"\n// Code generated by ent, DO NOT EDIT.\n\npackage ent\n\nfunc (u *User) Greet() string {\n\treturn \"Greetings, User\"\n}\n```",
+      "source_content_hash": "8ae2a19055bab17a767ec05353cbce0bfabe6106bc77ee1bc0be247bc83d50cf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7eccd6ba"
+      }
+    },
+    {
+      "segment_id": "e5821418",
+      "source_content": "Great! Our extension was invoked from Ent's code-generation and produced the code\nwe wanted for our schema!",
+      "source_content_hash": "9fdb270eb84f04a6bc1b243a856c2b2e7875663abb4aa119981131f4b6427170",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "成功！我们的扩展在 Ent 代码生成过程中被调用，并输出了预期的模式代码！"
+      }
+    },
+    {
+      "segment_id": "e63d69ef",
+      "source_content": "### Adding Annotations",
+      "source_content_hash": "cd73aa6412fcb1f17c40d1ec584d03c55968abd067256ee36034a9bff2e27fd5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 添加注解"
+      }
+    },
+    {
+      "segment_id": "0427bb2b",
+      "source_content": "Annotations provide a way to supply users of our extension with an API\nto modify the behavior of code generation logic. To add annotations to our extension,\nimplement the `Annotations` method. Suppose that for our `GreetExtension` we want\nto provide users with the ability to configure the greeting word in the generated\ncode:",
+      "source_content_hash": "8e04850f40eb74b8ae6a549413910ba9860d3a1b97bf5ff43754b2e0cfc3e10b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注解为扩展用户提供了修改代码生成逻辑行为的API接口。要为我们的扩展添加注解功能，需实现`Annotations`方法。假设对于`GreetExtension`，我们希望允许用户配置生成代码中的问候语："
+      }
+    },
+    {
+      "segment_id": "de34d0f2",
+      "source_content": "```go\n// GreetingWord implements entc.Annotation\ntype GreetingWord string\n\nfunc (GreetingWord) Name() string {\n\treturn \"GreetingWord\"\n}\n```",
+      "source_content_hash": "874df5ed3434746e22f892ea1008d0044c89959df274257ebc745e9d59d21a16",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de34d0f2"
+      }
+    },
+    {
+      "segment_id": "48249e3c",
+      "source_content": "Next, we add a `word` field to our `GreetExtension` struct:",
+      "source_content_hash": "7c5352f2b6c4f31592ed081f89a27f9d6c6716462ae943a48aac5c4fafcc7403",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先在`GreetExtension`结构体中添加`word`字段："
+      }
+    },
+    {
+      "segment_id": "117486ca",
+      "source_content": "```go\ntype GreetExtension struct {\n\tentc.DefaultExtension\n\tWord GreetingWord\n}\n```",
+      "source_content_hash": "b79f0b3e56f9c7745122848167205f212f1cb22f8d4874631f6a7ccc84a8c23e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_117486ca"
+      }
+    },
+    {
+      "segment_id": "eeeea5ce",
+      "source_content": "Next, implement the `Annotations` method:",
+      "source_content_hash": "d87bf4c1df848339f9c68d0da51129dc32f872472d0689f5ceca944863ffca17",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着实现`Annotations`方法："
+      }
+    },
+    {
+      "segment_id": "f377fafa",
+      "source_content": "```go\nfunc (s *GreetExtension) Annotations() []entc.Annotation {\n\treturn []entc.Annotation{\n\t\ts.Word,\n\t}\n}\n```",
+      "source_content_hash": "0251dd28635126af19ef638eec12fad778a913f201df6ca9c509a855832ad2d9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f377fafa"
+      }
+    },
+    {
+      "segment_id": "c277c3c0",
+      "source_content": "Now, from within your templates you can access the `GreetingWord` annotation. Modify\n`ent/templates/greet.tmpl` to use our new annotation:",
+      "source_content_hash": "22fcd98ee13763a7f8d6cb5298ccb8d72490f6c6099a8be2adbf439262e586c9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在模板中即可访问`GreetingWord`注解。修改`ent/templates/greet.tmpl`以使用新注解："
+      }
+    },
+    {
+      "segment_id": "daad2e28",
+      "source_content": "```gotemplate\nfunc ({{ $receiver }} *{{ $n.Name }}) Greet() string {\n    return \"{{ $.Annotations.GreetingWord }}, {{ $n.Name }}\"\n}\n```",
+      "source_content_hash": "617c8f1e3b021a8236845b2e225aaddbf20b7e2d3ba383c610e6e511711af388",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daad2e28"
+      }
+    },
+    {
+      "segment_id": "49be422b",
+      "source_content": "Next, modify the code-generation configuration to set the GreetingWord annotation:",
+      "source_content_hash": "cea909032cc2a35746139f56d3ace78a464bfc2c78295192dc7553653be963a0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后修改代码生成配置来设置问候语注解："
+      }
+    },
+    {
+      "segment_id": "18e3e63d",
+      "source_content": "```go title=\"ent/entc.go\nerr := entc.Generate(\"./schema\",\n    &gen.Config{},\n    entc.Extensions(&GreetExtension{\n        Word: GreetingWord(\"Shalom\"),\n    }),\n)\n```",
+      "source_content_hash": "a31d6a11d4d92bc0e1e58f96d1150c4a29c8a70747a282142a6039a5abb6004a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_18e3e63d"
+      }
+    },
+    {
+      "segment_id": "d3912b2e",
+      "source_content": "To see our annotation control the generated code, re-run:",
+      "source_content_hash": "090cec5fb150d07f46b823177fa43c2990bebeba5b368c64695ffacb12ac49a6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重新运行以下命令查看注解如何控制生成代码："
+      }
+    },
+    {
+      "segment_id": "d01e871e",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d01e871e"
+      }
+    },
+    {
+      "segment_id": "ba12acea",
+      "source_content": "Finally, observe that the generated `ent/greet.go` was updated:",
+      "source_content_hash": "d3bf64e5a0e7ff4f0b0241877606d6caf42a9ec59f6e549dc837f81bc68672b5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最终可观察到生成的`ent/greet.go`文件已更新："
+      }
+    },
+    {
+      "segment_id": "9d31dc8f",
+      "source_content": "```go\nfunc (u *User) Greet() string {\n\treturn \"Shalom, User\"\n}\n```",
+      "source_content_hash": "c962551073817fda3f32bae90205a634c086a74403e702ffcfb61514a2011e53",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9d31dc8f"
+      }
+    },
+    {
+      "segment_id": "d3f13bf4",
+      "source_content": "Hooray! We added an option to use an annotation to control the greeting word in the\ngenerated `Greet` method!",
+      "source_content_hash": "1b1f14691cd6c6486aa1297c330abee958e9e70cd5fc697100726b5e90e6d7f3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了！我们成功通过注解实现了对生成方法中问候词的可配置化！"
+      }
+    },
+    {
+      "segment_id": "accb07e1",
+      "source_content": "### More Possibilities",
+      "source_content_hash": "9f298d16439291c7aa01e2975cb464f61b9515428a95707b4916a7d5d5b39ed5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 更多可能性"
+      }
+    },
+    {
+      "segment_id": "65be34cb",
+      "source_content": "In addition to templates and annotations, the Extension API allows developers to bundle \n`gen.Hook`s and `entc.Option`s in extensions to further control the behavior of your code-generation.\nIn this post we will not discuss these possibilities, but if you are interested in using them\nhead over to the [documentation](https://entgo.io/docs/extensions).",
+      "source_content_hash": "e95a0206087da86452378c5270b2861211211882222bc3aa3c6f4f58e1b1ee09",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "除模板和注解外，Extension API还允许开发者通过捆绑`gen.Hook`和`entc.Option`来进一步控制代码生成行为。本文不展开讨论这些功能，如需了解可查阅[官方文档](https://entgo.io/docs/extensions)。"
+      }
+    },
+    {
+      "segment_id": "50e53dff",
+      "source_content": "### Wrapping Up",
+      "source_content_hash": "6df1295c536bdf3cf58241755891051d109001c784cced5b33a00f70983bc553",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "f6e7e6a7",
+      "source_content": "In this post we explored via a toy example how to use the `Extension` API to create new\nEnt code-generation extensions. As we've mentioned above, modular design that allows anyone\nto extend the core functionality of software is critical to the success of any ecosystem.\nWe're seeing this claim start to realize with the Ent community, here's a list of some \ninteresting projects that use the Extension API:",
+      "source_content_hash": "a95327832cdecf45f41f51774fa420ed9435b32ad3ab5ce90291629087a21424",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文通过示例演示了如何使用`Extension` API创建Ent代码生成扩展。正如前文所述，允许扩展核心功能的模块化设计对生态繁荣至关重要。目前Ent社区已涌现多个优秀扩展项目："
+      }
+    },
+    {
+      "segment_id": "a708427d",
+      "source_content": "* [elk](https://github.com/masseelch/elk) - an extension to generate REST endpoints from Ent schemas.\n* [entgql](https://github.com/ent/contrib/tree/master/entgql) - generate GraphQL servers from Ent schemas.\n* [entviz](https://github.com/hedwigz/entviz) - generate ER diagrams from Ent schemas. ",
+      "source_content_hash": "b12edb7b948631f33d4b3f4aa1689e20f2aacf39edae617e36ce608faea2839b",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* [elk](https://github.com/masseelch/elk) - 从Ent模式生成REST端点的扩展\n* [entgql](https://github.com/ent/contrib/tree/master/entgql) - 从Ent模式生成GraphQL服务\n* [entviz](https://github.com/hedwigz/entviz) - 从Ent模式生成ER图"
+      }
+    },
+    {
+      "segment_id": "bb5297fc",
+      "source_content": "And what about you? Do you have an idea for a useful Ent extension? I hope this post\ndemonstrated that with the new Extension API, it is not a difficult task. ",
+      "source_content_hash": "d9f68a4e5f448f2a6f6fb177a13c4c755583bbff9b8e349bd4c0620517a62748",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "你是否也有创建Ent扩展的想法？希望本文能证明借助Extension API实现这一目标并不困难。"
+      }
+    },
+    {
+      "segment_id": "6085c028",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "d0537932cd96ebc172f07d40432ff073381adb709b3fdc6d263a79438858fef3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若有疑问或需要帮助，欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack/)。"
+      }
+    },
+    {
+      "segment_id": "af948156",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅[新闻简报](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 加入[Ent Discord服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-09-02-ent-extension-api.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.684691+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "f6e67b9298cd91f0e10392017bbc631d6f01a3f08774627abd2336f6e7bae53b"
+  }
+}

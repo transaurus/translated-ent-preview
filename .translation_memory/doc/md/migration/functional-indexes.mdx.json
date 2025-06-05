@@ -1,0 +1,378 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/migration/functional-indexes.mdx",
+  "source_file_content_hash": "d4b3738a2d06aa748b7162e663b3c41be62f8613162632de7c93698176aec56a",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Using Functional Indexes in Ent Schema\nid: functional-indexes\nslug: functional-indexes\n---",
+      "source_content_hash": "6a2e3767489c3ed06d41c851724ce253353d70348d3bf6bb20c3624cdef331e8",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import InstallationInstructions from '../components/_installation_instructions.mdx';",
+      "source_content_hash": "afb49515c4f9b6aa67a78520d36b482a67d6d58297f2162ef1448cbea548208e",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "A functional index is an index whose key parts are based on expression values, rather than column values. This index\ntype is helpful for indexing the results of functions or expressions that are not stored in the table. Supported by\n[MySQL, MariaDB](https://atlasgo.io/guides/mysql/functional-indexes), [PostgreSQL](https://atlasgo.io/guides/postgres/functional-indexes)\nand [SQLite](https://atlasgo.io/guides/sqlite/functional-indexes).",
+      "source_content_hash": "74f0368a3558dbaeda2d0afc03c60c8fd332b7ebabeaaef36ebebeb7adb5af1e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "函数索引是一种基于表达式值而非列值构建的索引类型。这类索引对于索引未存储在表中的函数或表达式结果非常有用。目前[MySQL、MariaDB](https://atlasgo.io/guides/mysql/functional-indexes)、[PostgreSQL](https://atlasgo.io/guides/postgres/functional-indexes)和[SQLite](https://atlasgo.io/guides/sqlite/functional-indexes)均支持该特性。"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "This guide explains how to extend your Ent schema with functional indexes, and configure the schema migration to manage\nboth functional indexes and the Ent schema as a single migration unit using Atlas.",
+      "source_content_hash": "bb59ed6dcbd8cffa69212478db649de79790bc59bb8acc5c19047df93ebbcce8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南将介绍如何通过函数索引扩展Ent schema，并配置schema migration以使用Atlas将函数索引与Ent schema作为单一迁移单元进行管理。"
+      }
+    },
+    {
+      "segment_id": "a7378c68",
+      "source_content": ":::info[[Atlas Pro Feature](https://atlasgo.io/features#pro-plan)]\nAtlas support for [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema) used in this\nguide is available exclusively to Pro users. To use this feature, run:\n```\natlas login\n```\n:::",
+      "source_content_hash": "8edd037f30566c228d128ab1e7476e83826e96db9f47adebaf7d7458dd97b980",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[Atlas Pro功能](https://atlasgo.io/features#pro-plan)]\n本指南使用的[复合Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)支持为Pro版专属功能。使用前请执行：\n```\natlas login\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "ed7dde9c",
+      "source_content": "## Install Atlas",
+      "source_content_hash": "bf92a270e324b46f2c1d6f24555018906dc2df68b19873079220409508dabfad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装Atlas"
+      }
+    },
+    {
+      "segment_id": "358a309f",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "f2f30ae8",
+      "source_content": "## Login to Atlas",
+      "source_content_hash": "e256bf54631891b6388a26350087fe6f85606d3b82220c15db06e45dc9ae443c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 登录Atlas"
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```shell\n$ atlas login a8m\n//highlight-next-line-info\nYou are now connected to \"a8m\" on Atlas Cloud.\n```",
+      "source_content_hash": "496821c033e70d4510db88b24c2448b81f6a4860a232e94aa6828c08a6979cd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "3b7478ea",
+      "source_content": "## Composite Schema",
+      "source_content_hash": "bba3d45312f3e0d6b9188ea0568fe93b6ecf4dd0b5f18da48a134b0a61d8e55c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 复合Schema"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "An `ent/schema` package is mostly used for defining Ent types (objects), their fields, edges and logic. Functional indexes,\ndo not have representation in Ent schema, as Ent supports defining indexes on fields, edges (foreign-keys), and the combination\nof them.",
+      "source_content_hash": "1a1fe1bfaee90d8481749a19a29c7883ceaf0e3d82e45afd62b9a6efb20f2044",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema`包主要用于定义Ent类型（对象）、字段、边及其逻辑。由于Ent仅支持在字段、边（外键）及其组合上定义索引，函数索引在Ent schema中没有直接对应的表示形式。"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "In order to extend our PostgreSQL schema migration with functional indexes to our Ent types (tables), we configure Atlas to\nread the state of the schema from a [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)\ndata source. Follow the steps below to configure this for your project:",
+      "source_content_hash": "e50bf5d1501fd5d4a5db4ede7ea11a112193c78ed8f321c4a0699d39b3948920",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了将PostgreSQL schema迁移中的函数索引扩展到Ent类型（表），我们需要配置Atlas从[复合Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)数据源读取schema状态。请按以下步骤为项目进行配置："
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "1\\. Let's define a simple schema with one type (table): `User` (table `users`):",
+      "source_content_hash": "f6c07653d7a866318dc983ccfb0ad5cc2d9e69e0300a6feabeea69c3cdd98776",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 首先定义一个包含单一类型（表）的基础schema：`User`（表`users`）："
+      }
+    },
+    {
+      "segment_id": "229d6705",
+      "source_content": "```go title=\"ent/schema/user.go\"\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tComment(\"A unique index is defined on lower(name) in schema.sql\"),\n\t}\n}\n```",
+      "source_content_hash": "a78def4640918c7fb485875720cff825731a4528f50d772180a0d2ce44b6bc4a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "79ad944d",
+      "source_content": "2\\. Next step, we define a functional index on the `name` field in the `schema.sql` file:",
+      "source_content_hash": "3f938e14ef9b798cd6fbe10d62bc113d9ce3669edd9b875a2dfd886930184499",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 接下来在`schema.sql`文件中为`name`字段定义函数索引："
+      }
+    },
+    {
+      "segment_id": "5d4925eb",
+      "source_content": "```sql title=\"schema.sql\" {2}\n-- Create a functional (unique) index on the lowercased name column.\nCREATE UNIQUE INDEX unique_name ON \"users\" ((lower(\"name\")));\n```",
+      "source_content_hash": "705a3e4f0220cfd844ed92dd22d1e3de47d06ae5e6c02e50f1573016a1486dfd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "e7772088",
+      "source_content": "3\\. Create a simple `atlas.hcl` config file with a `composite_schema` that includes both the functional indexes defined in\n   `schema.sql` and your Ent schema:",
+      "source_content_hash": "23c9fdb8d319253f6f2e7a4eb513cc71e84f47302b8c111a659c62cea34618e6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 创建基础的`atlas.hcl`配置文件，通过`composite_schema`同时包含`schema.sql`中定义的函数索引和您的Ent schema："
+      }
+    },
+    {
+      "segment_id": "af983f82",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"app\" {\n  # Load the ent schema first with all tables.\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n  # Then, load the functional indexes.\n  schema \"public\" {\n    url = \"file://schema.sql\"\n  }\n}\n\nenv \"local\" {\n  src = data.composite_schema.app.url\n  dev = \"docker://postgres/15/dev?search_path=public\"\n}\n```",
+      "source_content_hash": "b7364561bc721e58d36e3537668d1de77f3f856c68872623735e3f4a57d5a613",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "bd30d33e",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用指南"
+      }
+    },
+    {
+      "segment_id": "6b77b644",
+      "source_content": "After setting up our composite schema, we can get its representation using the `atlas schema inspect` command, generate\nschema migrations for it, apply them to a database, and more. Below are a few commands to get you started with Atlas:",
+      "source_content_hash": "665f7c10dd9ccd55a0fe15b7cac8c2271c2ad26f6f52e51576798c2cc754ff7e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "配置复合schema后，我们可以通过`atlas schema inspect`命令获取其表示形式，为其生成schema迁移文件，应用到数据库等。以下是Atlas的入门命令："
+      }
+    },
+    {
+      "segment_id": "b10963d7",
+      "source_content": "#### Inspect the Schema",
+      "source_content_hash": "0b8da15efa6536bf3d7ba2b7c234ece1c6fd8c165a258f150b75f3c4a8a94775",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查Schema"
+      }
+    },
+    {
+      "segment_id": "2822251a",
+      "source_content": "The `atlas schema inspect` command is commonly used to inspect databases. However, we can also use it to inspect our\n`composite_schema` and print the SQL representation of it:",
+      "source_content_hash": "f3dbe5302e7d37e03961c48a085104e5315169634c3bc3ce4a8eebe0448f4f5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas schema inspect`命令通常用于检查数据库，但我们也可以用它来检查`composite_schema`并打印其SQL表示形式："
+      }
+    },
+    {
+      "segment_id": "a476a172",
+      "source_content": "```shell\natlas schema inspect \\\n  --env local \\\n  --url env://src \\\n  --format '{{ sql . }}'\n```",
+      "source_content_hash": "1842ce4f48f94bbd6a5aa04c673ac0b32a2a5303e5c49b31790f7f34cba2e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "0e80209e",
+      "source_content": "The command above prints the following SQL.",
+      "source_content_hash": "e4d848e44e0672c7680ec296daadadf0bdab13317a651b3852b5d3f028cfb56b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行上述命令后将输出如下SQL。"
+      }
+    },
+    {
+      "segment_id": "59534425",
+      "source_content": "```sql\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, PRIMARY KEY (\"id\"));\n-- Create index \"unique_name\" to table: \"users\"\nCREATE UNIQUE INDEX \"unique_name\" ON \"users\" ((lower((name)::text)));\n```",
+      "source_content_hash": "a3d144fe9c9825df149c681d0e5f2281017d41c20941e581591a04e53d2839a3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "44aaa880",
+      "source_content": "Note, our functional index is defined on the `name` field in the `users` table.",
+      "source_content_hash": "dc4c455f9cf625e3a8c033211fb9a14c395f4d62827dc0ed9f85c58d6e9b9224",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意，我们的函数索引定义在`users`表的`name`字段上。"
+      }
+    },
+    {
+      "segment_id": "638efb88",
+      "source_content": "#### Generate Migrations For the Schema",
+      "source_content_hash": "c5990cc35443eac491da766def9a4b660ae86e07358dc8ba13ee7cc4264ae8c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 生成Schema迁移文件"
+      }
+    },
+    {
+      "segment_id": "558df877",
+      "source_content": "To generate a migration for the schema, run the following command:",
+      "source_content_hash": "d37793d5ce1c9d58e36c9034b73243a6673c73c3d2019a3fc933949148642be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行以下命令为schema生成迁移文件："
+      }
+    },
+    {
+      "segment_id": "6f605d92",
+      "source_content": "```shell\natlas migrate diff \\\n  --env local\n```",
+      "source_content_hash": "6b7403f27f8ed223e30c839e71ca4751a7ab8d6c8cadab93c9b0579c577ecadd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "8fcdd6d4",
+      "source_content": "Note that a new migration file is created with the following content:",
+      "source_content_hash": "9e85891e456985b55c4c4723d5a20a256836ff963d5bacf28310685aeb824a89",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意新生成的迁移文件包含以下内容："
+      }
+    },
+    {
+      "segment_id": "5be4f25e",
+      "source_content": "```sql title=\"migrations/20240712090543.sql\"\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, PRIMARY KEY (\"id\"));\n-- Create index \"unique_name\" to table: \"users\"\nCREATE UNIQUE INDEX \"unique_name\" ON \"users\" ((lower((name)::text)));\n```",
+      "source_content_hash": "4da33daedccfc2e0c6b1403e5a1b410394eb5f3576164f30e1eb514d656c40f0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "13292277",
+      "source_content": "#### Apply the Migrations",
+      "source_content_hash": "dd262c901209a83701a71368b18fd88b248797d69ab716e0faf1fbcc27203f95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "e478ec2c",
+      "source_content": "To apply the migration generated above to a database, run the following command:",
+      "source_content_hash": "3b0f09a477a570f0dbe9432e3bfda1ef4da42bb2a1a2169041bbd1dde36f254d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要将生成的迁移应用到数据库，请运行以下命令："
+      }
+    },
+    {
+      "segment_id": "e908327f",
+      "source_content": "```\natlas migrate apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```",
+      "source_content_hash": "9ac63adaa93ec903e09e8bf048fee595f2113774afd394318a89f192a26e03e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "fd42cd42",
+      "source_content": ":::info[Apply the Schema Directly on the Database]\n\nSometimes, there is a need to apply the schema directly to the database without generating a migration file. For example,\nwhen experimenting with schema changes, spinning up a database for testing, etc. In such cases, you can use the command\nbelow to apply the schema directly to the database:\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?sslmode=disable\"\n```\n\nOr, using the [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk):\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// Automatically update the database with the desired schema.\n// Another option, is to use 'migrate apply' or 'schema apply' manually.\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::",
+      "source_content_hash": "f37fb752a98f73320b043278cfdb458471851e159fd8a686142da7113af1da94",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[直接向数据库应用模式]\n\n有时需要直接将模式应用到数据库而不生成迁移文件，例如在测试模式变更或启动测试数据库时。此时可使用以下命令直接将模式应用到数据库：\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?sslmode=disable\"\n```\n\n或使用 [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk)：\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"初始化客户端失败: %w\", err)\n}\n// 自动用目标模式更新数据库\n// 另一种方式是手动使用 'migrate apply' 或 'schema apply'\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"应用模式变更失败: %w\", err)\n}\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "445c72bd",
+      "source_content": "## Code Example",
+      "source_content_hash": "87f9980979aca6ce78fe2eaf1076f406ded92ada00f6080fcf10ca21f4c83dd8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 代码示例"
+      }
+    },
+    {
+      "segment_id": "9ef42155",
+      "source_content": "After setting up our Ent schema with functional indexes, we expect the database to enforce the uniqueness of the `name`\nfield in the `users` table:",
+      "source_content_hash": "39abb6b3ac7e940be123995e45eabf01aca4e04b0ccb11afb5246e8f57b3c519",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成带有函数索引的Ent模式配置后，预期数据库将强制保证`users`表中`name`字段的唯一性："
+      }
+    },
+    {
+      "segment_id": "44ecd2e3",
+      "source_content": "```go\n// Test that the unique index is enforced.\nclient.User.Create().SetName(\"Ariel\").SaveX(ctx)\nerr = client.User.Create().SetName(\"ariel\").Exec(ctx)\nrequire.EqualError(t, err, `ent: constraint failed: pq: duplicate key value violates unique constraint \"unique_name\"`)\n\n// Type-assert returned error.\nvar pqerr *pq.Error\nrequire.True(t, errors.As(err, &pqerr))\nrequire.Equal(t, `duplicate key value violates unique constraint \"unique_name\"`, pqerr.Message)\nrequire.Equal(t, user.Table, pqerr.Table)\nrequire.Equal(t, \"unique_name\", pqerr.Constraint)\nrequire.Equal(t, pq.ErrorCode(\"23505\"), pqerr.Code, \"unique violation\")\n```",
+      "source_content_hash": "3381afc2fbde5e26adbaa8769d14edb70ab53257c75907c7bbd06413202a5a7b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_44ecd2e3"
+      }
+    },
+    {
+      "segment_id": "015c0c6e",
+      "source_content": "The code for this guide can be found in [GitHub](https://github.com/ent/ent/tree/master/examples/functionalidx).",
+      "source_content_hash": "25d153eaf8f21d8cde1f6f0d635a02f158fd909f813020938f0eb6533254cdba",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南完整代码可在 [GitHub](https://github.com/ent/ent/tree/master/examples/functionalidx) 查看。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/migration/functional-indexes.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.670300+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "d4b3738a2d06aa748b7162e663b3c41be62f8613162632de7c93698176aec56a"
+  }
+}

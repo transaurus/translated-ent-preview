@@ -1,0 +1,362 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/schema-indexes.md",
+  "source_file_content_hash": "14eba14f9f5d98eaccf87e08418b28b2661e6018ce3570327633f4df85aa33ec",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: schema-indexes\ntitle: Indexes\n---",
+      "source_content_hash": "e3b5b24690add582245379daebf9400439b8bec47fa10b8a8dafd842ee580a1c",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "## Multiple Fields",
+      "source_content_hash": "dce41e81e1bc2caa22cc3a441f5ce48c9d1baf942bae5ba247f8d243355afeaf",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 多字段索引"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "Indexes can be configured on one or more fields in order to improve \nspeed of data retrieval, or defining uniqueness.",
+      "source_content_hash": "b9228a9b76ff1b8648443bf7b438b1b1e712be91153f122c943f34c55e7008b2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "索引可配置在一个或多个字段上，以提升数据检索速度或定义唯一性约束。"
+      }
+    },
+    {
+      "segment_id": "43a8bc7e",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/index\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\nfunc (User) Indexes() []ent.Index {\n\treturn []ent.Index{\n        // non-unique index.\n        index.Fields(\"field1\", \"field2\"),\n        // unique index.\n        index.Fields(\"first_name\", \"last_name\").\n            Unique(),\n\t}\n}\n```",
+      "source_content_hash": "7ca31dee0a85403f5c7473f1a37455e97d912b9be43199bfe213983e300fdeb6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_43a8bc7e"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "Note that for setting a single field as unique, use the `Unique`\nmethod on the field builder as follows:",
+      "source_content_hash": "0a9d35319100a071a7e95487971f0e4293b9b7bbc6bf06d57a0fc94a2d996be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意：若需将单个字段设为唯一，直接在字段构建器上调用`Unique`方法即可："
+      }
+    },
+    {
+      "segment_id": "4dd51304",
+      "source_content": "```go\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"phone\").\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "941d1a68f16479119da8c1aaf1dffbf9a5b6ca661ff9e57d8cfceeac91524f9d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4dd51304"
+      }
+    },
+    {
+      "segment_id": "f44c1398",
+      "source_content": "## Index On Edges",
+      "source_content_hash": "cf127a55f04d6bb136a9d2bca15086dd3f3c99554bbd7bd66b20612511b54e43",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 关联边索引"
+      }
+    },
+    {
+      "segment_id": "29528c8d",
+      "source_content": "Indexes can be configured on composition of fields and edges. The main use-case\nis setting uniqueness on fields under a specific relation. Let's take an example:",
+      "source_content_hash": "8d8cf7a6e889158596e1f7e4a92da0c94e8dff062706d982c5ae8254d7cdae37",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "索引可配置在字段与关联边的组合上，主要用途是在特定关系下设置字段的唯一性。例如："
+      }
+    },
+    {
+      "segment_id": "f7ef78f9",
+      "source_content": "![er-city-streets](https://entgo.io/images/assets/er_city_streets.png)",
+      "source_content_hash": "0e29d04c721c53e37fe7d0f6f421c8f13ac7ae8e18de3060654545acd6cab75c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![城市-街道ER图](https://entgo.io/images/assets/er_city_streets.png)"
+      }
+    },
+    {
+      "segment_id": "b36c6338",
+      "source_content": "In the example above, we have a `City` with many `Street`s, and we want to set the\nstreet name to be unique under each city.",
+      "source_content_hash": "9e65d22745967a132f113e9f4bd1c6b2bb49347e8e5c9c2982fa0b05fb0a091b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上例中，一个`City`拥有多条`Street`，我们需要确保街道名称在每个城市下具有唯一性。"
+      }
+    },
+    {
+      "segment_id": "4d52a261",
+      "source_content": "`ent/schema/city.go`",
+      "source_content_hash": "4fdb2ee8736150280989f9fb3ab4f77316f2fdc869206220a00deff210b31a81",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema/city.go`"
+      }
+    },
+    {
+      "segment_id": "ef0d086d",
+      "source_content": "```go\n// City holds the schema definition for the City entity.\ntype City struct {\n\tent.Schema\n}\n\n// Fields of the City.\nfunc (City) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// Edges of the City.\nfunc (City) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"streets\", Street.Type),\n\t}\n}\n```",
+      "source_content_hash": "336680efb637517f451a0952195eb9610354e16e3e5d043162bb56650ba243e0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ef0d086d"
+      }
+    },
+    {
+      "segment_id": "e8e162a9",
+      "source_content": "`ent/schema/street.go`",
+      "source_content_hash": "5c6619870fe82263d3e75727ec35472fc085efda0a3c5c68c75ca5ae1087f2ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema/street.go`"
+      }
+    },
+    {
+      "segment_id": "7b2110d8",
+      "source_content": "```go\n// Street holds the schema definition for the Street entity.\ntype Street struct {\n\tent.Schema\n}\n\n// Fields of the Street.\nfunc (Street) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// Edges of the Street.\nfunc (Street) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.From(\"city\", City.Type).\n\t\t\tRef(\"streets\").\n\t\t\tUnique(),\n\t}\n}\n\n// Indexes of the Street.\nfunc (Street) Indexes() []ent.Index {\n\treturn []ent.Index{\n\t\tindex.Fields(\"name\").\n\t\t\tEdges(\"city\").\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "77b9dbbc0f556320b2a92697b293f7a3735f2f7c3a82901e472b97660eeae711",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7b2110d8"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "`example.go`",
+      "source_content_hash": "07c3d60f7b11ede405171506bfef8cfafe1611ac89b5a397b2b23173283374ea",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`example.go`"
+      }
+    },
+    {
+      "segment_id": "f39e109c",
+      "source_content": "```go\nfunc Do(ctx context.Context, client *ent.Client) error {\n\t// Unlike `Save`, `SaveX` panics if an error occurs.\n\ttlv := client.City.\n\t\tCreate().\n\t\tSetName(\"TLV\").\n\t\tSaveX(ctx)\n\tnyc := client.City.\n\t\tCreate().\n\t\tSetName(\"NYC\").\n\t\tSaveX(ctx)\n\t// Add a street \"ST\" to \"TLV\".\n\tclient.Street.\n\t\tCreate().\n\t\tSetName(\"ST\").\n\t\tSetCity(tlv).\n\t\tSaveX(ctx)\n\t// This operation fails because \"ST\"\n\t// was already created under \"TLV\".\n\tif err := client.Street.\n\t\tCreate().\n\t\tSetName(\"ST\").\n\t\tSetCity(tlv).\n\t\tExec(ctx); err == nil {\n\t\treturn fmt.Errorf(\"expecting creation to fail\")\n\t}\n\t// Add a street \"ST\" to \"NYC\".\n\tclient.Street.\n\t\tCreate().\n\t\tSetName(\"ST\").\n\t\tSetCity(nyc).\n\t\tSaveX(ctx)\n\treturn nil\n}\n```",
+      "source_content_hash": "3297e01239cdb1d3d76adaba2a9ac0b82486fbfdb7ca726d9f35a770f877a14f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f39e109c"
+      }
+    },
+    {
+      "segment_id": "be17ccc3",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/edgeindex).",
+      "source_content_hash": "c69667396e54eaf98bdc21abcda71dd63dab3b5fe31cb6648b5b8585b500e66f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例参见[GitHub仓库](https://github.com/ent/ent/tree/master/examples/edgeindex)。"
+      }
+    },
+    {
+      "segment_id": "3cd8185f",
+      "source_content": "## Index On Edge Fields",
+      "source_content_hash": "c5971d1b0d35ae6acd83377b54ea5ff16d53d23ad49e22aef8084a0ccf27c152",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 关联边字段索引"
+      }
+    },
+    {
+      "segment_id": "3e8f45da",
+      "source_content": "Currently `Edges` columns are always added after `Fields` columns. However, some indexes require these columns to come first in order to achieve specific optimizations. You can work around this problem by making use of [Edge Fields](schema-edges.mdx#edge-field). ",
+      "source_content_hash": "e4eca4135d119afcbf65026d538f82db601bba702c64c592bb4ed74321238507",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当前`Edges`列总是排在`Fields`列之后。但某些索引需要这些列优先排序以实现特定优化。可通过[边字段](schema-edges.mdx#edge-field)功能解决此问题。"
+      }
+    },
+    {
+      "segment_id": "d58c5dc0",
+      "source_content": "```go\n// Card holds the schema definition for the Card entity.\ntype Card struct {\n\tent.Schema\n}\n// Fields of the Card.\nfunc (Card) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"number\").\n\t\t\tOptional(),\n\t\tfield.Int(\"owner_id\").\n\t\t\tOptional(),\n\t}\n}\n// Edges of the Card.\nfunc (Card) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.From(\"owner\", User.Type).\n\t\t\tRef(\"card\").\n\t\t\tField(\"owner_id\").\n \t\t\tUnique(),\n \t}\n}\n// Indexes of the Card.\nfunc (Card) Indexes() []ent.Index {\n\treturn []ent.Index{\n\t\tindex.Fields(\"owner_id\", \"number\"),\n\t}\n}\n```",
+      "source_content_hash": "f781896a1fc3213a3899e2e846d7b23502c2c2c57de83d68112af1518d920726",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d58c5dc0"
+      }
+    },
+    {
+      "segment_id": "188a0310",
+      "source_content": "## Dialect Support",
+      "source_content_hash": "86a2c27788a0bf8e48e0d5ccf2cc148d5c3515715d55f36dcaecd567672458e9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 方言支持"
+      }
+    },
+    {
+      "segment_id": "5cf1bce4",
+      "source_content": "Dialect specific features are allowed using [annotations](schema-annotations.md). For example, in order to use [index prefixes](https://dev.mysql.com/doc/refman/8.0/en/column-indexes.html#column-indexes-prefix)\nin MySQL, use the following configuration:",
+      "source_content_hash": "29071fc779a92336776110fb398ff92bdd0d11f2253324c680a1935fdddb2945",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过[注解](schema-annotations.md)可使用方言特定功能。例如在MySQL中使用[索引前缀](https://dev.mysql.com/doc/refman/8.0/en/column-indexes.html#column-indexes-prefix)需如下配置："
+      }
+    },
+    {
+      "segment_id": "768336f1",
+      "source_content": "```go\n// Indexes of the User.\nfunc (User) Indexes() []ent.Index {\n\treturn []ent.Index{\n\t\tindex.Fields(\"description\").\n\t\t\tAnnotations(entsql.Prefix(128)),\n\t\tindex.Fields(\"c1\", \"c2\", \"c3\").\n\t\t\tAnnotations(\n\t\t\t\tentsql.PrefixColumn(\"c1\", 100),\n\t\t\t\tentsql.PrefixColumn(\"c2\", 200),\n\t\t\t)\n\t}\n}\n```",
+      "source_content_hash": "64c5f944425c9eb3b2e558709d54f5da6cc2d4d483da9df1c4ac2916dd702b2b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_768336f1"
+      }
+    },
+    {
+      "segment_id": "ebfad7e4",
+      "source_content": "The code above generates the following SQL statements:",
+      "source_content_hash": "3600c7de8e8acfc04821f32a0fdc0fd59808c4d1db36f747fbf217a805a085da",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码会生成如下SQL语句："
+      }
+    },
+    {
+      "segment_id": "a4a54521",
+      "source_content": "```sql\nCREATE INDEX `users_description` ON `users`(`description`(128))\n\nCREATE INDEX `users_c1_c2_c3` ON `users`(`c1`(100), `c2`(200), `c3`)\n```",
+      "source_content_hash": "d61669ff21940e6c48233830ddef5eb7d5d0a0bb2db6cb142fecc0f285fae8a4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a4a54521"
+      }
+    },
+    {
+      "segment_id": "dd21637d",
+      "source_content": "## Atlas Support",
+      "source_content_hash": "4232a48c629592455647115d0b503efc42e5213da3699792e3bb886c59f7b57d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## Atlas支持"
+      }
+    },
+    {
+      "segment_id": "09f901c3",
+      "source_content": "Starting with v0.10, Ent running migration with [Atlas](https://github.com/ariga/atlas). This option provides\nmore control on indexes such as, configuring their types or define indexes in a reverse order.",
+      "source_content_hash": "0b4ccfef5624670734a88195dd6a5e6702276852e69b1de7cc6c7e7c2aca75af",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "自v0.10起，Ent使用[Atlas](https://github.com/ariga/atlas)执行迁移。该方案提供更精细的索引控制能力，如配置索引类型或定义逆序索引。"
+      }
+    },
+    {
+      "segment_id": "3ae81768",
+      "source_content": "```go\nfunc (User) Indexes() []ent.Index {\n    return []ent.Index{\n        index.Fields(\"c1\").\n            Annotations(entsql.Desc()),\n        index.Fields(\"c1\", \"c2\", \"c3\").\n            Annotations(entsql.DescColumns(\"c1\", \"c2\")),\n        index.Fields(\"c4\").\n            Annotations(entsql.IndexType(\"HASH\")),\n        // Enable FULLTEXT search on MySQL,\n        // and GIN on PostgreSQL.\n        index.Fields(\"c5\").\n            Annotations(\n                entsql.IndexTypes(map[string]string{\n                    dialect.MySQL:    \"FULLTEXT\",\n                    dialect.Postgres: \"GIN\",\n                }),\n            ),\n\t\t// For PostgreSQL, we can include in the index\n\t\t// non-key columns.\n\t\tindex.Fields(\"workplace\").\n\t\t\tAnnotations(\n\t\t\t\tentsql.IncludeColumns(\"address\"),\n\t\t\t),\n\t\t// Define a partial index on SQLite and PostgreSQL.\n\t\tindex.Fields(\"nickname\").\n\t\t\tAnnotations(\n\t\t\t\tentsql.IndexWhere(\"active\"),\n\t\t\t),\t\n\t\t// Define a custom operator class.\n\t\tindex.Fields(\"phone\").\n\t\t\tAnnotations(\n\t\t\t\tentsql.OpClass(\"bpchar_pattern_ops\"),\n\t\t\t),\n    }\n}\n```",
+      "source_content_hash": "970e7e5e480572ad31c096d38eaeed16e487548d895b094d5b201087a4b67307",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ae81768"
+      }
+    },
+    {
+      "segment_id": "41e7f712",
+      "source_content": "The code above generates the following SQL statements:",
+      "source_content_hash": "3600c7de8e8acfc04821f32a0fdc0fd59808c4d1db36f747fbf217a805a085da",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码会生成如下SQL语句："
+      }
+    },
+    {
+      "segment_id": "2ef49e00",
+      "source_content": "```sql\nCREATE INDEX `users_c1` ON `users` (`c1` DESC)\n\nCREATE INDEX `users_c1_c2_c3` ON `users` (`c1` DESC, `c2` DESC, `c3`)\n\nCREATE INDEX `users_c4` ON `users` USING HASH (`c4`)\n\n-- MySQL only.\nCREATE FULLTEXT INDEX `users_c5` ON `users` (`c5`)\n\n-- PostgreSQL only.\nCREATE INDEX \"users_c5\" ON \"users\" USING GIN (\"c5\")\n\n-- Include index-only scan on PostgreSQL.\nCREATE INDEX \"users_workplace\" ON \"users\" (\"workplace\") INCLUDE (\"address\")\n\n-- Define partial index on SQLite and PostgreSQL.\nCREATE INDEX \"users_nickname\" ON \"users\" (\"nickname\") WHERE \"active\"\n\n-- PostgreSQL only.\nCREATE INDEX \"users_phone\" ON \"users\" (\"phone\" bpchar_pattern_ops)\n```",
+      "source_content_hash": "987a1ea814d2af46915d743158fa786cae962221a463cd9c9328c8380c1e0d89",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2ef49e00"
+      }
+    },
+    {
+      "segment_id": "9a53bcb1",
+      "source_content": "## Functional Indexes",
+      "source_content_hash": "e6a86e1ef43cc292c828ba6450c07c4082fdaaafe083c29f0dcb225820591528",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 函数式索引"
+      }
+    },
+    {
+      "segment_id": "bed77f05",
+      "source_content": "The Ent schema supports defining indexes on fields and edges (foreign-keys), but there is no API for defining index\nparts as expressions, such as function calls. If you are using [Atlas](https://atlasgo.io/docs) for managing schema\nmigrations, you can define functional indexes as described in [this guide](/docs/migration/functional-indexes).",
+      "source_content_hash": "9f456e5cd841a9bc618d40982cb1c82052c35c6e33ba2c323e1d470dc76b3a57",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent模式支持在字段和关联边（外键）上定义索引，但未提供将索引部分定义为表达式（如函数调用）的API。若使用[Atlas](https://atlasgo.io/docs)管理模式迁移，可参考[本指南](/docs/migration/functional-indexes)定义函数式索引。"
+      }
+    },
+    {
+      "segment_id": "bea5d450",
+      "source_content": "## Storage Key",
+      "source_content_hash": "ff75b8bedb88f121fb52a904f8480c5e1b54a1ad55e2ced505b4a6c700568748",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 存储键名"
+      }
+    },
+    {
+      "segment_id": "aa705b4d",
+      "source_content": "Like Fields, custom index name can be configured using the `StorageKey` method.\nIt's mapped to an index name in SQL dialects.",
+      "source_content_hash": "d02a6abbde523a5bba71f7760cef71095f4999ee3c01cd421d4f3128a705602b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "与字段类似，可通过`StorageKey`方法配置自定义索引名称，该名称会映射为SQL方言中的索引名。"
+      }
+    },
+    {
+      "segment_id": "00c94fa3",
+      "source_content": "```go\nfunc (User) Indexes() []ent.Index {\n\treturn []ent.Index{\n\t\tindex.Fields(\"field1\", \"field2\").\n\t\t\tStorageKey(\"custom_index\"),\n\t}\n}\n```",
+      "source_content_hash": "1507677a49701a5dcaabca1de098c0a3c3d1eca918bc01cb95784cc788c3115c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_00c94fa3"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/schema-indexes.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.684239+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "14eba14f9f5d98eaccf87e08418b28b2661e6018ce3570327633f4df85aa33ec"
+  }
+}

@@ -1,0 +1,332 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/paging.mdx",
+  "source_file_content_hash": "1d7f3529c49bf79f08d8a9b149241afa1c6bab2a8113850c21ffc4f0497d6d2f",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: paging\ntitle: Paging And Ordering\n---",
+      "source_content_hash": "38d33b8b4410c9b7c20703b6114aa03d5367bd5b3c79f1bfbf080c1b9c84b38f",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "## Limit",
+      "source_content_hash": "be459bdce73901d2e665adde42c742cd7175a155de2cb9be485109d44dc331c3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 限制查询结果"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "`Limit` limits the query result to `n` entities.",
+      "source_content_hash": "fb71bd209b04b883594803a2ce6c04ba9640040304630bb8f016ba3264708d97",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Limit` 方法将查询结果限制为 `n` 条实体记录。"
+      }
+    },
+    {
+      "segment_id": "b9c7a144",
+      "source_content": "```go\nusers, err := client.User.\n\tQuery().\n\tLimit(n).\n\tAll(ctx)\n```",
+      "source_content_hash": "8ba89fd7f210c1886b8fe4ca97900ea6c1016c6e279cd09a51320654e433e333",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b9c7a144"
+      }
+    },
+    {
+      "segment_id": "418617bd",
+      "source_content": "## Offset",
+      "source_content_hash": "0347f4fe10593e9d962fb67cfdef1eeff50fb5288b48b1b01157fec2f3d300fb",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 偏移量"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "`Offset` sets the first node to return from the query. ",
+      "source_content_hash": "cd3b277fd8dfbcca5dcc167fda42149a26147465a67f6d3fd3fc26d9bd54a11c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Offset` 方法设置查询返回的起始记录位置。"
+      }
+    },
+    {
+      "segment_id": "3569d545",
+      "source_content": "```go\nusers, err := client.User.\n\tQuery().\n\tOffset(10).\n\tAll(ctx)\n```",
+      "source_content_hash": "ec7ca88144b731355968c8ac5735b8c51cb804fc13fa828a4d0e162d155c062b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3569d545"
+      }
+    },
+    {
+      "segment_id": "b25f21be",
+      "source_content": "## Ordering",
+      "source_content_hash": "033a2d7ce9ef109fef0be3011b28f0e107d8690a287002acfe2d4f807378104c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 排序"
+      }
+    },
+    {
+      "segment_id": "7499a4e7",
+      "source_content": "`Order` returns the entities sorted by the values of one or more fields. Note that, an error\nis returned if the given fields are not valid columns or foreign-keys.",
+      "source_content_hash": "5c7f1e5419ce3c48006395b5257c6985056fc72f3369e602f9334fb5045811a3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Order` 方法按一个或多个字段值对实体进行排序。注意：若指定字段不是有效列或外键，将返回错误。"
+      }
+    },
+    {
+      "segment_id": "be2d5397",
+      "source_content": "```go\nusers, err := client.User.Query().\n\tOrder(ent.Asc(user.FieldName)).\n\tAll(ctx)\n```",
+      "source_content_hash": "002c77ba4e62b1da9b8b2f9b76464cb48cb0ccdbfc3a579bd2bc6310a299626c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be2d5397"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "Starting with version `v0.12.0`, Ent generates type-safe ordering functions for fields and edges. The following\nexample demonstrates how to use these generated functions:",
+      "source_content_hash": "5bf1ab2f3e2c254d49df2d2ab1f955e41879e55fad11cc4932a59b1c5c217bb0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "自 `v0.12.0` 版本起，Ent 会为字段和边生成类型安全的排序函数。以下示例演示如何使用这些生成函数："
+      }
+    },
+    {
+      "segment_id": "4ec2920d",
+      "source_content": "```go\n// Get all users sorted by their name (and nickname) in ascending order.\nusers, err := client.User.Query().\n\tOrder(\n\t\t// highlight-start\n\t\tuser.ByName(),\n\t\tuser.ByNickname(),\n\t\t// highlight-end\n\t).\n\tAll(ctx)\n\n// Get all users sorted by their nickname in descending order.\nusers, err := client.User.Query().\n\tOrder(\n\t\t// highlight-start\n\t\tuser.ByNickname(\n\t\t\tsql.OrderDesc(),\n\t\t),\n\t\t// highlight-end\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "6f96b737950d84f8b971528b86c42765404d3335863e3b7fa6f726bf9bc222c9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4ec2920d"
+      }
+    },
+    {
+      "segment_id": "3ef18741",
+      "source_content": "## Order By Edge Count",
+      "source_content_hash": "bb62d5b7632aaea2a364c97e42f69863a285974766bd19314c117f2d081b11cb",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 按关联边数量排序"
+      }
+    },
+    {
+      "segment_id": "e7772088",
+      "source_content": "`Order` can also be used to sort entities based on the number of edges they have. For example, the following query\nreturns all users sorted by the number of posts they have:",
+      "source_content_hash": "38567a92c75c588f7f1fe56bf8fb2e697ea5d34386ce8ecd54eebdb7928a2039",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Order` 也可基于实体拥有的边数量进行排序。例如，以下查询返回所有用户并按他们拥有的帖子数量排序："
+      }
+    },
+    {
+      "segment_id": "af983f82",
+      "source_content": "```go\nusers, err := client.User.Query().\n\tOrder(\n\t\t// highlight-start\n\t\t// Users without posts are sorted first.\n\t\tuser.ByPostsCount(),\n\t\t// highlight-end\n\t).\n\tAll(ctx)\n\nusers, err := client.User.Query().\n\tOrder(\n\t\t// highlight-start\n\t\t// Users without posts are sorted last.\n\t\tuser.ByPostsCount(\n\t\t\tsql.OrderDesc(),\n\t\t),\n\t\t// highlight-end\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "66ac086e1a20b5f49312fc252dfbfffabc04f3370e8680f32b4f7c174c605d32",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_af983f82"
+      }
+    },
+    {
+      "segment_id": "5baf88e2",
+      "source_content": "## Order By Edge Field",
+      "source_content_hash": "9c65b3befac30d34bb38e041fb08eef32327db0bf09c554f4e19b44af2e78c53",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 按关联边字段排序"
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "Entities can also be sorted by the value of an edge field. For example, the following query returns all posts sorted by\ntheir author's name:",
+      "source_content_hash": "5688dd70fa50167f67d10a8d585aa19e0b41bbb7d387d337042eca1f4e49f7a5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "实体也可按关联边的字段值排序。例如，以下查询返回所有帖子并按作者姓名排序："
+      }
+    },
+    {
+      "segment_id": "efbe5e3f",
+      "source_content": "```go\n// Posts are sorted by their author's name in ascending\n// order with NULLs first unless otherwise specified.\nposts, err := client.Post.Query().\n\tOrder(\n\t\t// highlight-next-line\n\t\tpost.ByAuthorField(user.FieldName),\n\t).\n\tAll(ctx)\n\nposts, err := client.Post.Query().\n\tOrder(\n\t\t// highlight-start\n\t\tpost.ByAuthorField(\n\t\t\tuser.FieldName,\n\t\t\tsql.OrderDesc(),\n\t\t\tsql.OrderNullsFirst(),\n\t\t),\n\t\t// highlight-end\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "87cbb85522bca01b326dfdba0947b334ed096f6725594e9a95b02506cffc8e8a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_efbe5e3f"
+      }
+    },
+    {
+      "segment_id": "64d57278",
+      "source_content": "## Custom Edge Terms",
+      "source_content_hash": "fef839c3f0530d206c49709e9921454d6909e1b41f25d0e3cae3a5cc9b8b457b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自定义边条件排序"
+      }
+    },
+    {
+      "segment_id": "5f82a1e9",
+      "source_content": "The generated edge ordering functions support custom terms. For example, the following query returns all users sorted\nby the sum of their posts' likes and views:",
+      "source_content_hash": "460f2b2cf5f38aaf87c18b968106272176659d7a130a4b33ed59f180f2c99b0e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的边排序函数支持自定义条件。例如，以下查询返回所有用户并按他们帖子点赞数与浏览量的总和排序："
+      }
+    },
+    {
+      "segment_id": "2f34b0ad",
+      "source_content": "```go\n// Ascending order.\nposts, err := client.User.Query().\n\tOrder(\n\t\t// highlight-start\n\t\tuser.ByPosts(\n\t\t\tsql.OrderBySum(post.FieldNumLikes),\n\t\t\tsql.OrderBySum(post.FieldNumViews),\n\t\t),\n\t\t// highlight-end\n\t).\n\tAll(ctx)\n\n// Descending order.\nposts, err := client.User.Query().\n\tOrder(\n\t\t// highlight-start\n\t\tuser.ByPosts(\n\t\t\tsql.OrderBySum(\n\t\t\t\tpost.FieldNumLikes,\n\t\t\t\tsql.OrderDesc(),\n\t\t\t),\n\t\t\tsql.OrderBySum(\n\t\t\t\tpost.FieldNumViews,\n\t\t\t\tsql.OrderDesc(),\n\t\t\t),\n\t\t),\n\t\t// highlight-end\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "72f4e99b4f29a252ae0edbd4990d41aa1c9dac39579fcac47fba7965feb051e3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2f34b0ad"
+      }
+    },
+    {
+      "segment_id": "3c6dd548",
+      "source_content": "## Select Order Terms",
+      "source_content_hash": "19e88a2466cb11a23a07d4b613bc8964888554aae56bc8eb448ea19fc3cef8b7",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 选择排序条件"
+      }
+    },
+    {
+      "segment_id": "6f08f877",
+      "source_content": "Ordered terms like `SUM()` and `COUNT()` are not defined in the schema and thus do not exist on the generated entities.\nHowever, sometimes there is a need to retrieve their information in order to either display it to the user or implement\ncursor-based pagination. The `Value` method, defined on each entity, allows you to obtain the order value if it was\nselected in the query:",
+      "source_content_hash": "7aec320d2f9a29e1969ae87e0cc52fed97804dc9c3dce285c3ca68d52819b24e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "像 `SUM()` 和 `COUNT()` 这样的聚合排序条件并未在模式中定义，因此不会出现在生成的实体上。但有时需要获取这些信息用于用户展示或实现基于游标的分页。每个实体上定义的 `Value` 方法允许在查询中选择排序条件时获取其值："
+      }
+    },
+    {
+      "segment_id": "b5ea89c4",
+      "source_content": "```go\n// Define the alias for the order term.\nconst as = \"pets_count\"\n\n// Query users sorted by the number of pets\n// they have and select the order term.\nusers := client.User.Query().\n\tOrder(\n\t\tuser.ByPetsCount(\n\t\t\tsql.OrderDesc(),\n\t\t\t// highlight-next-line\n\t\t\tsql.OrderSelectAs(as),\n\t\t),\n\t\tuser.ByID(),\n\t).\n\tAllX(ctx)\n\n// Retrieve the order term value.\nfor _, u := range users {\n\t// highlight-next-line\n\tfmt.Println(u.Value(as))\n}\n```",
+      "source_content_hash": "1d9b15c60b1ea7531b3ba9ef2faff35a82e060745ea6316cf5714732e2abdded",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b5ea89c4"
+      }
+    },
+    {
+      "segment_id": "be4b1cbf",
+      "source_content": "## Custom Ordering",
+      "source_content_hash": "761e933e47bd5367610e84d39e5a3ca462e9cf1243f83539b067499caba08659",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自定义排序"
+      }
+    },
+    {
+      "segment_id": "b27c61de",
+      "source_content": "Custom ordering functions can be useful if you want to write your own storage-specific logic.",
+      "source_content_hash": "2418157c0c784926aa22c6d2f8569d2892986587363163007768412c5960631d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当需要编写特定存储逻辑时，自定义排序函数会非常有用。"
+      }
+    },
+    {
+      "segment_id": "de34d0f2",
+      "source_content": "```go\nnames, err := client.Pet.Query().\n\tOrder(func(s *sql.Selector) {\n\t\t// Logic goes here.\n\t}).\n\tSelect(pet.FieldName).\n\tStrings(ctx)\n```",
+      "source_content_hash": "24d385efa63ae5768e480f4d506a412bedc7ee7ce68230ed8226227d34c1bdba",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de34d0f2"
+      }
+    },
+    {
+      "segment_id": "a9de5d69",
+      "source_content": "#### Order by JSON fields",
+      "source_content_hash": "9d607a8d4a854b69e5ca4c8b74337a424454b04ed36b5cdb5b10f27e325188d5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 按JSON字段排序"
+      }
+    },
+    {
+      "segment_id": "e6ac016e",
+      "source_content": "The [`sqljson`](https://pkg.go.dev/entgo.io/ent/dialect/sql/sqljson) package allows to easily sort data based on the\nvalue of a JSON object:",
+      "source_content_hash": "2ef0fcd52616399ecccce84f4d4c71fef1caf24b8ad26b68255fbf6c4b97ad8f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[`sqljson`](https://pkg.go.dev/entgo.io/ent/dialect/sql/sqljson) 包支持基于JSON对象值轻松排序数据："
+      }
+    },
+    {
+      "segment_id": "0f9ea278",
+      "source_content": "<Tabs>\n<TabItem value=\"value\" label=\"By Value\" default>\n\n```go {3}\nusers := client.User.Query().\n    Order(\n        sqljson.OrderValue(user.FieldData, sqljson.Path(\"key1\", \"key2\")),\n    ).\n    AllX(ctx)\n```\n\n</TabItem>\n<TabItem value=\"length\" label=\"By Length\">\n\n```go {3}\nusers := client.User.Query().\n    Order(\n        sqljson.OrderLen(user.FieldData, sqljson.Path(\"key1\", \"key2\")),\n    ).\n    AllX(ctx)\n```\n\n</TabItem>\n<TabItem value=\"desc\" label=\"Descending\">\n\n```go {3,9}\nusers := client.User.Query().\n    Order(\n        sqljson.OrderValueDesc(user.FieldData, sqljson.Path(\"key1\", \"key2\")),\n    ).\n    AllX(ctx)\n\npets := client.Pet.Query().\n    Order(\n        sqljson.OrderLenDesc(pet.FieldData, sqljson.Path(\"key1\", \"key2\")),\n    ).\n    AllX(ctx)\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "3af121798793e368c58aa45e3430bcb28cc0754e153e709f07c6fe83ce8d6cc8",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0f9ea278"
+      }
+    },
+    {
+      "segment_id": "2d2470c7",
+      "source_content": "<details>\n<summary>PostgreSQL limitation on <code>ORDER BY</code> expressions with <code>SELECT DISTINCT</code></summary>\n<div>\n\nPostgreSQL does not support `ORDER BY` expressions with `SELECT DISTINCT`. Thus, the `Unique` modifier should be set\nto `false`. However, keep in mind that this may result in duplicate results when performing graph traversals.\n\n```diff\nusers := client.User.Query().\n    Order(\n        sqljson.OrderValue(user.FieldData, sqljson.Path(\"key1\", \"key2\")),\n    ).\n+   Unique(false).\n    AllX(ctx)\n```\n\n</div>\n</details>",
+      "source_content_hash": "dd23080de14f47019062b3472f90d52f214bcc5bb7f7d7f7916fd5c8956434b8",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2d2470c7"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/paging.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.683713+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "1d7f3529c49bf79f08d8a9b149241afa1c6bab2a8113850c21ffc4f0497d6d2f"
+  }
+}

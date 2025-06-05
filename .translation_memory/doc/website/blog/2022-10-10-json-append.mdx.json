@@ -1,0 +1,492 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2022-10-10-json-append.mdx",
+  "source_file_content_hash": "493a39c53d7f7fb3b496cb7b6d56c1368b74cee68b9465c90cb128b2435721da",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Appending values to JSON fields with Ent\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\nimage: \"https://entgo.io/images/assets/ent-json-append.png\"\n---",
+      "source_content_hash": "2f837009670da7ec0f34f48a52ae84dfa20e7d5ba3c22afc62a301b1422b3951",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b608d7f0",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b608d7f0"
+      }
+    },
+    {
+      "segment_id": "70153c6e",
+      "source_content": "### TL;DR",
+      "source_content_hash": "216375cfd413556232ef4b112b7b069b33f020b9b60abe44f9d205111340c7b9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 内容提要"
+      }
+    },
+    {
+      "segment_id": "4ddf6ae7",
+      "source_content": "* Most relational databases support columns with unstructured JSON values.\n* Ent has great support for working with JSON values in relational databases.\n* How to append values to a JSON array in an atomic way.\n* Ent recently added support for atomically appending values to fields in JSON values.",
+      "source_content_hash": "9ba9bf7835b722f5b259ef62e1601ffb198736bae0a21097faa80f1ad3aca387",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 大多数关系型数据库都支持存储非结构化JSON值的列\n* Ent为操作关系型数据库中的JSON值提供了出色支持\n* 如何以原子方式向JSON数组追加值\n* Ent近期新增了对JSON字段值原子化追加的支持"
+      }
+    },
+    {
+      "segment_id": "418617bd",
+      "source_content": "### JSON values in SQL databases",
+      "source_content_hash": "d29cf0afe2eb65480d7c1f336b601212b92b7a0132ba36c681d6553c8bf86650",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### SQL数据库中的JSON值"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "Despite being known mostly for storing structured tabular data, virtually all\nmodern relational databases support JSON columns for storing unstructured data\nin table columns. For example, in MySQL you can create a table such as:",
+      "source_content_hash": "c883a16011ed38edf5f17c3996fe31d579c9ccff7126df38ee922f24b2ab6f6a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "尽管关系型数据库以存储结构化表格数据著称，但几乎所有现代关系型数据库都支持JSON列来存储非结构化数据。例如在MySQL中可以创建如下表："
+      }
+    },
+    {
+      "segment_id": "08021a08",
+      "source_content": "```sql\nCREATE TABLE t1 (jdoc JSON);\n```",
+      "source_content_hash": "830d9982ab719c5b7fc0b6efcf11e5b8cb777d7389fa418e7ea70ce7f87b2a86",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_08021a08"
+      }
+    },
+    {
+      "segment_id": "dfe931a2",
+      "source_content": "In this column, users may store JSON objects of an arbitrary schema:",
+      "source_content_hash": "ba2a1b2f40d4ec15940458b13b83e8b90c782390b8969e74c2592435ba616368",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该列允许存储任意结构的JSON对象："
+      }
+    },
+    {
+      "segment_id": "a2110253",
+      "source_content": "```sql\nINSERT INTO t1 VALUES('{\"key1\": \"value1\", \"key2\": \"value2\"}');\n```",
+      "source_content_hash": "60a20e7cb1f17dd2240b9558c6e004b85faf82f46183b84cda3570ce01c28dff",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a2110253"
+      }
+    },
+    {
+      "segment_id": "97ae4a01",
+      "source_content": "Because JSON documents can always be expressed as strings, they can\nbe stored in regular VARCHAR or TEXT columns. However, when a column is declared\nwith the JSON type, the database enforces the correctness of the JSON\nsyntax. For example, if we try to write an incorrect JSON document to\nthis MySQL table: ",
+      "source_content_hash": "31fa7e6117900f1df5effe34cbece21ea6e8b34ce552d4524ff6c190e04aba9d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于JSON文档始终可以表示为字符串，它们可以被存储在常规VARCHAR或TEXT列中。但当列被声明为JSON类型时，数据库会强制校验JSON语法。例如如果我们尝试向该MySQL表写入格式错误的JSON文档："
+      }
+    },
+    {
+      "segment_id": "026f2f3e",
+      "source_content": "```sql\nINSERT INTO t1 VALUES('[1, 2,');\n```",
+      "source_content_hash": "02712ac9b1f24c70e21ecc563fd5f096a682a12032cf52a2727f04719939c233",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_026f2f3e"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "We will receive this error:",
+      "source_content_hash": "4634b6edfc903562f453be5bb984c271bc8bac82be41a26efd7f4a23778a239e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "将会收到如下错误："
+      }
+    },
+    {
+      "segment_id": "4ec2920d",
+      "source_content": "```console\nERROR 3140 (22032) at line 2: Invalid JSON text:\n\"Invalid value.\" at position 6 in value (or column) '[1, 2,'.\n```",
+      "source_content_hash": "091ad672cb142b08c193787351b51aafbb40e7acb3b7a79fc2b18bae8f956a8c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4ec2920d"
+      }
+    },
+    {
+      "segment_id": "a44047a5",
+      "source_content": "In addition, values stored inside JSON documents may be accessed \nin SELECT statements using [JSON Path](https://dev.mysql.com/doc/refman/8.0/en/json.html#json-path-syntax)\nexpressions, as well as used in predicates (WHERE clauses) to filter data:",
+      "source_content_hash": "13ec22fa3f559fef248ac1ba65602663fca9ede237ce0a32d15e66302963eea5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此外，可以通过[JSON路径](https://dev.mysql.com/doc/refman/8.0/en/json.html#json-path-syntax)表达式在SELECT语句中访问JSON文档内部的值，也能在谓词(WHERE子句)中用于数据过滤："
+      }
+    },
+    {
+      "segment_id": "ac961110",
+      "source_content": "```sql\nselect c->'$.hello' as greeting from t where c->'$.hello' = 'world';;\n```",
+      "source_content_hash": "26d87c4aa9312b8b0e5ce0ae9d20ff7a71607521eb2c221b9d4f4e4048aaa6bb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ac961110"
+      }
+    },
+    {
+      "segment_id": "b9aaa519",
+      "source_content": "To get:",
+      "source_content_hash": "c1ea8fcecc4cfab729d345703464e8a35dfcedbebdf24afade0d4aa5652455d7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行结果："
+      }
+    },
+    {
+      "segment_id": "c3955998",
+      "source_content": "```text\n+--------------+\n| greeting     |\n+--------------+\n| \"world\"      |\n+--------------+\n1 row in set (0.00 sec)\n```",
+      "source_content_hash": "b693e45fbcad1dafd2497d38eed55dd70b67da2ece0b79a595ca9b6262abf63a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c3955998"
+      }
+    },
+    {
+      "segment_id": "8c6d7ee7",
+      "source_content": "### JSON values in Ent",
+      "source_content_hash": "e4086b5cf2c0f8bcb3465e66ef04713b383aa202f264bfe05ea20dc0150a3975",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Ent中的JSON值"
+      }
+    },
+    {
+      "segment_id": "06e24cc0",
+      "source_content": "With Ent, users may define JSON fields in schemas using `field.JSON` by passing\nthe desired field name as well as the backing Go type. For example:",
+      "source_content_hash": "14a7fb03c2b76eec50d367db155afbc419ab96a77ed34424b4ea1d684bc5f72b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在Ent中，用户可以通过`field.JSON`定义JSON字段，指定字段名称和底层Go类型。例如："
+      }
+    },
+    {
+      "segment_id": "17c579d2",
+      "source_content": "```go\ntype Tag struct {\n\tName    string    `json:\"name\"`\n\tCreated time.Time `json:\"created\"`\n}\n\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.JSON(\"tags\", []Tag{}),\n\t}\n}\n```",
+      "source_content_hash": "7b56bc36c18648928f019eb2fd4d9c7de36e76cb078e3b425774f39c3235adab",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_17c579d2"
+      }
+    },
+    {
+      "segment_id": "a1fa5396",
+      "source_content": "Ent provides a convenient API for reading and writing values to JSON columns, as well\nas applying predicates (using [`sqljson`](https://entgo.io/docs/predicates/#json-predicates)):",
+      "source_content_hash": "5aef62617a8a2afecdb7f2c3fc896d34b23f5a9a608f89026df8e7e7a8e27d7b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent提供了便捷的API来读写JSON列中的值，并支持使用[`sqljson`](https://entgo.io/docs/predicates/#json-predicates)谓词进行查询："
+      }
+    },
+    {
+      "segment_id": "8c3563d3",
+      "source_content": "```go\nfunc TestEntJSON(t *testing.T) {\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tctx := context.Background()\n\t// Insert a user with two comments.\n\tclient.User.Create().\n\t\tSetTags([]schema.Tag{\n\t\t\t{Name: \"hello\", Created: time.Now()},\n\t\t\t{Name: \"goodbye\", Created: time.Now()},\n\t\t}).\n\t\tSaveX(ctx)\n\n\t// Count how many users have more than zero tags.\n\tcount := client.User.Query().\n\t\tWhere(func(s *sql.Selector) {\n\t\t\ts.Where(\n\t\t\t\tsqljson.LenGT(user.FieldTags, 0),\n\t\t\t)\n\t\t}).\n\t\tCountX(ctx)\n\tfmt.Printf(\"count: %d\", count)\n\t// Prints: count: 1\n}\n```",
+      "source_content_hash": "6e97285c5a3034a63fcae70c1020ab1fc8c2d84fb4632122d88e4342c638f46a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8c3563d3"
+      }
+    },
+    {
+      "segment_id": "d1f76d04",
+      "source_content": "### Appending values to fields in JSON columns",
+      "source_content_hash": "120e07e9b908a38ea92d74c8ad5523d475b58e4b61cf43169fc20d3712c0b273",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 向JSON列中的字段追加值"
+      }
+    },
+    {
+      "segment_id": "6693c38c",
+      "source_content": "In many cases, it is useful to append a value to a list in a JSON column.\nPreferably, appends are implemented in a way that is _atomic_, meaning, without\nneeding to read the current value and writing the entire new value. The reason\nfor this is that if two calls try to append the value concurrently, both will\nread the same _current_ value from the database, and write their own updated version\nroughly at the same time. Unless [optimistic locking](2021-07-22-database-locking-techniques-with-ent.md)\nis used, both writes will succeed, but the final result will only include one of\nthe new values. ",
+      "source_content_hash": "6cb1fb416bf0ce97b621c89214ae0e3eedfcc4e8ce5274dc7301d52c50b34923",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "许多场景下需要向JSON列中的列表追加值。理想情况下，追加操作应以原子方式实现，即无需读取当前值就能写入完整新值。这是因为如果两个并发调用尝试追加值，两者会从数据库读取相同的当前值，并几乎同时写入各自更新的版本。除非使用[乐观锁](2021-07-22-database-locking-techniques-with-ent.md)，否则两次写入都会成功，但最终结果只会包含其中一个新值。"
+      }
+    },
+    {
+      "segment_id": "558df877",
+      "source_content": "To overcome this race condition, we can let the database take care of the synchronization\nbetween both calls by using a clever UPDATE query. The intuition for this solution\nis similar to how counters are incremented in many applications. Instead of running:",
+      "source_content_hash": "754066096bcfbd93ede7a25c2e57fb2b9b1cba77de705c0333c7c9d565dbb3a3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为解决这个竞态条件，我们可以通过巧妙的UPDATE查询让数据库处理调用间的同步。这个解决方案的直觉类似于许多应用中计数器递增的实现。与其执行："
+      }
+    },
+    {
+      "segment_id": "3917a88d",
+      "source_content": "```sql\nSELECT points from leaderboard where user='rotemtam' \n```",
+      "source_content_hash": "7c32e5d7859c0f2b9e3779402e747feac6f7c255ef32520f9ee82865ec40a0b6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3917a88d"
+      }
+    },
+    {
+      "segment_id": "6fc234cf",
+      "source_content": "Reading the result (lets say its 1000), incrementing the value in process (1000+1=1001) and writing the new sum\nverbatim:",
+      "source_content_hash": "674e9fd98c3818e958bd241d5e247a4211353bd1ee3cfbc18d296244a458fc51",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "读取结果(假设是1000)，在进程中递增(1000+1=1001)并原样写入新值："
+      }
+    },
+    {
+      "segment_id": "a3a1b8eb",
+      "source_content": "```sql\nUPDATE leaderboard SET points=1001 where user='rotemtam'\n```",
+      "source_content_hash": "c17943d88319bb90b251ad9877f53089590786bd7b22076f3a7afe09ef6e3665",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a3a1b8eb"
+      }
+    },
+    {
+      "segment_id": "9c9e2b64",
+      "source_content": "Developers can use a query such as:",
+      "source_content_hash": "9ff71120e2cdff59855d09dd53decc3d95c26dcb5b1ab883b8fb0e884a5c842e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "开发者可以使用如下查询："
+      }
+    },
+    {
+      "segment_id": "136818ce",
+      "source_content": "```sql\nUPDATE leaderboard SET points=points+1 where user='rotemtam'\n```",
+      "source_content_hash": "83280d2c44c37c6eacec74f9768265d8ba3a28a463c9ed2219c900d956c1438b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_136818ce"
+      }
+    },
+    {
+      "segment_id": "14bc6b75",
+      "source_content": "To avoid the need to synchronize writes using optimistic locking\nor some other mechanism, let's see how we can similarly leverage the database's capability to\nperform them concurrently in a safe manner.",
+      "source_content_hash": "a0889c6d1c004bfb9b2d4a24e8dea19c5e65fa7cf7601f90e90b0de51c7ffd43",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为避免需要通过乐观锁或其他机制同步写入，下面我们看看如何类似地利用数据库能力安全地并发执行这些操作。"
+      }
+    },
+    {
+      "segment_id": "534ac82e",
+      "source_content": "There are two things to note as we are constructing this query. First, the syntax for working\nwith JSON values varies a bit between different database vendors, as you will see in\nthe examples below. Second, a query for appending a value to a list in a JSON document\nneeds to handle at least two edge cases:",
+      "source_content_hash": "290048dffd15f95116515fbd5bdab58da51cf42eecc920872dab1833f51d295a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "构建此类查询时需注意两点：首先，不同数据库厂商处理JSON值的语法略有差异(如下例所示)；其次，向JSON文档列表追加值的查询需要至少处理两种边界情况："
+      }
+    },
+    {
+      "segment_id": "17ca27eb",
+      "source_content": "1. The field we want to append to doesn't exist yet in the JSON document.\n2. The field exists but is set to JSON `null`.",
+      "source_content_hash": "7c2c6453577c1eb7f0fa4abd8632bfb1307c7ce806fedf782574dbbf4df911bc",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 目标JSON字段在文档中尚不存在。\n2. 字段存在但其值为JSON `null`。"
+      }
+    },
+    {
+      "segment_id": "be17ccc3",
+      "source_content": "Here is what such a query might look like for appending a value `new_val` to a field named `a`\nin a column `c` for table `t` in different dialects:",
+      "source_content_hash": "ca65e26816232b17d679f0b6e8beb62959dd62bec01b7baa80d2d48524c2a0a3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下是针对不同数据库方言，在表`t`的列`c`中向名为`a`的字段追加值`new_val`的查询示例："
+      }
+    },
+    {
+      "segment_id": "ec1057e4",
+      "source_content": "<Tabs\n    defaultValue=\"mysql\"\n    values={[\n        {label: 'MySQL', value: 'mysql'},\n        {label: 'PostgeSQL', value: 'pgsql'},\n        {label: 'SQLite', value: 'sqlite'},\n    ]}>\n<TabItem value=\"mysql\">\n\n```sql\nUPDATE `t` SET `c` = CASE\nWHEN\n    (JSON_TYPE(JSON_EXTRACT(`c`, '$.a')) IS NULL\n    OR JSON_TYPE(JSON_EXTRACT(`c`, '$.a')) = 'NULL')\nTHEN\n    JSON_SET(`c`, '$.a', JSON_ARRAY('new_val'))\nELSE\n    JSON_ARRAY_APPEND(`c`, '$.a', 'new_val')\nEND\n```\n\n</TabItem>\n<TabItem value=\"pgsql\">\n\n```sql\nUPDATE \"t\" SET \"c\" = CASE\nWHEN\n    ((\"c\"->'a')::jsonb IS NULL\n    OR (\"c\"->'a')::jsonb = 'null'::jsonb)\nTHEN\n    jsonb_set(\"c\", '{a}', 'new_val', true)\nELSE\n    jsonb_set(\"c\", '{a}', \"c\"->'a' || 'new_val', true)\nEND\n```\n\n</TabItem>\n<TabItem value=\"sqlite\">\n\n```sql\nUPDATE `t` SET `c` = CASE\nWHEN\n    (JSON_TYPE(`c`, '$') IS NULL\n    OR JSON_TYPE(`c`, '$') = 'null')\nTHEN\n    JSON_ARRAY(?)\nELSE\n    JSON_INSERT(`c`, '$[#]', ?)\nEND\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "abd6447abe3cc4df2c4b493617a978e32b76d5338b4356fd3fc5027699c29613",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ec1057e4"
+      }
+    },
+    {
+      "segment_id": "a9de5d69",
+      "source_content": "### Appending values to JSON fields with Ent",
+      "source_content_hash": "71f85de908f0ae7d3bb5310a753d0a9c0e942cb1e4eb51997a35cdf22859fa98",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 使用Ent向JSON字段追加值"
+      }
+    },
+    {
+      "segment_id": "e6ac016e",
+      "source_content": "Ent recently added support for atomically appending values to fields in JSON\ncolumns. Let's see how it can be used.",
+      "source_content_hash": "1137f07a7377d98dd53b608825a7f7f197ea953b06364df5aabeef77deaeaf68",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent近期新增了对JSON列字段原子化追加值的支持，下面演示具体使用方法。"
+      }
+    },
+    {
+      "segment_id": "90c4b96b",
+      "source_content": "If the backing type of the JSON field is a slice, such as:",
+      "source_content_hash": "e8ce265349d2f100d891db13996195d5812fa01d15920da629d786e3c883f800",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若JSON字段的底层类型是切片，例如："
+      }
+    },
+    {
+      "segment_id": "b3890715",
+      "source_content": "```go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\t// highlight-start\n\t\tfield.JSON(\"tags\", []string{}),\n\t\t// highlight-end\n\t}\n}\n```",
+      "source_content_hash": "12db8cdf0fad6c8e7c23fea2afe30668efb4c4345c7e9fc10db729846255c2ea",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b3890715"
+      }
+    },
+    {
+      "segment_id": "833ce577",
+      "source_content": "Ent will generate a method `AppendTags` on the update mutation builders.\nYou can use them like so:",
+      "source_content_hash": "2683865439085747cefdab2abe5781e5ea3b1022091924e41ef074eead648af5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent会在更新突变构建器上生成`AppendTags`方法，调用方式如下："
+      }
+    },
+    {
+      "segment_id": "3d4d9546",
+      "source_content": "```go\nfunc TestAppend(t *testing.T) {\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tctx := context.Background()\n\t// Insert a user with two tags.\n\tu := client.User.Create().\n\t\tSetTags([]string{\"hello\", \"world\"}).\n\t\tSaveX(ctx)\n\n\t// highlight-start\n\tu.Update().AppendTags([]string{\"goodbye\"}).ExecX(ctx)\n\t// highlight-end\n\n\tagain := client.User.GetX(ctx, u.ID)\n\tfmt.Println(again.Tags)\n\t// Prints: [hello world goodbye]\n}\n```",
+      "source_content_hash": "56eb0c0859bd5ea8b8e5fbca514c8e0e50c0f45342c3d37e7135facb9f2378ae",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3d4d9546"
+      }
+    },
+    {
+      "segment_id": "4033c370",
+      "source_content": "If the backing type of the JSON field is a struct containing a list, such as:",
+      "source_content_hash": "820f4cbd27d113d20dc666fe6fef4bfb7d96f2e4f8874a7c2565ccc4e122d83c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若JSON字段的底层类型是包含列表的结构体，例如："
+      }
+    },
+    {
+      "segment_id": "0869735f",
+      "source_content": "```go\ntype Meta struct {\n\tTags []string `json:\"tags\"'`\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.JSON(\"meta\", &Meta{}),\n\t}\n}\n```",
+      "source_content_hash": "063f261437c51439f961db4500701660d4c37ad66bcb564b943c63e750a56bf2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0869735f"
+      }
+    },
+    {
+      "segment_id": "13440cd7",
+      "source_content": "You can use the custom [sql/modifier](https://entgo.io/docs/feature-flags/#custom-sql-modifiers)\noption to have Ent generate the `Modify` method which you can use this way:",
+      "source_content_hash": "72b0de5bc48c9460b443ff063d2847c2663c6a13dec2a34f94707872ea1fdc32",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过[sql/modifier](https://entgo.io/docs/feature-flags/#custom-sql-modifiers)选项让Ent生成`Modify`方法，调用示例如下："
+      }
+    },
+    {
+      "segment_id": "9d91602e",
+      "source_content": "```go\nfunc TestAppendSubfield(t *testing.T) {\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tctx := context.Background()\n\t// Insert a user with two tags.\n\tu := client.User.Create().\n\t\tSetMeta(&schema.Meta{\n\t\t\tTags: []string{\"hello\", \"world\"},\n\t\t}).\n\t\tSaveX(ctx)\n\n\t// highlight-start\n\tu.Update().\n\t\tModify(func(u *sql.UpdateBuilder) {\n\t\t\tsqljson.Append(u, user.FieldMeta, []string{\"goodbye\"}, sqljson.Path(\"tags\"))\n\t\t}).\n\t\tExecX(ctx)\n\t// highlight-end\n\n\tagain := client.User.GetX(ctx, u.ID)\n\tfmt.Println(again.Meta.Tags)\n\t// Prints: [hello world goodbye]\n}\n```",
+      "source_content_hash": "e629434ca8e81fdf972b721c66104de430783c0b78b2483aa8447e918c4403fb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9d91602e"
+      }
+    },
+    {
+      "segment_id": "4b62af77",
+      "source_content": "### Wrapping up",
+      "source_content_hash": "a3785475b5dd9a66ae4506648eaafecb51ead6eb80351473642adc6a4aba69b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "740d2e67",
+      "source_content": "In this post we discussed JSON fields in SQL and Ent in general. Next,\nwe discussed how appending values to a JSON field can be done atomically\nin popular SQL databases. Finally, we showed how to do this using Ent.\nDo you think Remove/Slice operations are necessary? Let us know what you think!",
+      "source_content_hash": "df4bc1c2b39e2aa9fb49e6cc4b81b6869991e66173c8c33989e9aa47e1006acc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文探讨了SQL与Ent中的JSON字段，分析了主流SQL数据库实现JSON字段原子化追加的原理，最后演示了Ent的实现方案。您认为是否需要增加Remove/Slice操作？欢迎反馈意见！"
+      }
+    },
+    {
+      "segment_id": "d320dfae",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n:::",
+      "source_content_hash": "41de1e3e3bfff37d1c248755b51dd8428c0ca6c2f8a358f8cc6b9736984c77d1",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2022-10-10-json-append.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.674899+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "493a39c53d7f7fb3b496cb7b6d56c1368b74cee68b9465c90cb128b2435721da"
+  }
+}

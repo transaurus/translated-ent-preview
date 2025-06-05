@@ -1,0 +1,482 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/versioned/06-verifying-safety.mdx",
+  "source_file_content_hash": "9fbeed12945a4531d410dcd112dc04739deaadca7ecd95047022187b0b18be3b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Verifying migration safety\nid: verifying-safety\n---",
+      "source_content_hash": "aab0a32f0594dd2548b116f3f38eb2555e109728f7976504f99893b27ee27da7",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "0d5e1c45",
+      "source_content": ":::info[Supporting repository]\n\nThe change described in this section can be found in\n[PR #8](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/8/files)\nin the supporting repository.\n\n:::",
+      "source_content_hash": "0fc272df0f8b2e5c7470669216d9b025b24df4fe3f9155b308487b18ed2aa3a9",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[支持仓库]\n\n本节描述的变更可在支持仓库的\n[PR #8](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/8/files)\n中找到。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "3daf1b88",
+      "source_content": "## Verifying migration safety",
+      "source_content_hash": "b97295ede575a3df40e54c679f1eb8ec62f475cbca48138018ed1e87a858cff0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 验证迁移安全性"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "As the database is a critical component of our application, we want to make sure that when we \nmake changes to it, we don't break anything. Ill-planned migrations can cause data loss, application\ndowntime and other issues.  Atlas provides a mechanism to verify that a migration is safe to run.\nThis mechanism is called [migration linting](https://atlasgo.io/versioned/lint) and in this section\nwe will show how to use it to verify that our migration is safe to run.",
+      "source_content_hash": "0a41e7960957e55f493ce7133c7bc5e4308a69494b463015ce4aaa197ec91e43",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "数据库作为应用程序的核心组件，我们必须确保对其进行的任何变更都不会造成破坏。规划不当的迁移可能导致数据丢失、应用停机等问题。Atlas 提供了一种称为[迁移代码检查](https://atlasgo.io/versioned/lint)的机制来验证迁移是否可安全执行，本节将演示如何使用该功能。"
+      }
+    },
+    {
+      "segment_id": "ed7dde9c",
+      "source_content": "## Linting the migration directory",
+      "source_content_hash": "285d6990190c4bd17aa66aa68f33d564ce45eedc0d15347851360b2b9b095123",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 检查迁移目录"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "To lint our migration directory we can use the `atlas migrate lint` command.\nTo demonstrate this, let's see what happens if we decide to change the `Title` field in the `User`\nmodel from optional to required:",
+      "source_content_hash": "b3091831ad4a53185b00b780e538fb20abdabd7a0279961294894d497919656e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们可以使用 `atlas migrate lint` 命令对迁移目录进行检查。例如，假设我们将 `User` 模型中的 `Title` 字段从可选改为必填："
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```diff\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"email\").\n\t\t  Unique(),\n--\t\tfield.String(\"title\").\n--         Optional(),\n++\t\tfield.String(\"title\"),\n\t}\n}\n\n```",
+      "source_content_hash": "c49d6402b6a37be269d50c663debc605c47a1b1f2952d0bf4eae911b5772ef11",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cb57d798"
+      }
+    },
+    {
+      "segment_id": "8af76f3d",
+      "source_content": "Let's re-run codegen:",
+      "source_content_hash": "28773bc6835f090932d38df452fc84ee1431cd6348b1ae169fe47bc7f4e5fd0d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "48ec8149",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_48ec8149"
+      }
+    },
+    {
+      "segment_id": "f7ef78f9",
+      "source_content": "Next, let's automatically generate a new migration:",
+      "source_content_hash": "588ede22ac7abe483f312bca91b4d514bd134a53988df1228b7e3810514eab73",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着自动生成新迁移："
+      }
+    },
+    {
+      "segment_id": "bc38848e",
+      "source_content": "<Tabs\ndefaultValue=\"mysql\"\nvalues={[\n{label: 'MySQL', value: 'mysql'},\n{label: 'MariaDB', value: 'maria'},\n{label: 'PostgreSQL', value: 'postgres'},\n{label: 'SQLite', value: 'sqlite'},\n]}>\n<TabItem value=\"mysql\">\n\n```shell\natlas migrate diff user_title_required \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://mysql/8/ent\"\n```\n\n</TabItem>\n<TabItem value=\"maria\">\n\n```shell\natlas migrate diff user_title_required \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://mariadb/latest/test\"\n```\n\n</TabItem>\n<TabItem value=\"postgres\">\n\n```shell\natlas migrate diff user_title_required \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://postgres/15/test?search_path=public\"\n```\n\n</TabItem>\n<TabItem value=\"sqlite\">\n\n```shell\natlas migrate diff user_title_required \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"sqlite://file?mode=memory&_fk=1\"\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "9c0c08f0bba3175707a7183f214ad749a2ccbaec294583f625b6d38675e45b8a",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bc38848e"
+      }
+    },
+    {
+      "segment_id": "2838eb68",
+      "source_content": "A new migration file was created in the `ent/migrate/migrations` directory:",
+      "source_content_hash": "4dca1db55fb90e6fdec27186975db67528927c02dc999ec0b06c51fe488e29ac",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时会在 `ent/migrate/migrations` 目录下创建新迁移文件："
+      }
+    },
+    {
+      "segment_id": "de26f08a",
+      "source_content": "```sql title=\"ent/migrate/migrations/20221116051710_user_title_required.sql\"\n-- modify \"users\" table\nALTER TABLE `users` MODIFY COLUMN `title` varchar(255) NOT NULL;\n```",
+      "source_content_hash": "e7c563b024d2ce5064e79eeb980c9472e8f6a19216b10101734f6d73e2cc2f56",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de26f08a"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "Now, let's lint the migration directory:",
+      "source_content_hash": "aa43ec5025a59f7d15db29bbc4d2c8c762d27e8102551a8162dac746403e29a0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在执行目录检查："
+      }
+    },
+    {
+      "segment_id": "99070903",
+      "source_content": "```shell\natlas migrate lint --dev-url mysql://root:pass@localhost:3306/dev --dir file://ent/migrate/migrations --latest 1\n```",
+      "source_content_hash": "c8bfc1ccdc701af2e317770702337e30fe13f150042e9f3036ff6953801833f9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_99070903"
+      }
+    },
+    {
+      "segment_id": "44aaa880",
+      "source_content": "Atlas reports that the migration may be unsafe to run:",
+      "source_content_hash": "a0dacd1f0c5e32a846abadca165d5f1306adbd7e901916c3de3e6c71c2ece50c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas 报告该迁移可能存在风险："
+      }
+    },
+    {
+      "segment_id": "353ca453",
+      "source_content": "```text\n20221116051710_user_title_required.sql: data dependent changes detected:\n\n        L2: Modifying nullable column \"title\" to non-nullable might fail in case it contains NULL values\n```",
+      "source_content_hash": "fdd0a89757ba5118b9539ed23572b4f761655128895f8a23373edf731fd3bc36",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_353ca453"
+      }
+    },
+    {
+      "segment_id": "5f82a1e9",
+      "source_content": "Atlas detected that the migration is unsafe to run and prevented us from running it.\nIn this case, Atlas classified this change as a data dependent change. This means that the change\nmight fail, depending on the concrete data in the database.",
+      "source_content_hash": "e807dda72a65c913c3263628daa9db71f112a7e16e94a98d093df87817661987",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas 检测到这是数据依赖型变更（data dependent change），意味着该迁移的执行结果取决于数据库中的实际数据，因此被判定为不安全操作。"
+      }
+    },
+    {
+      "segment_id": "c364340c",
+      "source_content": "Atlas can detect many more types of issues, for a full list, see the [Atlas documentation](https://atlasgo.io/lint/analyzers).",
+      "source_content_hash": "11f13a3626f3734f66e5bc75304f7913d6271b0513b1049c585879e403270381",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas 可检测多种问题类型，完整列表参见[官方文档](https://atlasgo.io/lint/analyzers)。"
+      }
+    },
+    {
+      "segment_id": "47cd8dd6",
+      "source_content": "## Linting our migration directory in CI",
+      "source_content_hash": "1f0a7d10353bb64cada42df211670cf24fca998d60f6eb54b8b9b40e2a9f0cde",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 在CI中执行迁移检查"
+      }
+    },
+    {
+      "segment_id": "692c6053",
+      "source_content": "In the previous section, we saw how to lint our migration directory locally. In this section,\nwe will see how to lint our migration directory in CI. This way, we can make sure that our migration\nhistory is safe to run before we merge it to the main branch.",
+      "source_content_hash": "970329eb2cd43ae09cd474215174bad4d3f3fa3e82ac9e4bfa94dda88a7819d6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "前文展示了本地检查迁移目录的方法，本节将介绍如何在持续集成(CI)中实施该流程，确保合并到主分支前的迁移历史记录都是安全的。"
+      }
+    },
+    {
+      "segment_id": "14bc6b75",
+      "source_content": "[GitHub Actions](https://github.com/features/actions) is a popular CI/CD\nproduct from GitHub. With GitHub Actions, users can easily define workflows\nthat are triggered in various lifecycle events related to a Git repository.\nFor example, many teams configure GitHub actions to run all unit tests in\na repository on each change that is committed to a repository.",
+      "source_content_hash": "2e479025bb3d9a2f8c8b3f8c19c0b1ff90e2f3def2e8922575bca1caddce710f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[GitHub Actions](https://github.com/features/actions) 是 GitHub 提供的流行 CI/CD 服务，用户可轻松定义在代码仓库各类生命周期事件中触发的工作流。例如许多团队会配置 GitHub Actions 在每次提交时运行所有单元测试。"
+      }
+    },
+    {
+      "segment_id": "a9c2a503",
+      "source_content": "One of the powerful features of GitHub Actions is its extensibility: it is\nvery easy to package a piece of functionality as a module (called an \"action\")\nthat can later be reused by many projects.",
+      "source_content_hash": "1b8c58613a9cd4165dc6a3a50129f2ab420cffb7641d9dc5e2755336a11e12bb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "GitHub Actions 的强大之处在于其可扩展性：任何功能都可以打包为可复用的模块（称为\"action\"）。"
+      }
+    },
+    {
+      "segment_id": "f7e6e884",
+      "source_content": "Teams using GitHub that wish to ensure all changes to their database schema are safe\ncan use the [`atlas-action`](https://github.com/ariga/atlas-action) GitHub Action.",
+      "source_content_hash": "c06e5ec027851f878e79717ed66b41d99579a67cecd20789ce13731e0f6bbcb6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用 GitHub 的团队若想确保所有数据库模式变更的安全性，可以使用 [`atlas-action`](https://github.com/ariga/atlas-action) 这个 GitHub Action。"
+      }
+    },
+    {
+      "segment_id": "ad3e22c6",
+      "source_content": "This action is used for [linting migration directories](/versioned/lint)\nusing the `atlas migrate lint` command. This command  validates and analyzes the contents\nof migration directories and generates insights and diagnostics on the selected changes:",
+      "source_content_hash": "ad7d0091e8ec006711be4c059b1aa090600c6ea2f0816f1ff072e85b36e1fa9d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该 Action 通过 `atlas migrate lint` 命令对[迁移目录进行检查](/versioned/lint)，该命令会验证并分析迁移目录内容，生成变更诊断报告："
+      }
+    },
+    {
+      "segment_id": "1852dfef",
+      "source_content": "* Ensure the migration history can be replayed from any point in time.\n* Protect from unexpected history changes when concurrent migrations are written to the migration directory by\n  multiple team members.\n* Detect whether destructive or irreversible changes have been made or whether they are dependent on tables'\n  contents and can cause a migration failure.",
+      "source_content_hash": "ef8e1b8ff3ba433ac014a18bd214b6602c0a558d1ecbf350ae1eef2892308ded",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 确保迁移历史可从任意时间点重放\n* 防止多人并发修改迁移目录导致意外变更\n* 检测是否存在破坏性/不可逆变更，或依赖表内容可能导致迁移失败的操作"
+      }
+    },
+    {
+      "segment_id": "3c6dd548",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用方法"
+      }
+    },
+    {
+      "segment_id": "6f08f877",
+      "source_content": "Add `.github/workflows/atlas-ci.yaml` to your repo with the following contents:",
+      "source_content_hash": "4b44d04db1969c5ff92bdf6946c2b51d319ce363511b113075ee568e7cd2a65e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在仓库中添加 `.github/workflows/atlas-ci.yaml` 文件，内容如下："
+      }
+    },
+    {
+      "segment_id": "7c894678",
+      "source_content": "```yaml\nname: Atlas CI\non:\n  # Run whenever code is changed in the master branch,\n  # change this to your root branch.\n  push:\n    branches:\n      - master\n  pull_request:\n    paths:\n      - 'ent/migrate/migrations/*'\njobs:\n  lint:\n    services:\n      # Spin up a mysql:8.0.29 container to be used as the dev-database for analysis.\n      mysql:\n        image: mysql:8.0.29\n        env:\n          MYSQL_ROOT_PASSWORD: pass\n          MYSQL_DATABASE: dev\n        ports:\n          - \"3306:3306\"\n        options: >-\n          --health-cmd \"mysqladmin ping -ppass\"\n          --health-interval 10s\n          --health-start-period 10s\n          --health-timeout 5s\n          --health-retries 10\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3.0.1\n        with:\n          fetch-depth: 0 # Mandatory unless \"latest\" is set below.\n      - uses: ariga/atlas-action@v0\n        with:\n          dir: ent/migrate/migrations\n          dev-url: mysql://root:pass@localhost:3306/dev\n```",
+      "source_content_hash": "8efecf60512fe08b0e53162528327e944dbce39ce55bd51f01c88d50e043e834",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7c894678"
+      }
+    },
+    {
+      "segment_id": "38f964f1",
+      "source_content": "Now, whenever we make a pull request with a potentially unsafe migration, the Atlas\nGitHub action will run and report the linting results. For example, for our data-dependent change:\n![](https://atlasgo.io/uploads/images/atlas-ci-report-dd.png)",
+      "source_content_hash": "6cac71a0559bbfa56b254d550e0e95dc28d4edbf5fefb9fb381444c088df5cf0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在，每当我们提交包含潜在不安全迁移的拉取请求时，Atlas GitHub Action 都会运行并报告检查结果。例如针对我们的数据依赖型变更：\n![](https://atlasgo.io/uploads/images/atlas-ci-report-dd.png)"
+      }
+    },
+    {
+      "segment_id": "e6ac016e",
+      "source_content": "For more in depth documentation, see the [atlas-action](https://atlasgo.io/integrations/github-actions)\ndocs on the Atlas website.",
+      "source_content_hash": "3d73d202467da9e7aa7dc833e5dc2db54933946ec084c83104ca4d678e35371e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更深入的文档请参阅 Atlas 官网的 [atlas-action](https://atlasgo.io/integrations/github-actions) 文档。"
+      }
+    },
+    {
+      "segment_id": "90c4b96b",
+      "source_content": "Let's fix the issue by back-filling the `title` column. Add the following\nstatement to the migration file:",
+      "source_content_hash": "efa536cae5b7f2f4a0d5cc92ec1714f46d3f6293f0923372706c26f2116fb5b0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们通过回填 `title` 列来修复这个问题。在迁移文件中添加以下语句："
+      }
+    },
+    {
+      "segment_id": "ade38aab",
+      "source_content": "```sql title=\"ent/migrate/migrations/20221116051710_user_title_required.sql\"\n-- modify \"users\" table\nUPDATE `users` SET `title` = \"\" WHERE `title` IS NULL;\n\nALTER TABLE `users` MODIFY COLUMN `title` varchar(255) NOT NULL;\n```",
+      "source_content_hash": "6e4246e8812f92c52f21e1fb8a02ff1bace4dfe2c91c33cac66d5f0a3010ad26",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ade38aab"
+      }
+    },
+    {
+      "segment_id": "d8c366cc",
+      "source_content": "Re-hash the migration directory:",
+      "source_content_hash": "6e0f518d7630ecb888190e81acd0e7051453c64b15e21093cd5cd39937fa43b2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重新生成迁移目录的校验和："
+      }
+    },
+    {
+      "segment_id": "daad2e28",
+      "source_content": "```shell\natlas migrate hash --dir file://ent/migrate/migrations\n```",
+      "source_content_hash": "9c6063cb55ed571fe30f7957bce138a837b8a37eaea4bfedf5eedd83f99ba560",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daad2e28"
+      }
+    },
+    {
+      "segment_id": "61e5dad6",
+      "source_content": "Re-running `atlas migrate lint`, we can see that the migration directory doesn't\ncontain any unsafe changes:",
+      "source_content_hash": "3f6fe2f077b6409b55b928eea60c8a48a9215f412cda3250515d9ad4e26fed8f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "再次运行 `atlas migrate lint` 可以看到迁移目录不再包含任何不安全变更："
+      }
+    },
+    {
+      "segment_id": "5ad8d2b2",
+      "source_content": "```text\natlas migrate lint --dev-url mysql://root:pass@localhost:3306/dev --dir file://ent/migrate/migrations --latest 1\n```",
+      "source_content_hash": "d98a34ada5189c1efab76d9b475f319b7491a442b7129c1018f0b589d64ca057",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5ad8d2b2"
+      }
+    },
+    {
+      "segment_id": "09d52457",
+      "source_content": "Because no issues are found, the command will exit with a zero exit code and no output. ",
+      "source_content_hash": "7214ede168b8f51832a376a8c785bc3eea71c6d1844c0bf8561741d90c7812de",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于未发现问题，命令将以零退出码静默退出。"
+      }
+    },
+    {
+      "segment_id": "d73903fc",
+      "source_content": "When we commit this change to GitHub, the Atlas GitHub action will run and report that\nthe issue is resolved:",
+      "source_content_hash": "6f18e714b0aa560bcff6f6554b03afde02fb2338c5f94787ca4d7ec9fdfea069",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当我们将此变更提交到 GitHub 时，Atlas GitHub Action 会运行并报告问题已解决："
+      }
+    },
+    {
+      "segment_id": "2dbbb313",
+      "source_content": "![](https://atlasgo.io/uploads/images/atlas-ci-report-noissue.png)",
+      "source_content_hash": "416892e7280874814edb4dda0cb89d09790e8573735f67a5db6c967daba52302",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![](https://atlasgo.io/uploads/images/atlas-ci-report-noissue.png)"
+      }
+    },
+    {
+      "segment_id": "ad8a5f54",
+      "source_content": "## Conclusion",
+      "source_content_hash": "be031d37bb75d96ef08ca9ec5b0e83bb6f91172f60d3c31a78feae8d7dc4a0b0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 总结"
+      }
+    },
+    {
+      "segment_id": "4033c370",
+      "source_content": "In this section, we saw how to use Atlas to verify that our migration is safe to run both\nlocally and in CI.",
+      "source_content_hash": "669de09f733bc3719d8664ca4fdec3bb381849327db1ac6dda7bf8655f6b3fa6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节我们学习了如何在本地和 CI 环境中使用 Atlas 验证迁移的安全性。"
+      }
+    },
+    {
+      "segment_id": "face5559",
+      "source_content": "This wraps up our tutorial on how to upgrade your Ent project from\nautomatic migration to versioned migrations. To recap, we learned how to:",
+      "source_content_hash": "4c9364e9d0d195a101e2fe498788a68f4e8b14eb20d3c14a836add8f670e781b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "至此我们完成了将 Ent 项目从自动迁移升级到版本化迁移的教程。回顾要点包括："
+      }
+    },
+    {
+      "segment_id": "13f5db84",
+      "source_content": "* Enable the versioned migrations feature-flag\n* Create a script to automatically plan migrations based on our desired Ent schema\n* Upgrade our production database to use versioned migrations with Atlas\n* Plan custom migrations for our project\n* Verify migrations safely using `atlas migrate lint`",
+      "source_content_hash": "6442f5e9bca52520df4233d5335e4270942e907e25c9da1c556c53ad28a798f0",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 启用版本化迁移功能标志\n* 创建基于 Ent Schema 自动规划迁移的脚本\n* 使用 Atlas 将生产数据库升级至版本化迁移\n* 为项目规划自定义迁移\n* 通过 `atlas migrate lint` 安全验证迁移"
+      }
+    },
+    {
+      "segment_id": "318fb07e",
+      "source_content": "In the next steps",
+      "source_content_hash": "078ec4f851414f3a05763f48da551cb90620fba12ad6138831f94f6a8812c2a6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "后续步骤"
+      }
+    },
+    {
+      "segment_id": "efddd203",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多 Ent 资讯：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 关注 [Twitter](https://twitter.com/entgo_io)\n- 加入 [Gophers Slack](https://entgo.io/docs/slack) 的 #ent 频道\n- 参与 [Ent Discord 社区](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/versioned/06-verifying-safety.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.674229+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "9fbeed12945a4531d410dcd112dc04739deaadca7ecd95047022187b0b18be3b"
+  }
+}

@@ -1,0 +1,185 @@
+---
+id: eager-load
+title: Eager Loading
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## 概述
+
+`ent` 支持通过边(edges)查询实体及其关联对象。关联实体将被填充到返回对象的 `Edges` 字段中。
+
+以下面这个图结构为例展示API使用方式：
+
+![er-group-users](https://entgo.io/images/assets/er_user_pets_groups.png)
+
+**查询所有用户及其宠物：**
+
+```go
+users, err := client.User.
+	Query().
+	WithPets().
+	All(ctx)
+if err != nil {
+	return err
+}
+// The returned users look as follows:
+//
+//	[
+//		User {
+//			ID:   1,
+//			Name: "a8m",
+//			Edges: {
+//				Pets: [Pet(...), ...]
+//				...
+//			}
+//		},
+//		...
+//	]
+//
+for _, u := range users {
+	for _, p := range u.Edges.Pets {
+		fmt.Printf("User(%v) -> Pet(%v)\n", u.ID, p.ID)
+		// Output:
+		// User(...) -> Pet(...)
+	}
+} 
+```
+
+预加载机制允许同时查询多个关联（包括嵌套关联），并支持对结果进行过滤、排序或分页。例如：
+
+```go
+admins, err := client.User.
+	Query().
+	Where(user.Admin(true)).
+	// Populate the `pets` that associated with the `admins`.
+	WithPets().
+	// Populate the first 5 `groups` that associated with the `admins`.
+	WithGroups(func(q *ent.GroupQuery) {
+		q.Limit(5) 				// Limit to 5.
+		q.WithUsers()           // Populate the `users` of each `groups`.
+	}).
+	All(ctx)
+if err != nil {
+	return err
+}
+
+// The returned users look as follows:
+//
+//	[
+//		User {
+//			ID:   1,
+//			Name: "admin1",
+//			Edges: {
+//				Pets:   [Pet(...), ...]
+//				Groups: [
+//					Group {
+//						ID:   7,
+//						Name: "GitHub",
+//						Edges: {
+//							Users: [User(...), ...]
+//							...
+//						}
+//					}
+//				]
+//			}
+//		},
+//		...
+//	]
+//
+for _, admin := range admins {
+	for _, p := range admin.Edges.Pets {
+		fmt.Printf("Admin(%v) -> Pet(%v)\n", u.ID, p.ID)
+		// Output:
+		// Admin(...) -> Pet(...)
+	}
+	for _, g := range admin.Edges.Groups {
+		for _, u := range g.Edges.Users {
+			fmt.Printf("Admin(%v) -> Group(%v) -> User(%v)\n", u.ID, g.ID, u.ID)
+			// Output:
+			// Admin(...) -> Group(...) -> User(...)
+		}
+	}
+} 
+```
+
+## API接口
+
+每个查询构建器都为其边(edges)提供了一系列 `With<E>(...func(<N>Query))` 格式的方法，
+其中 `<E>` 表示边名称（如 `WithGroups`），`<N>` 表示边类型（如 `GroupQuery`）。
+
+请注意该特性仅支持SQL方言。
+
+## 命名边查询
+
+某些场景下需要以自定义名称预加载边。例如GraphQL查询中两个别名引用同一条边但参数不同。为此Ent提供了 `WithNamed<E>` API，
+需通过 [`namedges`](features.md#named-edges) 特性标志启用，可与[EntGQL字段集合](tutorial-todo-gql-field-collection.md)无缝集成。
+
+<Tabs
+defaultValue="ent"
+values={[
+{label: 'Ent', value: 'ent'},
+{label: 'GraphQL', value: 'graphql'},
+]}>
+<TabItem value="ent">
+
+See the GraphQL tab to learn more about the motivation behind this API.
+
+```go
+posts, err := client.Post.Query().
+    WithNamedComments("published", func(q *ent.CommentQuery) {
+        q.Where(comment.StatusEQ(comment.StatusPublished))
+    })
+    WithNamedComments("draft", func(q *ent.CommentQuery) {
+        q.Where(comment.StatusEQ(comment.StatusDraft))
+    }).
+    Paginate(...)
+
+// Get the preloaded edges by their name:
+for _, p := range posts {
+    published, err := p.Edges.NamedComments("published")
+    if err != nil {
+        return err
+    }
+    draft, err := p.Edges.NamedComments("draft")
+    if err != nil {
+        return err
+    }
+}
+```
+
+</TabItem>
+<TabItem value="graphql">
+
+An example of a GraphQL query that has two aliases referencing the same edge with different arguments.
+
+```graphql
+query {
+  posts {
+    id
+    title
+    published: comments(where: { status: PUBLISHED }) {
+      edges {
+        node {
+          text
+        }
+      }
+    }
+    draft: comments(where: { status: DRAFT }) {
+      edges {
+        node {
+          text
+        }
+      }
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+## 实现原理
+
+由于Ent查询可能同时预加载多条边，无法通过单次 `JOIN` 操作加载所有关联。因此Ent会为每个关联执行额外查询。该机制将在未来版本中进行优化。

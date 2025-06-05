@@ -1,0 +1,412 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-11-15-announcing-entoas.md",
+  "source_file_content_hash": "d794e6d3ca0fbf9b0bcf40ed8c8ed0297725aa1a7e0bc2111947914870c8d700",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Announcing \"entoas\" - An Extension to Automatically Generate OpenAPI Specification Documents from Ent Schemas \nauthor: MasseElch \nauthorURL: \"https://github.com/masseelch\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/12862103?v=4\"\nimage: https://entgo.io/images/assets/elkopa/entoas-code.png\n---",
+      "source_content_hash": "21e10dbbc4808e5d0c5decd486dc6e0e4ff9374085ccf896a78479c6316dd40c",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "The OpenAPI Specification (OAS, formerly known as Swagger Specification) is a technical specification defining a standard, language-agnostic\ninterface description for REST APIs. This allows both humans and automated tools to understand the described service\nwithout the actual source code or additional documentation. Combined with the [Swagger Tooling](https://swagger.io/) you\ncan generate both server and client boilerplate code for more than 20 languages, just by passing in the OAS document.",
+      "source_content_hash": "8e16ec40fa2fdc0b11356b691d94a9de267c168140de6335c93da272bf5cff81",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "OpenAPI规范（OAS，前身为Swagger规范）是一种技术规范，为REST API定义了标准且与语言无关的接口描述。这使得人类和自动化工具无需查看源代码或额外文档即可理解所描述的服务。结合[Swagger工具链](https://swagger.io/)，仅需传入OAS文档，您就能为20多种语言生成服务端和客户端样板代码。"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "In a [previous blogpost](https://entgo.io/blog/2021/09/10/openapi-generator), we presented to you a new\nfeature of the Ent extension [`elk`](https://github.com/masseelch/elk): a fully\ncompliant [OpenAPI Specification](https://swagger.io/resources/open-api/) document generator.",
+      "source_content_hash": "330bd252e9f8b2a56ad03403eefb89d7632a5d8f42e7ca4ac05c87d214fa7be8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在[之前的博客文章](https://entgo.io/blog/2021/09/10/openapi-generator)中，我们向您展示了Ent扩展[`elk`](https://github.com/masseelch/elk)的一项新功能：一个完全兼容的[OpenAPI规范](https://swagger.io/resources/open-api/)文档生成器。"
+      }
+    },
+    {
+      "segment_id": "39b3772c",
+      "source_content": "Today, we are very happy to announce, that the specification generator is now an official extension to the Ent project\nand has been moved to the [`ent/contrib`](https://github.com/ent/contrib/tree/master/entoas) repository. In addition, we\nhave listened to the feedback of the community and have made some changes to the generator, that we hope you will like.",
+      "source_content_hash": "9ce8daaa00b7df05b354d32a4cac0956d80cbc242a95ee564a248d690cc06ad7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "今天，我们非常高兴地宣布，该规范生成器现已成为Ent项目的官方扩展，并已迁移至[`ent/contrib`](https://github.com/ent/contrib/tree/master/entoas)代码库。此外，我们听取了社区的反馈，对生成器进行了一些改进，希望您会喜欢。"
+      }
+    },
+    {
+      "segment_id": "63622bf0",
+      "source_content": "### Getting Started",
+      "source_content_hash": "4467215509db0bd0e0f61cf6ee2efa3316c8285b2a46d4449ff85f9ef85923d9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 快速开始"
+      }
+    },
+    {
+      "segment_id": "98cfbd53",
+      "source_content": "To use the `entoas` extension use the `entc` (ent codegen) package as\ndescribed [here](https://entgo.io/docs/code-gen#use-entc-as-a-package). First install the extension to your Go module:",
+      "source_content_hash": "4e9ab6d9a46943a98f7c19d195ea713e9f207ce642695433c37e929d873186c1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要使用`entoas`扩展，请按照[此处](https://entgo.io/docs/code-gen#use-entc-as-a-package)所述，使用`entc`（Ent代码生成）包。首先将扩展安装到您的Go模块中："
+      }
+    },
+    {
+      "segment_id": "08021a08",
+      "source_content": "```shell\ngo get entgo.io/contrib/entoas\n```",
+      "source_content_hash": "20f950df8a50291c9a519928d02a86416a0a4243d5254b70c5e0731a3734c7f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_08021a08"
+      }
+    },
+    {
+      "segment_id": "dfe931a2",
+      "source_content": "Now follow the next two steps to enable it and to configure Ent to work with the `entoas` extension:",
+      "source_content_hash": "54c614bc34422e66202245bd1e5f30363a2f5488bf05b2ba260a572328a8c17e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来按照以下两个步骤启用扩展并配置Ent以配合`entoas`工作："
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "1\\. Create a new Go file named `ent/entc.go` and paste the following content:",
+      "source_content_hash": "46b9ecd02339c83feb000869a47f3629dfdf14f4e2aba80245edac427bffbc2a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 新建一个名为`ent/entc.go`的Go文件，并粘贴以下内容："
+      }
+    },
+    {
+      "segment_id": "ef6eebef",
+      "source_content": "```go\n// +build ignore\n\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/contrib/entoas\"\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n)\n\nfunc main() {\n\tex, err := entoas.NewExtension()\n\tif err != nil {\n\t\tlog.Fatalf(\"creating entoas extension: %v\", err)\n\t}\n\terr = entc.Generate(\"./schema\", &gen.Config{}, entc.Extensions(ex))\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "bcc36b0a7633b0735da20a1c620a5fd8b2061fb17966acfc46e9e0557d6dcad2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ef6eebef"
+      }
+    },
+    {
+      "segment_id": "40158b4b",
+      "source_content": "2\\. Edit the `ent/generate.go` file to execute the `ent/entc.go` file:",
+      "source_content_hash": "a43a5f1353e561d1f7ec6cef372b2d96df99509481252a924d1bb20f80940f43",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 编辑`ent/generate.go`文件以执行`ent/entc.go`文件："
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```go\npackage ent\n\n//go:generate go run -mod=mod entc.go\n```",
+      "source_content_hash": "d4ba1093df2e1ec9a86b8c5418043627594e1f378462e637bdf83f08cd3a5f4e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "06e24cc0",
+      "source_content": "With these steps complete, all is set up for generating an OAS document from your schema! If you are new to Ent and want\nto learn more about it, how to connect to different types of databases, run migrations or work with entities, then head\nover to the [Setup Tutorial](https://entgo.io/docs/tutorial-setup/).",
+      "source_content_hash": "6a8e0a50aafdd611f086f8c8312a027cda772d8ee083bb953a27ac12e667df40",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成这些步骤后，即可从您的模式生成OAS文档！如果您是Ent的新手，想了解更多关于如何连接不同类型的数据库、运行迁移或操作实体的信息，请前往[设置教程](https://entgo.io/docs/tutorial-setup/)。"
+      }
+    },
+    {
+      "segment_id": "047c2395",
+      "source_content": "### Generate an OAS document",
+      "source_content_hash": "6c1b880af57c226cb338467bb969bbe997159ccac492a3aeb19c14c4c278fa99",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 生成OAS文档"
+      }
+    },
+    {
+      "segment_id": "883231d4",
+      "source_content": "The first step on our way to the OAS document is to create an Ent schema graph. For the sake of brevity here is an\nexample schema to use:",
+      "source_content_hash": "e64f8b79a35a83bc94a22354513a5313a339ba639ea42a14885f6a16470adcee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成OAS文档的第一步是创建Ent模式图。为简洁起见，这里提供一个示例模式："
+      }
+    },
+    {
+      "segment_id": "c808e01e",
+      "source_content": "```go title=\"ent/schema/schema.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/edge\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// Fridge holds the schema definition for the Fridge entity.\ntype Fridge struct {\n\tent.Schema\n}\n\n// Fields of the Fridge.\nfunc (Fridge) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"title\"),\n\t}\n}\n\n// Edges of the Fridge.\nfunc (Fridge) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"compartments\", Compartment.Type),\n\t}\n}\n\n// Compartment holds the schema definition for the Compartment entity.\ntype Compartment struct {\n\tent.Schema\n}\n\n// Fields of the Compartment.\nfunc (Compartment) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// Edges of the Compartment.\nfunc (Compartment) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.From(\"fridge\", Fridge.Type).\n\t\t\tRef(\"compartments\").\n\t\t\tUnique(),\n\t\tedge.To(\"contents\", Item.Type),\n\t}\n}\n\n// Item holds the schema definition for the Item entity.\ntype Item struct {\n\tent.Schema\n}\n\n// Fields of the Item.\nfunc (Item) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// Edges of the Item.\nfunc (Item) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.From(\"compartment\", Compartment.Type).\n\t\t\tRef(\"contents\").\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "18d232c18078fa67677f94ffc67703f1f78c3fd815e30e647ad4c100f180ce95",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c808e01e"
+      }
+    },
+    {
+      "segment_id": "be17ccc3",
+      "source_content": "The code above is the Ent-way to describe a schema-graph. In this particular case we created three Entities: Fridge,\nCompartment and Item. Additionally, we added some edges to the graph: A Fridge can have many Compartments and a\nCompartment can contain many Items.",
+      "source_content_hash": "db7867d680adb3c8ef8e95ac85d0e7fed965afb21fd327928bec452b827b73c1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码是Ent描述模式图的方式。在本例中，我们创建了三个实体：Fridge（冰箱）、Compartment（隔间）和Item（物品）。此外，我们还向图中添加了一些边：一个Fridge可以拥有多个Compartment，一个Compartment可以包含多个Item。"
+      }
+    },
+    {
+      "segment_id": "3e8f45da",
+      "source_content": "Now run the code generator:",
+      "source_content_hash": "7fe7ca07f0cdab3b453f45b1542a84c0ebabcf16b0c514a71a9cecfa8b143bfe",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在运行代码生成器："
+      }
+    },
+    {
+      "segment_id": "d58c5dc0",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d58c5dc0"
+      }
+    },
+    {
+      "segment_id": "1496ef51",
+      "source_content": "In addition to the files Ent normally generates, another file named `ent/openapi.json` has been created. Here is a sneak peek into the file:",
+      "source_content_hash": "f39e6a8d084abf4ea320119e5cef6a9ee880422c596ff53989ed679a06a74079",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "除了Ent通常生成的文件外，还会创建一个名为`ent/openapi.json`的新文件。以下是该文件的预览："
+      }
+    },
+    {
+      "segment_id": "b68d496b",
+      "source_content": "```json title=\"ent/openapi.json\"\n{\n  \"info\": {\n    \"title\": \"Ent Schema API\",\n    \"description\": \"This is an auto generated API description made out of an Ent schema definition\",\n    \"termsOfService\": \"\",\n    \"contact\": {},\n    \"license\": {\n      \"name\": \"\"\n    },\n    \"version\": \"0.0.0\"\n  },\n  \"paths\": {\n    \"/compartments\": {\n      \"get\": {\n    [...]\n```",
+      "source_content_hash": "7266bc753662c62b3bd1cd018a6ec6ad957826fa41108bff41d4474ba8d890d3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b68d496b"
+      }
+    },
+    {
+      "segment_id": "61a78cbe",
+      "source_content": "If you feel like it, copy its contents and paste them into the [Swagger Editor](https://editor.swagger.io/). It should\nlook like this:",
+      "source_content_hash": "b0ca272dc7ff9cdfd06e86b3de86c37377568e44f6716a23ae46c190764862ef",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果您有兴趣，可以将其内容复制并粘贴到[Swagger编辑器](https://editor.swagger.io/)中。效果应如下所示："
+      }
+    },
+    {
+      "segment_id": "c4ac6a6f",
+      "source_content": "### Basic Configuration",
+      "source_content_hash": "59d86cb0b1e1f48893eeb7391f8f2fcface6fed6e3072dc1883014ff43ff083f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 基础配置"
+      }
+    },
+    {
+      "segment_id": "b49a7009",
+      "source_content": "The description of our API does not yet reflect what it does, but `entoas` lets you change that! Open up `ent/entc.go`\nand pass in the updated title and description of our Fridge API:",
+      "source_content_hash": "b7d5ca5ac870bad027b6bb7871b328a748da9ea8de963b648bc9f23736cd22f8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们的API描述尚未反映其功能，但`entoas`允许您修改这一点！打开`ent/entc.go`文件，传入更新后的Fridge API标题和描述："
+      }
+    },
+    {
+      "segment_id": "0152e600",
+      "source_content": "```go {16-18} title=\"ent/entc.go\"\n//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/contrib/entoas\"\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n)\n\nfunc main() {\n\tex, err := entoas.NewExtension(\n\t\tentoas.SpecTitle(\"Fridge CMS\"),\n\t\tentoas.SpecDescription(\"API to manage fridges and their cooled contents. **ICY!**\"), \n\t\tentoas.SpecVersion(\"0.0.1\"),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"creating entoas extension: %v\", err)\n\t}\n\terr = entc.Generate(\"./schema\", &gen.Config{}, entc.Extensions(ex))\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "aab75063571bc7ca5015c2f6de9f85bf99b2abb105d2adfbb9327932ec1bab1a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0152e600"
+      }
+    },
+    {
+      "segment_id": "833ce577",
+      "source_content": "Rerunning the code generator will create an updated OAS document.",
+      "source_content_hash": "c74d9c42fdfc28bd29fbd40efc7e8c86a49be1639616aeaa067f775ef8f5892e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重新运行代码生成器将创建更新后的OAS文档。"
+      }
+    },
+    {
+      "segment_id": "3d4d9546",
+      "source_content": "```json {3-4,10} title=\"ent/openapi.json\"\n{\n  \"info\": {\n    \"title\": \"Fridge CMS\",\n    \"description\": \"API to manage fridges and their cooled contents. **ICY!**\",\n    \"termsOfService\": \"\",\n    \"contact\": {},\n    \"license\": {\n      \"name\": \"\"\n    },\n    \"version\": \"0.0.1\"\n  },\n  \"paths\": {\n    \"/compartments\": {\n      \"get\": {\n    [...]\n```",
+      "source_content_hash": "446aa73e58e24548fd310c3419f405e485b34e25e7d592c9aa0e9bb34d1296f9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3d4d9546"
+      }
+    },
+    {
+      "segment_id": "2f833a4d",
+      "source_content": "### Operation configuration",
+      "source_content_hash": "e9e78f60b418be4aca46c03b9955eb6a026743823d2c34e32dc9351a459b6353",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 操作配置"
+      }
+    },
+    {
+      "segment_id": "dfb6fc67",
+      "source_content": "There are times when you do not want to generate endpoints for every operation for every node. Fortunately, `entoas`\nlets us configure what endpoints to generate and which to ignore. `entoas`' default policy is to expose all routes. You\ncan either change this behaviour to not expose any route but those explicitly asked for, or you can just tell `entoas`\nto exclude a specific operation by using an `entoas.Annotation`. Policies are used to enable / disable the generation\nof sub-resource operations as well:",
+      "source_content_hash": "f0acf0b7dce5ac2f9f29c4b372b8dba57f50b4dbab193816cb8e67c629d69c2d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有时您不希望为每个节点的每个操作都生成端点。幸运的是，`entoas`允许我们配置要生成和忽略的端点。`entoas`的默认策略是暴露所有路由。您可以将此行为更改为仅暴露明确请求的路由，或者通过使用`entoas.Annotation`告诉`entoas`排除特定操作。策略还可用于启用/禁用子资源操作的生成："
+      }
+    },
+    {
+      "segment_id": "9eaa3064",
+      "source_content": "```go {5-10,14-20} title=\"ent/schema/fridge.go\"\n// Edges of the Fridge.\nfunc (Fridge) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"compartments\", Compartment.Type).\n\t\t\t// Do not generate an endpoint for POST /fridges/{id}/compartments\n\t\t\tAnnotations(\n\t\t\t\tentoas.CreateOperation(\n\t\t\t\t\tentoas.OperationPolicy(entoas.PolicyExclude),\n\t\t\t\t),\n\t\t\t), \n\t}\n}\n\n// Annotations of the Fridge.\nfunc (Fridge) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\t// Do not generate an endpoint for DELETE /fridges/{id}\n\t\tentoas.DeleteOperation(entoas.OperationPolicy(entoas.PolicyExclude)),\n\t}\n}\n```",
+      "source_content_hash": "d26acb5113b7893bddc77aa2df13117204e4cfa0ef9b36769c082478b161a562",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9eaa3064"
+      }
+    },
+    {
+      "segment_id": "f4b938fe",
+      "source_content": "And voilà! the operations are gone.",
+      "source_content_hash": "71ecfb40833966f6462e982ef475e2abc1f8ae73c49ec28234e77b3fade8dfc7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "瞧！这些操作已被移除。"
+      }
+    },
+    {
+      "segment_id": "2d5a3f2f",
+      "source_content": "For more information about how `entoas`'s policies work and what you can do with\nit, have a look at the [godoc](https://pkg.go.dev/entgo.io/contrib/entoas#Config).",
+      "source_content_hash": "3646ea99485658da9faa875504054b987edc57742a30ef296b4cf3950ea950dc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有关`entoas`策略工作原理及其功能的更多信息，请参阅[godoc文档](https://pkg.go.dev/entgo.io/contrib/entoas#Config)。"
+      }
+    },
+    {
+      "segment_id": "92505e51",
+      "source_content": "### Simple Models",
+      "source_content_hash": "bd8eaa6046764794a962db10d36f6fad43c9dead241731d0f61233a1b43fea27",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 简单模型"
+      }
+    },
+    {
+      "segment_id": "2f8456b2",
+      "source_content": "By default `entoas` generates one response-schema per endpoint. To learn about the naming strategy have a look at\nthe [godoc](https://pkg.go.dev/entgo.io/contrib/entoas#Config).",
+      "source_content_hash": "dca00147b246b4952aa9edd28ccd456e95f9350fb61ed6e7d803673ab02de658",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，`entoas`会为每个端点生成一个响应模式。命名策略详情请参阅[godoc文档](https://pkg.go.dev/entgo.io/contrib/entoas#Config)。"
+      }
+    },
+    {
+      "segment_id": "66e62938",
+      "source_content": "Many users have requested to change this behaviour to simply map the Ent schema to the OAS document. Therefore, you now\ncan configure `entoas` to do that: ",
+      "source_content_hash": "9450ea6d3f893e932a44bd9175fbf6cae29d446ce04309f76ab05efba850408b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "许多用户要求改变这一行为，直接将Ent模式映射到OAS文档。现在您可以通过配置`entoas`实现："
+      }
+    },
+    {
+      "segment_id": "ca8f8565",
+      "source_content": "```go {5}\nex, err := entoas.NewExtension(\n    entoas.SpecTitle(\"Fridge CMS\"),\n    entoas.SpecDescription(\"API to manage fridges and their cooled contents. **ICY!**\"),\n    entoas.SpecVersion(\"0.0.1\"),\n    entoas.SimpleModels(),\n) \n```",
+      "source_content_hash": "f1a88501ec0fcd3a16bf2caa2af60ee7a0d6c80889ae74ebbce36afd27a915ab",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ca8f8565"
+      }
+    },
+    {
+      "segment_id": "7f0accbb",
+      "source_content": "### Wrapping Up",
+      "source_content_hash": "6df1295c536bdf3cf58241755891051d109001c784cced5b33a00f70983bc553",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "130e2dfb",
+      "source_content": "In this post we announced `entoas`, the official integration of the former `elk` OpenAPI Specification generation into\nEnt. This feature connects between Ent's code-generation capabilities and OpenAPI/Swagger's rich tooling ecosystem. ",
+      "source_content_hash": "00f02cb69532ae1095ddbf31d14ecb5033f22f80dcc35acec97e9fff1d72192e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文我们宣布了`entoas`——原`elk`的OpenAPI规范生成功能已正式集成至Ent。该特性将Ent的代码生成能力与OpenAPI/Swagger丰富的工具生态系统连接起来。"
+      }
+    },
+    {
+      "segment_id": "95b3e282",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "d0537932cd96ebc172f07d40432ff073381adb709b3fdc6d263a79438858fef3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有问题？需要入门帮助？欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack/)。"
+      }
+    },
+    {
+      "segment_id": "ad489c4d",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter账号](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 加入[Ent Discord服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-11-15-announcing-entoas.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.673992+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "d794e6d3ca0fbf9b0bcf40ed8c8ed0297725aa1a7e0bc2111947914870c8d700"
+  }
+}

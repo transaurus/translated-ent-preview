@@ -1,0 +1,222 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/versioned/03-upgrade-prod.mdx",
+  "source_file_content_hash": "2c38c829277f422c0ad733e014c395bc3af6912539f42bfa9fd0d5d3795d87ff",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: upgrade-prod\ntitle: Upgrading Production\n---",
+      "source_content_hash": "69ee0b25b36bc3109d0814a8fb8850590df71453ef641da8a9b047b3015e24ba",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "0d5e1c45",
+      "source_content": ":::info[Supporting repository]\n\nThe change described in this section can be found in\n[PR #5](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/5/files)\nin the supporting repository.\n\n:::",
+      "source_content_hash": "84de5e77f2f8cf5c327ff44be2c7b4a5f077cc9b8a83ce9f2a995332bd04f439",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[支持仓库]\n\n本节描述的变更可在配套仓库的\n[PR #5](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/5/files)\n中找到。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "3daf1b88",
+      "source_content": "## Upgrading our production database to use versioned migrations",
+      "source_content_hash": "ab937bb846e711bc81c5a274530cfc6baec0180255222f7a56bfbe6981b39952",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 将生产数据库升级为使用版本化迁移"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "If you have been following our tutorial to this point, you may be asking yourself how do we\nupgrade the production instance of our database to be managed by the versioned migraions workflow? \nWith local development, we can just delete the database and start over, but that is not an option\nfor production for obvious reasons.",
+      "source_content_hash": "83f53a90b1cfcfa1df06406eaf880266a6b33c934b63e51f35e18ec5cfb79fce",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果您一直跟随本教程至此，可能会思考如何将生产环境的数据库实例升级为由版本化迁移工作流管理？\n在本地开发中，我们可以直接删除数据库重新开始，但这显然不适用于生产环境。"
+      }
+    },
+    {
+      "segment_id": "98cfbd53",
+      "source_content": "Like many other database schema management tools, [Atlas](https://atlasgo.io) uses a metadata table\non the target database to keep track of which migrations were already applied.\nIn the case where we start using Atlas on an existing database, we must somehow\ninform Atlas that all migrations up to a certain version were already applied.",
+      "source_content_hash": "755485db8b7dafc496014698ce87dbf9f153a0546ebab2a757bf6db3b2af24ec",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "与其他数据库模式管理工具类似，[Atlas](https://atlasgo.io)通过在目标数据库上维护元数据表来追踪已应用的迁移。\n当我们在现有数据库上开始使用Atlas时，必须告知Atlas某个版本之前的所有迁移都已被应用。"
+      }
+    },
+    {
+      "segment_id": "4b1d2d7d",
+      "source_content": "To illustrate this, let's try to run Atlas's `migrate apply` command on a database\nthat is currently managed by an auto-migration workflow using the migration directory that we just\ncreated. Notice that we use a connection string to a database that _already has_ the application schema\ninstantiated (we use the `/db` suffix to indicate that we want to connect to the `db` database).",
+      "source_content_hash": "8176bb6ad3185bbe8136d50bee402b310104d30aa1ff50ca6edea3711a910fcf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为演示这一点，让我们尝试在已通过自动迁移工作流管理的数据库上运行Atlas的`migrate apply`命令（注意我们使用带有`/db`后缀的连接字符串，表示要连接到已包含应用模式的`db`数据库）。"
+      }
+    },
+    {
+      "segment_id": "6543a19e",
+      "source_content": "```text\natlas migrate apply --dir file://ent/migrate/migrations --url mysql://root:pass@localhost:3306/db\n```",
+      "source_content_hash": "9172e8d6ca754d6053a3c4941044adc58b03ffb541e2c1cc749c2a69662a2dae",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6543a19e"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "Atlas returns an error:",
+      "source_content_hash": "0d95367a9ae9ddd206c0bb01fec9aa10de80dd39e78211f0f65301edbcbb33e0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas返回错误："
+      }
+    },
+    {
+      "segment_id": "a11df754",
+      "source_content": "```text\nError: sql/migrate: connected database is not clean: found table \"atlas_schema_revisions\" in schema \"db\". baseline version or allow-dirty is required\n```",
+      "source_content_hash": "156b048ca3e237581326a9afdfc8128e063966a44e516f5822fcbcf271d06291",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a11df754"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "This error is expected, as this is the first time we are running Atlas on this database, but as the error said\nwe need to \"baseline\" the database. This means that we tell Atlas that the database is already at a certain state\nthat correlates with one of the versions in the migration directory.",
+      "source_content_hash": "d377eb3eede879be3801dcd7ce82dcead397d619bf778f8dbf489b7744a42044",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这个错误符合预期，因为这是我们首次在该数据库上运行Atlas。如错误所述，我们需要对数据库进行\"基线标记\"——即告知Atlas数据库当前状态已对应迁移目录中的某个版本。"
+      }
+    },
+    {
+      "segment_id": "a9d49f92",
+      "source_content": "To fix this, we use the `--baseline` flag to tell Atlas that the database is already at\na certain version:",
+      "source_content_hash": "f39a80d89c9268f33df74c5647b49ec24d75423d519533f5b31d77aa8d87e693",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`--baseline`标志可指定数据库的基线版本："
+      }
+    },
+    {
+      "segment_id": "4795a13d",
+      "source_content": "```text\natlas migrate apply --dir file://ent/migrate/migrations --url mysql://root:pass@localhost:3306/db --baseline 20221114165732\n```",
+      "source_content_hash": "c8a1cd8be563f5c1bd1bde21eeaf2b1039a291940498b641a68205647ec262ed",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4795a13d"
+      }
+    },
+    {
+      "segment_id": "d3649a1e",
+      "source_content": "Atlas reports that there's nothing new to run:",
+      "source_content_hash": "586b6288d505a1684d4e1de14a3bc344cdb446afe1c6ba1a84ca76ca928822be",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas报告无需执行新操作："
+      }
+    },
+    {
+      "segment_id": "c3955998",
+      "source_content": "```text\nNo migration files to execute\n```",
+      "source_content_hash": "5253b6beb21fc35bba7c754a324ff4fd3aaf9ecfba599d6f18bd22a092f39283",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c3955998"
+      }
+    },
+    {
+      "segment_id": "1131ef75",
+      "source_content": "That's better! Next, let's verify that Atlas is aware of what migrations\nwere already applied by using the `migrate status` command:",
+      "source_content_hash": "802d4ab1753623ea1ab5ae3a4c9e35da69ab039d99691605619f75e2d8ede00e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在情况好转了！接下来通过`migrate status`命令验证Atlas是否已正确识别已应用的迁移："
+      }
+    },
+    {
+      "segment_id": "5a41b4fb",
+      "source_content": "```text\natlas migrate status --dir file://ent/migrate/migrations --url mysql://root:pass@localhost:3306/db\n```",
+      "source_content_hash": "63569c7dff81d2a63032d58ed9b681b1425ee5d44fee0824b8a23b77f651beb1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5a41b4fb"
+      }
+    },
+    {
+      "segment_id": "0bb95128",
+      "source_content": "Atlas reports:",
+      "source_content_hash": "e18d60faf6f9045c301055165ccd938a5dcd503317c9383637c20e195530e031",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas显示："
+      }
+    },
+    {
+      "segment_id": "67b24fc5",
+      "source_content": "```text\nMigration Status: OK\n  -- Current Version: 20221114165732\n  -- Next Version:    Already at latest version\n  -- Executed Files:  1\n  -- Pending Files:   0\n```",
+      "source_content_hash": "1096bb8008588483b3eb45ac0c74194ff41c86cd1b20db0fbeb78e359056aa67",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_67b24fc5"
+      }
+    },
+    {
+      "segment_id": "f01228d3",
+      "source_content": "Great! We have successfully upgraded our project to use versioned migrations with Atlas.",
+      "source_content_hash": "f11a3f34b6703a292cc374d66c4dec0a7600f462218e81a00662d82942835ee7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "成功！我们已将项目升级为使用Atlas的版本化迁移工作流。"
+      }
+    },
+    {
+      "segment_id": "afa378f7",
+      "source_content": "Next, let's see how we add a new migration to our project when we make a change to our\nEnt schema.",
+      "source_content_hash": "9096585b2c0f17bdeb65b57dc7bc890da759eebf6e529d02928331c8278d71d3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来我们将看到，当修改Ent模式时如何为项目添加新的迁移。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/versioned/03-upgrade-prod.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.676123+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "2c38c829277f422c0ad733e014c395bc3af6912539f42bfa9fd0d5d3795d87ff"
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/transactions.md",
+  "source_file_content_hash": "b1cdbfa8c8e8b6c782dc2066abbe2098a5b9d4171ef1002b3c0d6062646ff0f0",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: transactions\ntitle: Transactions\n---",
+      "source_content_hash": "387dfb9b38a7c55a6ced2abca2523fa3b2545c9eb1d9e1a29216a0abdb0e4a72",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "## Starting A Transaction",
+      "source_content_hash": "40732c0ff94b47c6c72fbd6bd45f1ac31c6147764b4e159b70abbaeb62568dc3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 开启事务"
+      }
+    },
+    {
+      "segment_id": "e6a5da7c",
+      "source_content": "```go\n// GenTx generates group of entities in a transaction.\nfunc GenTx(ctx context.Context, client *ent.Client) error {\n\ttx, err := client.Tx(ctx)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"starting a transaction: %w\", err)\n\t}\n\thub, err := tx.Group.\n\t\tCreate().\n\t\tSetName(\"Github\").\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn rollback(tx, fmt.Errorf(\"failed creating the group: %w\", err))\n\t}\n\t// Create the admin of the group.\n\tdan, err := tx.User.\n\t\tCreate().\n\t\tSetAge(29).\n\t\tSetName(\"Dan\").\n\t\tAddManage(hub).\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn rollback(tx, err)\n\t}\n\t// Create user \"Ariel\".\n\ta8m, err := tx.User.\n\t\tCreate().\n\t\tSetAge(30).\n\t\tSetName(\"Ariel\").\n\t\tAddGroups(hub).\n\t\tAddFriends(dan).\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn rollback(tx, err)\n\t}\n\tfmt.Println(a8m)\n\t// Output:\n\t// User(id=2, age=30, name=Ariel)\n\t\n\t// Commit the transaction.\n\treturn tx.Commit()\n}\n\n// rollback calls to tx.Rollback and wraps the given error\n// with the rollback error if occurred.\nfunc rollback(tx *ent.Tx, err error) error {\n\tif rerr := tx.Rollback(); rerr != nil {\n\t\terr = fmt.Errorf(\"%w: %v\", err, rerr)\n\t}\n\treturn err\n}\n```",
+      "source_content_hash": "43680904a397e6cb2f7a6590e767ed40d6ebb372225f8591ddcbf4e312e29e68",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e6a5da7c"
+      }
+    },
+    {
+      "segment_id": "1131ef75",
+      "source_content": "You must call `Unwrap()` if you are querying edges off of a created entity after a successful transaction (example: `a8m.QueryGroups()`). Unwrap restores the state of the underlying client embedded within the entity to a non-transactable version. ",
+      "source_content_hash": "cd5b33408d50c5d456c18774be867a6f08d67e25ff500846a8ef19f9d370ccf6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若需在事务成功后查询已创建实体的关联边（例如 `a8m.QueryGroups()`），必须调用 `Unwrap()` 方法。该方法会将实体内部封装的底层客户端状态恢复为非事务模式。"
+      }
+    },
+    {
+      "segment_id": "3a4225d7",
+      "source_content": ":::warning[Note]\nCalling `Unwrap()` on a non-transactional entity (i.e., after a transaction has been committed or rolled back) will\ncause a panic.\n:::",
+      "source_content_hash": "d2874e421f68dfb655d08ba3ae4dc7dda7079ea998a2cd94f175640e3bddef76",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::warning[注意]\n对非事务性实体（即事务已提交或回滚后）调用 `Unwrap()` 将引发 panic。\n:::"
+      }
+    },
+    {
+      "segment_id": "06e24cc0",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/traversal).",
+      "source_content_hash": "9518136aaf09c776623d0aaf92528cc9aa9cb0196880503af53e38d337a99b8b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例参见 [GitHub](https://github.com/ent/ent/tree/master/examples/traversal)。"
+      }
+    },
+    {
+      "segment_id": "ee8401db",
+      "source_content": "## Transactional Client",
+      "source_content_hash": "e7555ae6f7f64110853661a36ca60c33bb8b21b2504d5d93bb6fbf7198a2d0a2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 事务型客户端"
+      }
+    },
+    {
+      "segment_id": "147e8550",
+      "source_content": "Sometimes, you have an existing code that already works with `*ent.Client`, and you want to change it (or wrap it)\nto interact with transactions. For these use cases, you have a transactional client. An `*ent.Client` that you can\nget from an existing transaction.",
+      "source_content_hash": "978990fdbcf4ddeba874f417c101aae4e3806267f7807de2c5e8d215ef139cff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当现有代码已基于 `*ent.Client` 实现，且需要改造（或封装）为支持事务交互时，可使用事务型客户端。该客户端可通过现有事务获取，本质上仍是 `*ent.Client`。"
+      }
+    },
+    {
+      "segment_id": "468b36ba",
+      "source_content": "```go\n// WrapGen wraps the existing \"Gen\" function in a transaction.\nfunc WrapGen(ctx context.Context, client *ent.Client) error {\n\ttx, err := client.Tx(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\ttxClient := tx.Client()\n\t// Use the \"Gen\" below, but give it the transactional client; no code changes to \"Gen\".\n\tif err := Gen(ctx, txClient); err != nil {\n\t\treturn rollback(tx, err)\n\t}\n\treturn tx.Commit()\n}\n\n// Gen generates a group of entities.\nfunc Gen(ctx context.Context, client *ent.Client) error {\n\t// ...\n\treturn nil\n}\n```",
+      "source_content_hash": "4d47dabf085a11ba7bc3b888a3eda1e0a974ea4996f028c3254fe65e0653e9eb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_468b36ba"
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/traversal).",
+      "source_content_hash": "9518136aaf09c776623d0aaf92528cc9aa9cb0196880503af53e38d337a99b8b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例参见 [GitHub](https://github.com/ent/ent/tree/master/examples/traversal)。"
+      }
+    },
+    {
+      "segment_id": "c19de48a",
+      "source_content": "## Best Practices",
+      "source_content_hash": "0f443fd6dc74b48e9cd86221dde5b984e479a03e4f16bb2e0b6d6dc423b03a93",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 最佳实践"
+      }
+    },
+    {
+      "segment_id": "6ca4479f",
+      "source_content": "Reusable function that runs callbacks in a transaction:",
+      "source_content_hash": "47f1d323a1c43c9ccfddd4ede79fbec3bec0d60d0f6475268dab8e8938359b0a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "封装可复用的事务回调函数："
+      }
+    },
+    {
+      "segment_id": "1cf51900",
+      "source_content": "```go\nfunc WithTx(ctx context.Context, client *ent.Client, fn func(tx *ent.Tx) error) error {\n\ttx, err := client.Tx(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer func() {\n\t\tif v := recover(); v != nil {\n\t\t\ttx.Rollback()\n\t\t\tpanic(v)\n\t\t}\n\t}()\n\tif err := fn(tx); err != nil {\n\t\tif rerr := tx.Rollback(); rerr != nil {\n\t\t\terr = fmt.Errorf(\"%w: rolling back transaction: %v\", err, rerr)\n\t\t}\n\t\treturn err\n\t}\n\tif err := tx.Commit(); err != nil {\n\t\treturn fmt.Errorf(\"committing transaction: %w\", err)\n\t}\n\treturn nil\n}\n```",
+      "source_content_hash": "6096543ef8f5f32c6973bfc751674e7c97bd503359eb6d56bb0ed0cf2a95e37c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1cf51900"
+      }
+    },
+    {
+      "segment_id": "8fcdd6d4",
+      "source_content": "Its usage:",
+      "source_content_hash": "f3b7fa2164c76dc684a423855416f89700a969ec9141ababa3f8c468be3588a7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "调用示例："
+      }
+    },
+    {
+      "segment_id": "5be4f25e",
+      "source_content": "```go\nfunc Do(ctx context.Context, client *ent.Client) {\n\t// WithTx helper.\n\tif err := WithTx(ctx, client, func(tx *ent.Tx) error {\n\t\treturn Gen(ctx, tx.Client())\n\t}); err != nil {\n\t\tlog.Fatal(err)\n\t}\n}\n```",
+      "source_content_hash": "044ebf5a549ab31c176cc660b2ad8e93ecd2ca881d64618255294e29d7053e66",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5be4f25e"
+      }
+    },
+    {
+      "segment_id": "9c2ab4c8",
+      "source_content": "## Hooks",
+      "source_content_hash": "6dfbfab8ca8effc4c6b9adda8de2f9b3b00a79bf5682d6db526831a3cde64be3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 钩子"
+      }
+    },
+    {
+      "segment_id": "a9c2a503",
+      "source_content": "Same as [schema hooks](hooks.md#schema-hooks) and [runtime hooks](hooks.md#runtime-hooks), hooks can be registered on\nactive transactions, and will be executed on `Tx.Commit` or `Tx.Rollback`:",
+      "source_content_hash": "1276b471dd3d7673fd5f41d3c4373390b0538555ec9baa3ae8e866ba71d2f8de",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "与[模式钩子](hooks.md#schema-hooks)和[运行时钩子](hooks.md#runtime-hooks)类似，可在活跃事务上注册钩子，这些钩子将在执行 `Tx.Commit` 或 `Tx.Rollback` 时触发："
+      }
+    },
+    {
+      "segment_id": "a4a107b4",
+      "source_content": "```go\nfunc Do(ctx context.Context, client *ent.Client) error {\n    tx, err := client.Tx(ctx)\n    if err != nil {\n        return err\n    }\n    // Add a hook on Tx.Commit.\n    tx.OnCommit(func(next ent.Committer) ent.Committer {\n        return ent.CommitFunc(func(ctx context.Context, tx *ent.Tx) error {\n            // Code before the actual commit.\n            err := next.Commit(ctx, tx)\n            // Code after the transaction was committed.\n            return err\n        })\n    })\n    // Add a hook on Tx.Rollback.\n    tx.OnRollback(func(next ent.Rollbacker) ent.Rollbacker {\n        return ent.RollbackFunc(func(ctx context.Context, tx *ent.Tx) error {\n            // Code before the actual rollback.\n            err := next.Rollback(ctx, tx)\n            // Code after the transaction was rolled back.\n            return err\n        })\n    })\n    //\n    // <Code goes here>\n    //\n    return err\n}\n```",
+      "source_content_hash": "83ad4098437c3be5b7e47ed6e9084d6542a02776935fb828352bd17f6c7fa497",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a4a107b4"
+      }
+    },
+    {
+      "segment_id": "e1642ab4",
+      "source_content": "## Isolation Levels",
+      "source_content_hash": "da6445169b1ad6d9fd09da7d74c46ad0c6d20b81d7d0e7f2568eab9a03a48143",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 隔离级别"
+      }
+    },
+    {
+      "segment_id": "674abb31",
+      "source_content": "Some drivers support tweaking a transaction's isolation level. For example, with the [sql](sql-integration.md) driver, you can do so with the `BeginTx` method.",
+      "source_content_hash": "2b89aa3a5af8003a9335cdffb78075993e4b057150c67ef630644990cf9ac8cc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "部分驱动支持调整事务隔离级别。例如使用 [sql](sql-integration.md) 驱动时，可通过 `BeginTx` 方法实现。"
+      }
+    },
+    {
+      "segment_id": "ebc385af",
+      "source_content": "```go\ntx, err := client.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})\n```",
+      "source_content_hash": "b2d190a62345ca9010f66f11553820bf677f5821cebefc8c3142fab0ed431967",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ebc385af"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/transactions.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.677877+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "b1cdbfa8c8e8b6c782dc2066abbe2098a5b9d4171ef1002b3c0d6062646ff0f0"
+  }
+}

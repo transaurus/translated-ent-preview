@@ -1,0 +1,262 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2022-03-17-announcing-preview-support-for-tidb.md",
+  "source_file_content_hash": "ff7844c5ec8d4744071e58dd5fce4734f59281056f2b123f18a3b1ed1ecd9583",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Announcing preview support for TiDB\nauthor: Amit Shani\nauthorURL: \"https://github.com/hedwigz\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/8277210?v=4\"\nauthorTwitter: itsamitush\n---",
+      "source_content_hash": "1c34c60ea15b8dd03d044ccca4afc170a5d4885d293b7eae05a8419492fdfc9e",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "We [previously announced](2022-01-20-announcing-new-migration-engine.md) Ent's new migration engine - Atlas.\nUsing Atlas, it has become easier than ever to add support for new databases to Ent.\nToday, I am happy to announce that preview support for [TiDB](https://en.pingcap.com/tidb/) is now available, using the latest version of Ent with Atlas enabled.  ",
+      "source_content_hash": "36fa53b141f86c483d230faed12ddd8813a0645efeec393d98ca627ae24a3ea2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们[此前已宣布](2022-01-20-announcing-new-migration-engine.md)Ent的新迁移引擎Atlas。通过Atlas，为Ent添加对新数据库的支持变得前所未有的简单。今天，我很高兴地宣布，使用启用Atlas的最新版Ent，现已提供对[TiDB](https://en.pingcap.com/tidb/)的预览版支持。"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "Ent can be used to access data in many types of databases, both graph-oriented and relational.  Most commonly, users have been using standard open-source relational databases such as MySQL, MariaDB, and PostgreSQL.  As teams building Ent-based applications become more successful and need to deal with  traffic on larger scales, these single-node databases often become the bottleneck for scaling out. For this reason, many members of the Ent community have requested support for [NewSQL](https://en.wikipedia.org/wiki/NewSQL) databases such as TiDB.",
+      "source_content_hash": "847e12a029cca603316839f6319edaf04894489c4ad0e6a5338a088a181adcf2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent可用于访问多种类型数据库中的数据，包括图数据库和关系型数据库。最常见的是，用户一直在使用标准的开源关系型数据库，如MySQL、MariaDB和PostgreSQL。随着基于Ent构建的应用程序团队日益成功，需要处理更大规模的流量时，这些单节点数据库往往成为扩展的瓶颈。因此，Ent社区的许多成员要求支持[NewSQL](https://en.wikipedia.org/wiki/NewSQL)数据库，如TiDB。"
+      }
+    },
+    {
+      "segment_id": "e14c9928",
+      "source_content": "### TiDB",
+      "source_content_hash": "3b3d363e26a32cb3743c86b92dc5d601dce4ebf3b2eb8e32654805541b9c9936",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### TiDB"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "[TiDB](https://en.pingcap.com/tidb/) is an [open-source](https://github.com/pingcap/tidb) NewSQL database. It provides many features that traditional databases don't, such as:",
+      "source_content_hash": "7cd2ef337ba50cbf8cf3b4d5cd42dcd4cd9c5d4e529dca15e5a13e131d4ce29f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[TiDB](https://en.pingcap.com/tidb/)是一个[开源](https://github.com/pingcap/tidb)的NewSQL数据库。它提供了许多传统数据库所不具备的特性，例如："
+      }
+    },
+    {
+      "segment_id": "84758135",
+      "source_content": "1. **Horizontal scaling** - for many years software architects needed to choose between the familiarity and guarantees that relational databases provide and the scaling-out capability of _NoSQL_ databases (such as MongoDB or Cassandra). TiDB supports horizontal scaling while maintaining good compatibility with MySQL features. \n2. **HTAP (Hybrid transactional/analytical processing)** - In addition, databases are traditionally divided into analytical (OLAP) and transactional (OLTP) databases. TiDB breaks this dichotomy by enabling both analytics and transactional workloads on the same database. \n3. **Pre-packed monitoring** w/ Prometheus+Grafana - TiDB is built on Cloud-native paradigms from the ground up, and natively supports the standard CNCF observability stack. ",
+      "source_content_hash": "6c999489334ab2645a5ab5aea3f48f8e2e766f7ad3c51e00b8d41e5a659b9972",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. **水平扩展** - 多年来，软件架构师需要在关系型数据库提供的熟悉度和保证与_NoSQL_数据库（如MongoDB或Cassandra）的扩展能力之间做出选择。TiDB在保持与MySQL功能良好兼容性的同时支持水平扩展。\n2. **HTAP（混合事务/分析处理）** - 此外，数据库传统上分为分析型（OLAP）和事务型（OLTP）数据库。TiDB打破了这种二分法，允许在同一数据库上同时进行分析和事务处理工作负载。\n3. **预打包监控** w/ Prometheus+Grafana - TiDB从底层构建时就基于云原生范式，并原生支持标准的CNCF可观测性堆栈。"
+      }
+    },
+    {
+      "segment_id": "f5f6d2ce",
+      "source_content": "To read more about it, check out the official [TiDB Introduction](https://docs.pingcap.com/tidb/stable).",
+      "source_content_hash": "7d49413fcb7b32cd46714493881c6dbc8fa7b151de586e559970e8ae747af4c5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要了解更多信息，请查看官方的[TiDB简介](https://docs.pingcap.com/tidb/stable)。"
+      }
+    },
+    {
+      "segment_id": "40f9552a",
+      "source_content": "### Hello World with TiDB",
+      "source_content_hash": "bea2f5a87789405e1a1393b37ecd3abba982004d1e11fae4cd4b004e89b8dd18",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### TiDB的Hello World"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "For a quick \"Hello World\" application with Ent+TiDB, follow these steps:  ",
+      "source_content_hash": "1e38633b7e9f2a040449d49bdbfb306386b468ac4b6ea02e8350dbebecd649ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要快速体验Ent+TiDB的\"Hello World\"应用程序，请按照以下步骤操作："
+      }
+    },
+    {
+      "segment_id": "0cc488ed",
+      "source_content": "1. Spin up a local TiDB server by using Docker:",
+      "source_content_hash": "1b47237fd0340764da9adada96791d9e9da34709a456e8497d90f84bc5e5d5e5",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 使用Docker启动一个本地TiDB服务器："
+      }
+    },
+    {
+      "segment_id": "08021a08",
+      "source_content": "```shell\n docker run -p 4000:4000 pingcap/tidb\n ```",
+      "source_content_hash": "8a576289c6fb955fb0c49be2c7dd9c1ab710c730cf7982e7c0f0def9bb7f4d91",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_08021a08"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "Now you should have a running instance of TiDB listening on port 4000.",
+      "source_content_hash": "bacab3efa18585e0a773abf6cb504adf2ee130f0142a436f67f1d8f8ce267d3f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在你应该有一个运行中的TiDB实例在端口4000上监听。"
+      }
+    },
+    {
+      "segment_id": "86b525ab",
+      "source_content": "2. Clone the example [`hello world` repository](https://github.com/hedwigz/tidb-hello-world):",
+      "source_content_hash": "8a60a23e40cb7db8420a405c98c6814c52bd7fa1d147f6e9a5dd15e883b5d284",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2. 克隆示例[`hello world`仓库](https://github.com/hedwigz/tidb-hello-world)："
+      }
+    },
+    {
+      "segment_id": "a2110253",
+      "source_content": "```shell\n git clone https://github.com/hedwigz/tidb-hello-world.git\n ```",
+      "source_content_hash": "cc5d51c07679088dfe1dda0e9005877b066e502d69c0fa8cd45c8851ea39c6ab",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a2110253"
+      }
+    },
+    {
+      "segment_id": "517051a7",
+      "source_content": "In this example repository we defined a simple schema `User`:",
+      "source_content_hash": "ceddd48bb61fa241ff83c8579070a0c2778ee2811f5f2a68a3d292da87b17914",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在这个示例仓库中，我们定义了一个简单的`User`模式："
+      }
+    },
+    {
+      "segment_id": "be2d5397",
+      "source_content": "```go title=\"ent/schema/user.go\"\n func (User) Fields() []ent.Field {\n \treturn []ent.Field{\n \t\tfield.Time(\"created_at\").\n \t\t\tDefault(time.Now),\n \t\tfield.String(\"name\"),\n \t\tfield.Int(\"age\"),\n \t}\n }\n ```",
+      "source_content_hash": "2f612d0442b89e03f32bda4a1bd0fc8e6cc0b1dd386ef5d573a2bd584cdcbea8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be2d5397"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "Then, we connected Ent with TiDB:",
+      "source_content_hash": "2dd42a3738ad05a29a4341cdf64a383aa522aef64c0b2ee18d93fb20e037c015",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后，我们将Ent与TiDB连接："
+      }
+    },
+    {
+      "segment_id": "48ec8149",
+      "source_content": "```go title=\"main.go\"\n client, err := ent.Open(\"mysql\", \"root@tcp(localhost:4000)/test?parseTime=true\")\n if err != nil {\n \tlog.Fatalf(\"failed opening connection to tidb: %v\", err)\n }\n defer client.Close()\n // Run the auto migration tool, with Atlas.\n if err := client.Schema.Create(context.Background(), schema.WithAtlas(true)); err != nil {\n \tlog.Fatalf(\"failed printing schema changes: %v\", err)\n }\n\t```\n Note that in line `1` we connect to the TiDB server using a `mysql` dialect. This is possible due to the fact that TiDB is [MySQL compatible](https://docs.pingcap.com/tidb/stable/mysql-compatibility), and it does not require any special driver.  \n Having said that, there are some differences between TiDB and MySQL, especially when pertaining to schema migrations, such as information schema inspection and migration planning. For this reason, `Atlas` automatically detects if it is connected to `TiDB` and handles the migration accordingly.  \n In addition, note that in line `7` we used `schema.WithAtlas(true)`, which flags Ent to use `Atlas` as its \n migration engine.  \n   \n Finally, we create a user and save the record to TiDB to later be queried and printed.\n ```go title=\"main.go\"\n client.User.Create().\n\t\tSetAge(30).\n\t\tSetName(\"hedwigz\").\n\t\tSaveX(context.Background())\n user := client.User.Query().FirstX(context.Background())\n fmt.Printf(\"the user: %s is %d years old\\n\", user.Name, user.Age)\n ```",
+      "source_content_hash": "6b90b05e47cec7d07f19a9664f0401795aed24a4ac3ebdf05552b9071d008bc9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_48ec8149"
+      }
+    },
+    {
+      "segment_id": "69c1f590",
+      "source_content": "3. Run the example program:",
+      "source_content_hash": "10ef6cdd20a6cb2ca824f6e4ad366b206ff311c3ac18c3c312e50cc944bd2344",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3. 运行示例程序："
+      }
+    },
+    {
+      "segment_id": "af983f82",
+      "source_content": "```go\n $ go run main.go\n the user: hedwigz is 30 years old\n ```",
+      "source_content_hash": "a47d37c4eab69804d158288b0a1a537348436b7f358cc74b4e520172e4bab801",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_af983f82"
+      }
+    },
+    {
+      "segment_id": "e8e162a9",
+      "source_content": "Woohoo! In this quick walk-through we managed to:",
+      "source_content_hash": "e9293a3faccd9c652535d6a9d602368b8ce99bcdd260252716d6b4518cbd7efb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "哇！在这个快速演练中，我们成功实现了："
+      }
+    },
+    {
+      "segment_id": "ca1573da",
+      "source_content": "* Spin up a local instance of TiDB.\n* Connect Ent with TiDB.\n* Migrate our Ent schema with Atlas.\n* Insert and query from TiDB using Ent.",
+      "source_content_hash": "3118f2d936d9a6d0ef39ee7a639cda285bc9e7a594b8921a09018e6daf86bd9f",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 启动一个本地TiDB实例。\n* 将Ent与TiDB连接。\n* 使用Atlas迁移我们的Ent模式。\n* 使用Ent向TiDB插入并查询数据。"
+      }
+    },
+    {
+      "segment_id": "0a103a02",
+      "source_content": "### Preview support",
+      "source_content_hash": "7c17f27be59ed9b12ca5ab4b00255128cbcbbec8d8cb9802541deb0c04e6370c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 预览版支持"
+      }
+    },
+    {
+      "segment_id": "ec619944",
+      "source_content": "The integration of Atlas with TiDB is well tested with TiDB version `v5.4.0` (at the time of writing, `latest`) and we will extend that in the future.\nIf you're using other versions of TiDB or looking for help, don't hesitate to [file an issue](https://github.com/ariga/atlas/issues) or join our [Discord channel](https://discord.gg/zZ6sWVg6NT).",
+      "source_content_hash": "63223e61ab7c175ea2708681b53eaf9400cdcf172fece4fa4832dcd5a43391d2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas与TiDB的集成已在TiDB版本`v5.4.0`（撰写本文时为`latest`）上进行了充分测试，未来我们将进一步扩展支持范围。如果你使用的是其他版本的TiDB或需要帮助，请随时[提交问题](https://github.com/ariga/atlas/issues)或加入我们的[Discord频道](https://discord.gg/zZ6sWVg6NT)。"
+      }
+    },
+    {
+      "segment_id": "09f6e084",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent新闻和更新：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 在[Twitter](https://twitter.com/entgo_io)上关注我们\n- 加入[Gophers Slack](https://entgo.io/docs/slack)上的#ent频道\n- 加入[Ent Discord服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2022-03-17-announcing-preview-support-for-tidb.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.688503+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "ff7844c5ec8d4744071e58dd5fce4734f59281056f2b123f18a3b1ed1ecd9583"
+  }
+}

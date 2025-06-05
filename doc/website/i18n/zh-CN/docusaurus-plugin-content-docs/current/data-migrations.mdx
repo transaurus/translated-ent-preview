@@ -1,0 +1,297 @@
+---
+id: data-migrations
+title: Data Migrations
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+迁移通常用于变更数据库模式，但在某些场景下，需要修改数据库中存储的数据。例如添加种子数据，或为空列回填自定义默认值。
+
+这类迁移称为数据迁移。本文将探讨如何利用Ent规划数据迁移，并将其集成到常规的模式迁移工作流中。
+
+### 迁移类型
+
+Ent当前支持两种迁移类型：[版本化迁移](versioned-migrations.mdx)和[声明式迁移](migrate.md)（又称自动迁移）。两种类型均可执行数据迁移。
+
+## 版本化迁移
+
+使用版本化迁移时，数据迁移文件应存放在相同的`migrations`目录下，执行方式与常规迁移相同。但建议将数据迁移与模式迁移分文件存储，便于单独测试。
+
+此类迁移采用SQL格式，即使Ent模式发生变更导致生成代码与数据迁移文件不兼容，仍可安全执行原始SQL文件。
+
+创建数据迁移脚本有两种方式：手动编写与自动生成。手动编写需用户自行撰写所有SQL语句以精确控制执行逻辑；自动生成则通过Ent生成迁移脚本。建议对生成文件进行人工校验，某些边缘场景可能仍需手动修正。
+
+### 手动创建
+
+1\. 若未安装Atlas，请参考[入门指南](https://atlasgo.io/getting-started/#installation)进行安装。
+
+2\. 使用[Atlas](https://atlasgo.io/versioned/new)创建新迁移文件：
+
+```shell
+atlas migrate new <migration_name> \
+  --dir "file://my/project/migrations"
+```
+
+3\. 编辑迁移文件并添加自定义数据迁移逻辑。例如：
+
+```sql title="ent/migrate/migrations/20221126185750_backfill_data.sql"
+-- Backfill NULL or null tags with a default value.
+UPDATE `users` SET `tags` = '["foo","bar"]' WHERE `tags` IS NULL OR JSON_CONTAINS(`tags`, 'null', '$');
+```
+
+4\. 更新迁移目录的[完整性文件](https://atlasgo.io/concepts/migration-directory-integrity)：
+
+```shell
+atlas migrate hash \
+  --dir "file://my/project/migrations"
+```
+
+若不确定如何测试数据迁移文件，请参阅下文[测试](#testing)章节。
+
+### 自动生成脚本
+
+当前Ent提供数据迁移文件的初步生成支持。该功能可简化复杂SQL语句的手动编写过程，但在极端情况下仍需人工校验生成结果。
+
+1\. 若未配置[版本化迁移](/docs/versioned/intro)，请先完成基础设置。
+
+2\. 创建首个数据迁移函数。下方示例演示如何编写此类函数：
+
+<Tabs>
+<TabItem value="single" label="Single Statement" default>
+
+```go title="ent/migrate/migratedata/migratedata.go"
+package migratedata
+
+// BackfillUnknown back-fills all empty users' names with the default value 'Unknown'.
+func BackfillUnknown(dir *migrate.LocalDir) error {
+	w := &schema.DirWriter{Dir: dir}
+	client := ent.NewClient(ent.Driver(schema.NewWriteDriver(dialect.MySQL, w)))
+
+	// Change all empty names to 'unknown'.
+	err := client.User.
+		Update().
+		Where(
+			user.NameEQ(""),
+		).
+		SetName("Unknown").
+		Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed generating statement: %w", err)
+	}
+
+	// Write the content to the migration directory.
+	return w.FlushChange(
+		"unknown_names",
+		"Backfill all empty user names with default value 'unknown'.",
+	)
+}
+```
+
+Then, using this function in `ent/migrate/main.go` will generate the following migration file:
+
+```sql title="migrations/20221126185750_unknown_names.sql"
+-- Backfill all empty user names with default value 'unknown'.
+UPDATE `users` SET `name` = 'Unknown' WHERE `users`.`name` = '';
+```
+
+</TabItem>
+<TabItem value="multi" label="Multi Statement">
+
+```go title="ent/migrate/migratedata/migratedata.go"
+package migratedata
+
+// BackfillUserTags is used to generate the migration file '20221126185750_backfill_user_tags.sql'.
+func BackfillUserTags(dir *migrate.LocalDir) error {
+	w := &schema.DirWriter{Dir: dir}
+	client := ent.NewClient(ent.Driver(schema.NewWriteDriver(dialect.MySQL, w)))
+
+	// Add defaults "foo" and "bar" tags for users without any.
+	err := client.User.
+		Update().
+		Where(func(s *sql.Selector) {
+			s.Where(
+				sql.Or(
+					sql.IsNull(user.FieldTags),
+					sqljson.ValueIsNull(user.FieldTags),
+				),
+			)
+		}).
+		SetTags([]string{"foo", "bar"}).
+		Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed generating backfill statement: %w", err)
+	}
+	// Document all changes until now with a custom comment.
+	w.Change("Backfill NULL or null tags with a default value.")
+
+	// Append the "org" special tag for users with a specific prefix or suffix.
+	err = client.User.
+		Update().
+		Where(
+			user.Or(
+				user.NameHasPrefix("org-"),
+				user.NameHasSuffix("-org"),
+			),
+			// Append to only those without this tag.
+			func(s *sql.Selector) {
+				s.Where(
+					sql.Not(sqljson.ValueContains(user.FieldTags, "org")),
+				)
+			},
+		).
+		AppendTags([]string{"org"}).
+		Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed generating backfill statement: %w", err)
+	}
+	// Document all changes until now with a custom comment.
+	w.Change("Append the 'org' tag for organization accounts in case they don't have it.")
+
+	// Write the content to the migration directory.
+	return w.Flush("backfill_user_tags")
+}
+```
+
+Then, using this function in `ent/migrate/main.go` will generate the following migration file:
+
+```sql title="migrations/20221126185750_backfill_user_tags.sql"
+-- Backfill NULL or null tags with a default value.
+UPDATE `users` SET `tags` = '["foo","bar"]' WHERE `tags` IS NULL OR JSON_CONTAINS(`tags`, 'null', '$');
+-- Append the 'org' tag for organization accounts in case they don't have it.
+UPDATE `users` SET `tags` = CASE WHEN (JSON_TYPE(JSON_EXTRACT(`tags`, '$')) IS NULL OR JSON_TYPE(JSON_EXTRACT(`tags`, '$')) = 'NULL') THEN JSON_ARRAY('org') ELSE JSON_ARRAY_APPEND(`tags`, '$', 'org') END WHERE (`users`.`name` LIKE 'org-%' OR `users`.`name` LIKE '%-org') AND (NOT (JSON_CONTAINS(`tags`, '"org"', '$') = 1));
+```
+
+</TabItem>
+<TabItem value="seed" label="Data Seeding">
+
+```go title="ent/migrate/migratedata/migratedata.go"
+package migratedata
+
+// SeedUsers add the initial users to the database.
+func SeedUsers(dir *migrate.LocalDir) error {
+	w := &schema.DirWriter{Dir: dir}
+	client := ent.NewClient(ent.Driver(schema.NewWriteDriver(dialect.MySQL, w)))
+
+	// The statement that generates the INSERT statement.
+	err := client.User.CreateBulk(
+		client.User.Create().SetName("a8m").SetAge(1).SetTags([]string{"foo"}),
+		client.User.Create().SetName("nati").SetAge(1).SetTags([]string{"bar"}),
+	).Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed generating statement: %w", err)
+	}
+
+	// Write the content to the migration directory.
+	return w.FlushChange(
+		"seed_users",
+		"Add the initial users to the database.",
+	)
+}
+```
+
+Then, using this function in `ent/migrate/main.go` will generate the following migration file:
+
+```sql title="migrations/20221126212120_seed_users.sql"
+-- Add the initial users to the database.
+INSERT INTO `users` (`age`, `name`, `tags`) VALUES (1, 'a8m', '["foo"]'), (1, 'nati', '["bar"]');
+```
+
+</TabItem>
+</Tabs>
+
+3\. 若对生成文件进行了编辑，需通过以下命令更新迁移目录[完整性文件](https://atlasgo.io/concepts/migration-directory-integrity)：
+
+```shell
+atlas migrate hash \
+  --dir "file://my/project/migrations"
+```
+
+### 测试
+
+添加迁移文件后，强烈建议在本地数据库应用这些文件以验证其有效性及预期结果。该过程可手动执行或通过程序自动化。
+
+1\. 执行所有迁移文件直至最新创建的数据迁移文件：
+
+```shell
+# Total number of files.
+number_of_files=$(ls ent/migrate/migrations/*.sql | wc -l)
+
+# Execute all files without the latest.
+atlas migrate apply $[number_of_files-1] \
+  --dir "file://my/project/migrations" \
+  -u "mysql://root:pass@localhost:3306/test"
+```
+
+2\. 确认最新迁移文件处于待执行状态：
+
+```shell
+atlas migrate status \
+  --dir "file://my/project/migrations" \
+  -u "mysql://root:pass@localhost:3306/test"
+
+Migration Status: PENDING
+  -- Current Version: <VERSION_N-1>
+  -- Next Version:    <VERSION_N>
+  -- Executed Files:  <N-1>
+  -- Pending Files:   1
+```
+
+3\. 在本地数据库填充临时数据，模拟执行数据迁移前的生产环境数据状态。
+
+4\. 运行 `atlas migrate apply` 并确保其执行成功。
+
+```shell
+atlas migrate apply \
+  --dir "file://my/project/migrations" \
+  -u "mysql://root:pass@localhost:3306/test"
+```
+
+注意：通过使用 `atlas schema clean` 命令，您可以清理用于本地开发的数据库，并重复此流程直至数据迁移文件达到预期效果。
+
+## 自动迁移
+
+在声明式工作流中，数据迁移通过 Diff 或 Apply [钩子](migrate.md#atlas-diff-and-apply-hooks)实现。这是因为与版本化方案不同，此类迁移在应用时不保留名称或版本号。因此，当使用钩子写入数据时，必须在执行前检查 `schema.Change` 的类型，以确保数据迁移不会重复执行。
+
+```go
+func FillNullValues(dbdialect string) schema.ApplyHook {
+	return func(next schema.Applier) schema.Applier {
+		return schema.ApplyFunc(func(ctx context.Context, conn dialect.ExecQuerier, plan *migrate.Plan) error {
+			//highlight-next-line-info
+			// Search the schema.Change that triggers the data migration.
+			hasC := func() bool {
+				for _, c := range plan.Changes {
+					m, ok := c.Source.(*schema.ModifyTable)
+					if ok && m.T.Name == user.Table && schema.Changes(m.Changes).IndexModifyColumn(user.FieldName) != -1 {
+						return true
+					}
+				}
+				return false
+			}()
+			// Change was found, apply the data migration.
+			if hasC {
+			    //highlight-info-start
+			    // At this stage, there are three ways to UPDATE the NULL values to "Unknown".
+			    // Append a custom migrate.Change to migrate.Plan, execute an SQL statement
+			    // directly on the dialect.ExecQuerier, or use the generated ent.Client.
+			    //highlight-info-end
+
+			    // Create a temporary client from the migration connection.
+			    client := ent.NewClient(
+			    	ent.Driver(sql.NewDriver(dbdialect, sql.Conn{ExecQuerier: conn.(*sql.Tx)})),
+			    )
+			    if err := client.User.
+			    	Update().
+			    	SetName("Unknown").
+			    	Where(user.NameIsNil()).
+			    	Exec(ctx); err != nil {
+			    	return err
+			    }
+			}
+			return next.Apply(ctx, conn, plan)
+		})
+	}
+}
+```
+
+更多示例请参阅 [Apply Hook](migrate.md#apply-hook-example) 示例章节。

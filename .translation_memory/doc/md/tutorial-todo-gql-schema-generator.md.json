@@ -1,0 +1,332 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-gql-schema-generator.md",
+  "source_file_content_hash": "28077c99fc0f80cd412e7ed6c9376f958c2444fc5a9ee5e2b5d75221b2118ca1",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-gql-schema-generator\ntitle: Schema Generator\nsidebar_label: Schema Generator\n---",
+      "source_content_hash": "a1a352455bb0475cf430efc8e1a3727e9061c8ecc3e9526741baee969e1ab47e",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "In this section, we will continue the [GraphQL example](tutorial-todo-gql.mdx) by explaining how to generate a\ntype-safe GraphQL schema from our `ent/schema`.",
+      "source_content_hash": "2d1ff8033da1f531ca48b820d803c14770d43069030b1ea77e166b802625e0bb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节我们将延续[GraphQL示例](tutorial-todo-gql.mdx)，讲解如何从`ent/schema`生成类型安全的GraphQL模式。"
+      }
+    },
+    {
+      "segment_id": "1cc03ec8",
+      "source_content": "### Configure Ent",
+      "source_content_hash": "052a13beb7fff643a89a3fee55820e574004036cb4ce13247b4cdc50a6ffb0b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 配置Ent"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "Go to your `ent/entc.go` file, and add the highlighted line (extension options):",
+      "source_content_hash": "6547c5ab13e13d6f93f56d45bf393bf931432345fc25e4604e026be1b903f112",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "打开`ent/entc.go`文件，添加高亮行（扩展选项）："
+      }
+    },
+    {
+      "segment_id": "5564d81d",
+      "source_content": "```go {5} title=\"ent/entc.go\"\nfunc main() {\n\tex, err := entgql.NewExtension(\n\t\tentgql.WithWhereInputs(true),\n\t\tentgql.WithConfigPath(\"../gqlgen.yml\"),\n\t\tentgql.WithSchemaGenerator(),\n\t\tentgql.WithSchemaPath(\"../ent.graphql\"),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"creating entgql extension: %v\", err)\n\t}\n\topts := []entc.Option{\n\t\tentc.Extensions(ex),\n\t\tentc.TemplateDir(\"./template\"),\n\t}\n\tif err := entc.Generate(\"./schema\", &gen.Config{}, opts...); err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n} \n```",
+      "source_content_hash": "684959880c3fed11e199d4531ce1f555f928c4b2f989feb7c5b665a9581567c9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5564d81d"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "The `WithSchemaGenerator` option enables the GraphQL schema generation.",
+      "source_content_hash": "bb0b7ac7fb3b3adb2d7f5bd5021bd1543406697a5999141152bfa019bf2f57ae",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`WithSchemaGenerator`选项用于启用GraphQL模式生成功能。"
+      }
+    },
+    {
+      "segment_id": "3b7478ea",
+      "source_content": "### Add Annotations To `Todo` Schema",
+      "source_content_hash": "abc01703b26fb13badc43e807f476866b75ac8fe56be9e490086bf0c233076cf",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 为`Todo`模式添加注解"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "The `entgql.RelayConnection()` annotation is used to generate the Relay `<T>Edge`, `<T>Connection`, and `PageInfo` types for the `Todo` type.",
+      "source_content_hash": "f468683e704322883b653caff63ba6f96f3f8ac7f7a217114ef18c36d58c7728",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entgql.RelayConnection()`注解用于为`Todo`类型生成Relay的`<T>Edge`、`<T>Connection`和`PageInfo`类型。"
+      }
+    },
+    {
+      "segment_id": "3cfe6286",
+      "source_content": "The `entgql.QueryField()` annotation is used to generate the `todos` field in the `Query` type.",
+      "source_content_hash": "015b1cba6d55508168b936e5c8cfc2162a827016bd3b643239e0a6060dbaac37",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entgql.QueryField()`注解用于在`Query`类型中生成`todos`字段。"
+      }
+    },
+    {
+      "segment_id": "d9330cd7",
+      "source_content": "```go {13,14} title=\"ent/schema/todo.go\"\n// Edges of the Todo.\nfunc (Todo) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"parent\", Todo.Type).\n\t\t\tUnique().\n\t\t\tFrom(\"children\").\n\t}\n}\n\n// Annotations of the Todo.\nfunc (Todo) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentgql.RelayConnection(),\n\t\tentgql.QueryField(),\n\t}\n}\n```",
+      "source_content_hash": "503d67354cb9fb8598af27ce267d19caedd8ee30bfbf8e95fe8a71e30ce1d7cc",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9330cd7"
+      }
+    },
+    {
+      "segment_id": "6ea4c715",
+      "source_content": "The `entgql.RelayConnection()` annotation can also be used on the edge fields, to generate first, last, after, before... arguments and change the field type to `<T>Connection!`. For example to change the `children` field from `children: [Todo!]!` to `children(first: Int, last: Int, after: Cursor, before: Cursor): TodoConnection!`. You can add the `entgql.RelayConnection()` annotation to the edge field:",
+      "source_content_hash": "ed87aee59dec6fd2dce1a9d79acb74bf01ed15e677254f80286d6bfc7b48d1b7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entgql.RelayConnection()`注解也可用于边字段，以生成first/last/after/before等参数，并将字段类型改为`<T>Connection!`。例如将`children`字段从`children: [Todo!]!`改为`children(first: Int, last: Int, after: Cursor, before: Cursor): TodoConnection!`。您可以为边字段添加`entgql.RelayConnection()`注解："
+      }
+    },
+    {
+      "segment_id": "5a41b4fb",
+      "source_content": "```go {7} title=\"ent/schema/todo.go\"\n// Edges of the Todo.\nfunc (Todo) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"parent\", Todo.Type).\n\t\t\tUnique().\n\t\t\tFrom(\"children\").\n\t\t\tAnnotations(entgql.RelayConnection()),\n\t}\n}\n```",
+      "source_content_hash": "648dd316d6279cf71a305be3d56618e2cf04ef154a96587f64988665111fd45f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5a41b4fb"
+      }
+    },
+    {
+      "segment_id": "b051b70c",
+      "source_content": "### Cleanup the handwritten schema",
+      "source_content_hash": "7ec598c210387db93cfd851ea406b18fef3ef3ed72161fbe2763e15252934a0b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 清理手写模式"
+      }
+    },
+    {
+      "segment_id": "d0dd855b",
+      "source_content": "Please remove the types below from the `todo.graphql` to avoid conflict with the types that are generated by EntGQL in the `ent.graphql` file.",
+      "source_content_hash": "052565614ca7729534cc5178fab4a78ba3efb64e352e467fc9220f7802cd435b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请从`todo.graphql`中移除以下类型，避免与EntGQL在`ent.graphql`文件中生成的类型冲突。"
+      }
+    },
+    {
+      "segment_id": "7b2110d8",
+      "source_content": "```diff title=\"todo.graphql\"\n-interface Node {\n-  id: ID!\n-}\n\n\"\"\"Maps a Time GraphQL scalar to a Go time.Time struct.\"\"\"\nscalar Time\n\n-\"\"\"\n-Define a Relay Cursor type:\n-https://relay.dev/graphql/connections.htm#sec-Cursor\n-\"\"\"\n-scalar Cursor\n\n-\"\"\"\n-Define an enumeration type and map it later to Ent enum (Go type).\n-https://graphql.org/learn/schema/#enumeration-types\n-\"\"\"\n-enum Status {\n-  IN_PROGRESS\n-  COMPLETED\n-}\n-\n-type PageInfo {\n-  hasNextPage: Boolean!\n-  hasPreviousPage: Boolean!\n-  startCursor: Cursor\n-  endCursor: Cursor\n-}\n\n-type TodoConnection {\n-  totalCount: Int!\n-  pageInfo: PageInfo!\n-  edges: [TodoEdge]\n-}\n\n-type TodoEdge {\n-  node: Todo\n-  cursor: Cursor!\n-}\n\n-\"\"\"The following enums match the entgql annotations in the ent/schema.\"\"\"\n-enum TodoOrderField {\n-  CREATED_AT\n-  PRIORITY\n-  STATUS\n-  TEXT\n-}\n\n-enum OrderDirection {\n-  ASC\n-  DESC\n-}\n\ninput TodoOrder {\n  direction: OrderDirection!\n  field: TodoOrderField\n}\n\n-\"\"\"\n-Define an object type and map it later to the generated Ent model.\n-https://graphql.org/learn/schema/#object-types-and-fields\n-\"\"\"\n-type Todo implements Node {\n-  id: ID!\n-  createdAt: Time\n-  status: Status!\n-  priority: Int!\n-  text: String!\n-  parent: Todo\n-  children: [Todo!]\n-}\n\n\"\"\"\nDefine an input type for the mutation below.\nhttps://graphql.org/learn/schema/#input-types\nNote that this type is mapped to the generated\ninput type in mutation_input.go.\n\"\"\"\ninput CreateTodoInput {\n  status: Status! = IN_PROGRESS\n  priority: Int\n  text: String\n  parentID: ID\n  ChildIDs: [ID!]\n}\n\n\"\"\"\nDefine an input type for the mutation below.\nhttps://graphql.org/learn/schema/#input-types\nNote that this type is mapped to the generated\ninput type in mutation_input.go.\n\"\"\"\ninput UpdateTodoInput {\n  status: Status\n  priority: Int\n  text: String\n  parentID: ID\n  clearParent: Boolean\n  addChildIDs: [ID!]\n  removeChildIDs: [ID!]\n}\n\n\"\"\"\nDefine a mutation for creating todos.\nhttps://graphql.org/learn/queries/#mutations\n\"\"\"\ntype Mutation {\n  createTodo(input: CreateTodoInput!): Todo!\n  updateTodo(id: ID!, input: UpdateTodoInput!): Todo!\n  updateTodos(ids: [ID!]!, input: UpdateTodoInput!): [Todo!]!\n}\n\n-\"\"\"Define a query for getting all todos and support the Node interface.\"\"\"\n-type Query {\n-  todos(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: TodoOrder, where: TodoWhereInput): TodoConnection\n-  node(id: ID!): Node\n-  nodes(ids: [ID!]!): [Node]!\n-}\n```",
+      "source_content_hash": "e746b10f434f90387d432f83913fa30debdbdeb74c0f91ad0791c264fcbc4d8a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7b2110d8"
+      }
+    },
+    {
+      "segment_id": "4d7a4554",
+      "source_content": "### Ensure the execution order of Ent and GQLGen",
+      "source_content_hash": "9e4fd4bb9c87962d9954c80496ee8be125abf12811dc8d192253946873889ca9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 确保Ent与GQLGen的执行顺序"
+      }
+    },
+    {
+      "segment_id": "38f964f1",
+      "source_content": "We also need to do some changes to our `generate.go` files to ensure the execution order of Ent and GQLGen. The reason for this is to ensure that GQLGen sees the objects created by Ent and executes the code generator properly.",
+      "source_content_hash": "d5c6a76cd1c268c2943c87ed82ff3ea4e0d4b7a202d46c7897bb082773b855bd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们还需要修改`generate.go`文件以确保Ent和GQLGen的执行顺序。这是为了保证GQLGen能正确识别Ent生成的对象并执行代码生成器。"
+      }
+    },
+    {
+      "segment_id": "b4204c03",
+      "source_content": "First, remove the `ent/generate.go` file. Then, update the `ent/entc.go` file with the correct path, because the Ent codegen will be run from the project root directory.",
+      "source_content_hash": "a6f4a3f83437494069139f65294ff768a85afc8842489dcd4cd3a8338261fa6e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先删除`ent/generate.go`文件，然后更新`ent/entc.go`文件中的路径配置，因为Ent代码生成将从项目根目录运行。"
+      }
+    },
+    {
+      "segment_id": "d9ca18af",
+      "source_content": "```diff title=\"ent/entc.go\"\nfunc main() {\n\tex, err := entgql.NewExtension(\n\t\tentgql.WithWhereInputs(true),\n-\t\tentgql.WithConfigPath(\"../gqlgen.yml\"),\n+\t\tentgql.WithConfigPath(\"./gqlgen.yml\"),\n\t\tentgql.WithSchemaGenerator(),\n-\t\tentgql.WithSchemaPath(\"../ent.graphql\"),\n+\t\tentgql.WithSchemaPath(\"./ent.graphql\"),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"creating entgql extension: %v\", err)\n\t}\n\topts := []entc.Option{\n\t\tentc.Extensions(ex),\n-\t\tentc.TemplateDir(\"./template\"),\n+\t\tentc.TemplateDir(\"./ent/template\"),\n\t}\n-\tif err := entc.Generate(\"./schema\", &gen.Config{}, opts...); err != nil {\n+\tif err := entc.Generate(\"./ent/schema\", &gen.Config{}, opts...); err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n} \n```",
+      "source_content_hash": "16f928c71835c2c64d13fd32193c713ff320c3cc87bcad48707f8c003f4ddacf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9ca18af"
+      }
+    },
+    {
+      "segment_id": "228d01d5",
+      "source_content": "Update the `generate.go` to include the ent codegen.",
+      "source_content_hash": "381d960ebf95d266c184bde6c2967a9484e298a6d26e38743fb14a7305bbbfcb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更新`generate.go`以包含ent代码生成。"
+      }
+    },
+    {
+      "segment_id": "489cbec9",
+      "source_content": "```go {3} title=\"generate.go\"\npackage todo\n\n//go:generate go run -mod=mod ./ent/entc.go\n//go:generate go run -mod=mod github.com/99designs/gqlgen\n```",
+      "source_content_hash": "ff0fedacf0540829b666ed34023a4adbb39cdc2e19d7253208bb2b821ec94175",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_489cbec9"
+      }
+    },
+    {
+      "segment_id": "ba12acea",
+      "source_content": "After changing the `generate.go` file, we're ready to execute the code generation as follows:",
+      "source_content_hash": "d036fb24b508e09b3f62c1033ca7c5203736e761baee7ac8cbc27d4eaba6a1e7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "修改`generate.go`文件后，即可按以下方式执行代码生成："
+      }
+    },
+    {
+      "segment_id": "9d31dc8f",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9d31dc8f"
+      }
+    },
+    {
+      "segment_id": "80dbdeb8",
+      "source_content": "You will see that the `ent.graphql` file will be updated with the new content from EntGQL's Schema Generator.",
+      "source_content_hash": "7b53623a4260a811be861a4b4559c9393d92abb0bd0edc23c97fbb92fe0e6b84",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您将看到`ent.graphql`文件会更新为EntGQL模式生成器产生的新内容。"
+      }
+    },
+    {
+      "segment_id": "9349ceaa",
+      "source_content": "### Extending the type that generated by Ent",
+      "source_content_hash": "e6c4396e44052fb9690542406e8129ea08269ca4d60761072f38c495743f1882",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 扩展Ent生成的类型"
+      }
+    },
+    {
+      "segment_id": "e636ba62",
+      "source_content": "You may note that the type generated will include the `Query` type object with some fields that are already defined:",
+      "source_content_hash": "16fe90612c43c50622cc9b377681aee0dc5952df3d956bf95ccae724b700084a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您会注意到生成的类型将包含已定义的`Query`类型对象及其字段："
+      }
+    },
+    {
+      "segment_id": "7f3d1f07",
+      "source_content": "```graphql\ntype Query {\n  \"\"\"Fetches an object given its ID.\"\"\"\n  node(\n    \"\"\"ID of the object.\"\"\"\n    id: ID!\n  ): Node\n  \"\"\"Lookup nodes by a list of IDs.\"\"\"\n  nodes(\n    \"\"\"The list of node IDs.\"\"\"\n    ids: [ID!]!\n  ): [Node]!\n  todos(\n    \"\"\"Returns the elements in the list that come after the specified cursor.\"\"\"\n    after: Cursor\n\n    \"\"\"Returns the first _n_ elements from the list.\"\"\"\n    first: Int\n\n    \"\"\"Returns the elements in the list that come before the specified cursor.\"\"\"\n    before: Cursor\n\n    \"\"\"Returns the last _n_ elements from the list.\"\"\"\n    last: Int\n\n    \"\"\"Ordering options for Todos returned from the connection.\"\"\"\n    orderBy: TodoOrder\n\n    \"\"\"Filtering options for Todos returned from the connection.\"\"\"\n    where: TodoWhereInput\n  ): TodoConnection!\n}\n```",
+      "source_content_hash": "2c9fde912ce3c3e1829087303f1ec7055fa5154f05b85748b5cf51154e2c5a49",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7f3d1f07"
+      }
+    },
+    {
+      "segment_id": "46e586a3",
+      "source_content": "To add new fields to the `Query` type, you can do the following:",
+      "source_content_hash": "199020cfd2c9db96dbae88413f5127692b4513057c8b283fdc7ca6a4cccc1ff6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要为`Query`类型添加新字段，可执行以下操作："
+      }
+    },
+    {
+      "segment_id": "b73b8545",
+      "source_content": "```graphql title=\"todo.graphql\"\nextend type Query {\n\t\"\"\"Returns the literal string 'pong'.\"\"\"\n\tping: String!\n}\n```",
+      "source_content_hash": "d643b0b9334c83b6f4157e02ad4231591eff9844bd9af3b54efa416241791700",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b73b8545"
+      }
+    },
+    {
+      "segment_id": "4e994fc3",
+      "source_content": "You can extend any type that is generated by Ent. To skip a field from the type, you can use the `entgql.Skip()` on that field or edge.",
+      "source_content_hash": "fd1797ae20a2a9a22d4b488d2e0e0719e21b1967180a2f36d2a2e41171a61c91",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您可以扩展任何由Ent生成的类型。若要跳过某个字段，可在该字段或边上使用`entgql.Skip()`注解。"
+      }
+    },
+    {
+      "segment_id": "75448b5e",
+      "source_content": "---",
+      "source_content_hash": "cb3f91d54eee30e53e35b2b99905f70f169ed549fd78909d3dac2defc9ed8d3b",
+      "node_type": "thematicBreak",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "---"
+      }
+    },
+    {
+      "segment_id": "2ab62b74",
+      "source_content": "Well done! As you can see, after adapting the Schema Generator feature we don't have to write GQL schemas by hand anymore. Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack).",
+      "source_content_hash": "571a7ae8b7c947c2578a5f032f95b3a39fc3cad4bb60a41dad8c68ff9d5a323f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成！如您所见，在适配Schema Generator功能后，我们不再需要手动编写GQL模式。如有疑问或需要入门帮助，欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack)。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-gql-schema-generator.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.687898+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "28077c99fc0f80cd412e7ed6c9376f958c2444fc5a9ee5e2b5d75221b2118ca1"
+  }
+}

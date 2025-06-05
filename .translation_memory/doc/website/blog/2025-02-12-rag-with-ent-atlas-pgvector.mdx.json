@@ -1,0 +1,1002 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2025-02-12-rag-with-ent-atlas-pgvector.mdx",
+  "source_file_content_hash": "fb5386003a45eb64e4268c767eb94971d37bcfad51d5ef0368727b13b0c689ed",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: \"Building RAG systems in Go with Ent, Atlas, and pgvector\"\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\nimage: \"https://atlasgo.io/uploads/entrag.png\"\n---",
+      "source_content_hash": "3fd51d5bb62cbaf09e33bc38fce7ff0ec51f23632173befccdab7568a9bc3257",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "In this blog post, we will explore how to build a [RAG](https://en.wikipedia.org/wiki/Retrieval-augmented_generation)\n(Retrieval Augmented Generation) system using [Ent](https://entgo.io), [Atlas](https://atlasgo.io), and\n[pgvector](https://github.com/pgvector/pgvector).",
+      "source_content_hash": "62ed381f4bdcdfb5e8ae972fdd309ad8d336481fdaeefdacc1a54415fdc4737f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本篇博文将探讨如何利用[Ent](https://entgo.io)、[Atlas](https://atlasgo.io)和[pgvector](https://github.com/pgvector/pgvector)构建一个[RAG](https://en.wikipedia.org/wiki/Retrieval-augmented_generation)（检索增强生成）系统。"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "RAG is a technique that augments the power of generative models by incorporating a retrieval step. Instead of relying\nsolely on the model’s internal knowledge, we can retrieve relevant documents or data from an external source and use\nthat information to produce more accurate, context-aware responses. This approach is particularly useful when building\napplications such as question-answering systems, chatbots, or any scenario where up-to-date or domain-specific knowledge\nis needed.",
+      "source_content_hash": "407a75a7b5338f60e578d3755eec20834aedb91a13e9cdae5849cc6d9987a38c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "RAG是一种通过引入检索步骤来增强生成模型能力的技术。不同于仅依赖模型内部知识，该方法能从外部数据源检索相关文档或数据，从而生成更准确、更具上下文感知的响应。这一技术特别适用于构建问答系统、聊天机器人等需要最新或领域特定知识的应用场景。"
+      }
+    },
+    {
+      "segment_id": "aee0e40d",
+      "source_content": "### Setting Up our Ent schema",
+      "source_content_hash": "57de4cf2406c72709edafe405ff32f2daa86cdb05612fb06cd4aba1884bd2f9c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 配置Ent数据模型"
+      }
+    },
+    {
+      "segment_id": "f5f6d2ce",
+      "source_content": "Let's begin our tutorial by initializing the Go module which we will be using for our project:",
+      "source_content_hash": "d8c28e60c5b450b602fda72dedecd843f1850413e35498f7d018588216050854",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先初始化项目所需的Go模块："
+      }
+    },
+    {
+      "segment_id": "41a8ae85",
+      "source_content": "```bash\ngo mod init github.com/rotemtam/entrag # Feel free to replace the module path with your own\n```",
+      "source_content_hash": "6b17115a5dccca0e461f9b621da6c415643bb027478029a314620369b4e25783",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_41a8ae85"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "In this project we will use [Ent](/), an entity framework for Go, to define our database schema. The database will store\nthe documents we want to retrieve (chunked to a fixed size) and the vectors representing each chunk. Initialize the Ent\nproject by running the following command:",
+      "source_content_hash": "33f389f334565179a3dfaae01303ce02f17bc9b7a741c6d5ab3a0cc0843cecb0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本项目将使用Go的实体框架[Ent](/)定义数据库模型。数据库将存储待检索文档（按固定大小分块）及每个文本块的向量表示。运行以下命令初始化Ent项目："
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```bash\ngo run -mod=mod entgo.io/ent/cmd/ent new Embedding Chunk\n```",
+      "source_content_hash": "3f65f4650e11e3eff325e98f75dd687d8b794618333e8a91827753bb40f248c3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cb57d798"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "This command creates placeholders for our data models. Our project should look like this:",
+      "source_content_hash": "da307e42d532c316999f097419aae902a1065410ccbd7eba1ffbe65408e5d210",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该命令会创建数据模型的占位文件，项目结构如下："
+      }
+    },
+    {
+      "segment_id": "be2d5397",
+      "source_content": "```\n├── ent\n│   ├── generate.go\n│   └── schema\n│       ├── chunk.go\n│       └── embedding.go\n├── go.mod\n└── go.sum\n```",
+      "source_content_hash": "6949730f2afe3973b7ed0bc47120b7061137c242cc67b3cac1368f68a8ef28f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be2d5397"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "Next, let's define the schema for the `Chunk` model. Open the `ent/schema/chunk.go` file and define the schema as follows:",
+      "source_content_hash": "267670ba071757507a7c95e006cb1f306979285bf91b1a7811b0d3ecef135649",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着定义`Chunk`模型的结构。打开`ent/schema/chunk.go`文件进行如下定义："
+      }
+    },
+    {
+      "segment_id": "229d6705",
+      "source_content": "```go title=\"ent/schema/chunk.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/edge\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// Chunk holds the schema definition for the Chunk entity.\ntype Chunk struct {\n\tent.Schema\n}\n\n// Fields of the Chunk.\nfunc (Chunk) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"path\"),\n\t\tfield.Int(\"nchunk\"),\n\t\tfield.Text(\"data\"),\n\t}\n}\n\n// Edges of the Chunk.\nfunc (Chunk) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"embedding\", Embedding.Type).StorageKey(edge.Column(\"chunk_id\")).Unique(),\n\t}\n}\n```",
+      "source_content_hash": "b994786163dd99d87940f1e0fc97e8f492bc6ef97c41bace7ce7a4099fc3212b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229d6705"
+      }
+    },
+    {
+      "segment_id": "e8e162a9",
+      "source_content": "This schema defines a `Chunk` entity with three fields: `path`, `nchunk`, and `data`. The `path` field stores the path\nof the document, `nchunk` stores the chunk number, and `data` stores the chunked text data. We also define an edge to\nthe `Embedding` entity, which will store the vector representation of the chunk.",
+      "source_content_hash": "39e1bc646559c8e44952b19394fbec54597c25ac35701eecbb31d9f7f25f44d4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该模型定义了包含三个字段的`Chunk`实体：`path`存储文档路径，`nchunk`存储分块序号，`data`存储分块文本数据。同时定义了指向`Embedding`实体的边关系，用于存储文本块的向量表示。"
+      }
+    },
+    {
+      "segment_id": "a5c5772a",
+      "source_content": "Before we proceed, let's install the `pgvector` package. `pgvector` is a PostgreSQL extension that provides support for\nvector operations and similarity search. We will need it to store and retrieve the vector representations of our chunks.",
+      "source_content_hash": "2309a2be408a31f9a2b64a88daf088d446e65e6d567baf301d19451f95df7f1c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "继续之前，需安装`pgvector`扩展包。该PostgreSQL扩展提供向量运算和相似性搜索支持，用于存储和检索文本块的向量表示。"
+      }
+    },
+    {
+      "segment_id": "8c3563d3",
+      "source_content": "```bash\ngo get github.com/pgvector/pgvector-go\n```",
+      "source_content_hash": "f1f8937a7da5d0075ddb9caa5dba93c684c18486f8bd657b45a6b4580e465662",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8c3563d3"
+      }
+    },
+    {
+      "segment_id": "0750bfa1",
+      "source_content": "Next, let's define the schema for the `Embedding` model. Open the `ent/schema/embedding.go` file and define the schema\nas follows:",
+      "source_content_hash": "c6b0286e27d34f5e6a29edb091ff2cee37bbff987b21aafd3a2d161dfb25db5e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来定义`Embedding`模型。打开`ent/schema/embedding.go`文件进行如下配置："
+      }
+    },
+    {
+      "segment_id": "5782e280",
+      "source_content": "```go title=\"ent/schema/embedding.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/dialect\"\n\t\"entgo.io/ent/dialect/entsql\"\n\t\"entgo.io/ent/schema/edge\"\n\t\"entgo.io/ent/schema/field\"\n\t\"entgo.io/ent/schema/index\"\n\t\"github.com/pgvector/pgvector-go\"\n)\n\n// Embedding holds the schema definition for the Embedding entity.\ntype Embedding struct {\n\tent.Schema\n}\n\n// Fields of the Embedding.\nfunc (Embedding) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Other(\"embedding\", pgvector.Vector{}).\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.Postgres: \"vector(1536)\",\n\t\t\t}),\n\t}\n}\n\n// Edges of the Embedding.\nfunc (Embedding) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.From(\"chunk\", Chunk.Type).Ref(\"embedding\").Unique().Required(),\n\t}\n}\n\nfunc (Embedding) Indexes() []ent.Index {\n\treturn []ent.Index{\n\t\tindex.Fields(\"embedding\").\n\t\t\tAnnotations(\n\t\t\t\tentsql.IndexType(\"hnsw\"),\n\t\t\t\tentsql.OpClass(\"vector_l2_ops\"),\n\t\t\t),\n\t}\n}\n```",
+      "source_content_hash": "7ff6bac61cecb8ab0d716e217ed9a7c0f0ab22ee8c39c36127cc933f041a24db",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5782e280"
+      }
+    },
+    {
+      "segment_id": "e77cf7c6",
+      "source_content": "This schema defines an `Embedding` entity with a single field `embedding` of type `pgvector.Vector`. The `embedding`\nfield stores the vector representation of the chunk. We also define an edge to the `Chunk` entity and an index on the\n`embedding` field using the `hnsw` index type and `vector_l2_ops` operator class. This index will enable us to perform\nefficient similarity searches on the embeddings.",
+      "source_content_hash": "0b5adce006dc9ab18902f8dd1b9416b448dfa6c1fbba79f299f3cfef1aea8aa9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该模型定义了包含`pgvector.Vector`类型字段`embedding`的实体，用于存储文本块向量。通过定义指向`Chunk`实体的边关系，并在`embedding`字段上使用`hnsw`索引类型和`vector_l2_ops`操作符类建立索引，可实现高效的向量相似性搜索。"
+      }
+    },
+    {
+      "segment_id": "a9c2a503",
+      "source_content": "Finally, let's generate the Ent code by running the following commands:",
+      "source_content_hash": "c87e45f3b7b7e170e9be05293e9a27a5c2beb3693e5c8136f36ee2a0bb61858a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后运行以下命令生成Ent代码："
+      }
+    },
+    {
+      "segment_id": "4fe849d4",
+      "source_content": "```bash\ngo mod tidy\ngo generate ./...\n```",
+      "source_content_hash": "08193fbc5757021cfd0779fb8f2b1e4d2e00394073ec66d8705f05b79e19db90",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4fe849d4"
+      }
+    },
+    {
+      "segment_id": "ad3e22c6",
+      "source_content": "Ent will generate the necessary code for our models based on the schema definitions.",
+      "source_content_hash": "936e11928974e9ecb974f731075e9464bc92f9901d82eb4ffe541faec89825ad",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent将根据模型定义自动生成所需代码。"
+      }
+    },
+    {
+      "segment_id": "671cbf7c",
+      "source_content": "### Setting Up the database",
+      "source_content_hash": "44c616ca8c7ed29a3ecb2e55332ab433e831b8e711b2c2e85e8f6bf6a81f5630",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 数据库配置"
+      }
+    },
+    {
+      "segment_id": "4c787c52",
+      "source_content": "Next, let's set up the PostgreSQL database. We will use Docker to run a PostgreSQL instance locally. As we need the\n`pgvector` extension, we will use the `pgvector/pgvector:pg17` Docker image, which comes with the extension\npre-installed.",
+      "source_content_hash": "c2119cd4136f21e19cbbc883602cc4a7f37f74d180ab12ad9e63e2f8a6686757",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来配置PostgreSQL数据库。我们将使用Docker运行本地PostgreSQL实例，由于需要`pgvector`扩展，选择预装该扩展的`pgvector/pgvector:pg17`镜像。"
+      }
+    },
+    {
+      "segment_id": "e9921a93",
+      "source_content": "```bash\ndocker run --rm --name postgres -e POSTGRES_PASSWORD=pass -p 5432:5432 -d pgvector/pgvector:pg17\n```",
+      "source_content_hash": "3700635f0a0efa7e96a07d39237c905088525065af24cce486b40cce7499a718",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e9921a93"
+      }
+    },
+    {
+      "segment_id": "6f08f877",
+      "source_content": "We will be using [Atlas](https://atlasgo.io), a database schema-as-code tool that integrates with Ent, to manage our\ndatabase schema. Install Atlas by running the following command:",
+      "source_content_hash": "2aa14dd87128d49e850e398070e29ccf4ddb06761c5bcf1d30e239561f216764",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将使用与Ent集成的数据库Schema-as-Code工具[Atlas](https://atlasgo.io)来管理数据库模型。运行以下命令安装Atlas："
+      }
+    },
+    {
+      "segment_id": "71779666",
+      "source_content": "```\ncurl -sSfL https://atlasgo.io/install.sh | sh\n```",
+      "source_content_hash": "44ee1af6001f258936625bc0c483199c585f1fdc7f4b7d372f86c212cadf4f3e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_71779666"
+      }
+    },
+    {
+      "segment_id": "b08ad0b4",
+      "source_content": "For other installation options, see the [Atlas installation docs](https://atlasgo.io/getting-started#installation).",
+      "source_content_hash": "f7efba46ecc1486ea3248dd5d3c22870d0ef6922c6bdfc7d5bc772da42757386",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "其他安装方式请参阅[Atlas安装文档](https://atlasgo.io/getting-started#installation)。"
+      }
+    },
+    {
+      "segment_id": "d636abf8",
+      "source_content": "As we are going to managing extensions, we need an Atlas Pro account. You can sign up for a free trial by running:",
+      "source_content_hash": "7703ca55a21731d609fc056506c4c628e5cdc4e34647027135fee489efe23194",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于需要管理扩展功能，您需注册Atlas Pro账户。可通过以下命令申请免费试用："
+      }
+    },
+    {
+      "segment_id": "a1af15b5",
+      "source_content": "```\natlas login\n```",
+      "source_content_hash": "c48abb9b55a590342f961c8ae0ba0a516f4bf43eda6b25e9d8dc21b24c1956ac",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a1af15b5"
+      }
+    },
+    {
+      "segment_id": "f3377609",
+      "source_content": ":::note[Working without a migration tool]\n\nIf you would like to skip using Atlas, you can apply the required schema directly to the database\nusing the statements in [this file](https://github.com/rotemtam/entrag/blob/e91722c0fbe011b03dbd6b9e68415547c8b7bba4/setup.sql#L1)\n\n:::",
+      "source_content_hash": "a03570a740ef78c94a91744e29b7142bc629ed4da3584497e406418c1f333249",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[不使用迁移工具的情况]\n\n若希望跳过Atlas的使用，您可以直接通过[此文件](https://github.com/rotemtam/entrag/blob/e91722c0fbe011b03dbd6b9e68415547c8b7bba4/setup.sql#L1)中的SQL语句将所需模式直接应用到数据库。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "e5821418",
+      "source_content": "Now, let's create our Atlas configuration which composes the `base.pg.hcl` file with the Ent schema:",
+      "source_content_hash": "5d408eb0863093b88f91a2b1a6b34add8fb684b92c3028f53107dee546edfe48",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在，让我们创建Atlas配置文件，将`base.pg.hcl`文件与Ent模式组合起来："
+      }
+    },
+    {
+      "segment_id": "1cd1d315",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"schema\" {\n  schema {\n    url = \"file://base.pg.hcl\"\n  }\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n}\n\nenv \"local\" {\n  url = getenv(\"DB_URL\")\n  schema {\n    src = data.composite_schema.schema.url\n  }\n  dev = \"docker://pgvector/pg17/dev\"\n}\n```",
+      "source_content_hash": "25786e129c1dc6ae3a81c28be39e472cf48ff1e14814c652a261da36b861e3b8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1cd1d315"
+      }
+    },
+    {
+      "segment_id": "ebfad7e4",
+      "source_content": "This configuration defines a composite schema that includes the `base.pg.hcl` file and the Ent schema. We also define an\nenvironment named `local` that uses the composite schema which we will use for local development. The `dev` field specifies\nthe [Dev Database](https://atlasgo.io/concepts/dev-database) URL, which is used by Atlas to normalize schemas and make\nvarious calculations.",
+      "source_content_hash": "de466450dd7df187e9b4153066c1faca01302f6325e6a88233bf7bb279ad4524",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该配置定义了一个复合模式，包含`base.pg.hcl`文件和Ent模式。我们还定义了一个名为`local`的环境，使用该复合模式进行本地开发。`dev`字段指定了[开发数据库](https://atlasgo.io/concepts/dev-database)的URL，Atlas利用该URL对模式进行规范化处理并执行各类计算。"
+      }
+    },
+    {
+      "segment_id": "eeeea5ce",
+      "source_content": "Next, let's apply the schema to the database by running the following command:",
+      "source_content_hash": "420eedc35d2d7eb41da5585631766994d3e7a5b1858676f09058d148d1e9e9ae",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，运行以下命令将模式应用到数据库："
+      }
+    },
+    {
+      "segment_id": "ade38aab",
+      "source_content": "```bash\nexport DB_URL='postgresql://postgres:pass@localhost:5432/postgres?sslmode=disable'\natlas schema apply --env local\n```",
+      "source_content_hash": "2942dba7962f8dd8d2e970678dff4a27deebe9745978c129a87c23af73b906a6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ade38aab"
+      }
+    },
+    {
+      "segment_id": "d75361e3",
+      "source_content": "Atlas will load the desired state of the database from our configuration, compare it to the current state of the database,\nand create a migration plan to bring the database to the desired state:",
+      "source_content_hash": "a2665c0b618fcf270a283a5c2bcae933690a71737ff45918f3544f268c068880",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas会从配置中加载数据库的目标状态，与数据库当前状态进行对比，并创建迁移计划以使数据库达到目标状态："
+      }
+    },
+    {
+      "segment_id": "eff3427d",
+      "source_content": "```\nPlanning migration statements (5 in total):\n\n  -- create extension \"vector\":\n    -> CREATE EXTENSION \"vector\" WITH SCHEMA \"public\" VERSION \"0.8.0\";\n  -- create \"chunks\" table:\n    -> CREATE TABLE \"public\".\"chunks\" (\n         \"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY,\n         \"path\" character varying NOT NULL,\n         \"nchunk\" bigint NOT NULL,\n         \"data\" text NOT NULL,\n         PRIMARY KEY (\"id\")\n       );\n  -- create \"embeddings\" table:\n    -> CREATE TABLE \"public\".\"embeddings\" (\n         \"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY,\n         \"embedding\" public.vector(1536) NOT NULL,\n         \"chunk_id\" bigint NOT NULL,\n         PRIMARY KEY (\"id\"),\n         CONSTRAINT \"embeddings_chunks_embedding\" FOREIGN KEY (\"chunk_id\") REFERENCES \"public\".\"chunks\" (\"id\") ON UPDATE NO ACTION ON DELETE NO ACTION\n       );\n  -- create index \"embedding_embedding\" to table: \"embeddings\":\n    -> CREATE INDEX \"embedding_embedding\" ON \"public\".\"embeddings\" USING hnsw (\"embedding\" vector_l2_ops);\n  -- create index \"embeddings_chunk_id_key\" to table: \"embeddings\":\n    -> CREATE UNIQUE INDEX \"embeddings_chunk_id_key\" ON \"public\".\"embeddings\" (\"chunk_id\");\n\n-------------------------------------------\n\nAnalyzing planned statements (5 in total):\n\n  -- non-optimal columns alignment:\n    -- L4: Table \"chunks\" has 8 redundant bytes of padding per row. To reduce disk space,\n       the optimal order of the columns is as follows: \"id\", \"nchunk\", \"path\",\n       \"data\" https://atlasgo.io/lint/analyzers#PG110\n  -- ok (370.25µs)\n\n  -------------------------\n  -- 114.306667ms\n  -- 5 schema changes\n  -- 1 diagnostic\n\n-------------------------------------------\n\n? Approve or abort the plan:\n  ▸ Approve and apply\n    Abort\n```",
+      "source_content_hash": "a1feb1f1f9bd5ffbcf4182bb224593a2b0270f95474f5599f50bf3d9dd771fb6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eff3427d"
+      }
+    },
+    {
+      "segment_id": "f50056c0",
+      "source_content": "In addition to planning the change, Atlas will also provide diagnostics and suggestions for optimizing the schema. In this\ncase it suggests reordering the columns in the `chunks` table to reduce disk space. As we are not concerned with disk space\nin this tutorial, we can proceed with the migration by selecting `Approve and apply`.",
+      "source_content_hash": "e6d849031ad83ab0b04b4aba112696bc38f5957b63dc936f01830cf9c9dfd3ce",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "除了规划变更外，Atlas还会提供诊断信息及模式优化建议。本例中它建议调整`chunks`表的列顺序以减少磁盘空间占用。由于本教程不关注磁盘空间问题，我们可以选择`Approve and apply`继续执行迁移。"
+      }
+    },
+    {
+      "segment_id": "6085c028",
+      "source_content": "Finally, we can verify that our schema was applied successfully, we can re-run the `atlas schema apply` command. Atlas\nwill output:",
+      "source_content_hash": "ac0d24d89325ad53c6d6a23998900fcb2c8433873197b0f62151d7c2f42fd675",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后，为验证模式是否成功应用，可重新运行`atlas schema apply`命令。Atlas将输出："
+      }
+    },
+    {
+      "segment_id": "229a037e",
+      "source_content": "```bash\nSchema is synced, no changes to be made\n```",
+      "source_content_hash": "9deafc06c941857f8a8663a723075777587c58411b0acf8b99775fd4b786d65f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229a037e"
+      }
+    },
+    {
+      "segment_id": "a075432c",
+      "source_content": "### Scaffolding the CLI",
+      "source_content_hash": "9dfb6a6a36c1b8b94197739802946e3d5e2bcf2a64d861d45628af62b957c0b9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 搭建CLI框架"
+      }
+    },
+    {
+      "segment_id": "5014d30c",
+      "source_content": "Now that our database schema is set up, let's scaffold our CLI application. For this tutorial, we will be using\nthe [`alecthomas/kong`](https://github.com/alecthomas/kong) library to build a small app that can load, index\nand query the documents in our database.",
+      "source_content_hash": "0093fd801f785bfe9aa467294fb6d385065591d9ff6d4aefea6455cb1d5ff528",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "数据库模式设置完成后，让我们搭建CLI应用程序框架。本教程将使用[`alecthomas/kong`](https://github.com/alecthomas/kong)库构建一个小型应用，用于加载、索引和查询数据库中的文档。"
+      }
+    },
+    {
+      "segment_id": "740d2e67",
+      "source_content": "First, install the `kong` library:",
+      "source_content_hash": "ee3b0919489017547beb9b24042ec9485c897bb1c7f9105ed5a64906217f905b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先安装`kong`库："
+      }
+    },
+    {
+      "segment_id": "b73b8545",
+      "source_content": "```bash\ngo get github.com/alecthomas/kong\n```",
+      "source_content_hash": "c4c0fac5c1249c7b85b7def5f3b05a560dcb167e95e2b998b3774a308d0abd95",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b73b8545"
+      }
+    },
+    {
+      "segment_id": "7eb5b32d",
+      "source_content": "Next, create a new file named `cmd/entrag/main.go` and define the CLI application as follows:",
+      "source_content_hash": "ee847c5663ce2420eafd40f76345f8c0c3eea9ba7e4c32cc9288994aade10200",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着创建名为`cmd/entrag/main.go`的新文件，按如下方式定义CLI应用："
+      }
+    },
+    {
+      "segment_id": "00c94fa3",
+      "source_content": "```go title=\"cmd/entrag/main.go\"\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/alecthomas/kong\"\n)\n\n// CLI holds global options and subcommands.\ntype CLI struct {\n\t// DBURL is read from the environment variable DB_URL.\n\tDBURL     string `kong:\"env='DB_URL',help='Database URL for the application.'\"`\n\tOpenAIKey string `kong:\"env='OPENAI_KEY',help='OpenAI API key for the application.'\"`\n\n\t// Subcommands\n\tLoad  *LoadCmd  `kong:\"cmd,help='Load command that accepts a path.'\"`\n\tIndex *IndexCmd `kong:\"cmd,help='Create embeddings for any chunks that do not have one.'\"`\n\tAsk   *AskCmd   `kong:\"cmd,help='Ask a question about the indexed documents'\"`\n}\n\nfunc main() {\n\tvar cli CLI\n\tapp := kong.Parse(&cli,\n\t\tkong.Name(\"entrag\"),\n\t\tkong.Description(\"Ask questions about markdown files.\"),\n\t\tkong.UsageOnError(),\n\t)\n\tif err := app.Run(&cli); err != nil {\n\t\tfmt.Fprintf(os.Stderr, \"Error: %s\\n\", err)\n\t\tos.Exit(1)\n\t}\n}\n```",
+      "source_content_hash": "6c503f09db4fc2f7b4a13949790f96a546bb6cd32ae280c737de244e562731c2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_00c94fa3"
+      }
+    },
+    {
+      "segment_id": "b682f1ac",
+      "source_content": "Create an additional file named `cmd/entrag/rag.go` with the following content:",
+      "source_content_hash": "50e97d52bec298ffda83a03bc15f4adc0dd3c3109f101e7e3ba671270ffb7ac2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "再创建名为`cmd/entrag/rag.go`的文件，内容如下："
+      }
+    },
+    {
+      "segment_id": "bad1188f",
+      "source_content": "```go title=\"cmd/entrag/rag.go\"\npackage main\n\ntype (\n\t// LoadCmd loads the markdown files into the database.\n\tLoadCmd struct {\n\t\tPath string `help:\"path to dir with markdown files\" type:\"existingdir\" required:\"\"`\n\t}\n\t// IndexCmd creates the embedding index on the database.\n\tIndexCmd struct {\n\t}\n\t// AskCmd is another leaf command.\n\tAskCmd struct {\n\t\t// Text is the positional argument for the ask command.\n\t\tText string `kong:\"arg,required,help='Text for the ask command.'\"`\n\t}\n)\n```",
+      "source_content_hash": "183e3d2e72b1ad56c7ea2ca3c41ea1ee3bd5ec0dc22c0b413b12b93129e74636",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bad1188f"
+      }
+    },
+    {
+      "segment_id": "e17d0554",
+      "source_content": "Verify our scaffolded CLI application works by running:",
+      "source_content_hash": "79d37553f35d79537b70f8569bac36b7901d551a5283126842d63c941a71fca7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令验证搭建的CLI应用是否正常工作："
+      }
+    },
+    {
+      "segment_id": "bab21133",
+      "source_content": "```bash\ngo run ./cmd/entrag --help\n```",
+      "source_content_hash": "9a87bfea60084a09e8b42e4080d4e716c6c9132f758a601b41e113bd3b2cc8a0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bab21133"
+      }
+    },
+    {
+      "segment_id": "5b98f6e2",
+      "source_content": "If everything is set up correctly, you should see the help output for the CLI application:",
+      "source_content_hash": "733350dc980ff4b9ca201068358496face92f36b7c17bef5b0090ffadd068a7f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若一切配置正确，您将看到CLI应用的帮助输出："
+      }
+    },
+    {
+      "segment_id": "fa7da7df",
+      "source_content": "```\nUsage: entrag <command> [flags]\n\nAsk questions about markdown files.\n\nFlags:\n  -h, --help                  Show context-sensitive help.\n      --dburl=STRING          Database URL for the application ($DB_URL).\n      --open-ai-key=STRING    OpenAI API key for the application ($OPENAI_KEY).\n\nCommands:\n  load --path=STRING [flags]\n    Load command that accepts a path.\n\n  index [flags]\n    Create embeddings for any chunks that do not have one.\n\n  ask <text> [flags]\n    Ask a question about the indexed documents\n\nRun \"entrag <command> --help\" for more information on a command.\n```",
+      "source_content_hash": "fe4f0536c47d688bb96695c163c6013077db56ffc467be9de8c7ab3be3b76eb3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fa7da7df"
+      }
+    },
+    {
+      "segment_id": "5176651f",
+      "source_content": "### Load the documents into the database",
+      "source_content_hash": "757be21b9a01ea3f672d451b971c2422ccdaa7729de9e7ff7c1d4ac6251acf3e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 将文档加载至数据库"
+      }
+    },
+    {
+      "segment_id": "475959f2",
+      "source_content": "Next, we need some markdown files to load into the database. Create a directory named `data` and add some markdown files\nto it. For this example, I downloaded the [`ent/ent`](https://github.com/ent/ent) repository and used the `docs` directory\nas the source of markdown files.",
+      "source_content_hash": "f26caed348cc43a9850f1128cbbde188a0565cc9d3e3e584db15f179ba3a62c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来需要准备要加载到数据库的markdown文件。创建名为`data`的目录并添加若干markdown文件。本示例中，我下载了[`ent/ent`](https://github.com/ent/ent)仓库并使用其`docs`目录作为markdown文件源。"
+      }
+    },
+    {
+      "segment_id": "1697776c",
+      "source_content": "Now, let's implement the `LoadCmd` command to load the markdown files into the database. Open the `cmd/entrag/rag.go` file\nand add the following code:",
+      "source_content_hash": "637cda17693cf25b4dc4159eb1ac9e462d52e6da7c8f4ca08d02f874b94bf371",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在实现`LoadCmd`命令以将markdown文件加载到数据库。打开`cmd/entrag/rag.go`文件并添加以下代码："
+      }
+    },
+    {
+      "segment_id": "c9affc65",
+      "source_content": "```go title=\"cmd/entrag/rag.go\"\nconst (\n\ttokenEncoding = \"cl100k_base\"\n\tchunkSize     = 1000\n)\n\n// Run is the method called when the \"load\" command is executed.\nfunc (cmd *LoadCmd) Run(ctx *CLI) error {\n\tclient, err := ctx.entClient()\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed opening connection to postgres: %w\", err)\n\t}\n\ttokTotal := 0\n\treturn filepath.WalkDir(ctx.Load.Path, func(path string, d fs.DirEntry, err error) error {\n\t\tif filepath.Ext(path) == \".mdx\" || filepath.Ext(path) == \".md\" {\n\t\t\tchunks := breakToChunks(path)\n\t\t\tfor i, chunk := range chunks {\n\t\t\t\ttokTotal += len(chunk)\n\t\t\t\tclient.Chunk.Create().\n\t\t\t\t\tSetData(chunk).\n\t\t\t\t\tSetPath(path).\n\t\t\t\t\tSetNchunk(i).\n\t\t\t\t\tSaveX(context.Background())\n\t\t\t}\n\t\t}\n\t\treturn nil\n\t})\n}\n\nfunc (c *CLI) entClient() (*ent.Client, error) {\n\treturn ent.Open(\"postgres\", c.DBURL)\n}\n```",
+      "source_content_hash": "70e8be1dee078be8a83121fcd405bdff6239cfefebc63371a1e9e6090a2d420d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c9affc65"
+      }
+    },
+    {
+      "segment_id": "a279d6f8",
+      "source_content": "This code defines the `Run` method for the `LoadCmd` command. The method reads the markdown files from the specified\npath, breaks them into chunks of 1000 tokens each, and saves them to the database. We use the `entClient` method to\ncreate a new Ent client using the database URL specified in the CLI options.",
+      "source_content_hash": "b50c912d020e67dc5e2cc58117eea26f858af54193c4e761168bc6b6839bea4e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这段代码定义了`LoadCmd`命令的`Run`方法。该方法从指定路径读取markdown文件，将其拆分为每1000个token的块，并保存到数据库。我们使用`entClient`方法通过CLI选项中指定的数据库URL创建新的Ent客户端。"
+      }
+    },
+    {
+      "segment_id": "4206c3f9",
+      "source_content": "For the implementation of `breakToChunks`, see the [full code](https://github.com/rotemtam/entrag/blob/93291e0c8479ecabd5f2a2e49fbaa8c49f995e70/cmd/entrag/rag.go#L157)\nin the [`entrag` repository](https://github.com/rotemtam/entrag), which is based almost entirely on\n[Eli Bendersky's intro to RAG in Go](https://eli.thegreenplace.net/2023/retrieval-augmented-generation-in-go/).",
+      "source_content_hash": "704ff01fd720c596ddfbb3e5ba686c40e7b0f7ee54918f9e9c9492ce5f284237",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "关于`breakToChunks`的具体实现，请参考[完整代码](https://github.com/rotemtam/entrag/blob/93291e0c8479ecabd5f2a2e49fbaa8c49f995e70/cmd/entrag/rag.go#L157)\n（位于[`entrag`代码库](https://github.com/rotemtam/entrag)），该实现基本基于\n[Eli Bendersky关于Go语言RAG的入门指南](https://eli.thegreenplace.net/2023/retrieval-augmented-generation-in-go/)。"
+      }
+    },
+    {
+      "segment_id": "ac91a2d7",
+      "source_content": "Finally, let's run the `load` command to load the markdown files into the database:",
+      "source_content_hash": "98826ad5250a12e2ee43ff67fe718259d0b777cbbf30ba18c5aef31617baf483",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后，运行`load`命令将Markdown文件加载至数据库："
+      }
+    },
+    {
+      "segment_id": "51315946",
+      "source_content": "```bash\ngo run ./cmd/entrag load --path=data\n```",
+      "source_content_hash": "95bad168b182c3d6f4bd1562df62b8db68ca8ea114e3808a6da1b7cb8d8e9040",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_51315946"
+      }
+    },
+    {
+      "segment_id": "1e0d7fbe",
+      "source_content": "After the command completes, you should see the chunks loaded into the database. To verify run:",
+      "source_content_hash": "1191a68890839a2d134c5600db5497a393e9c98d035589add730ab431c23c2f7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "命令执行完成后，数据块应已存入数据库。可通过以下命令验证："
+      }
+    },
+    {
+      "segment_id": "7b02faf5",
+      "source_content": "```bash\ndocker exec -it postgres psql -U postgres -d postgres -c \"SELECT COUNT(*) FROM chunks;\"\n```",
+      "source_content_hash": "752addb75ccbebe968b38187c000a41872abc764cbd8bc86a2f356f97fccfb18",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7b02faf5"
+      }
+    },
+    {
+      "segment_id": "13c7706c",
+      "source_content": "You should see something similar to:",
+      "source_content_hash": "b7dad49ae887b0a301a8435253e4f69a8333d234966e039bbbcaabb696191e99",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "预期输出类似："
+      }
+    },
+    {
+      "segment_id": "2294a59b",
+      "source_content": "```\n  count\n-------\n   276\n(1 row)\n```",
+      "source_content_hash": "1b93808d77f6ba0b49b19aa320985eb5c00a0e225f6d31d4f3fc90c176c79520",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2294a59b"
+      }
+    },
+    {
+      "segment_id": "95a0af4d",
+      "source_content": "### Indexing the embeddings",
+      "source_content_hash": "f0576f0273fe16a9c5e762c395df7248a9ab20c7ebb2953a2c541bf8936ab6af",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 生成嵌入向量索引"
+      }
+    },
+    {
+      "segment_id": "0d8c3e6f",
+      "source_content": "Now that we have loaded the documents into the database, we need to create embeddings for each chunk. We will use the\nOpenAI API to generate embeddings for the chunks. To do this, we need to install the `openai` package:",
+      "source_content_hash": "9208efa9dc8a369965849620500d92b0121f207133a37a594aad64404cff8044",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "文档加载完成后，我们需要为每个文本块创建嵌入向量。这里使用OpenAI API生成嵌入向量，首先需安装`openai`包："
+      }
+    },
+    {
+      "segment_id": "ae548439",
+      "source_content": "```bash\ngo get github.com/sashabaranov/go-openai\n```",
+      "source_content_hash": "d468b0c2e81632bc9cc449826bbea92dd6a08d60f5a5b8898ba42a13b2a5088a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ae548439"
+      }
+    },
+    {
+      "segment_id": "9bc9e142",
+      "source_content": "If you do not have an OpenAI API key, you can sign up for an account on the\n[OpenAI Platform](https://platform.openai.com/signup) and [generate an API key](https://platform.openai.com/api-keys).",
+      "source_content_hash": "61908b9a0bf09f48b9e7dafdd872573646ba64454c5874a496f8fa4ab04e90fb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若未持有OpenAI API密钥，可前往[OpenAI平台](https://platform.openai.com/signup)注册账号并[生成API密钥](https://platform.openai.com/api-keys)。"
+      }
+    },
+    {
+      "segment_id": "8be3f6dc",
+      "source_content": "We will be reading this key from the environment variable `OPENAI_KEY`, so let's set it:",
+      "source_content_hash": "dbee1626c082e36e67520213c2323fc082ff4d554066825dad8c8c434c7fd644",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将通过环境变量`OPENAI_KEY`读取该密钥，请先进行设置："
+      }
+    },
+    {
+      "segment_id": "7c9cd24e",
+      "source_content": "```bash\nexport OPENAI_KEY=<your OpenAI API key>\n```",
+      "source_content_hash": "b9582dbe5299f5b4d5ccf7a9d5e8dad5ae4f65adce5f29c9d021e710e646487e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7c9cd24e"
+      }
+    },
+    {
+      "segment_id": "c829cc4b",
+      "source_content": "Next, let's implement the `IndexCmd` command to create embeddings for the chunks. Open the `cmd/entrag/rag.go` file and\nadd the following code:",
+      "source_content_hash": "2cdb05f06ce349647510f6d2ea4a1645baf89b609b55f83ebb739d28fc806f3a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来实现`IndexCmd`命令以生成文本块嵌入向量。编辑`cmd/entrag/rag.go`文件并添加以下代码："
+      }
+    },
+    {
+      "segment_id": "7584896b",
+      "source_content": "```go title=\"cmd/entrag/rag.go\"\n// Run is the method called when the \"index\" command is executed.\nfunc (cmd *IndexCmd) Run(cli *CLI) error {\n\tclient, err := cli.entClient()\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed opening connection to postgres: %w\", err)\n\t}\n\tctx := context.Background()\n\tchunks := client.Chunk.Query().\n\t\tWhere(\n\t\t\tchunk.Not(\n\t\t\t\tchunk.HasEmbedding(),\n\t\t\t),\n\t\t).\n\t\tOrder(ent.Asc(chunk.FieldID)).\n\t\tAllX(ctx)\n\tfor _, ch := range chunks {\n\t\tlog.Println(\"Created embedding for chunk\", ch.Path, ch.Nchunk)\n\t\tembedding := getEmbedding(ch.Data)\n\t\t_, err := client.Embedding.Create().\n\t\t\tSetEmbedding(pgvector.NewVector(embedding)).\n\t\t\tSetChunk(ch).\n\t\t\tSave(ctx)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"error creating embedding: %v\", err)\n\t\t}\n\t}\n\treturn nil\n}\n\n// getEmbedding invokes the OpenAI embedding API to calculate the embedding\n// for the given string. It returns the embedding.\nfunc getEmbedding(data string) []float32 {\n\tclient := openai.NewClient(os.Getenv(\"OPENAI_KEY\"))\n\tqueryReq := openai.EmbeddingRequest{\n\t\tInput: []string{data},\n\t\tModel: openai.AdaEmbeddingV2,\n\t}\n\tqueryResponse, err := client.CreateEmbeddings(context.Background(), queryReq)\n\tif err != nil {\n\t\tlog.Fatalf(\"Error getting embedding: %v\", err)\n\t}\n\treturn queryResponse.Data[0].Embedding\n}\n```",
+      "source_content_hash": "81f346ef162aaf19d13b7d6169e2a064d1ea0ca038d2c495469d6e1d64fbb8df",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7584896b"
+      }
+    },
+    {
+      "segment_id": "6dbe7a7e",
+      "source_content": "We have defined the `Run` method for the `IndexCmd` command. The method queries the database for chunks that do not have\nembeddings, generates embeddings for each chunk using the OpenAI API, and saves the embeddings to the database.",
+      "source_content_hash": "1036c0c11de4345f8fd80d9870a46990374622d5cc2a8f4ff22dbdbe9c582bbe",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这里定义了`IndexCmd`命令的`Run`方法：查询未生成嵌入向量的文本块，通过OpenAI API创建嵌入向量后存入数据库。"
+      }
+    },
+    {
+      "segment_id": "0ac62679",
+      "source_content": "Finally, let's run the `index` command to create embeddings for the chunks:",
+      "source_content_hash": "8344f409f1617aabefcace19ca094d6661f2ce79aaf2d4ee65af1f3bdc784197",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后执行`index`命令生成嵌入向量："
+      }
+    },
+    {
+      "segment_id": "f1799214",
+      "source_content": "```bash\ngo run ./cmd/entrag index\n```",
+      "source_content_hash": "bd19ed24aa2ff87ddbbed0bccb6877e043efabb747e5ecf55ad93576da55b171",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f1799214"
+      }
+    },
+    {
+      "segment_id": "b20523b9",
+      "source_content": "You should see logs similar to: ",
+      "source_content_hash": "15aa54d1bd21f3ef128d0fda10808f6e426f676c6cf3b8b3edc72ecf0fb88237",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "预期看到类似日志输出："
+      }
+    },
+    {
+      "segment_id": "3ea84404",
+      "source_content": "```\n2025/02/13 13:04:42 Created embedding for chunk /Users/home/entr/data/md/aggregate.md 0\n2025/02/13 13:04:43 Created embedding for chunk /Users/home/entr/data/md/ci.mdx 0\n2025/02/13 13:04:44 Created embedding for chunk /Users/home/entr/data/md/ci.mdx 1\n2025/02/13 13:04:45 Created embedding for chunk /Users/home/entr/data/md/ci.mdx 2\n2025/02/13 13:04:46 Created embedding for chunk /Users/home/entr/data/md/code-gen.md 0\n2025/02/13 13:04:47 Created embedding for chunk /Users/home/entr/data/md/code-gen.md 1\n```",
+      "source_content_hash": "d8d79e8aae20d2968917de13f71c3c3637cdbc3d75b9538f82cf8c5d0919dad2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ea84404"
+      }
+    },
+    {
+      "segment_id": "1ea07a68",
+      "source_content": "### Asking questions",
+      "source_content_hash": "280912b75937a17a5f9e289477e41e0471fe5de246ff1a22908f5cff489b2b57",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 提问功能"
+      }
+    },
+    {
+      "segment_id": "624f0d89",
+      "source_content": "Now that we have loaded the documents and created embeddings for the chunks, we can implement\nthe `AskCmd` command to ask questions about the indexed documents. Open the `cmd/entrag/rag.go` file and add the following code:",
+      "source_content_hash": "ad6da69babaf14449c45f2e6b6dfabc426ab9542a0ee597dfb13855713b32e49",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成文档加载和嵌入向量生成后，可实现`AskCmd`命令来查询已索引文档。编辑`cmd/entrag/rag.go`文件并添加："
+      }
+    },
+    {
+      "segment_id": "08404d6e",
+      "source_content": "```go title=\"cmd/entrag/rag.go\"\n// Run is the method called when the \"ask\" command is executed.\nfunc (cmd *AskCmd) Run(ctx *CLI) error {\n\tclient, err := ctx.entClient()\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed opening connection to postgres: %w\", err)\n\t}\n\tquestion := cmd.Text\n\temb := getEmbedding(question)\n\tembVec := pgvector.NewVector(emb)\n\tembs := client.Embedding.\n\t\tQuery().\n\t\tOrder(func(s *sql.Selector) {\n\t\t\ts.OrderExpr(sql.ExprP(\"embedding <-> $1\", embVec))\n\t\t}).\n\t\tWithChunk().\n\t\tLimit(5).\n\t\tAllX(context.Background())\n\tb := strings.Builder{}\n\tfor _, e := range embs {\n\t\tchnk := e.Edges.Chunk\n\t\tb.WriteString(fmt.Sprintf(\"From file: %v\\n\", chnk.Path))\n\t\tb.WriteString(chnk.Data)\n\t}\n\tquery := fmt.Sprintf(`Use the below information from the ent docs to answer the subsequent question.\nInformation:\n%v\n\nQuestion: %v`, b.String(), question)\n\toac := openai.NewClient(ctx.OpenAIKey)\n\tresp, err := oac.CreateChatCompletion(\n\t\tcontext.Background(),\n\t\topenai.ChatCompletionRequest{\n\t\t\tModel: openai.GPT4o,\n\t\t\tMessages: []openai.ChatCompletionMessage{\n\n\t\t\t\t{\n\t\t\t\t\tRole:    openai.ChatMessageRoleUser,\n\t\t\t\t\tContent: query,\n\t\t\t\t},\n\t\t\t},\n\t\t},\n\t)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"error creating chat completion: %v\", err)\n\t}\n\tchoice := resp.Choices[0]\n\tout, err := glamour.Render(choice.Message.Content, \"dark\")\n\tfmt.Print(out)\n\treturn nil\n}\n```",
+      "source_content_hash": "34ad767b33d3ea1d2449b47dd76611464d8f588266058b27208d1292e9a863de",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_08404d6e"
+      }
+    },
+    {
+      "segment_id": "7753928b",
+      "source_content": "This is where all of the parts come together. After preparing our database with the documents and their embeddings, we\ncan now ask questions about them. Let's break down the `AskCmd` command:",
+      "source_content_hash": "5741de84235597ed6e8f79d4056c638594fe996b4c6fbace1139f1157f5a2b5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "至此所有组件已完成集成。在数据库准备好文档及其嵌入向量后，现在可以对其进行提问。`AskCmd`命令的工作流程如下："
+      }
+    },
+    {
+      "segment_id": "e13609bf",
+      "source_content": "```go\nemb := getEmbedding(question)\nembVec := pgvector.NewVector(emb)\nembs := client.Embedding.\n    Query().\n    Order(func(s *sql.Selector) {\n        s.OrderExpr(sql.ExprP(\"embedding <-> $1\", embVec))\n    }).\n    WithChunk().\n    Limit(5).\n    AllX(context.Background())\n```",
+      "source_content_hash": "879636bd65b067f8c159b2128763a34518452d4d8d057ea822dc76004ef8ff6a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e13609bf"
+      }
+    },
+    {
+      "segment_id": "0241afda",
+      "source_content": "We begin by transforming the user's question into a vector using the OpenAI API. Using this vector we would like\nto find the most similar embeddings in our database. We query the database for the embeddings, order them by similarity\nusing `pgvector`'s `<->` operator, and limit the results to the top 5.",
+      "source_content_hash": "4dc9bc6fb6eb1dc15ea38f3c4e4d007bb79cbf67fd60f0cef25bd8b70bc22778",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先通过OpenAI API将用户问题转换为向量。利用该向量在数据库中查找最相似的嵌入向量，使用pgvector的`<->`运算符按相似度排序，并限制返回前5条结果。"
+      }
+    },
+    {
+      "segment_id": "20238e48",
+      "source_content": "```go\nfor _, e := range embs {\n\t\tchnk := e.Edges.Chunk\n\t\tb.WriteString(fmt.Sprintf(\"From file: %v\\n\", chnk.Path))\n\t\tb.WriteString(chnk.Data)\n\t}\n\tquery := fmt.Sprintf(`Use the below information from the ent docs to answer the subsequent question.\nInformation:\n%v\n\nQuestion: %v`, b.String(), question)\n```",
+      "source_content_hash": "ee4c67f11a48c5c0f12b28c80e58319d973476384eed7503db08edd2d2b20ce2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_20238e48"
+      }
+    },
+    {
+      "segment_id": "84d249e5",
+      "source_content": "Next, we prepare the information from the top 5 chunks to be used as context for the question. We then format the\nquestion and the context into a single string.",
+      "source_content_hash": "d99d6f34f797d88def5880df48c2c8ad95b6bf069fa22cf6e40c81a66cecdb44",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "随后将前5个文本块的信息组合为问题上下文，并将问题和上下文格式化为单一字符串。"
+      }
+    },
+    {
+      "segment_id": "dd286a16",
+      "source_content": "```go\noac := openai.NewClient(ctx.OpenAIKey)\nresp, err := oac.CreateChatCompletion(\n    context.Background(),\n    openai.ChatCompletionRequest{\n        Model: openai.GPT4o,\n        Messages: []openai.ChatCompletionMessage{\n\n            {\n                Role:    openai.ChatMessageRoleUser,\n                Content: query,\n            },\n        },\n    },\n)\nif err != nil {\n    return fmt.Errorf(\"error creating chat completion: %v\", err)\n}\nchoice := resp.Choices[0]\nout, err := glamour.Render(choice.Message.Content, \"dark\")\nfmt.Print(out)\n```",
+      "source_content_hash": "d89afda037a1b6b9ed3c80e88d44c85ccce3e0faa1d6a19a3dde17c5278ae439",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dd286a16"
+      }
+    },
+    {
+      "segment_id": "81f22300",
+      "source_content": "Then, we use the OpenAI API to generate a response to the question. We pass the question and context to the API\nand receive a response. We then render the response using the `glamour` package to display it in the terminal.",
+      "source_content_hash": "bf52d195e77f604973b3d2b210c980e0ef48e5ec0072fb7cd12814561326b2f0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后通过OpenAI API生成问题回答。我们将问题和上下文传递给API获取响应，并使用`glamour`包在终端中渲染输出。"
+      }
+    },
+    {
+      "segment_id": "384ce019",
+      "source_content": "Before running the `ask` command, let's install the `glamour` package:",
+      "source_content_hash": "a58da6253adabfab9b5871204c8ec0a1c6ea286b1719e82fbb93834efe08f360",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行`ask`命令前，请先安装`glamour`包："
+      }
+    },
+    {
+      "segment_id": "8efeb251",
+      "source_content": "```bash\ngo get github.com/charmbracelet/glamour\n```",
+      "source_content_hash": "9da5192812e98ecebfaf27db1107dcfc5212c26d913c6fffa1c5accc555b333d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8efeb251"
+      }
+    },
+    {
+      "segment_id": "7102fa78",
+      "source_content": "Finally, let's run the `ask` command to ask a question about the indexed documents:",
+      "source_content_hash": "9017cc2594aff68d819ce1314286476e41498687d53f8ca9dd8c9f76b72327db",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后，运行 `ask` 命令来对已索引的文档提出问题："
+      }
+    },
+    {
+      "segment_id": "1d468855",
+      "source_content": "```bash\ngo run ./cmd/entrag ask \"tl;dr What is Ent?\"\n```",
+      "source_content_hash": "967c9804c1daefc573f91289f08d27a8086cef92acfa3edcdc0f5a229d46b372",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1d468855"
+      }
+    },
+    {
+      "segment_id": "7c8cbeda",
+      "source_content": "And our RAG system responds:",
+      "source_content_hash": "dc8dc96d88837c4ff21624ac4a8c2cc04561a9d94b384ec5703476238293ed5d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们的RAG系统会给出如下响应："
+      }
+    },
+    {
+      "segment_id": "1b68a952",
+      "source_content": "```\n  Ent is an open-source entity framework (ORM) for the Go programming language. It\n  allows developers to define data models or graph-structures in Go code. Ent\n  emphasizes principles such as schema as code, a statically typed and explicit\n  API generated through codegen, simple queries and graph traversals, statically\n  typed predicates, and storage agnosticism. It supports various databases,\n  including MySQL, MariaDB, PostgreSQL, SQLite, and Gremlin-based graph databases,\n  and aims to enhance productivity in Go development.\n```",
+      "source_content_hash": "31745830894f2f731f6e2a9559fd9972801b3642ddb03749325d922a31cb5daf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1b68a952"
+      }
+    },
+    {
+      "segment_id": "2acec8f4",
+      "source_content": "Amazing! We have successfully built a RAG system using Ent, Atlas, and pgvector.\nWe can now ask questions about the documents we loaded into the database and receive context-aware responses.",
+      "source_content_hash": "fa6b1fa49a09a08e59511ab3a303f07ab61c5f76bfe50320838b0581fe470d24",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了！我们已成功使用Ent、Atlas和pgvector构建了一个RAG系统。现在可以向数据库中加载的文档提问，并获得结合上下文的智能回答。"
+      }
+    },
+    {
+      "segment_id": "74ff82c1",
+      "source_content": "Here are some more Q&As with our nifty RAG system:",
+      "source_content_hash": "a3eb42b9beff43ab9c078ef39710efc1a59fd25fec792663853632f45bb3b428",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下是这个精巧的RAG系统更多的问答示例："
+      }
+    },
+    {
+      "segment_id": "38950ee4",
+      "source_content": "<details>\n<summary>go run ./cmd/entrag ask \"how to define order field in entgql\"</summary>\n To define an order field in  entgql , you need to annotate a field in your  Ent\n  schema using the  entgql.Annotation  with the  OrderField . Here's a step-by-\n  step\n  guide on how you can do it:\n\n  1. Choose a Comparable Field: Select the field in your schema that you want to\n  be orderable. This could be a text field, a timestamp, an integer, an enum, etc.\n  2. Annotate the Field: Use the  entgql.OrderField  annotation on the chosen\n  field. The order field name should be uppercase and match its corresponding enum\n  value in the GraphQL schema.\n  3. Update your Schema: Here’s an example of how to annotate your fields in the\n  ent/schema :\n    ```go\n    func (Todo) Fields() []ent.Field {\n        return []ent.Field{\n            field.Text(\"text\").\n                NotEmpty().\n                Annotations(\n                    entgql.OrderField(\"TEXT\"),\n                ),\n            field.Time(\"created_at\").\n                Default(time.Now).\n                Immutable().\n                Annotations(\n                    entgql.OrderField(\"CREATED_AT\"),\n                ),\n            field.Enum(\"status\").\n                NamedValues(\n                    \"InProgress\", \"IN_PROGRESS\",\n                    \"Completed\", \"COMPLETED\",\n                ).\n                Default(\"IN_PROGRESS\").\n                Annotations(\n                    entgql.OrderField(\"STATUS\"),\n                ),\n            field.Int(\"priority\").\n                Default(0).\n                Annotations(\n                    entgql.OrderField(\"PRIORITY\"),\n                ),\n        }\n    }\n    ```\n  4. Alternatively, Multiple Order Fields: If you want to enable ordering by\n  multiple fields, you can use the  entgql.MultiOrder()  annotation:\n    ```go\n    func (Todo) Annotations() []schema.Annotation {\n        return []schema.Annotation{\n            entgql.MultiOrder(),\n        }\n    }\n    ```\n\n  5. Generate GraphQL Types: Ensure that the GraphQL types match this setup in\n  your GraphQL schema, for example:\n    ```graphql\n    enum OrderDirection {\n      ASC\n      DESC\n    }\n    enum TodoOrderField {\n      CREATED_AT\n      PRIORITY\n      STATUS\n      TEXT\n    }\n    input TodoOrder {\n      direction: OrderDirection!\n      field: TodoOrderField\n    }\n    ```\n\n  6. Add  orderBy  Argument to Queries: Include the  orderBy  parameter in your\n  GraphQL queries to allow clients to sort items:\n    ```graphql\n    type Query {\n      todos(\n        after: Cursor\n        first: Int\n        before: Cursor\n        last: Int\n        orderBy: TodoOrder\n      ): TodoConnection!\n    }\n    ```\n\n  By following these steps, you ensure that your Ent-based application can support\n  sorting in your GraphQL API based on various fields.\n\n\n</details>",
+      "source_content_hash": "83e3ab053c8dbde82824bcf95116e67d47ecdacfc6c656d7efadab20c36a05a1",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_38950ee4"
+      }
+    },
+    {
+      "segment_id": "fb30047c",
+      "source_content": "<details>\n<summary> go run ./cmd/entrag ask \"what's the difference between privacy rules and interceptors\" </summary>\n Privacy rules and interceptors serve different purposes within the Ent\n  framework, each providing distinct functionalities:\n\n1. Privacy Rules:\n* Purpose: Privacy rules are primarily concerned with enforcing access\ncontrol policies for data queries and mutations. They determine whether an\noperation is allowed or denied based on predefined rules.\n* Implementation: They are implemented as part of a privacy policy using the\nent.Policy  interface which includes  EvalQuery  and  EvalMutation  methods.\n* Operation: Privacy rules evaluate whether specific conditions are met\nbefore allowing or denying access to the data. They can return decisions\nlike  privacy.Allow ,  privacy.Deny , or  privacy.Skip  to control the flow\nof evaluation.\n* Use Case: Ideal for managing access control by ensuring that users can\nonly perform certain operations if they meet the specified criteria.\n2. Interceptors:\n* Purpose: Interceptors act as middleware for Ent queries, allowing\nmodification and customization of query behaviors. They can be used to\naugment or modify queries during different stages of their lifecycle.\n* Implementation: Implemented as interfaces or using the  ent.InterceptFunc\nadapter. They intercept and potentially modify queries by working on the\nread-path.\n* Operation: Interceptors modify or enhance queries, typically without the\naccess control logic inherent in privacy rules. They provide hooks to\nexecute custom logic pre and post query execution.\n* Use Case: Suitable for generic transformations or modifications to queries,\nsuch as adding default filters, query limitations, or logging operations\nwithout focusing on access control.\n\n\nIn summary, while privacy rules focus on access control, interceptors are about\nmanaging and modifying the query execution process.\n</details>",
+      "source_content_hash": "a0f66c57da2532ffd37ff8b4bc3e886a295b5dbc772ce3f2995a4546454d06e1",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fb30047c"
+      }
+    },
+    {
+      "segment_id": "3649bc3c",
+      "source_content": "### Wrapping up",
+      "source_content_hash": "a3785475b5dd9a66ae4506648eaafecb51ead6eb80351473642adc6a4aba69b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "b0286e2e",
+      "source_content": "In this blog post, we explored how to build a RAG system using Ent, Atlas, and pgvector. Special thanks to\n[Eli Bendersky](https://eli.thegreenplace.net/2023/retrieval-augmented-generation-in-go/) for the informative\nblog post and for his great Go writing over the years!",
+      "source_content_hash": "7a5ce6069aaa5b84dbdc7b8338804d1bddf70bcc1c4ced93ad89e2929f29011f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文中，我们探索了如何用Ent、Atlas和pgvector构建RAG系统。特别感谢[Eli Bendersky](https://eli.thegreenplace.net/2023/retrieval-augmented-generation-in-go/)的精彩博文，以及他多年来在Go语言领域的卓越写作！"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2025-02-12-rag-with-ent-atlas-pgvector.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.660573+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "fb5386003a45eb64e4268c767eb94971d37bcfad51d5ef0368727b13b0c689ed"
+  }
+}

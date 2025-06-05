@@ -1,0 +1,382 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-11-1-sync-to-external-data-systems-using-hooks.md",
+  "source_file_content_hash": "8d3b07eef9e2c168a839481152e8855f7fe38f25c5ce17054c1c9f5aaeb80db2",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Sync Changes to External Data Systems using Ent Hooks\nauthor: Ariel Mashraki\nauthorURL: https://github.com/a8m\nauthorImageURL: \"https://avatars0.githubusercontent.com/u/7413593\"\nauthorTwitter: arielmashraki\nimage: https://entgo.io/images/assets/sync-hook/share.png\n---",
+      "source_content_hash": "f14346d3106ad1e2c84a7b932b43398c7d2406ead2bcc8e0bd00cea63ac0de49",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "One of the common questions we get from the Ent community is how to synchronize objects or references between the\ndatabase backing an Ent application (e.g. MySQL or PostgreSQL) with external services. For example, users would like\nto create or delete a record from within their CRM when a user is created or deleted in Ent, publish a message to a\n[Pub/Sub system](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) when an entity is updated, or verify\nreferences to blobs in object storage such as AWS S3 or Google Cloud Storage.",
+      "source_content_hash": "1015cd447152eb58c8589f087593665d4308cc43ff10ae332f5ea0bf00575b9d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent社区经常提出的一个常见问题是如何在Ent应用的后端数据库（如MySQL或PostgreSQL）与外部服务之间同步对象或引用。例如，用户希望在Ent中创建或删除用户记录时，从其CRM系统创建或删除对应记录；当实体更新时向[发布/订阅系统](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern)发布消息；或验证对象存储（如AWS S3或Google云存储）中的blob引用。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "Ensuring consistency between two separate data systems is not a simple task.  When we want to propagate, for example,\nthe deletion of a record in one system to another, there is no obvious way to guarantee that the two systems will end in\na synchronized state, since one of them may fail, and the network link between them may be slow or down. Having said\nthat, and especially with the prominence of microservices-architectures, these problems have become more common, and\ndistributed systems researchers have come up with patterns to solve them, such as the\n[Saga Pattern](https://microservices.io/patterns/data/saga.html).",
+      "source_content_hash": "37b7cae43ad31b3ee990d386cb49e9dac67c5a489bb5ea4c3bce01daedc35a86",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "确保两个独立数据系统之间的一致性并非易事。当我们希望将某个系统中的记录删除操作传播到另一个系统时，无法保证两个系统最终会达到同步状态，因为其中一方可能失败，或者网络连接可能延迟或中断。尽管如此，随着微服务架构的普及，这类问题愈发常见，分布式系统研究者提出了诸如[Saga模式](https://microservices.io/patterns/data/saga.html)等解决方案。"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "The application of these patterns is usually complex and difficult, and so in many cases architects do not go after a\n\"perfect\" design, and instead go after simpler solutions that involve either the acceptance of some inconsistency\nbetween the systems or background reconciliation procedures.",
+      "source_content_hash": "a511537a16975bb35cc6d504117a539033da56da0de138b4a4a1de55be423511",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这些模式的应用通常复杂且困难，因此在许多情况下，架构师不会追求\"完美\"设计，而是采用更简单的解决方案——要么接受系统间存在一定程度的不一致性，要么通过后台协调程序进行处理。"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "In this post, we will not discuss how to solve distributed transactions or implement the Saga pattern with Ent.\nInstead, we will limit our scope to study how to hook into Ent mutations before and after they occur, and run our\ncustom logic there.",
+      "source_content_hash": "f22aa8d07dd4845cd5d4387018dc9840a3f781523a4d6d851ed0c9b34e5a1db2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文不会讨论如何用Ent解决分布式事务或实现Saga模式，而是将范围限定在研究如何挂钩Ent的变更操作前后，并在其中运行自定义逻辑。"
+      }
+    },
+    {
+      "segment_id": "48847fd4",
+      "source_content": "### Propagating Mutations to External Systems",
+      "source_content_hash": "3256b1bca95968aab6114cdba7c58ba8475de1493125ad19315b1be6c9bd7783",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 将变更传播至外部系统"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "In our example, we are going to create a simple `User` schema with 2 immutable string fields, `\"name\"` and\n`\"avatar_url\"`. Let's run the `ent init` command for creating a skeleton schema for our `User`:",
+      "source_content_hash": "9cd3b86e1ba64d0fac00540a4d104ba67556320004f802cd9700fa7ab0ed53cd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在本示例中，我们将创建一个简单的`User`模式，包含两个不可变字符串字段`\"name\"`和`\"avatar_url\"`。首先运行`ent init`命令创建`User`模式骨架："
+      }
+    },
+    {
+      "segment_id": "076d64d1",
+      "source_content": "```shell\ngo run entgo.io/ent/cmd/ent new User\n```",
+      "source_content_hash": "81b46820cf236f3402a474e7aec3c43af27c3efa20d6f46e4d568a7adc76be57",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_076d64d1"
+      }
+    },
+    {
+      "segment_id": "33331f27",
+      "source_content": "Then, add the `name` and the `avatar_url` fields and run `go generate` to generate the assets.",
+      "source_content_hash": "19f85b52614580bde0cb2ae505043e431603e4c6a41607e8a46e81bbe855fd22",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后添加`name`和`avatar_url`字段，并运行`go generate`生成资源。"
+      }
+    },
+    {
+      "segment_id": "026f2f3e",
+      "source_content": "```go title=\"ent/schema/user.go\"\ntype User struct {\n\tent.Schema\n}\n\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tImmutable(),\n\t\tfield.String(\"avatar_url\").\n\t\t\tImmutable(),\n\t}\n}\n```",
+      "source_content_hash": "20d9eeabf68039e6dba25f866f5392d3a2797923751cd2958a6cff16e8f51c11",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_026f2f3e"
+      }
+    },
+    {
+      "segment_id": "c3955998",
+      "source_content": "```shell\ngo generate ./ent\n```",
+      "source_content_hash": "e3fe1a1fe124e029be6f03ec396c7ed683beda64bf76722f622232165874d886",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c3955998"
+      }
+    },
+    {
+      "segment_id": "e912d935",
+      "source_content": "### The Problem",
+      "source_content_hash": "0d607bdb14e634232a119a24c108cf018898429d423ba4c9424c912928b105ae",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 问题描述"
+      }
+    },
+    {
+      "segment_id": "8b2a52b1",
+      "source_content": "The `avatar_url` field defines a URL to an image in a bucket on our object storage (e.g. AWS S3). For the purpose of\nthis discussion  we want to make sure that:",
+      "source_content_hash": "6357233e86f7337215b010cac65a4d6f8523ddf1549aa252d860935f2261e640",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`avatar_url`字段定义了指向对象存储桶（如AWS S3）中图像的URL。我们需要确保："
+      }
+    },
+    {
+      "segment_id": "2eb5ba30",
+      "source_content": "- When a user is created, an image with the URL stored in `\"avatar_url\"` exists in our bucket.\n- Orphan images are deleted from the bucket. This means that when a user is deleted from our system, its avatar image\n  is deleted as well.",
+      "source_content_hash": "d0c3fa203b09101d627f613b93a5f3af36c42f51bd6363a05c250c847ae6bd2c",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 创建用户时，`\"avatar_url\"`存储的URL对应的图像必须存在于存储桶中\n- 清理孤儿图像。即当用户从系统中删除时，其头像图像也应从存储桶中删除"
+      }
+    },
+    {
+      "segment_id": "7f71ff2a",
+      "source_content": "For interacting with blobs, we will use the [`gocloud.dev/blob`](https://gocloud.dev/howto/blob) package. This package\nprovides abstraction for reading, writing, deleting and listing blobs in a bucket. Similar to the `database/sql`\npackage, it allows interacting with variety of object storages with the same API by configuring its driver URL. \nFor example:",
+      "source_content_hash": "c0413fb3b5d046a250ba9c450b1619b04c957e4c1fba6f1cbffc616192106670",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将使用[`gocloud.dev/blob`](https://gocloud.dev/howto/blob)包进行blob操作。该包提供了读写、删除和列举桶中blob的抽象接口。类似于`database/sql`包，它支持通过配置驱动URL来以相同API操作多种对象存储，例如："
+      }
+    },
+    {
+      "segment_id": "9f3b4022",
+      "source_content": "```go\n// Open an in-memory bucket. \nif bucket, err := blob.OpenBucket(ctx, \"mem://photos/\"); err != nil {\n\tlog.Fatal(\"failed opening in-memory bucket:\", err)\n}\n\n// Open an S3 bucket named photos.\nif bucket, err := blob.OpenBucket(ctx, \"s3://photos\"); err != nil {\n\tlog.Fatal(\"failed opening s3 bucket:\", err)\n}\n\n// Open a bucket named photos in Google Cloud Storage.\nif bucket, err := blob.OpenBucket(ctx, \"gs://my-bucket\"); err != nil {\n\tlog.Fatal(\"failed opening gs bucket:\", err)\n}\n```",
+      "source_content_hash": "e27ba63d66adc56e2c799f3fb5aad80aaadff98e32d6e752f47b6ee465ae258b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9f3b4022"
+      }
+    },
+    {
+      "segment_id": "bd30d33e",
+      "source_content": "### Schema Hooks",
+      "source_content_hash": "eb773794b7dbd26f677a9f9d34c78750f979c42bf88bfc908ea7929812c74232",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 模式钩子"
+      }
+    },
+    {
+      "segment_id": "6b77b644",
+      "source_content": "[Hooks](https://entgo.io/docs/hooks) are a powerful feature of Ent that allows adding custom logic before and after\noperations that mutate the graph.",
+      "source_content_hash": "347e633821be276bc090de8052ae23165d5c8f4462609f1df3cf493b906dde7a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[钩子](https://entgo.io/docs/hooks)是Ent的强大功能，允许在图变更操作前后添加自定义逻辑。"
+      }
+    },
+    {
+      "segment_id": "82e90254",
+      "source_content": "Hooks can be either defined dynamically using `client.Use` (called \"Runtime Hooks\"), or explicitly on the schema\n(called \"Schema Hooks\") as follows:",
+      "source_content_hash": "9e8e9f18de7d186760f189c167ed09161c55fddd3a0438fe006ec812b82594c9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "钩子可以通过`client.Use`动态定义（称为\"运行时钩子\"），也可以在模式上显式定义（称为\"模式钩子\"）如下："
+      }
+    },
+    {
+      "segment_id": "dc73c0d2",
+      "source_content": "```go\n// Hooks of the User.\nfunc (User) Hooks() []ent.Hook {\n\treturn []ent.Hook{\n\t\tEnsureImageExists(),\n\t\tDeleteOrphans(),\n\t}\n}\n```",
+      "source_content_hash": "51c8e562f438fcee6e29e0fda40dd1d343b89bc5bae4586038ed6abf8acfa770",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dc73c0d2"
+      }
+    },
+    {
+      "segment_id": "a81544fd",
+      "source_content": "As you can imagine, the `EnsureImageExists` hook will be responsible for ensuring that when a user is created, their\navatar URL exists in the bucket, and the `DeleteOrphans` will ensure that orphan images are deleted. Let's start\nwriting them.",
+      "source_content_hash": "0e43322b7057b9afe8385b52c0d540bdf57f932b9578fcec2a88064433b59be2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如你所料，`EnsureImageExists`钩子负责确保创建用户时其头像URL存在于存储桶中，`DeleteOrphans`则确保删除孤儿图像。现在开始编写它们。"
+      }
+    },
+    {
+      "segment_id": "99070903",
+      "source_content": "```go title=\"ent/schema/hooks.go\"\nfunc EnsureImageExists() ent.Hook {\n\thk := func(next ent.Mutator) ent.Mutator {\n\t\treturn hook.UserFunc(func(ctx context.Context, m *ent.UserMutation) (ent.Value, error) {\n\t\t\tavatarURL, exists := m.AvatarURL()\n\t\t\tif !exists {\n\t\t\t\treturn nil, errors.New(\"avatar field is missing\")\n\t\t\t}\n\t\t\t// TODO:\n\t\t\t// 1. Verify that \"avatarURL\" points to a real object in the bucket.\n\t\t\t// 2. Otherwise, fail.\n\t\t\treturn next.Mutate(ctx, m)\n\t\t})\n\t}\n\t// Limit the hook only to \"Create\" operations.\n\treturn hook.On(hk, ent.OpCreate)\n}\n\nfunc DeleteOrphans() ent.Hook {\n\thk := func(next ent.Mutator) ent.Mutator {\n\t\treturn hook.UserFunc(func(ctx context.Context, m *ent.UserMutation) (ent.Value, error) {\n\t\t\tid, exists := m.ID()\n\t\t\tif !exists {\n\t\t\t\treturn nil, errors.New(\"id field is missing\")\n\t\t\t}\n\t\t\t// TODO:\n\t\t\t// 1. Get the AvatarURL field of the deleted user.\n\t\t\t// 2. Cascade the deletion to object storage.\n\t\t\treturn next.Mutate(ctx, m)\n\t\t})\n\t}\n\t// Limit the hook only to \"DeleteOne\" operations.\n\treturn hook.On(hk, ent.OpDeleteOne)\n}\n```",
+      "source_content_hash": "945bb115556825b81318e135aa3f51d27ca1eade8e9d1c7f3720cb1c7bedf99d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_99070903"
+      }
+    },
+    {
+      "segment_id": "17b50e81",
+      "source_content": "Now, you may ask yourself, _how do we access the blob client from the mutations hooks?_ You are going to find out in\nthe next section.",
+      "source_content_hash": "fc79fa0cc81d4e0b8e9dbc4be5cdb3b8f504f0acca29c51fb0250e4115eade0d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时你可能会问：_如何在变更钩子中访问blob客户端？_下一节将揭晓答案。"
+      }
+    },
+    {
+      "segment_id": "671cbf7c",
+      "source_content": "### Injecting Dependencies",
+      "source_content_hash": "748b2866e64041a4962c114076e9a017bbd98efa50e7fde0cc4098a71379b6b8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 依赖注入"
+      }
+    },
+    {
+      "segment_id": "4c787c52",
+      "source_content": "The [entc.Dependency](https://entgo.io/docs/code-gen/#external-dependencies) option allows extending the generated\nbuilders with external dependencies as struct fields, and provides options for injecting them on client initialization.",
+      "source_content_hash": "1465e5213da6f8d4db07a547b3202bbf70a3259b020e4470a6364d7287b1d38c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[entc.Dependency](https://entgo.io/docs/code-gen/#external-dependencies) 选项允许通过结构体字段的形式向生成的构建器注入外部依赖，并提供在客户端初始化时配置依赖项的机制。"
+      }
+    },
+    {
+      "segment_id": "44285072",
+      "source_content": "To inject a `blob.Bucket` to be available inside our hooks, we can follow the tutorial about external dependencies in\n[the website](https://entgo.io/docs/code-gen/#external-dependencies), and define the\n[`gocloud.dev/blob.Bucket`](https://pkg.go.dev/gocloud.dev/blob#Bucket) as a dependency.",
+      "source_content_hash": "850b45e331c32b49e56f272c0a1f432ebe0277cc355996f7c57547f0cc0e0f3a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了在钩子函数中访问 `blob.Bucket`，我们可以参照[官网教程](https://entgo.io/docs/code-gen/#external-dependencies)中关于外部依赖的说明，将[`gocloud.dev/blob.Bucket`](https://pkg.go.dev/gocloud.dev/blob#Bucket)定义为依赖项。"
+      }
+    },
+    {
+      "segment_id": "25a51782",
+      "source_content": "```go title=\"ent/entc.go\" {3-6}\nfunc main() {\n\topts := []entc.Option{\n\t\tentc.Dependency(\n\t\t\tentc.DependencyName(\"Bucket\"),\n\t\t\tentc.DependencyType(&blob.Bucket{}),\n\t\t),\n\t}\n\tif err := entc.Generate(\"./schema\", &gen.Config{}, opts...); err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "f87a3310a33f828028acf16a8cf00abbfb0740ed5f91574c773c47d8f2b33573",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_25a51782"
+      }
+    },
+    {
+      "segment_id": "85ea22dd",
+      "source_content": "Next, re-run code generation:",
+      "source_content_hash": "2a491bc91c6d60036ca5ef9cd919e6c1a4227a50f4d84ee944894ea32fb5e2e7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "9bc650e1",
+      "source_content": "```shell\ngo generate ./ent\n```",
+      "source_content_hash": "e3fe1a1fe124e029be6f03ec396c7ed683beda64bf76722f622232165874d886",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9bc650e1"
+      }
+    },
+    {
+      "segment_id": "9ef42155",
+      "source_content": "We can now access the Bucket API from all generated builders. Let's finish the implementations of the above hooks.",
+      "source_content_hash": "7041d0bafba3b5a0be7b257f8a1e59b57e668416290ea0f62c11be209ed9f25a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们可以通过所有生成的构建器访问Bucket API。接下来完成上述钩子函数的实现。"
+      }
+    },
+    {
+      "segment_id": "8185786b",
+      "source_content": "```go title=\"ent/schema/hooks.go\"\n// EnsureImageExists ensures the avatar_url points\n// to a real object in the bucket.\nfunc EnsureImageExists() ent.Hook {\n\thk := func(next ent.Mutator) ent.Mutator {\n\t\treturn hook.UserFunc(func(ctx context.Context, m *ent.UserMutation) (ent.Value, error) {\n\t\t\tavatarURL, exists := m.AvatarURL()\n\t\t\tif !exists {\n\t\t\t\treturn nil, errors.New(\"avatar field is missing\")\n\t\t\t}\n\t\t\tswitch exists, err := m.Bucket.Exists(ctx, avatarURL); {\n\t\t\tcase err != nil:\n\t\t\t\treturn nil, fmt.Errorf(\"check key existence: %w\", err)\n\t\t\tcase !exists:\n\t\t\t\treturn nil, fmt.Errorf(\"key %q does not exist in the bucket\", avatarURL)\n\t\t\tdefault:\n\t\t\t\treturn next.Mutate(ctx, m)\n\t\t\t}\n\t\t})\n\t}\n\treturn hook.On(hk, ent.OpCreate)\n}\n\n// DeleteOrphans cascades the user deletion to the bucket.\n// Hence, when a user is deleted, its avatar image is deleted\n// as well.\nfunc DeleteOrphans() ent.Hook {\n\thk := func(next ent.Mutator) ent.Mutator {\n\t\treturn hook.UserFunc(func(ctx context.Context, m *ent.UserMutation) (ent.Value, error) {\n\t\t\tid, exists := m.ID()\n\t\t\tif !exists {\n\t\t\t\treturn nil, errors.New(\"id field is missing\")\n\t\t\t}\n\t\t\tu, err := m.Client().User.Get(ctx, id)\n\t\t\tif err != nil {\n\t\t\t\treturn nil, fmt.Errorf(\"getting deleted user: %w\", err)\n\t\t\t}\n\t\t\tif err := m.Bucket.Delete(ctx, u.AvatarURL); err != nil {\n\t\t\t\treturn nil, fmt.Errorf(\"deleting user avatar from bucket: %w\", err)\n\t\t\t}\n\t\t\treturn next.Mutate(ctx, m)\n\t\t})\n\t}\n\treturn hook.On(hk, ent.OpDeleteOne)\n}\n```",
+      "source_content_hash": "05a7341334b980484b65e74c2589e395e2b9880ce7d162b6dcc5090d171bdaff",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8185786b"
+      }
+    },
+    {
+      "segment_id": "dbeb30c1",
+      "source_content": "Now, it's time to test our hooks! Let's write a testable example that verifies that our 2 hooks work as expected.",
+      "source_content_hash": "82afb10f7d9cc667ba14c22ad8f225c55b8ad6f3c46517ded66c42eee24222e9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在来测试我们的钩子函数！编写一个可测试的示例来验证这两个钩子是否符合预期行为。"
+      }
+    },
+    {
+      "segment_id": "489cbec9",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"log\"\n\n\t\"github.com/a8m/ent-sync-example/ent\"\n\t_ \"github.com/a8m/ent-sync-example/ent/runtime\"\n\n\t\"entgo.io/ent/dialect\"\n\t_ \"github.com/mattn/go-sqlite3\"\n\t\"gocloud.dev/blob\"\n\t_ \"gocloud.dev/blob/memblob\"\n)\n\nfunc Example_SyncCreate() {\n\tctx := context.Background()\n\t// Open an in-memory bucket.\n\tbucket, err := blob.OpenBucket(ctx, \"mem://photos/\")\n\tif err != nil {\n\t\tlog.Fatal(\"failed opening bucket:\", err)\n\t}\n\tclient, err := ent.Open(\n\t\tdialect.SQLite,\n\t\t\"file:ent?mode=memory&cache=shared&_fk=1\",\n\t\t// Inject the blob.Bucket on client initialization.\n\t\tent.Bucket(bucket),\n\t)\n\tif err != nil {\n\t\tlog.Fatal(\"failed opening connection to sqlite:\", err)\n\t}\n\tdefer client.Close()\n\tif err := client.Schema.Create(ctx); err != nil {\n\t\tlog.Fatal(\"failed creating schema resources:\", err)\n\t}\n\tif err := client.User.Create().SetName(\"a8m\").SetAvatarURL(\"a8m.png\").Exec(ctx); err == nil {\n\t\tlog.Fatal(\"expect user creation to fail because the image does not exist in the bucket\")\n\t}\n\tif err := bucket.WriteAll(ctx, \"a8m.png\", []byte{255, 255, 255}, nil); err != nil {\n\t\tlog.Fatalf(\"failed uploading image to the bucket: %v\", err)\n\t}\n\tfmt.Printf(\"%q\\n\", keys(ctx, bucket))\n\n\t// User creation should pass as image was uploaded to the bucket.\n\tu := client.User.Create().SetName(\"a8m\").SetAvatarURL(\"a8m.png\").SaveX(ctx)\n\n\t// Deleting a user, should delete also its image from the bucket.\n\tclient.User.DeleteOne(u).ExecX(ctx)\n\tfmt.Printf(\"%q\\n\", keys(ctx, bucket))\n\n\t// Output:\n\t// [\"a8m.png\"]\n\t// []\n}\n```",
+      "source_content_hash": "187edda862043be42851765945d95bc472c76cfbc64301e5541388f4c9c33fb6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_489cbec9"
+      }
+    },
+    {
+      "segment_id": "e151b2af",
+      "source_content": "### Wrapping Up",
+      "source_content_hash": "6df1295c536bdf3cf58241755891051d109001c784cced5b33a00f70983bc553",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "850ec775",
+      "source_content": "Great! We have configured Ent to extend our generated code and inject the `blob.Bucket` as an \n[External Dependency](https://entgo.io/docs/code-gen#external-dependencies). Next, we defined two mutation hooks and\nused the `blob.Bucket` API to ensure our product constraints are satisfied.",
+      "source_content_hash": "f68c423a9618d25d27147cd918c39643fc130a499238431a65de9bcef032fc32",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了！我们已成功配置Ent，通过[外部依赖注入](https://entgo.io/docs/code-gen#external-dependencies)机制将`blob.Bucket`集成到生成代码中。随后定义了两个变更钩子，并利用`blob.Bucket` API确保满足业务约束条件。"
+      }
+    },
+    {
+      "segment_id": "c95293b9",
+      "source_content": "The code for this example is available at [github.com/a8m/ent-sync-example](https://github.com/a8m/ent-sync-example).",
+      "source_content_hash": "8e4a5fe7279e1e831495cfff9a689cfa8f17939099002b2d28820107175fd95e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例代码已托管在[github.com/a8m/ent-sync-example](https://github.com/a8m/ent-sync-example)。"
+      }
+    },
+    {
+      "segment_id": "2b6f869a",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter账号](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-11-1-sync-to-external-data-systems-using-hooks.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.676488+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "8d3b07eef9e2c168a839481152e8855f7fe38f25c5ce17054c1c9f5aaeb80db2"
+  }
+}

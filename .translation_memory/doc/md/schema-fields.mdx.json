@@ -1,0 +1,1262 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/schema-fields.mdx",
+  "source_file_content_hash": "898ba18a90e295af89b7fe160705667eea058f37f1bf123993adf628180f118b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: schema-fields\ntitle: Fields\n---",
+      "source_content_hash": "4d31012a3af0963ca424cca6e38c829926b8eaf7ec7f8a4130115bf55151f563",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "## Quick Summary",
+      "source_content_hash": "7c75b978a05a4792221561daeb8e74a3e3187e24367e602c206809c33d127dbc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 快速概览"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "Fields (or properties) in the schema are the attributes of the node. For example, a `User`\nwith 4 fields: `age`, `name`, `username` and `created_at`:",
+      "source_content_hash": "1e41803e330d6d1837d4945836ff31cca07be63e3b6d2699a2ac62d900b51813",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "模式中的字段（或属性）是节点的属性。例如，一个包含4个字段的`User`：`age`、`name`、`username`和`created_at`："
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "![re-fields-properties](https://entgo.io/images/assets/er_fields_properties.png)",
+      "source_content_hash": "bafd1a5b3ae777314fa9f8e9fa11bf90c717fa38577275478c5d8c62ee775733",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![re-fields-properties](https://entgo.io/images/assets/er_fields_properties.png)"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "Fields are returned from the schema using the `Fields` method. For example:",
+      "source_content_hash": "dc2a71bfdb36d27aef7f67bb4fa78eae797edcc76416359574871a4709a62370",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "字段通过`Fields`方法从模式中返回。例如："
+      }
+    },
+    {
+      "segment_id": "6e5ba8fb",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"time\"\n\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// User schema.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"age\"),\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"username\").\n\t\t\tUnique(),\n\t\tfield.Time(\"created_at\").\n\t\t\tDefault(time.Now),\n\t}\n}\n```",
+      "source_content_hash": "3bc67082bf1cc05c77453dbef20b9a281d899ed73e02a891a21d756060b794c0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6e5ba8fb"
+      }
+    },
+    {
+      "segment_id": "8af76f3d",
+      "source_content": "All fields are required by default, and can be set to optional using the `Optional` method.",
+      "source_content_hash": "c1856eae8457a0330cf386c71baa0a7654aba509d76258ee431217435286feb6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下所有字段都是必填的，可以通过`Optional`方法设置为可选。"
+      }
+    },
+    {
+      "segment_id": "c674e260",
+      "source_content": "## Types",
+      "source_content_hash": "d3501a7dcfa1381a6da5936cfbc54568288cfa6d68304d6725d36311896e982c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 类型"
+      }
+    },
+    {
+      "segment_id": "a44047a5",
+      "source_content": "The following types are currently supported by the framework:",
+      "source_content_hash": "4d6fb7c815964b66d6dc8a688a094d777349747132b711fa5912a664d6b41e60",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "框架目前支持以下类型："
+      }
+    },
+    {
+      "segment_id": "b4ef1e56",
+      "source_content": "- All Go numeric types. Like `int`, `uint8`, `float64`, etc.\n- `bool`\n- `string`\n- `time.Time`\n- `UUID`\n- `[]byte` (SQL only).\n- `JSON` (SQL only).\n- `Enum` (SQL only).\n- `Other` (SQL only).",
+      "source_content_hash": "a60fc0bd73b09eb0b2be876114bb72f2ca50b3414117e2d8384f14e951ac832e",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 所有Go数值类型。如`int`、`uint8`、`float64`等。\n- `bool`\n- `string`\n- `time.Time`\n- `UUID`\n- `[]byte`（仅限SQL）。\n- `JSON`（仅限SQL）。\n- `Enum`（仅限SQL）。\n- `Other`（仅限SQL）。"
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"time\"\n\t\"net/url\"\n\n\t\"github.com/google/uuid\"\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// User schema.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"age\").\n\t\t\tPositive(),\n\t\tfield.Float(\"rank\").\n\t\t\tOptional(),\n\t\tfield.Bool(\"active\").\n\t\t\tDefault(false),\n\t\tfield.String(\"name\").\n\t\t\tUnique(),\n\t\tfield.Time(\"created_at\").\n\t\t\tDefault(time.Now),\n\t\tfield.JSON(\"url\", &url.URL{}).\n\t\t\tOptional(),\n\t\tfield.JSON(\"strings\", []string{}).\n\t\t\tOptional(),\n\t\tfield.Enum(\"state\").\n\t\t\tValues(\"on\", \"off\").\n\t\t\tOptional(),\n\t\tfield.UUID(\"uuid\", uuid.UUID{}).\n\t\t\tDefault(uuid.New),\n\t}\n}\n```",
+      "source_content_hash": "ecf4bae6a9643a62846c3188f6fc725b2211db614fd321650578add1319f5846",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "2838eb68",
+      "source_content": "To read more about how each type is mapped to its database-type, go to the [Migration](migrate.md) section.",
+      "source_content_hash": "3acffd0630958a8ffdb44499524b6b1a717d065adac4df900b513c634d74d394",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要了解每种类型如何映射到其数据库类型，请参阅[迁移](migrate.md)部分。"
+      }
+    },
+    {
+      "segment_id": "42a5832e",
+      "source_content": "## ID Field",
+      "source_content_hash": "f2f502570c8ab53aa3fafff68c2bb73a4749e1e0d9c5ddba786b9ba80787686e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## ID字段"
+      }
+    },
+    {
+      "segment_id": "0e80209e",
+      "source_content": "The `id` field is builtin in the schema and does not need declaration. In SQL-based\ndatabases, its type defaults to `int` (but can be changed with a [codegen option](code-gen.md#code-generation-options))\nand auto-incremented in the database.",
+      "source_content_hash": "e212f1ba4274e653dbf8cc7974de70085bb4e9f99c21d6f90c7bda3f2929dc88",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`id`字段是模式中内置的，无需声明。在基于SQL的数据库中，其类型默认为`int`（但可以通过[代码生成选项](code-gen.md#code-generation-options)更改），并在数据库中自动递增。"
+      }
+    },
+    {
+      "segment_id": "6693c38c",
+      "source_content": "In order to configure the `id` field to be unique across all tables, use the\n[WithGlobalUniqueID](migrate.md#universal-ids) option when running schema migration.",
+      "source_content_hash": "c2461c37751f69db6d13b9d9de462895f44cbcdc9ef421865482459127fa6d24",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若要将`id`字段配置为在所有表中全局唯一，请在运行模式迁移时使用[WithGlobalUniqueID](migrate.md#universal-ids)选项。"
+      }
+    },
+    {
+      "segment_id": "d21af28f",
+      "source_content": "If a different configuration for the `id` field is needed, or the `id` value should\nbe provided on entity creation by the application (e.g. UUID), override the builtin\n`id` configuration. For example:",
+      "source_content_hash": "47864a99b46d83b5b5b94e7a37c3ce4d26c713f2c116bd046d4fa1cba3e95fa7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果需要为`id`字段进行不同的配置，或者应由应用程序在创建实体时提供`id`值（例如UUID），请覆盖内置的`id`配置。例如："
+      }
+    },
+    {
+      "segment_id": "353ca453",
+      "source_content": "```go\n// Fields of the Group.\nfunc (Group) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"id\").\n\t\t\tStructTag(`json:\"oid,omitempty\"`),\n\t}\n}\n\n// Fields of the Blob.\nfunc (Blob) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.UUID(\"id\", uuid.UUID{}).\n\t\t\tDefault(uuid.New).\n\t\t\tStorageKey(\"oid\"),\n\t}\n}\n\n// Fields of the Pet.\nfunc (Pet) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"id\").\n\t\t\tMaxLen(25).\n\t\t\tNotEmpty().\n\t\t\tUnique().\n\t\t\tImmutable(),\n\t}\n}\n```",
+      "source_content_hash": "c4d49c8640b46ec214125b9eee53c130ff803a12018a182f6802ef9c57699081",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_353ca453"
+      }
+    },
+    {
+      "segment_id": "17b50e81",
+      "source_content": "If you need to set a custom function to generate IDs, you can use `DefaultFunc`\nto specify a function which will always be ran when the resource is created.\nSee the [related FAQ](faq.md#how-do-i-use-a-custom-generator-of-ids) for more information.",
+      "source_content_hash": "7818739d73c7bd2b10b78d93d2e077d689755863f6e7b2628910ddc8a4450c14",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果需要设置自定义函数来生成ID，可以使用`DefaultFunc`指定一个在创建资源时始终运行的函数。更多信息请参阅[相关FAQ](faq.md#how-do-i-use-a-custom-generator-of-ids)。"
+      }
+    },
+    {
+      "segment_id": "5d30fd9b",
+      "source_content": "```go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int64(\"id\").\n\t\t\tDefaultFunc(func() int64 {\n\t\t\t\t// An example of a dumb ID generator - use a production-ready alternative instead.\n\t\t\t\treturn time.Now().Unix() << 8 | atomic.AddInt64(&counter, 1) % 256\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "b612a350d23112a07eb35fa32ea861a2a1f69c08ff72d08b74ddcf71f23182e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5d30fd9b"
+      }
+    },
+    {
+      "segment_id": "3f77c6a0",
+      "source_content": "## Database Type",
+      "source_content_hash": "4c3d9ef73e34b36df34da65f9b60cbb45432ee60456e0e6e45246d514bef46d3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 数据库类型"
+      }
+    },
+    {
+      "segment_id": "39f476dc",
+      "source_content": "Each database dialect has its own mapping from Go type to database type. For example,\nthe MySQL dialect creates `float64` fields as `double` columns in the database. However,\nthere is an option to override the default behavior using the `SchemaType` method.",
+      "source_content_hash": "e28ccf122ce1c31d42e41e519d44718aef02cd6c837e6254353333ddd6293d13",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "每种数据库方言都有其从Go类型到数据库类型的映射。例如，MySQL方言将`float64`字段创建为数据库中的`double`列。但是，可以使用`SchemaType`方法覆盖默认行为。"
+      }
+    },
+    {
+      "segment_id": "ddf3de1d",
+      "source_content": "```go\npackage schema\n\nimport (\n    \"entgo.io/ent\"\n    \"entgo.io/ent/dialect\"\n    \"entgo.io/ent/schema/field\"\n)\n\n// Card schema.\ntype Card struct {\n    ent.Schema\n}\n\n// Fields of the Card.\nfunc (Card) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Float(\"amount\").\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.MySQL:    \"decimal(6,2)\",   // Override MySQL.\n\t\t\t\tdialect.Postgres: \"numeric\",        // Override Postgres.\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "73b8ced4b8d93a55be7da0f759021d385102a63f3a0bf45571933a0a1e25ab99",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ddf3de1d"
+      }
+    },
+    {
+      "segment_id": "17fd5988",
+      "source_content": "## Go Type",
+      "source_content_hash": "b58b04f6945a5c902402c9066712872ad2a4b9b0b4cc5040eb3d399c88f70170",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## Go类型"
+      }
+    },
+    {
+      "segment_id": "3208eb29",
+      "source_content": "The default type for fields are the basic Go types. For example, for string fields, the type is `string`,\nand for time fields, the type is `time.Time`. The `GoType` method provides an option to override the\ndefault ent type with a custom one.",
+      "source_content_hash": "02fc84596d14977ebc89b558e4a1c6b93d6f3493c47b895b3df234eaaa85bf69",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "字段的默认类型是基本的Go类型。例如，字符串字段的类型是`string`，时间字段的类型是`time.Time`。`GoType`方法提供了用自定义类型覆盖默认ent类型的选项。"
+      }
+    },
+    {
+      "segment_id": "b4204c03",
+      "source_content": "The custom type must be either a type that is convertible to the Go basic type, a type that implements the\n[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field?tab=doc#ValueScanner) interface, or has an\n[External ValueScanner](#external-valuescanner). Also, if the provided type implements the Validator interface and no validators have been set,\nthe type validator will be used.",
+      "source_content_hash": "b33df1614b24b15c03b694ee375da75eb37f6069b3af0546b302b1431ffb0472",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "自定义类型必须是可以转换为Go基本类型的类型，或者实现了[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field?tab=doc#ValueScanner)接口的类型，或者具有[外部ValueScanner](#external-valuescanner)的类型。此外，如果提供的类型实现了Validator接口且未设置验证器，则将使用类型验证器。"
+      }
+    },
+    {
+      "segment_id": "b3890715",
+      "source_content": "```go\npackage schema\n\nimport (\n    \"database/sql\"\n\n    \"entgo.io/ent\"\n    \"entgo.io/ent/dialect\"\n    \"entgo.io/ent/schema/field\"\n    \"github.com/shopspring/decimal\"\n)\n\n// Amount is a custom Go type that's convertible to the basic float64 type.\ntype Amount float64\n\n// Card schema.\ntype Card struct {\n    ent.Schema\n}\n\n// Fields of the Card.\nfunc (Card) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Float(\"amount\").\n\t\t\tGoType(Amount(0)),\n\t\tfield.String(\"name\").\n\t\t\tOptional().\n\t\t\t// A ValueScanner type.\n\t\t\tGoType(&sql.NullString{}),\n\t\tfield.Enum(\"role\").\n\t\t\t// A convertible type to string.\n\t\t\tGoType(role.Role(\"\")),\n\t\tfield.Float(\"decimal\").\n\t\t\t// A ValueScanner type mixed with SchemaType.\n\t\t\tGoType(decimal.Decimal{}).\n\t\t\tSchemaType(map[string]string{\n\t\t\t    dialect.MySQL:    \"decimal(6,2)\",\n\t\t\t    dialect.Postgres: \"numeric\",\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "0e16be9965f9a7758577e06575aa80759f3e6cb74137a66386af3b930ed0b754",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b3890715"
+      }
+    },
+    {
+      "segment_id": "f7d4d765",
+      "source_content": "#### External `ValueScanner`",
+      "source_content_hash": "4a3870295fdc6503f07e31877c13d2d833490523acc9e1400f262812865821a6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 外部`ValueScanner`"
+      }
+    },
+    {
+      "segment_id": "13440cd7",
+      "source_content": "Ent allows attaching custom `ValueScanner` for basic or custom Go types. This enables the use of standard\nschema fields while maintaining control over how they are stored in the database without implementing a `ValueScanner`\ninterface. Additionally, this option enables users to use `GoType` that does not implement the `ValueScanner`, such\nas `*url.URL`.",
+      "source_content_hash": "2e9f5829ad7873754eaec1b161894f9cda584de43facb617ffeeb67f8ec69893",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent允许为基本或自定义Go类型附加自定义`ValueScanner`。这使得可以在不实现`ValueScanner`接口的情况下使用标准模式字段，同时控制它们在数据库中的存储方式。此外，此选项还允许用户使用未实现`ValueScanner`的`GoType`，例如`*url.URL`。"
+      }
+    },
+    {
+      "segment_id": "147c044c",
+      "source_content": ":::note\nAt this stage, this option is only available for text and numeric fields, but it will be extended to other types in\nthe future.\n:::",
+      "source_content_hash": "085f90b38ea60c0d221fc250c808078089fc2372e56b1c6406bd5ab604e37bc9",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n目前，此选项仅适用于文本和数字字段，但未来将扩展到其他类型。\n:::"
+      }
+    },
+    {
+      "segment_id": "9581e570",
+      "source_content": "<Tabs>\n<TabItem value=\"TextMarshaller\">\n\nFields with a custom Go type that implements the `encoding.TextMarshaller` and `encoding.TextUnmarshaller` interfaces can\nuse the `field.TextValueScanner` as a `ValueScanner`. This `ValueScanner` calls `MarshalText` and `UnmarshalText` for\nwriting and reading field values from the database:\n\n```go\nfield.String(\"big_int\").\n    GoType(&big.Int{}).\n    ValueScanner(field.TextValueScanner[*big.Int]{})\n```\n\n</TabItem>\n<TabItem value=\"BinaryMarshaller\">\n\nFields with a custom Go type that implements the `encoding.BinaryMarshaller` and `encoding.BinaryUnmarshaller` interfaces can\nuse the `field.BinaryValueScanner` as a `ValueScanner`. This `ValueScanner` calls `MarshalBinary` and `UnmarshalBinary` for\nwriting and reading field values from the database:\n\n```go\nfield.String(\"url\").\n    GoType(&url.URL{}).\n    ValueScanner(field.BinaryValueScanner[*url.URL]{})\n```\n\n</TabItem>\n<TabItem value=\"Functions based\">\n\nThe `field.ValueScannerFunc` allows setting two functions to be used for writing and reading database values: `V`\nfor `driver.Value` and `S` for `sql.Scanner`:\n\n```go\nfield.String(\"encoded\").\n\tValueScanner(field.ValueScannerFunc[string, *sql.NullString]{\n\t\tV: func(s string) (driver.Value, error) {\n\t\t\treturn base64.StdEncoding.EncodeToString([]byte(s)), nil\n\t\t},\n\t\tS: func(ns *sql.NullString) (string, error) {\n\t\t\tif !ns.Valid {\n\t\t\t\treturn \"\", nil\n\t\t\t}\n\t\t\tb, err := base64.StdEncoding.DecodeString(ns.String)\n\t\t\tif err != nil {\n\t\t\t\treturn \"\", err\n\t\t\t}\n\t\t\treturn string(b), nil\n\t\t},\n\t})\n```\n\n</TabItem>\n<TabItem value=\"Custom\">\n\n```go title=\"usage\"\nfield.String(\"prefixed\").\n\tValueScanner(PrefixedHex{\n\t\tprefix: \"0x\",\n\t})\n```\n\n```go title=\"implementation\"\n\n// PrefixedHex is a custom type that implements the TypeValueScanner interface.\ntype PrefixedHex struct {\n\tprefix string\n}\n\n// Value implements the TypeValueScanner.Value method.\nfunc (p PrefixedHex) Value(s string) (driver.Value, error) {\n\treturn p.prefix + \":\" + hex.EncodeToString([]byte(s)), nil\n}\n\n// ScanValue implements the TypeValueScanner.ScanValue method.\nfunc (PrefixedHex) ScanValue() field.ValueScanner {\n\treturn &sql.NullString{}\n}\n\n// FromValue implements the TypeValueScanner.FromValue method.\nfunc (p PrefixedHex) FromValue(v driver.Value) (string, error) {\n\ts, ok := v.(*sql.NullString)\n\tif !ok {\n\t\treturn \"\", fmt.Errorf(\"unexpected input for FromValue: %T\", v)\n\t}\n\tif !s.Valid {\n\t\treturn \"\", nil\n\t}\n\td, err := hex.DecodeString(strings.TrimPrefix(s.String, p.prefix+\":\"))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\treturn string(d), nil\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "6832346b2f08a2a36c9e7b227c300df7dbad321d9330efbf5d4ec4be8948d54a",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9581e570"
+      }
+    },
+    {
+      "segment_id": "a6f3574e",
+      "source_content": "## Other Field",
+      "source_content_hash": "34d821099b38b9d3340b8f9237ca94a84faece933a90be5de477ae1f5af24fdf",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 其他字段类型"
+      }
+    },
+    {
+      "segment_id": "d67645cb",
+      "source_content": "Other represents a field that is not a good fit for any of the standard field types.\nExamples are a Postgres Range type or Geospatial type",
+      "source_content_hash": "fbc00118a0928b980c7672ce848fba5a15c0d5501dcef839251863904e4960d5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Other类型表示不适合任何标准字段类型的特殊字段，例如PostgreSQL的范围类型或地理空间类型。"
+      }
+    },
+    {
+      "segment_id": "4770f21e",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/dialect\"\n\t\"entgo.io/ent/schema/field\"\n\t\n\t\"github.com/jackc/pgtype\"\n)\n\n// User schema.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Other(\"duration\", &pgtype.Tstzrange{}).\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.Postgres: \"tstzrange\",\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "e0f1d8188664401b94bab6e7f9959a720f58bf680a179ce0928a027a383901b1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4770f21e"
+      }
+    },
+    {
+      "segment_id": "811ba0cd",
+      "source_content": "## Default Values",
+      "source_content_hash": "5417bdb71e05b4572d7e53c08b6b4a595274850640c6bf91015096485f313c4f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 默认值"
+      }
+    },
+    {
+      "segment_id": "639926e9",
+      "source_content": "**Non-unique** fields support default values using the `Default` and `UpdateDefault` methods.\nYou can also specify `DefaultFunc` instead to have a custom generator.",
+      "source_content_hash": "03128dd2afb1e60d06292849d4f64d37aa6a6e27d5c77acaa6f2e79338071636",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**非唯一**字段支持通过`Default`和`UpdateDefault`方法设置默认值，也可使用`DefaultFunc`指定自定义生成器。"
+      }
+    },
+    {
+      "segment_id": "371e39a0",
+      "source_content": "```go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Time(\"created_at\").\n\t\t\tDefault(time.Now),\n\t\tfield.Time(\"updated_at\").\n\t\t\tDefault(time.Now).\n\t\t\tUpdateDefault(time.Now),\n\t\tfield.String(\"name\").\n\t\t\tDefault(\"unknown\"),\n\t\tfield.String(\"cuid\").\n\t\t\tDefaultFunc(cuid.New),\n\t\tfield.JSON(\"dirs\", []http.Dir{}).\n\t\t\tDefault([]http.Dir{\"/tmp\"}),\n\t}\n}\n```",
+      "source_content_hash": "326b90c9be260a55d55e4ce035ad9a9450f8462cf39e3f16e2cc46edf3ee06f7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_371e39a0"
+      }
+    },
+    {
+      "segment_id": "3bb26da2",
+      "source_content": "SQL-specific literals or expressions like function calls can be added to default value configuration using the\n[`entsql.Annotation`](https://pkg.go.dev/entgo.io/ent@master/dialect/entsql#Annotation):",
+      "source_content_hash": "c5a33ded4c32ba58381d3c7dcaf290c92260a2f601cb4352712a1adaf6e47588",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过[`entsql.Annotation`](https://pkg.go.dev/entgo.io/ent@master/dialect/entsql#Annotation)为默认值配置添加SQL特有的字面量或表达式（如函数调用）："
+      }
+    },
+    {
+      "segment_id": "d5447dbb",
+      "source_content": "```go {9,16,23-27}\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\t// Add a new field with CURRENT_TIMESTAMP\n\t\t// as a default value to all previous rows.\n\t\tfield.Time(\"created_at\").\n\t\t\tDefault(time.Now).\n\t\t\tAnnotations(\n\t\t\t\tentsql.Default(\"CURRENT_TIMESTAMP\"),\n\t\t\t),\n\t\t// Add a new field with a default value\n\t\t// expression that works on all dialects.\n\t\tfield.String(\"field\").\n\t\t\tOptional().\n\t\t\tAnnotations(\n\t\t\t\tentsql.DefaultExpr(\"lower(other_field)\"),\n\t\t\t),\n\t\t// Add a new field with custom default value\n\t\t// expression for each dialect.\n\t\tfield.String(\"default_exprs\").\n\t\t\tOptional().\n\t\t\tAnnotations(\n\t\t\t\tentsql.DefaultExprs(map[string]string{\n\t\t\t\t    dialect.MySQL:    \"TO_BASE64('ent')\",\n\t\t\t\t    dialect.SQLite:   \"hex('ent')\",\n\t\t\t\t    dialect.Postgres: \"md5('ent')\",\n\t\t\t    }),\n\t\t\t),\n\t}\n}\n```",
+      "source_content_hash": "b8f77d6b6fc57040d8d893d9fadcede98dc08d02ea5271e0354c56c2081ada2c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d5447dbb"
+      }
+    },
+    {
+      "segment_id": "5e15188a",
+      "source_content": "In case your `DefaultFunc` is also returning an error, it is better to handle it properly using [schema-hooks](hooks.md#schema-hooks).\nSee [this FAQ](faq.md#how-to-use-a-custom-generator-of-ids) for more information. ",
+      "source_content_hash": "3fbf6d94fb9cfad2aa02537cdc6afef8bb473745ca6c581b86532a26639f2875",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若`DefaultFunc`需要返回错误，建议通过[schema-hooks](hooks.md#schema-hooks)妥善处理，详见[此FAQ](faq.md#how-to-use-a-custom-generator-of-ids)。"
+      }
+    },
+    {
+      "segment_id": "a59a3e1f",
+      "source_content": "## Validators",
+      "source_content_hash": "38c8b7969541cf2ef012790a48f0a159f84cea22a0de95d59369c8e04db52d5d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 字段验证器"
+      }
+    },
+    {
+      "segment_id": "24d24e6d",
+      "source_content": "A field validator is a function from type `func(T) error` that is defined in the schema\nusing the `Validate` method, and applied on the field value before creating or updating\nthe entity.",
+      "source_content_hash": "a53cac83675988cef7a4f5ae9f8951515b47b11f3af3e6c62eae3c03d112876f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "字段验证器是形如`func(T) error`的函数，通过`Validate`方法在模式中定义，会在实体创建/更新前对字段值进行校验。"
+      }
+    },
+    {
+      "segment_id": "8be3f6dc",
+      "source_content": "The supported types of field validators are `string` and all numeric types.",
+      "source_content_hash": "b655a91b6c4b6440afd5c65c9839bb3a1a0819e216049f36c5d6bf45f2fd8108",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "支持的验证器类型包括`string`及所有数字类型。"
+      }
+    },
+    {
+      "segment_id": "7c9cd24e",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"errors\"\n\t\"regexp\"\n\t\"strings\"\n\t\"time\"\n\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n\n// Group schema.\ntype Group struct {\n\tent.Schema\n}\n\n// Fields of the group.\nfunc (Group) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tMatch(regexp.MustCompile(\"[a-zA-Z_]+$\")).\n\t\t\tValidate(func(s string) error {\n\t\t\t\tif strings.ToLower(s) == s {\n\t\t\t\t\treturn errors.New(\"group name must begin with uppercase\")\n\t\t\t\t}\n\t\t\t\treturn nil\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "3a6a0f4bcbe596892dacaef31ba6892d989d501c186e8addf991ea3efd44b335",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7c9cd24e"
+      }
+    },
+    {
+      "segment_id": "3441f612",
+      "source_content": "Here is another example for writing a reusable validator:",
+      "source_content_hash": "2293bf9e1ee834cdade357bdff1deb92040db5f175522bd02cde520c4d3dc726",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下是可复用验证器的编写示例："
+      }
+    },
+    {
+      "segment_id": "884442f0",
+      "source_content": "```go\nimport (\n\t\"entgo.io/ent/dialect/entsql\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// MaxRuneCount validates the rune length of a string by using the unicode/utf8 package.\nfunc MaxRuneCount(maxLen int) func(s string) error {\n\treturn func(s string) error {\n\t\tif utf8.RuneCountInString(s) > maxLen {\n\t\t\treturn errors.New(\"value is more than the max length\")\n\t\t}\n\t\treturn nil\n\t}\n}\n\nfield.String(\"name\").\n\t// If using a SQL-database: change the underlying data type to varchar(10).\n\tAnnotations(entsql.Annotation{\n\t\tSize: 10,\n\t}).\n\tValidate(MaxRuneCount(10))\nfield.String(\"nickname\").\n\t//  If using a SQL-database: change the underlying data type to varchar(20).\n\tAnnotations(entsql.Annotation{\n\t\tSize: 20,\n\t}).\n\tValidate(MaxRuneCount(20))\n```",
+      "source_content_hash": "1dab3dd000bba8118a45dda004da2be4ddb9751335c0ecaa485d3183f7de0a6d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_884442f0"
+      }
+    },
+    {
+      "segment_id": "e9a726de",
+      "source_content": "## Built-in Validators",
+      "source_content_hash": "58a310a9763a56d6f3097116b9ddfa5240988125ca635b5fcc0a3e7a34282128",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 内置验证器"
+      }
+    },
+    {
+      "segment_id": "71c1aac0",
+      "source_content": "The framework provides a few built-in validators for each type:",
+      "source_content_hash": "0c4ce35e4008c509c4dc776d461aa4eee85474d1f43d158203be05924b229507",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "框架为每种类型提供以下内置验证器："
+      }
+    },
+    {
+      "segment_id": "0700b3a8",
+      "source_content": "- Numeric types:\n  - `Positive()`\n  - `Negative()`\n  - `NonNegative()`\n  - `Min(i)` - Validate that the given value is > i.\n  - `Max(i)` - Validate that the given value is < i.\n  - `Range(i, j)` - Validate that the given value is within the range [i, j].\n\n- `string`\n  - `MinLen(i)`\n  - `MaxLen(i)`\n  - `Match(regexp.Regexp)`\n  - `NotEmpty`\n\n- `[]byte`\n  - `MaxLen(i)`\n  - `MinLen(i)`\n  - `NotEmpty`",
+      "source_content_hash": "c7012fc0082ffdcb9e36d211553baa0f2ba66796375c7c068aa9faea64f9e188",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 数字类型：\n  - `Positive()` - 必须为正数\n  - `Negative()` - 必须为负数\n  - `NonNegative()` - 必须非负\n  - `Min(i)` - 必须大于i\n  - `Max(i)` - 必须小于i\n  - `Range(i, j)` - 必须在[i, j]范围内\n\n- 字符串：\n  - `MinLen(i)` - 最小长度\n  - `MaxLen(i)` - 最大长度\n  - `Match(regexp.Regexp)` - 正则匹配\n  - `NotEmpty` - 非空\n\n- 字节切片：\n  - `MaxLen(i)` - 最大长度\n  - `MinLen(i)` - 最小长度\n  - `NotEmpty` - 非空"
+      }
+    },
+    {
+      "segment_id": "85c87282",
+      "source_content": "## Optional",
+      "source_content_hash": "8fa18053d50146ccb3d5355c7ad910f80f8fc043a09d2fd732b41f707a37f397",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 可选字段"
+      }
+    },
+    {
+      "segment_id": "0e5d7420",
+      "source_content": "Optional fields are fields that are not required in the entity creation, and\nwill be set to nullable fields in the database.\nUnlike edges, **fields are required by default**, and setting them to\noptional should be done explicitly using the `Optional` method.",
+      "source_content_hash": "a8d39e5acbac4761f120eed6b0cc4bf8a9b001d0d8ac0d2bdfb5e5af91edbb67",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可选字段在实体创建时非必须，在数据库中会设置为可空字段。注意**字段默认是必填的**，必须显式调用`Optional`方法才能设为可选。"
+      }
+    },
+    {
+      "segment_id": "d262d7d1",
+      "source_content": "```go\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"required_name\"),\n\t\tfield.String(\"optional_name\").\n\t\t\tOptional(),\n\t}\n}\n```",
+      "source_content_hash": "9ac57db13bc1218ecb436aaae09566b5ea04c7a63c59fadb1803332c78fa4386",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d262d7d1"
+      }
+    },
+    {
+      "segment_id": "261891c2",
+      "source_content": "## Nillable",
+      "source_content_hash": "a3a29f375ce766485f9486e89e2c39bb281db6cd3f29849eece21c8fa47bf59a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 可空字段"
+      }
+    },
+    {
+      "segment_id": "d55ba54d",
+      "source_content": "Sometimes you want to be able to distinguish between the zero value of fields and `nil`.\nFor example, if the database column contains `0` or `NULL`.  The `Nillable` option exists exactly for this.",
+      "source_content_hash": "cbf3dc6e090d60fc1a61998746de73d7b470b2d3e2d0a9cc04a897cab44ba5d8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当需要区分字段零值与`NULL`时（如数据库列包含`0`或`NULL`），应使用`Nillable`选项。"
+      }
+    },
+    {
+      "segment_id": "cff30da4",
+      "source_content": "If you have an `Optional` field of type `T`, setting it to `Nillable` will generate\na struct field with type `*T`. Hence, if the database returns `NULL` for this field,\nthe struct field will be `nil`. Otherwise, it will contain a pointer to the actual value.",
+      "source_content_hash": "8a42e9d8edefef8ffcc0ec33dfb1e5d18c769d318c1dd2a0a9ea293fcee674ea",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对类型为`T`的`Optional`字段启用`Nillable`后，生成的结构体字段类型将变为`*T`。若数据库返回`NULL`则该字段为`nil`，否则为指向实际值的指针。"
+      }
+    },
+    {
+      "segment_id": "eb2c43fb",
+      "source_content": "For example, given this schema:",
+      "source_content_hash": "e0320618c14ffb23aa26cf4207e72fb79f80ebcb1fca3cdae4b6ebac03abdcb0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "例如给定模式："
+      }
+    },
+    {
+      "segment_id": "c595833d",
+      "source_content": "```go\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"required_name\"),\n\t\tfield.String(\"optional_name\").\n\t\t\tOptional(),\n\t\tfield.String(\"nillable_name\").\n\t\t\tOptional().\n\t\t\tNillable(),\n\t}\n}\n```",
+      "source_content_hash": "6f931a9479847cbe0696fbad56af91eeb0cdfce78f7bac5dbca27670e0acfb55",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c595833d"
+      }
+    },
+    {
+      "segment_id": "e5a40cc3",
+      "source_content": "The generated struct for the `User` entity will be as follows:",
+      "source_content_hash": "26f74b89128674cce2a356a001a11f3c77573886eeeeafc0d5964b13a1341724",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的`User`实体结构如下："
+      }
+    },
+    {
+      "segment_id": "e13609bf",
+      "source_content": "```go title=\"ent/user.go\"\npackage ent\n\n// User entity.\ntype User struct {\n\tRequiredName string `json:\"required_name,omitempty\"`\n\tOptionalName string `json:\"optional_name,omitempty\"`\n\tNillableName *string `json:\"nillable_name,omitempty\"`\n}\n```",
+      "source_content_hash": "ee9a5b57013fb03b8e195395c079f6d2a619274fff31c22c6a578f658d6844a5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e13609bf"
+      }
+    },
+    {
+      "segment_id": "adb7af0c",
+      "source_content": "#### `Nillable` required fields",
+      "source_content_hash": "9d94e9739ec07344755f2e9f8a9bd6e03bae95aa6806dafb086c06d5ab83c23a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 必填可空字段"
+      }
+    },
+    {
+      "segment_id": "0241afda",
+      "source_content": "`Nillable` fields are also helpful for avoiding zero values in JSON marshaling for fields that have not been\n`Select`ed in the query. For example, a `time.Time` field.",
+      "source_content_hash": "3de3c095346d63f666aac304312f97891c96f96648502e51c6bde2d9ac8dad0e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对于未被查询`Select`的字段（如`time.Time`），`Nillable`还能避免JSON序列化时出现零值。"
+      }
+    },
+    {
+      "segment_id": "0c3af00a",
+      "source_content": "```go\n// Fields of the task.\nfunc (Task) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Time(\"created_at\").\n\t\t\tDefault(time.Now),\n\t\tfield.Time(\"nillable_created_at\").\n            Default(time.Now).\n\t\t\tNillable(),\n\t}\n}\n```",
+      "source_content_hash": "c5a5295e98b0b0efddb8bad4e4e8b03c0d449814956f2979fdb135c7430f21f0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0c3af00a"
+      }
+    },
+    {
+      "segment_id": "84d249e5",
+      "source_content": "The generated struct for the `Task` entity will be as follows:",
+      "source_content_hash": "2b37bc0f718ba42e1390947a0ad129d128f7a2ad06a2af6a2c942c408cc0f10d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的`Task`实体结构如下："
+      }
+    },
+    {
+      "segment_id": "8cb278f2",
+      "source_content": "```go title=\"ent/task.go\"\npackage ent\n\n// Task entity.\ntype Task struct {\n\t// CreatedAt holds the value of the \"created_at\" field.\n\tCreatedAt time.Time `json:\"created_at,omitempty\"`\n\t// NillableCreatedAt holds the value of the \"nillable_created_at\" field.\n\tNillableCreatedAt *time.Time `json:\"nillable_created_at,omitempty\"`\n}\n```",
+      "source_content_hash": "617a3fb04fbe3f00c5fb87893c878f8b336018b860ea1d40523dbd9b212b5e79",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8cb278f2"
+      }
+    },
+    {
+      "segment_id": "444c86cc",
+      "source_content": "And the result of `json.Marshal` is:",
+      "source_content_hash": "ad542d3f687d65756d47ca66d6aecf016566a8404933cb93f1c0fc7d7be02d09",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "JSON序列化结果示例："
+      }
+    },
+    {
+      "segment_id": "0f5df84e",
+      "source_content": "```go\nb, _ := json.Marshal(Task{})\nfmt.Printf(\"%s\\n\", b)\n//highlight-next-line-info\n// {\"created_at\":\"0001-01-01T00:00:00Z\"}\n\nnow := time.Now()\nb, _ = json.Marshal(Task{CreatedAt: now, NillableCreatedAt: &now})\nfmt.Printf(\"%s\\n\", b)\n//highlight-next-line-info\n// {\"created_at\":\"2009-11-10T23:00:00Z\",\"nillable_created_at\":\"2009-11-10T23:00:00Z\"}\n```",
+      "source_content_hash": "affca4d8ee452565deb3d9bfabb61956608b0e5682f3f7ced3905525682753d2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0f5df84e"
+      }
+    },
+    {
+      "segment_id": "bd6b59a9",
+      "source_content": "## Immutable",
+      "source_content_hash": "87d06451d2b3a5764c8f90767a484b1f16405c8567870d1d90164805342f92c2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 不可变字段"
+      }
+    },
+    {
+      "segment_id": "83bf44f4",
+      "source_content": "Immutable fields are fields that can be set only in the creation of the entity.\ni.e., no setters will be generated for the update builders of the entity.",
+      "source_content_hash": "5642e235b64c9f2009ba55ff5324810ad1ed5f21af482c9beafe1542d7f8d470",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "不可变字段只能在实体创建时设置值。即实体更新构建器不会生成这些字段的setter方法。"
+      }
+    },
+    {
+      "segment_id": "26a800cc",
+      "source_content": "```go {6}\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Time(\"created_at\").\n\t\t\tDefault(time.Now).\n\t\t\tImmutable(),\n\t}\n}\n```",
+      "source_content_hash": "5326b0152d54e467ebd36589c78edd4e82587ff329db3ab5d61ea96406d063e8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_26a800cc"
+      }
+    },
+    {
+      "segment_id": "dfc5d601",
+      "source_content": "## Uniqueness",
+      "source_content_hash": "307c500583657f9d91ccc44a59c12a3db03df39e08e5db8b2c5df1265576e94f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 唯一性"
+      }
+    },
+    {
+      "segment_id": "664ad775",
+      "source_content": "Fields can be defined as unique using the `Unique` method.\nNote that unique fields cannot have default values.",
+      "source_content_hash": "6e964c7187a2f5c33264270b71a6beb11fccd7eb007cdd9bd4e5feb54e58bc63",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过`Unique`方法将字段定义为唯一。注意唯一性字段不能设置默认值。"
+      }
+    },
+    {
+      "segment_id": "15065973",
+      "source_content": "```go {5}\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"nickname\").\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "ce61bb2d3ad3a362d5d128682f21be7679b28f46e3a8978110fbc92898d2fcf3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_15065973"
+      }
+    },
+    {
+      "segment_id": "0b4ae2f4",
+      "source_content": "## Comments",
+      "source_content_hash": "ccd37303241bac95b3a5112bac2bf0c8d1198c2d5477acd33e16ec57ce85dfb6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 注释"
+      }
+    },
+    {
+      "segment_id": "90878fe8",
+      "source_content": "A comment can be added to a field using the `.Comment()` method. This comment\nappears before the field in the generated entity code. Newlines are supported \nusing the `\\n` escape sequence.",
+      "source_content_hash": "c5543e608b5a29f0cd08b404d705eeeaca0e165fbdd508fff4e0ee1eb71f3942",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`.Comment()`方法可为字段添加注释。该注释会出现在生成实体代码的字段上方，支持使用`\\n`换行符进行多行注释。"
+      }
+    },
+    {
+      "segment_id": "052ed659",
+      "source_content": "```go\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tDefault(\"John Doe\").\n\t\t\tComment(\"Name of the user.\\n If not specified, defaults to \\\"John Doe\\\".\"),\n\t}\n}\n```",
+      "source_content_hash": "6e4c4c79c5c1bfcd6beddca9b7fb26e9e065102c4157482b3e84ee90c4480695",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_052ed659"
+      }
+    },
+    {
+      "segment_id": "4d4c89ad",
+      "source_content": "## Deprecated Fields",
+      "source_content_hash": "f20e2d96c1f66fc53ffac0d7ae03fe525d6b8ee417420f836860a030e2f249c2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 弃用字段"
+      }
+    },
+    {
+      "segment_id": "8beee012",
+      "source_content": "The `Deprecated` method can be used to mark a field as deprecated. Deprecated fields are not\nselected by default in queries, and their struct fields are annotated as `Deprecated` in the\ngenerated code.",
+      "source_content_hash": "d2b43ad34c02588bb2497aa654062af7401ed1535bdc4bd81696628bbf509bde",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Deprecated`方法用于标记字段为弃用状态。弃用字段默认不会被查询选中，且在生成代码中其结构体字段会标注`Deprecated`注解。"
+      }
+    },
+    {
+      "segment_id": "0ab47a8d",
+      "source_content": "```go\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tDeprecated(\"use `full_name` instead\"),\n\t}\n}\n```",
+      "source_content_hash": "25bbb8ba8dfe0e6aa4a5345b4eff0dee1aa0355a3ed0c2cc314787d13af528e0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0ab47a8d"
+      }
+    },
+    {
+      "segment_id": "7d7eca9f",
+      "source_content": "## Storage Key",
+      "source_content_hash": "ff75b8bedb88f121fb52a904f8480c5e1b54a1ad55e2ced505b4a6c700568748",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 存储键"
+      }
+    },
+    {
+      "segment_id": "b34be360",
+      "source_content": "Custom storage name can be configured using the `StorageKey` method.\nIt's mapped to a column name in SQL dialects and to property name in Gremlin.",
+      "source_content_hash": "5ec8ff5165a8e8ddd6e8a44980bf4c94a874ad0f47533449bf870eb4e84fd1e8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`StorageKey`方法可配置自定义存储名称。在SQL方言中映射为列名，在Gremlin中映射为属性名。"
+      }
+    },
+    {
+      "segment_id": "9e60bd11",
+      "source_content": "```go\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tStorageKey(\"old_name\"),\n\t}\n}\n```",
+      "source_content_hash": "07b04cb535fc195ed9752bf2fdab020e7c76bc04079208f9c90bf6bb8241a6f5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9e60bd11"
+      }
+    },
+    {
+      "segment_id": "18cb766f",
+      "source_content": "## Indexes",
+      "source_content_hash": "10f48fa48049ca916a844181e3c7553ce5ee3355e0ed58b7af77e0ea607c7e94",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 索引"
+      }
+    },
+    {
+      "segment_id": "f3bed9df",
+      "source_content": "Indexes can be defined on multi fields and some types of edges as well.\nHowever, you should note, that this is currently an SQL-only feature.",
+      "source_content_hash": "39138201d958acff0c7eafaa101cb267479a0617caa30499c533feb28944b535",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可在多字段及某些边类型上定义索引。但需注意当前该特性仅支持SQL数据库。"
+      }
+    },
+    {
+      "segment_id": "d1d04358",
+      "source_content": "Read more about this in the [Indexes](schema-indexes.md) section.",
+      "source_content_hash": "082b099df1915c042e5113813ceaaaa48d6d2f7634676ef8a807e2f544e85e0f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "详见[索引](schema-indexes.md)章节。"
+      }
+    },
+    {
+      "segment_id": "18c0bc86",
+      "source_content": "## Struct Tags",
+      "source_content_hash": "70effbb80a6f160b3e8d1ad169ceeb4c012de2021f553e6c62062ba5310e3699",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 结构体标签"
+      }
+    },
+    {
+      "segment_id": "16ad9b8d",
+      "source_content": "Custom struct tags can be added to the generated entities using the `StructTag`\nmethod. Note that if this option was not provided, or provided and did not\ncontain the `json` tag, the default `json` tag will be added with the field name.",
+      "source_content_hash": "3a2141e85f9371a1d6243906e9afd1425ef0e943c7760d772b6d5feeb35ce6c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`StructTag`方法可为生成实体添加自定义结构体标签。若未提供此配置，或提供的标签中不含`json`标签，系统会自动添加带字段名的默认`json`标签。"
+      }
+    },
+    {
+      "segment_id": "315959ec",
+      "source_content": "```go\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tStructTag(`gqlgen:\"gql_name\"`),\n\t}\n}\n```",
+      "source_content_hash": "01c961ff290c32218220bfe53c25e47dd8c2218e10e5b5ba961dbbd42fe7eaab",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_315959ec"
+      }
+    },
+    {
+      "segment_id": "750e45bd",
+      "source_content": "## Additional Struct Fields",
+      "source_content_hash": "4910336a311f559297b0c3eb4a50e14472561e9ef7253415b39e8c6e33139618",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 附加结构体字段"
+      }
+    },
+    {
+      "segment_id": "5f4b614f",
+      "source_content": "By default, `ent` generates the entity model with fields that are configured in the `schema.Fields` method.\nFor example, given this schema configuration:",
+      "source_content_hash": "9f172b58beb1f3c7ac382d4383cf8a51805946460f84e05ade407b9ed782a0bd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，`ent`仅根据`schema.Fields`方法配置生成实体模型字段。例如给定如下模式配置："
+      }
+    },
+    {
+      "segment_id": "c07f7ae7",
+      "source_content": "```go\n// User schema.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"age\").\n\t\t\tOptional().\n\t\t\tNillable(),\n\t\tfield.String(\"name\").\n\t\t\tStructTag(`gqlgen:\"gql_name\"`),\n\t}\n}\n```",
+      "source_content_hash": "8c6e29c36da088b7e89ac00a43f2b92c985ca48f0405cfceac49e6c19ba2bc0d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c07f7ae7"
+      }
+    },
+    {
+      "segment_id": "398d0803",
+      "source_content": "The generated model will be as follows:",
+      "source_content_hash": "2677fbaec50fed547bcaf34dc0dffabce4840abab3e0a852820d2fd6df67d0a1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的模型如下："
+      }
+    },
+    {
+      "segment_id": "9528b7bb",
+      "source_content": "```go\n// User is the model entity for the User schema.\ntype User struct {\n\t// Age holds the value of the \"age\" field.\n\tAge  *int\t`json:\"age,omitempty\"`\n\t// Name holds the value of the \"name\" field.\n\tName string `json:\"name,omitempty\" gqlgen:\"gql_name\"`\n}\n```",
+      "source_content_hash": "e1001e35debfde6bad26bb2229c671d93d292345d0971af9d0693e19b6d371d2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9528b7bb"
+      }
+    },
+    {
+      "segment_id": "eb1bc927",
+      "source_content": "In order to add additional fields to the generated struct **that are not stored in the database**,\nuse [external templates](code-gen.md/#external-templates). For example:",
+      "source_content_hash": "7db29362fb48d8e0de40bf568cacf6083535819c69e6dc328b5f395ba68f22db",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如需添加不存储到数据库的附加字段，请使用[外部模板](code-gen.md/#external-templates)。例如："
+      }
+    },
+    {
+      "segment_id": "eacc7740",
+      "source_content": "```gotemplate\n{{ define \"model/fields/additional\" }}\n\t{{- if eq $.Name \"User\" }}\n\t\t// StaticField defined by template.\n\t\tStaticField string `json:\"static,omitempty\"`\n\t{{- end }}\n{{ end }}\n```",
+      "source_content_hash": "885d5a782cee14258c992c975da0aacb572b757184959d9fbd936c709b5ed5a8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eacc7740"
+      }
+    },
+    {
+      "segment_id": "3ed14ffc",
+      "source_content": "The generated model will be as follows:",
+      "source_content_hash": "2677fbaec50fed547bcaf34dc0dffabce4840abab3e0a852820d2fd6df67d0a1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的模型将包含："
+      }
+    },
+    {
+      "segment_id": "8adc04d2",
+      "source_content": "```go\n// User is the model entity for the User schema.\ntype User struct {\n\t// Age holds the value of the \"age\" field.\n\tAge  *int\t`json:\"age,omitempty\"`\n\t// Name holds the value of the \"name\" field.\n\tName string `json:\"name,omitempty\" gqlgen:\"gql_name\"`\n\t// StaticField defined by template.\n\tStaticField string `json:\"static,omitempty\"`\n}\n```",
+      "source_content_hash": "302ebeac197141c7980599f7febbe93cda3d4e1c55fc5877f0420973059e89f1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8adc04d2"
+      }
+    },
+    {
+      "segment_id": "d0e7f7c1",
+      "source_content": "## Sensitive Fields",
+      "source_content_hash": "3dea148444409c39cc0a02f0eaa83456f9483efc1f0232b685aa86cc475ec6b1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 敏感字段"
+      }
+    },
+    {
+      "segment_id": "dd0c7dc2",
+      "source_content": "String fields can be defined as sensitive using the `Sensitive` method. Sensitive fields\nwon't be printed and they will be omitted when encoding.",
+      "source_content_hash": "371d30e1ee92e350f609b0fa4d4289abc9178174ffdef000e4e34eea5920de61",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`Sensitive`方法可将字符串字段标记为敏感字段。敏感字段不会被打印显示，序列化时也会被忽略。"
+      }
+    },
+    {
+      "segment_id": "ab7fbd06",
+      "source_content": "Note that sensitive fields cannot have struct tags.",
+      "source_content_hash": "f6bf66571dcde54d549f95be4d418155fc1f72e26e7466c3370a3bc7229166f1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意敏感字段不能设置结构体标签。"
+      }
+    },
+    {
+      "segment_id": "7f1bd029",
+      "source_content": "```go\n// User schema.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"password\").\n\t\t\tSensitive(),\n\t}\n}\n```",
+      "source_content_hash": "f31ed23cc30b2fcded093663f4a32e693fc4fdc4c2bec12b08eff7e5f37c1632",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7f1bd029"
+      }
+    },
+    {
+      "segment_id": "ba310e82",
+      "source_content": "## Enum Fields",
+      "source_content_hash": "02ca61abb6ff14a097e3a5ad64c8aedcad2cb8b40a7f79090a1b2713019d15ec",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 枚举字段"
+      }
+    },
+    {
+      "segment_id": "ed740d45",
+      "source_content": "The `Enum` builder allows creating enum fields with a list of permitted values. ",
+      "source_content_hash": "5b8cff7016de2f5b45edb6927c1de9fbd3bb6a2add1d1879a11bd35f7a5da2c7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Enum`构建器用于创建带允许值列表的枚举字段。"
+      }
+    },
+    {
+      "segment_id": "22923b62",
+      "source_content": "```go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"first_name\"),\n\t\tfield.String(\"last_name\"),\n\t\tfield.Enum(\"size\").\n\t\t\tValues(\"big\", \"small\"),\n\t}\n}\n```",
+      "source_content_hash": "3d0171e9254dc9653cbb0aa199dfd090de3b4155dd5b9dedfb5a3fa0281172e2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_22923b62"
+      }
+    },
+    {
+      "segment_id": "35123b88",
+      "source_content": ":::info[[Using PostgreSQL Native Enum Types](/docs/migration/enum-types)]\nBy default, Ent uses simple string types to represent the enum values in **PostgreSQL and SQLite**. However, in some\ncases, you may want to use the native enum types provided by the database. Follow the [enum migration guide](/docs/migration/enum-types)\nfor more info.\n:::",
+      "source_content_hash": "919b872556eebb1f5c71fa9d8dddaa3e43fd8ecb5c0dc71cdc3e501d06e2ce2b",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[使用PostgreSQL原生枚举类型](/docs/migration/enum-types)]\n默认情况下，Ent在**PostgreSQL和SQLite**中使用简单字符串类型表示枚举值。但在某些场景下，可能需要使用数据库原生枚举类型。具体操作请参阅[枚举迁移指南](/docs/migration/enum-types)。\n:::"
+      }
+    },
+    {
+      "segment_id": "e440c014",
+      "source_content": "When a custom [`GoType`](#go-type) is being used, it must be convertible to the basic `string` type or it needs to implement the [ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field#ValueScanner) interface.",
+      "source_content_hash": "bee09cf3360cfcf63563e90adbc32c4b6ef8e045d9b5d31804a05463414b4b2c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用自定义[`GoType`](#go-type)时，该类型必须可转换为基本`string`类型，或需实现[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field#ValueScanner)接口。"
+      }
+    },
+    {
+      "segment_id": "c25cc016",
+      "source_content": "The [EnumValues](https://pkg.go.dev/entgo.io/ent/schema/field#EnumValues) interface is also required by the custom Go type to tell Ent what are the permitted values of the enum. ",
+      "source_content_hash": "e716c578ed58f35660cdb9c3844ea8878d53980ac34891beca69243c6853f066",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "自定义Go类型还需实现[EnumValues](https://pkg.go.dev/entgo.io/ent/schema/field#EnumValues)接口，用于向Ent声明枚举的允许值范围。"
+      }
+    },
+    {
+      "segment_id": "298e69e7",
+      "source_content": "The following example shows how to define an `Enum` field with a custom Go type that is convertible to `string`: ",
+      "source_content_hash": "b94fbf8691465b2d2b3125a6fbc267d646c06f21403e0b08962b9547c391327e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下示例展示了如何定义一个使用可转换为`string`的自定义Go类型的`Enum`字段："
+      }
+    },
+    {
+      "segment_id": "a1c5198f",
+      "source_content": "```go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"first_name\"),\n\t\tfield.String(\"last_name\"),\n\t\t// A convertible type to string.\n\t\tfield.Enum(\"shape\").\n\t\t\tGoType(property.Shape(\"\")),\n\t}\n}\n```",
+      "source_content_hash": "1bb8d8bd17e8bc4261dee4402104d2e3cefd71224afb3ef92ed8889efbe5e018",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a1c5198f"
+      }
+    },
+    {
+      "segment_id": "1409b265",
+      "source_content": "Implement the [EnumValues](https://pkg.go.dev/entgo.io/ent/schema/field#EnumValues) interface.",
+      "source_content_hash": "a3f6d42bbce3dff478fdb19961b0d8acf27aad4320eef41d0e28d66688bfc381",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "实现[EnumValues](https://pkg.go.dev/entgo.io/ent/schema/field#EnumValues)接口。"
+      }
+    },
+    {
+      "segment_id": "fe64b5e8",
+      "source_content": "```go\npackage property\n\ntype Shape string\n\nconst (\n\tTriangle Shape = \"TRIANGLE\"\n\tCircle   Shape = \"CIRCLE\"\n)\n\n// Values provides list valid values for Enum.\nfunc (Shape) Values() (kinds []string) {\n\tfor _, s := range []Shape{Triangle, Circle} {\n\t\tkinds = append(kinds, string(s))\n\t}\n\treturn\n}\n\n```",
+      "source_content_hash": "930fb038e83afeffb3cf6163719cc03987baa6453381fe467793a6d2a9449b99",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fe64b5e8"
+      }
+    },
+    {
+      "segment_id": "81953b4d",
+      "source_content": "The following example shows how to define an `Enum` field with a custom Go type that is not convertible to `string`, but it implements the [ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field#ValueScanner) interface: ",
+      "source_content_hash": "a1c1be44abc3e58732c93d40116650bd0d7cf7b75291bcaef7cdc07c8bf45d1f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下示例展示了如何定义一个使用不可转换为`string`但实现了[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field#ValueScanner)接口的自定义Go类型的`Enum`字段："
+      }
+    },
+    {
+      "segment_id": "008400fb",
+      "source_content": "```go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"first_name\"),\n\t\tfield.String(\"last_name\"),\n\t\t// Add conversion to and from string\n\t\tfield.Enum(\"level\").\n\t\t\tGoType(property.Level(0)),\n\t}\n}\n```",
+      "source_content_hash": "147c66fb8186d44f015afe9e70c3f68f0d92c2bda1dde402b9406a404b8c2d1a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_008400fb"
+      }
+    },
+    {
+      "segment_id": "9580943c",
+      "source_content": "Implement also the [ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field?tab=doc#ValueScanner) interface.",
+      "source_content_hash": "5ce088d61befe420ad27c514d377eeab635704584d855003727f615df85341c7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "同时实现[ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field?tab=doc#ValueScanner)接口。"
+      }
+    },
+    {
+      "segment_id": "428efdb3",
+      "source_content": "```go\npackage property\n\nimport \"database/sql/driver\"\n\ntype Level int\n\nconst (\n\tUnknown Level = iota\n\tLow\n\tHigh\n)\n\nfunc (p Level) String() string {\n\tswitch p {\n\tcase Low:\n\t\treturn \"LOW\"\n\tcase High:\n\t\treturn \"HIGH\"\n\tdefault:\n\t\treturn \"UNKNOWN\"\n\t}\n}\n\n// Values provides list valid values for Enum.\nfunc (Level) Values() []string {\n\treturn []string{Unknown.String(), Low.String(), High.String()}\n}\n\n// Value provides the DB a string from int.\nfunc (p Level) Value() (driver.Value, error) {\n\treturn p.String(), nil\n}\n\n// Scan tells our code how to read the enum into our type.\nfunc (p *Level) Scan(val any) error {\n\tvar s string\n\tswitch v := val.(type) {\n\tcase nil:\n\t\treturn nil\n\tcase string:\n\t\ts = v\n\tcase []uint8:\n\t\ts = string(v)\n\t}\n\tswitch s {\n\tcase \"LOW\":\n\t\t*p = Low\n\tcase \"HIGH\":\n\t\t*p = High\n\tdefault:\n\t\t*p = Unknown\n\t}\n\treturn nil\n}\n```",
+      "source_content_hash": "df9f40491e82281d1e5abf3919730c38fecbc0e680fad20178dcb2d46c965eff",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_428efdb3"
+      }
+    },
+    {
+      "segment_id": "0a749aa0",
+      "source_content": "Combining it all together:",
+      "source_content_hash": "e09dc5a9734faf0f3e520973b9ff2881347c9ab8798fa37cb506d1e6e41dda3a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整整合示例如下："
+      }
+    },
+    {
+      "segment_id": "5d1e1205",
+      "source_content": "```go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"first_name\"),\n\t\tfield.String(\"last_name\"),\n\t\tfield.Enum(\"size\").\n\t\t\tValues(\"big\", \"small\"),\n\t\t// A convertible type to string.\n\t\tfield.Enum(\"shape\").\n\t\t\tGoType(property.Shape(\"\")),\n\t\t// Add conversion to and from string.\n\t\tfield.Enum(\"level\").\n\t\t\tGoType(property.Level(0)),\n\t}\n}\n```",
+      "source_content_hash": "6930f136f577b140269d6654c10fb0efb91d28e4aa5d4598dad317952ff5d9a5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5d1e1205"
+      }
+    },
+    {
+      "segment_id": "1bce1aed",
+      "source_content": "After code generation usage is trivial:",
+      "source_content_hash": "1c9e5076e695436f029a219abc73db2c21ccafba8fc9b88c664af6d5374c7783",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "代码生成后的使用方式非常简单："
+      }
+    },
+    {
+      "segment_id": "263a5fb3",
+      "source_content": "```go \nclient.User.Create().\n\tSetFirstName(\"John\").\n\tSetLastName(\"Dow\").\n\tSetSize(user.SizeSmall).\n\tSetShape(property.Triangle).\n\tSetLevel(property.Low).\n\tSaveX(context.Background())\n\t\njohn := client.User.Query().FirstX(context.Background())\nfmt.Println(john)\n// User(id=1, first_name=John, last_name=Dow, size=small, shape=TRIANGLE, level=LOW)\n```",
+      "source_content_hash": "084862d92f864982b76fd1d4ca700c144fae6955cf5e2d8ce214a14b1c26b3ed",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_263a5fb3"
+      }
+    },
+    {
+      "segment_id": "e10d3e60",
+      "source_content": "## Annotations",
+      "source_content_hash": "82240f01a68b4c2d7f31c325f0b755f82e1304978e68685ff85b2c545f7708aa",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 注解"
+      }
+    },
+    {
+      "segment_id": "ec594b5b",
+      "source_content": "`Annotations` is used to attach arbitrary metadata to the field object in code generation.\nTemplate extensions can retrieve this metadata and use it inside their templates.",
+      "source_content_hash": "39b4ad69590461249a6a86e2f316a46938e2eee46ce6bd2482b9182d4f69c64a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Annotations`用于在代码生成时为字段对象附加任意元数据。模板扩展可以通过模板检索这些元数据并使用。"
+      }
+    },
+    {
+      "segment_id": "bb4f7311",
+      "source_content": "Note that the metadata object must be serializable to a JSON raw value (e.g. struct, map or slice).",
+      "source_content_hash": "8e0874ca0c3b2a252746d25bfa1026d7859a9a4a661bae8456e1d297e9ef5fff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意元数据对象必须可序列化为JSON原始值（例如结构体、映射或切片）。"
+      }
+    },
+    {
+      "segment_id": "0a8a0200",
+      "source_content": "```go\n// User schema.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Time(\"creation_date\").\n\t\t\tAnnotations(entgql.Annotation{\n\t\t\t\tOrderField: \"CREATED_AT\",\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "d0e21308b854b38f6f777597e44021a266eec603b38d0d651d45057a754ed0c2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0a8a0200"
+      }
+    },
+    {
+      "segment_id": "372af754",
+      "source_content": "Read more about annotations and their usage in templates in the [template doc](templates.md#annotations).",
+      "source_content_hash": "e75d3ba470b0f66082014e1e75c0132ac30988a006f885f787e975c4eb1c43cf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更多关于注解及其在模板中使用的信息，请参阅[模板文档](templates.md#annotations)。"
+      }
+    },
+    {
+      "segment_id": "5f74cfc9",
+      "source_content": "## Naming Convention",
+      "source_content_hash": "7728a7682eded222882b9dcee4830f27e5a69d2f7847cbd5c4ea662d1c5a1232",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 命名规范"
+      }
+    },
+    {
+      "segment_id": "b072f056",
+      "source_content": "By convention field names should use `snake_case`. The corresponding struct fields generated by `ent` will follow the Go convention\nof using `PascalCase`. In cases where `PascalCase` is desired, you can do so with the `StorageKey` or `StructTag` methods.",
+      "source_content_hash": "d1c40b3de5c110c8e0f2d22ed1cf1406487035006fb7f094b75e08b0c6026957",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "按照惯例，字段名应使用`snake_case`。`ent`生成的对应结构体字段将遵循Go语言的`PascalCase`命名规范。如需使用`PascalCase`命名，可通过`StorageKey`或`StructTag`方法实现。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/schema-fields.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.671325+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "898ba18a90e295af89b7fe160705667eea058f37f1bf123993adf628180f118b"
+  }
+}

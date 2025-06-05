@@ -1,0 +1,1723 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "i18n/en/code.json",
+  "source_file_content_hash": "564f69b8cdb362b406c43df3ec2301843f8b695c9ade5714518a68956438e67b",
+  "segments": [
+    {
+      "segment_id": "theme.ErrorPageContent.title",
+      "source_content": "This page crashed.",
+      "source_content_hash": "61f8a32b0a81f1e879969b34d4c92824acda7eb932c4c11a85d54e3c85b6d0f6",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "页面崩溃"
+      },
+      "metadata": {
+        "json_description": "The title of the fallback page when the page crashed"
+      }
+    },
+    {
+      "segment_id": "theme.NotFound.title",
+      "source_content": "Page Not Found",
+      "source_content_hash": "cb2f00d1e554baf96001ddb5e22ee63a8053fd3f8b6cad8acd74504af0dadb52",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "页面未找到"
+      },
+      "metadata": {
+        "json_description": "The title of the 404 page"
+      }
+    },
+    {
+      "segment_id": "theme.NotFound.p1",
+      "source_content": "We could not find what you were looking for.",
+      "source_content_hash": "887e4838ffa96692b36cf413d531e20c92958b4a45fb3cc2448f913e8301b8e7",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "未能找到您要访问的内容"
+      },
+      "metadata": {
+        "json_description": "The first paragraph of the 404 page"
+      }
+    },
+    {
+      "segment_id": "theme.NotFound.p2",
+      "source_content": "Please contact the owner of the site that linked you to the original URL and let them know their link is broken.",
+      "source_content_hash": "0cf882ed2315a80023d3a3f5d4621ae38d0d2f9a3e2ebf12e364c515c41ff175",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请联系原链接所有者并告知其链接已失效"
+      },
+      "metadata": {
+        "json_description": "The 2nd paragraph of the 404 page"
+      }
+    },
+    {
+      "segment_id": "theme.admonition.note",
+      "source_content": "note",
+      "source_content_hash": "edb465624291e4053c6c5ea4b7eb320dec773e10a57d26b95dcf0564f8e310f8",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意"
+      },
+      "metadata": {
+        "json_description": "The default label used for the Note admonition (:::note)"
+      }
+    },
+    {
+      "segment_id": "theme.admonition.tip",
+      "source_content": "tip",
+      "source_content_hash": "97380187a878903ffe722b7bfd8d8ba92457ef77de0216cfe9261c72c2b87397",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "提示"
+      },
+      "metadata": {
+        "json_description": "The default label used for the Tip admonition (:::tip)"
+      }
+    },
+    {
+      "segment_id": "theme.admonition.danger",
+      "source_content": "danger",
+      "source_content_hash": "123fd666aa39d376690cfa6570426d3585c188b291bc87acf47b84e3fe822102",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "危险"
+      },
+      "metadata": {
+        "json_description": "The default label used for the Danger admonition (:::danger)"
+      }
+    },
+    {
+      "segment_id": "theme.admonition.info",
+      "source_content": "info",
+      "source_content_hash": "06271baf49532c879aa3c58b48671884bcc858f09197412d682750496c33e1e1",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "信息"
+      },
+      "metadata": {
+        "json_description": "The default label used for the Info admonition (:::info)"
+      }
+    },
+    {
+      "segment_id": "theme.admonition.caution",
+      "source_content": "caution",
+      "source_content_hash": "3cf083c28255868b5f464f8ed39b1db95aee54b99b8670a2dbb556a580e9d5da",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "警告"
+      },
+      "metadata": {
+        "json_description": "The default label used for the Caution admonition (:::caution)"
+      }
+    },
+    {
+      "segment_id": "theme.BackToTopButton.buttonAriaLabel",
+      "source_content": "Scroll back to top",
+      "source_content_hash": "2ae71ffa6c1c05aabbbb0202c976de8442a3ff7999579ef396591f664e35564f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "返回顶部"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the back to top button"
+      }
+    },
+    {
+      "segment_id": "theme.blog.archive.title",
+      "source_content": "Archive",
+      "source_content_hash": "66f4804ee23ddc092d1bae43cb88186aa541187fff7c1cc8a4aa17e59a9f4123",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "归档"
+      },
+      "metadata": {
+        "json_description": "The page & hero title of the blog archive page"
+      }
+    },
+    {
+      "segment_id": "theme.blog.archive.description",
+      "source_content": "Archive",
+      "source_content_hash": "66f4804ee23ddc092d1bae43cb88186aa541187fff7c1cc8a4aa17e59a9f4123",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "归档"
+      },
+      "metadata": {
+        "json_description": "The page & hero description of the blog archive page"
+      }
+    },
+    {
+      "segment_id": "theme.blog.paginator.navAriaLabel",
+      "source_content": "Blog list page navigation",
+      "source_content_hash": "b61fc99000ea4a88f4d7fdbf30df4c1075697699bc7fa932093fb8e1681e0821",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "博客列表分页导航"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the blog pagination"
+      }
+    },
+    {
+      "segment_id": "theme.blog.paginator.newerEntries",
+      "source_content": "Newer Entries",
+      "source_content_hash": "f14acddce6cd6e419e43ecd7b90b3693cf920d205cae07d7c8732ca569ce3011",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "较新文章"
+      },
+      "metadata": {
+        "json_description": "The label used to navigate to the newer blog posts page (previous page)"
+      }
+    },
+    {
+      "segment_id": "theme.blog.paginator.olderEntries",
+      "source_content": "Older Entries",
+      "source_content_hash": "c3e32e104a9556d2de50b7d7e081a5c7acbb35a4b77203a21817727380d6f265",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "较旧文章"
+      },
+      "metadata": {
+        "json_description": "The label used to navigate to the older blog posts page (next page)"
+      }
+    },
+    {
+      "segment_id": "theme.blog.post.paginator.navAriaLabel",
+      "source_content": "Blog post page navigation",
+      "source_content_hash": "57501fdeec3bc10bd5384d5d73e680e9b6965f394d6c394cc3fca1d867c81c7b",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "博客文章分页导航"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the blog posts pagination"
+      }
+    },
+    {
+      "segment_id": "theme.blog.post.paginator.newerPost",
+      "source_content": "Newer Post",
+      "source_content_hash": "cdfb6252c4aec1b63894f3b8d832ea68cdfb000d1710fd931a13ce509ba9e96c",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "较新文章"
+      },
+      "metadata": {
+        "json_description": "The blog post button label to navigate to the newer/previous post"
+      }
+    },
+    {
+      "segment_id": "theme.blog.post.paginator.olderPost",
+      "source_content": "Older Post",
+      "source_content_hash": "1f47dbb5cb0f9593cde483ce0d5b0ded77103f21f7915ea899fe230dcb56005a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "较旧文章"
+      },
+      "metadata": {
+        "json_description": "The blog post button label to navigate to the older/next post"
+      }
+    },
+    {
+      "segment_id": "theme.blog.post.plurals",
+      "source_content": "One post|{count} posts",
+      "source_content_hash": "9c1684210f2697c7676fc3e5b67cb83cbd2eb89f0f18014a785fa27afeaba5e2",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1篇文章|{count}篇文章"
+      },
+      "metadata": {
+        "json_description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+      }
+    },
+    {
+      "segment_id": "theme.blog.tagTitle",
+      "source_content": "{nPosts} tagged with \"{tagName}\"",
+      "source_content_hash": "4b684216376becf33ff139e258b4650835aa502cc55cbcf444611782b8a6da1b",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "{nPosts}篇标记为\"{tagName}\"的文章"
+      },
+      "metadata": {
+        "json_description": "The title of the page for a blog tag"
+      }
+    },
+    {
+      "segment_id": "theme.tags.tagsPageLink",
+      "source_content": "View All Tags",
+      "source_content_hash": "088ead4c42a96dd8fcf9b5e9ca747c5171551aad786cf1634eeb665849961a29",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "查看所有标签"
+      },
+      "metadata": {
+        "json_description": "The label of the link targeting the tag list page"
+      }
+    },
+    {
+      "segment_id": "theme.colorToggle.ariaLabel",
+      "source_content": "Switch between dark and light mode (currently {mode})",
+      "source_content_hash": "246c76dc4b28163373d94ef84c0234aadcc7f399733f4e7191f9aa03f15c51c1",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "切换深色/浅色模式(当前为{mode})"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the navbar color mode toggle"
+      }
+    },
+    {
+      "segment_id": "theme.colorToggle.ariaLabel.mode.dark",
+      "source_content": "dark mode",
+      "source_content_hash": "ddf377084a3224274c6c493e76e9b62155269645c64aaca8c091e6f88981430a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "深色模式"
+      },
+      "metadata": {
+        "json_description": "The name for the dark color mode"
+      }
+    },
+    {
+      "segment_id": "theme.colorToggle.ariaLabel.mode.light",
+      "source_content": "light mode",
+      "source_content_hash": "a6ea4833bc3f883c067eadc432de158f4426e857a0c1551d393221feeaeedd49",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "浅色模式"
+      },
+      "metadata": {
+        "json_description": "The name for the light color mode"
+      }
+    },
+    {
+      "segment_id": "theme.docs.breadcrumbs.navAriaLabel",
+      "source_content": "Breadcrumbs",
+      "source_content_hash": "73667278486b9c9d3958f9449418af7d1caac4e1db5a70209b6d0bad7d9e301e",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "面包屑导航"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the breadcrumbs"
+      }
+    },
+    {
+      "segment_id": "theme.docs.DocCard.categoryDescription",
+      "source_content": "{count} items",
+      "source_content_hash": "f65216b3ac8c5249886b85261ea5a5dc6818f3d3c0f33b7499d04724f5c12235",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "{count}个项目"
+      },
+      "metadata": {
+        "json_description": "The default description for a category card in the generated index about how many items this category includes"
+      }
+    },
+    {
+      "segment_id": "theme.docs.paginator.navAriaLabel",
+      "source_content": "Docs pages",
+      "source_content_hash": "758061873727938c87007174dc0a69949cb7c7e423ece886c92f4c0bce246b70",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "文档分页"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the docs pagination"
+      }
+    },
+    {
+      "segment_id": "theme.docs.paginator.previous",
+      "source_content": "Previous",
+      "source_content_hash": "a57b08a480b822a0a572b993391c292ede593bf8000b406675b180bbb16260fa",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上一篇"
+      },
+      "metadata": {
+        "json_description": "The label used to navigate to the previous doc"
+      }
+    },
+    {
+      "segment_id": "theme.docs.paginator.next",
+      "source_content": "Next",
+      "source_content_hash": "1ff57a29d7c9d11bdf61c1b80f2b289b44c1ea844824d4b94a0d52b6ba5fc858",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下一篇"
+      },
+      "metadata": {
+        "json_description": "The label used to navigate to the next doc"
+      }
+    },
+    {
+      "segment_id": "theme.docs.tagDocListPageTitle.nDocsTagged",
+      "source_content": "One doc tagged|{count} docs tagged",
+      "source_content_hash": "e96ecd09ae1cc3713db6979a647a1d33b1da812601f6136ae7307f3d548f64e7",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1篇文档标记|{count}篇文档标记"
+      },
+      "metadata": {
+        "json_description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+      }
+    },
+    {
+      "segment_id": "theme.docs.tagDocListPageTitle",
+      "source_content": "{nDocsTagged} with \"{tagName}\"",
+      "source_content_hash": "c68823366823b04059138ebbf8a6f330b3061c68e4a6746bfda5c01a90c7fca2",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "{nDocsTagged}为\"{tagName}\""
+      },
+      "metadata": {
+        "json_description": "The title of the page for a docs tag"
+      }
+    },
+    {
+      "segment_id": "theme.docs.versionBadge.label",
+      "source_content": "Version: {versionLabel}",
+      "source_content_hash": "17fd56e2079a80830455bc785fc5357e37314cb694beaafc8f5420309b5f363f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "版本: {versionLabel}"
+      }
+    },
+    {
+      "segment_id": "theme.docs.versions.unreleasedVersionLabel",
+      "source_content": "This is unreleased documentation for {siteTitle} {versionLabel} version.",
+      "source_content_hash": "b48f344a3282972ccb109fe37d7ecb9eb7e44ffeca3e8615210b2790609d7478",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这是 {siteTitle} {versionLabel} 版本的未发布文档。"
+      },
+      "metadata": {
+        "json_description": "The label used to tell the user that he's browsing an unreleased doc version"
+      }
+    },
+    {
+      "segment_id": "theme.docs.versions.unmaintainedVersionLabel",
+      "source_content": "This is documentation for {siteTitle} {versionLabel}, which is no longer actively maintained.",
+      "source_content_hash": "6d35df058a3b2344b5638b5d58fa820ddc8ac1952138c3bb7c18d66869f968f2",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这是 {siteTitle} {versionLabel} 的文档，该版本已不再积极维护。"
+      },
+      "metadata": {
+        "json_description": "The label used to tell the user that he's browsing an unmaintained doc version"
+      }
+    },
+    {
+      "segment_id": "theme.docs.versions.latestVersionSuggestionLabel",
+      "source_content": "For up-to-date documentation, see the {latestVersionLink} ({versionLabel}).",
+      "source_content_hash": "63e9c46b1e49202c69eb4dd5703dc8a6977806591c4cdc9041c23ee797c475a6",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "查看最新文档，请访问 {latestVersionLink}（{versionLabel}）。"
+      },
+      "metadata": {
+        "json_description": "The label used to tell the user to check the latest version"
+      }
+    },
+    {
+      "segment_id": "theme.docs.versions.latestVersionLinkLabel",
+      "source_content": "latest version",
+      "source_content_hash": "5fe87164c1923b3c7cd59758a7e03610c6a95b3c9ad8cb45ab86911fd463962d",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最新版本"
+      },
+      "metadata": {
+        "json_description": "The label used for the latest version suggestion link label"
+      }
+    },
+    {
+      "segment_id": "theme.common.editThisPage",
+      "source_content": "Edit this page",
+      "source_content_hash": "a9029e19d5b3d36d8ede9c51ff2e147eddf9c6fa41a8cdfd5dbf6ceb7eb72a8f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "编辑此页"
+      },
+      "metadata": {
+        "json_description": "The link label to edit the current page"
+      }
+    },
+    {
+      "segment_id": "theme.common.headingLinkTitle",
+      "source_content": "Direct link to {heading}",
+      "source_content_hash": "f514688566aaa11baf503cbe4e995001bc42d27b1ba9a6256417f1dc616b2c77",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "直达 {heading} 的链接"
+      },
+      "metadata": {
+        "json_description": "Title for link to heading"
+      }
+    },
+    {
+      "segment_id": "theme.lastUpdated.atDate",
+      "source_content": " on {date}",
+      "source_content_hash": "e8a6241baffbcb8293b3bfc1f8dd635d84a548cf70e443f761721186a189fcbc",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "于 {date}"
+      },
+      "metadata": {
+        "json_description": "The words used to describe on which date a page has been last updated"
+      }
+    },
+    {
+      "segment_id": "theme.lastUpdated.byUser",
+      "source_content": " by {user}",
+      "source_content_hash": "75f117172ea53ec05b9920645ff22d75fdefd058f6a796ffb3e36d9ae5bb1d9b",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由 {user}"
+      },
+      "metadata": {
+        "json_description": "The words used to describe by who the page has been last updated"
+      }
+    },
+    {
+      "segment_id": "theme.lastUpdated.lastUpdatedAtBy",
+      "source_content": "Last updated{atDate}{byUser}",
+      "source_content_hash": "2c6781f3ea27ef3fa439d05bfa217a586a6651f5e4f76659dd8d8417685d12a2",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后更新{atDate}{byUser}"
+      },
+      "metadata": {
+        "json_description": "The sentence used to display when a page has been last updated, and by who"
+      }
+    },
+    {
+      "segment_id": "theme.navbar.mobileVersionsDropdown.label",
+      "source_content": "Versions",
+      "source_content_hash": "f89ea27036ac1d3174e2160a4d291d006ad6f85d466726ba04760beec0940c24",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "版本"
+      },
+      "metadata": {
+        "json_description": "The label for the navbar versions dropdown on mobile view"
+      }
+    },
+    {
+      "segment_id": "theme.tags.tagsListLabel",
+      "source_content": "Tags:",
+      "source_content_hash": "865658f888f2c50229acf31c7f4f412dfe4412ada982c4591a67b0774d45bd02",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "标签："
+      },
+      "metadata": {
+        "json_description": "The label alongside a tag list"
+      }
+    },
+    {
+      "segment_id": "theme.AnnouncementBar.closeButtonAriaLabel",
+      "source_content": "Close",
+      "source_content_hash": "7d9eb7acb13e24625c404401d8e88b2350e32162455885f18276cf802f7701ed",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "关闭"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for close button of announcement bar"
+      }
+    },
+    {
+      "segment_id": "theme.blog.sidebar.navAriaLabel",
+      "source_content": "Blog recent posts navigation",
+      "source_content_hash": "d031de661e73af4296b4caae3412af713493579e09ad5098bfc6ccbbd242570f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "博客近期文章导航"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for recent posts in the blog sidebar"
+      }
+    },
+    {
+      "segment_id": "theme.CodeBlock.copied",
+      "source_content": "Copied",
+      "source_content_hash": "8d525e5f158b9afe05f3122af363ac67763bdc4e1395b46597b320c289766ce3",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "已复制"
+      },
+      "metadata": {
+        "json_description": "The copied button label on code blocks"
+      }
+    },
+    {
+      "segment_id": "theme.CodeBlock.copyButtonAriaLabel",
+      "source_content": "Copy code to clipboard",
+      "source_content_hash": "f0437b8953e1d58a2d791ebdea9a92985b7afe296ffd50bf936e4372cb1ed900",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "复制代码到剪贴板"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for copy code blocks button"
+      }
+    },
+    {
+      "segment_id": "theme.CodeBlock.copy",
+      "source_content": "Copy",
+      "source_content_hash": "e21f935f11d7e966dbbae78da9daa378fe8142a14e7c0cd7434183005faa6c5c",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "复制"
+      },
+      "metadata": {
+        "json_description": "The copy button label on code blocks"
+      }
+    },
+    {
+      "segment_id": "theme.CodeBlock.wordWrapToggle",
+      "source_content": "Toggle word wrap",
+      "source_content_hash": "ecd0f38a04446721e9a09b1994bae262fe43d2d47b050870a2d3b1d9e9a11a6b",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "切换自动换行"
+      },
+      "metadata": {
+        "json_description": "The title attribute for toggle word wrapping button of code block lines"
+      }
+    },
+    {
+      "segment_id": "theme.DocSidebarItem.toggleCollapsedCategoryAriaLabel",
+      "source_content": "Toggle the collapsible sidebar category '{label}'",
+      "source_content_hash": "20e81439438e5376a9e4eb62de37f7b09ce8f109bfb03ac6fa84548c77041f3b",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "切换可折叠侧边栏类别 '{label}'"
+      },
+      "metadata": {
+        "json_description": "The ARIA label to toggle the collapsible sidebar category"
+      }
+    },
+    {
+      "segment_id": "theme.NavBar.navAriaLabel",
+      "source_content": "Main",
+      "source_content_hash": "eb814be3ca3b78c0734c560518be2a03e8d8f6e7e26447224cc7c7b105e1193e",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "主导航"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the main navigation"
+      }
+    },
+    {
+      "segment_id": "theme.navbar.mobileLanguageDropdown.label",
+      "source_content": "Languages",
+      "source_content_hash": "318655cea4bd2096fbfad433d7c019bac40750d1a456fc34d366df41fcc77197",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "语言"
+      },
+      "metadata": {
+        "json_description": "The label for the mobile language switcher dropdown"
+      }
+    },
+    {
+      "segment_id": "theme.TOCCollapsible.toggleButtonLabel",
+      "source_content": "On this page",
+      "source_content_hash": "b5658fc8edda24f9c94eabac9e536e0a18e3055a8ca255f9d1b8f256ea02a6cc",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本页目录"
+      },
+      "metadata": {
+        "json_description": "The label used by the button on the collapsible TOC component"
+      }
+    },
+    {
+      "segment_id": "theme.blog.post.readMore",
+      "source_content": "Read More",
+      "source_content_hash": "c29602f4775797f9b2b0de2468274674c6f6c1bc850399284bb3d1f9afaa7fda",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "阅读更多"
+      },
+      "metadata": {
+        "json_description": "The label used in blog post item excerpts to link to full blog posts"
+      }
+    },
+    {
+      "segment_id": "theme.blog.post.readMoreLabel",
+      "source_content": "Read more about {title}",
+      "source_content_hash": "23698aca02aba4c2e5376eac758e654fda555250c8251a869089843f262a7a49",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "阅读更多关于 {title} 的内容"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the link to full blog posts from excerpts"
+      }
+    },
+    {
+      "segment_id": "theme.blog.post.readingTime.plurals",
+      "source_content": "One min read|{readingTime} min read",
+      "source_content_hash": "7c21f68b3dc6cbcba3288d06578945132ca07ec8ec0dc2c97d428c124f997bbe",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1 分钟阅读|{readingTime} 分钟阅读"
+      },
+      "metadata": {
+        "json_description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+      }
+    },
+    {
+      "segment_id": "theme.docs.breadcrumbs.home",
+      "source_content": "Home page",
+      "source_content_hash": "11d58b08de98e05930a7f73b5f5d75367e4a58ac27335a420d55583cb16ad1ff",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首页"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the home page in the breadcrumbs"
+      }
+    },
+    {
+      "segment_id": "theme.docs.sidebar.collapseButtonTitle",
+      "source_content": "Collapse sidebar",
+      "source_content_hash": "aab31cde23ba9783050a754575b80c05e0e799b1542990b24b4b4bde2327e37e",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "折叠侧边栏"
+      },
+      "metadata": {
+        "json_description": "The title attribute for collapse button of doc sidebar"
+      }
+    },
+    {
+      "segment_id": "theme.docs.sidebar.collapseButtonAriaLabel",
+      "source_content": "Collapse sidebar",
+      "source_content_hash": "aab31cde23ba9783050a754575b80c05e0e799b1542990b24b4b4bde2327e37e",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "折叠侧边栏"
+      },
+      "metadata": {
+        "json_description": "The title attribute for collapse button of doc sidebar"
+      }
+    },
+    {
+      "segment_id": "theme.docs.sidebar.navAriaLabel",
+      "source_content": "Docs sidebar",
+      "source_content_hash": "b2b5561fa18f91f78a39879dc0754b3ebbb96818c8b1a41d725294ce8824d54d",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "文档侧边栏"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the sidebar navigation"
+      }
+    },
+    {
+      "segment_id": "theme.docs.sidebar.closeSidebarButtonAriaLabel",
+      "source_content": "Close navigation bar",
+      "source_content_hash": "fe1e984bf7134dc98302ff4d77c4f057b8474a73471687071a068c69b4111a84",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "关闭导航栏"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for close button of mobile sidebar"
+      }
+    },
+    {
+      "segment_id": "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel",
+      "source_content": "← Back to main menu",
+      "source_content_hash": "e35c6e48aa36ab346557173fd941f671e096ebe9d4b56b93d7a20e7ed20c821a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "← 返回主菜单"
+      },
+      "metadata": {
+        "json_description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
+      }
+    },
+    {
+      "segment_id": "theme.docs.sidebar.expandButtonTitle",
+      "source_content": "Expand sidebar",
+      "source_content_hash": "37a5d6485e109bf695382308d0e2cd33913c3e5f7e9ab990e8f1a5f4287b2c6a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "展开侧边栏"
+      },
+      "metadata": {
+        "json_description": "The ARIA label and title attribute for expand button of doc sidebar"
+      }
+    },
+    {
+      "segment_id": "theme.docs.sidebar.expandButtonAriaLabel",
+      "source_content": "Expand sidebar",
+      "source_content_hash": "37a5d6485e109bf695382308d0e2cd33913c3e5f7e9ab990e8f1a5f4287b2c6a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "展开侧边栏"
+      },
+      "metadata": {
+        "json_description": "The ARIA label and title attribute for expand button of doc sidebar"
+      }
+    },
+    {
+      "segment_id": "theme.docs.sidebar.toggleSidebarButtonAriaLabel",
+      "source_content": "Toggle navigation bar",
+      "source_content_hash": "64cbd960a7108dbb48fad79b5dd4ce88e9fc0101bad61398b2043af6c6e19b55",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "切换导航栏"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for hamburger menu button of mobile navigation"
+      }
+    },
+    {
+      "segment_id": "theme.SearchBar.seeAll",
+      "source_content": "See all {count} results",
+      "source_content_hash": "7a15783a74a51ce10c82f1c10e0ad797fb240cebb4b100afc74fb77e2c483c55",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "查看全部 {count} 条结果"
+      }
+    },
+    {
+      "segment_id": "theme.SearchPage.documentsFound.plurals",
+      "source_content": "One document found|{count} documents found",
+      "source_content_hash": "6d44a43c22210405b2d7b7271809278ab97ffa0ea1110f24aa2ad9bd161a517c",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "找到1个文档|找到{count}个文档"
+      },
+      "metadata": {
+        "json_description": "Pluralized label for \"{count} documents found\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+      }
+    },
+    {
+      "segment_id": "theme.SearchPage.existingResultsTitle",
+      "source_content": "Search results for \"{query}\"",
+      "source_content_hash": "43947f3cdcf1186ae158fdecaf543b18fd0b1188c875b8cadb116d8d32790ba1",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "搜索\"{query}\"的结果"
+      },
+      "metadata": {
+        "json_description": "The search page title for non-empty query"
+      }
+    },
+    {
+      "segment_id": "theme.SearchPage.emptyResultsTitle",
+      "source_content": "Search the documentation",
+      "source_content_hash": "2bdb6b49bb2c69b550828f75df7d54d6f44318022fc735d7ecd82207e6885b88",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "搜索文档"
+      },
+      "metadata": {
+        "json_description": "The search page title for empty query"
+      }
+    },
+    {
+      "segment_id": "theme.SearchPage.inputPlaceholder",
+      "source_content": "Type your search here",
+      "source_content_hash": "8ace0cba09aa578e47bf84032e3968616ee75e4d09a611db6bb060d5817750cb",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在此输入搜索内容"
+      },
+      "metadata": {
+        "json_description": "The placeholder for search page input"
+      }
+    },
+    {
+      "segment_id": "theme.SearchPage.inputLabel",
+      "source_content": "Search",
+      "source_content_hash": "49c266baaaa70981ea188fa714d5c40cf13830d786a861c9943ae0d26a7f3fe9",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "搜索"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for search page input"
+      }
+    },
+    {
+      "segment_id": "theme.SearchPage.algoliaLabel",
+      "source_content": "Search by Algolia",
+      "source_content_hash": "1f4f568cec4f3d4bae359fe5649894190d7a94cebac999148eb897cd7365da40",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由Algolia提供搜索"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for Algolia mention"
+      }
+    },
+    {
+      "segment_id": "theme.SearchPage.noResultsText",
+      "source_content": "No results were found",
+      "source_content_hash": "8fb7e1ee6a3ad73b4676d7578e23b7585cbef054e52934c78b091eb30ab53f67",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "未找到结果"
+      },
+      "metadata": {
+        "json_description": "The paragraph for empty search result"
+      }
+    },
+    {
+      "segment_id": "theme.SearchPage.fetchingNewResults",
+      "source_content": "Fetching new results...",
+      "source_content_hash": "8b5f3b89021efe16afdb08e83d522b13fa94a426930f2795a0023a72bfce42a4",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "正在获取新结果..."
+      },
+      "metadata": {
+        "json_description": "The paragraph for fetching new search results"
+      }
+    },
+    {
+      "segment_id": "theme.SearchBar.label",
+      "source_content": "Search",
+      "source_content_hash": "49c266baaaa70981ea188fa714d5c40cf13830d786a861c9943ae0d26a7f3fe9",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "搜索"
+      },
+      "metadata": {
+        "json_description": "The ARIA label and placeholder for search button"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.searchBox.resetButtonTitle",
+      "source_content": "Clear the query",
+      "source_content_hash": "290601437330bf590bea691741d0a98ca548204bc308d527d4e06c560c3ddc7d",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "清除查询"
+      },
+      "metadata": {
+        "json_description": "The label and ARIA label for search box reset button"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.searchBox.cancelButtonText",
+      "source_content": "Cancel",
+      "source_content_hash": "19766ed6ccb2f4a32778eed80d1928d2c87a18d7c275ccb163ec6709d3eb2e27",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "取消"
+      },
+      "metadata": {
+        "json_description": "The label and ARIA label for search box cancel button"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.startScreen.recentSearchesTitle",
+      "source_content": "Recent",
+      "source_content_hash": "690dbe9dc0993c4256683738fc3fd541cfa96f60d299be33343615dd58179d93",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最近搜索"
+      },
+      "metadata": {
+        "json_description": "The title for recent searches"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.startScreen.noRecentSearchesText",
+      "source_content": "No recent searches",
+      "source_content_hash": "fa985b571cdb26dabcdeca39e339d1d9cfd8763dcce511d13a7b42d9f4ed62c2",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "无最近搜索记录"
+      },
+      "metadata": {
+        "json_description": "The text when no recent searches"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.startScreen.saveRecentSearchButtonTitle",
+      "source_content": "Save this search",
+      "source_content_hash": "cd3b55bc11fafd8eab70cdc50b941f0fce17da720cb6da6ceb00b8e17ce04fa0",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "保存本次搜索"
+      },
+      "metadata": {
+        "json_description": "The label for save recent search button"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.startScreen.removeRecentSearchButtonTitle",
+      "source_content": "Remove this search from history",
+      "source_content_hash": "0f108aa282564d8ec6bcef42c022436e516bf86eaed419450426609801d668f4",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "从历史记录中移除此搜索"
+      },
+      "metadata": {
+        "json_description": "The label for remove recent search button"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.startScreen.favoriteSearchesTitle",
+      "source_content": "Favorite",
+      "source_content_hash": "ea713ecd8537f77ec9a7abaaf39c03f4ad011f8ad960dc557e65b0237812190f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "收藏"
+      },
+      "metadata": {
+        "json_description": "The title for favorite searches"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.startScreen.removeFavoriteSearchButtonTitle",
+      "source_content": "Remove this search from favorites",
+      "source_content_hash": "7013068aa1a8518644439612f92ad6ae5a8ed7d04fc334db0a400376b6a5a280",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "从收藏中移除此搜索"
+      },
+      "metadata": {
+        "json_description": "The label for remove favorite search button"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.errorScreen.titleText",
+      "source_content": "Unable to fetch results",
+      "source_content_hash": "d8819ac88d3133a7910ee083155cb95221eb818056df7278099b7c6e2681a26d",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "无法获取结果"
+      },
+      "metadata": {
+        "json_description": "The title for error screen of search modal"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.errorScreen.helpText",
+      "source_content": "You might want to check your network connection.",
+      "source_content_hash": "a90ebaa3e7381bc52eeddda067dd5279c7d198448e96c73de1ec7561d8bf7ff6",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请检查您的网络连接"
+      },
+      "metadata": {
+        "json_description": "The help text for error screen of search modal"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.footer.selectText",
+      "source_content": "to select",
+      "source_content_hash": "a7f58de1b71e913cf02d52f097818a378aa168335d98aaddc7d038717542887b",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "进行选择"
+      },
+      "metadata": {
+        "json_description": "The explanatory text of the action for the enter key"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.footer.selectKeyAriaLabel",
+      "source_content": "Enter key",
+      "source_content_hash": "d787682755d0870de594fb78c4985c3aa7a8bd6a105dd8ad77e79ca09e9e3ccd",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "回车键"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the Enter key button that makes the selection"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.footer.navigateText",
+      "source_content": "to navigate",
+      "source_content_hash": "5a70bdb08330fafc60eda32d2f4d7acce036268dd33a2480d31e8c9b7a330ea5",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "进行导航"
+      },
+      "metadata": {
+        "json_description": "The explanatory text of the action for the Arrow up and Arrow down key"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.footer.navigateUpKeyAriaLabel",
+      "source_content": "Arrow up",
+      "source_content_hash": "a0a5f0bf0615ba5e5b5643be64958ea946d3bdbd1bb6cf399f4a3accc51a20a5",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上箭头键"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the Arrow up key button that makes the navigation"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.footer.navigateDownKeyAriaLabel",
+      "source_content": "Arrow down",
+      "source_content_hash": "abfd15f94ec53e9c0db6a0caaf26c8bd72d0541b8b391dbc50d7def8d78c0b7e",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下箭头键"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the Arrow down key button that makes the navigation"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.footer.closeText",
+      "source_content": "to close",
+      "source_content_hash": "ce9c329f815c3a63a87ac3de0c453ec6a36c8e853c9255d789315b300d7d56fa",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "关闭"
+      },
+      "metadata": {
+        "json_description": "The explanatory text of the action for Escape key"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.footer.closeKeyAriaLabel",
+      "source_content": "Escape key",
+      "source_content_hash": "1e4989dfe89d09638a30fcf6db28dcc02f8de4292fb2482ee597d2968fab9595",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "ESC键"
+      },
+      "metadata": {
+        "json_description": "The ARIA label for the Escape key button that close the modal"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.footer.searchByText",
+      "source_content": "Search by",
+      "source_content_hash": "86f5c627fced939d610fe2594368f9e01bd5becb01b38522de49e511fc61740f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "搜索由"
+      },
+      "metadata": {
+        "json_description": "The text explain that the search is making by Algolia"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.noResultsScreen.noResultsText",
+      "source_content": "No results for",
+      "source_content_hash": "ca05013959ab2db7c26d8ae61ad2c7d52b769aac2223dbb721deb730dab37df3",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "没有找到"
+      },
+      "metadata": {
+        "json_description": "The text explains that there are no results for the following search"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.noResultsScreen.suggestedQueryText",
+      "source_content": "Try searching for",
+      "source_content_hash": "71d1853437ebac3cd936cedd21a2c7a5170f99e13717c6a5ca6fd6f56593b020",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "尝试搜索"
+      },
+      "metadata": {
+        "json_description": "The text for the suggested query when no results are found for the following search"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.noResultsScreen.reportMissingResultsText",
+      "source_content": "Believe this query should return results?",
+      "source_content_hash": "d258ae019466a700ac3bfb43d12095019760d9f50ae8e382ad997111293813e5",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "认为该查询应返回结果？"
+      },
+      "metadata": {
+        "json_description": "The text for the question where the user thinks there are missing results"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.noResultsScreen.reportMissingResultsLinkText",
+      "source_content": "Let us know.",
+      "source_content_hash": "e0b5363aa7b92c2aed2845459384b037bc6ff1d2d30b68190ab59adf4474567a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "告诉我们"
+      },
+      "metadata": {
+        "json_description": "The text for the link to report missing results"
+      }
+    },
+    {
+      "segment_id": "theme.SearchModal.placeholder",
+      "source_content": "Search docs",
+      "source_content_hash": "e2af5a17d42b83b9a56cf5ae38acf75ac7d8af517c0102f78f7335e5447dc625",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "搜索文档"
+      },
+      "metadata": {
+        "json_description": "The placeholder of the input of the DocSearch pop-up modal"
+      }
+    },
+    {
+      "segment_id": "theme.ErrorPageContent.tryAgain",
+      "source_content": "Try again",
+      "source_content_hash": "d8b8392e2c542950ca64867168e4ef87d4ad606882d5898f826b51c6d553988f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重试"
+      },
+      "metadata": {
+        "json_description": "The label of the button to try again rendering when the React error boundary captures an error"
+      }
+    },
+    {
+      "segment_id": "theme.common.skipToMainContent",
+      "source_content": "Skip to main content",
+      "source_content_hash": "c887f134c26ea8310e1fb4bd6fbab7b640393bd1b556e62691c7a442be92ec2a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "跳转到主内容"
+      },
+      "metadata": {
+        "json_description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
+      }
+    },
+    {
+      "segment_id": "theme.tags.tagsPageTitle",
+      "source_content": "Tags",
+      "source_content_hash": "1331275bc537b4c2bf1e46f7275677967515342e30b572e6852fa6f51b831fe8",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "标签"
+      },
+      "metadata": {
+        "json_description": "The title of the tag list page"
+      }
+    }
+  ],
+  "original_json_structure": {
+    "theme.ErrorPageContent.title": {
+      "message": "This page crashed.",
+      "description": "The title of the fallback page when the page crashed"
+    },
+    "theme.NotFound.title": {
+      "message": "Page Not Found",
+      "description": "The title of the 404 page"
+    },
+    "theme.NotFound.p1": {
+      "message": "We could not find what you were looking for.",
+      "description": "The first paragraph of the 404 page"
+    },
+    "theme.NotFound.p2": {
+      "message": "Please contact the owner of the site that linked you to the original URL and let them know their link is broken.",
+      "description": "The 2nd paragraph of the 404 page"
+    },
+    "theme.admonition.note": {
+      "message": "note",
+      "description": "The default label used for the Note admonition (:::note)"
+    },
+    "theme.admonition.tip": {
+      "message": "tip",
+      "description": "The default label used for the Tip admonition (:::tip)"
+    },
+    "theme.admonition.danger": {
+      "message": "danger",
+      "description": "The default label used for the Danger admonition (:::danger)"
+    },
+    "theme.admonition.info": {
+      "message": "info",
+      "description": "The default label used for the Info admonition (:::info)"
+    },
+    "theme.admonition.caution": {
+      "message": "caution",
+      "description": "The default label used for the Caution admonition (:::caution)"
+    },
+    "theme.BackToTopButton.buttonAriaLabel": {
+      "message": "Scroll back to top",
+      "description": "The ARIA label for the back to top button"
+    },
+    "theme.blog.archive.title": {
+      "message": "Archive",
+      "description": "The page & hero title of the blog archive page"
+    },
+    "theme.blog.archive.description": {
+      "message": "Archive",
+      "description": "The page & hero description of the blog archive page"
+    },
+    "theme.blog.paginator.navAriaLabel": {
+      "message": "Blog list page navigation",
+      "description": "The ARIA label for the blog pagination"
+    },
+    "theme.blog.paginator.newerEntries": {
+      "message": "Newer Entries",
+      "description": "The label used to navigate to the newer blog posts page (previous page)"
+    },
+    "theme.blog.paginator.olderEntries": {
+      "message": "Older Entries",
+      "description": "The label used to navigate to the older blog posts page (next page)"
+    },
+    "theme.blog.post.paginator.navAriaLabel": {
+      "message": "Blog post page navigation",
+      "description": "The ARIA label for the blog posts pagination"
+    },
+    "theme.blog.post.paginator.newerPost": {
+      "message": "Newer Post",
+      "description": "The blog post button label to navigate to the newer/previous post"
+    },
+    "theme.blog.post.paginator.olderPost": {
+      "message": "Older Post",
+      "description": "The blog post button label to navigate to the older/next post"
+    },
+    "theme.blog.post.plurals": {
+      "message": "One post|{count} posts",
+      "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.blog.tagTitle": {
+      "message": "{nPosts} tagged with \"{tagName}\"",
+      "description": "The title of the page for a blog tag"
+    },
+    "theme.tags.tagsPageLink": {
+      "message": "View All Tags",
+      "description": "The label of the link targeting the tag list page"
+    },
+    "theme.colorToggle.ariaLabel": {
+      "message": "Switch between dark and light mode (currently {mode})",
+      "description": "The ARIA label for the navbar color mode toggle"
+    },
+    "theme.colorToggle.ariaLabel.mode.dark": {
+      "message": "dark mode",
+      "description": "The name for the dark color mode"
+    },
+    "theme.colorToggle.ariaLabel.mode.light": {
+      "message": "light mode",
+      "description": "The name for the light color mode"
+    },
+    "theme.docs.breadcrumbs.navAriaLabel": {
+      "message": "Breadcrumbs",
+      "description": "The ARIA label for the breadcrumbs"
+    },
+    "theme.docs.DocCard.categoryDescription": {
+      "message": "{count} items",
+      "description": "The default description for a category card in the generated index about how many items this category includes"
+    },
+    "theme.docs.paginator.navAriaLabel": {
+      "message": "Docs pages",
+      "description": "The ARIA label for the docs pagination"
+    },
+    "theme.docs.paginator.previous": {
+      "message": "Previous",
+      "description": "The label used to navigate to the previous doc"
+    },
+    "theme.docs.paginator.next": {
+      "message": "Next",
+      "description": "The label used to navigate to the next doc"
+    },
+    "theme.docs.tagDocListPageTitle.nDocsTagged": {
+      "message": "One doc tagged|{count} docs tagged",
+      "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.docs.tagDocListPageTitle": {
+      "message": "{nDocsTagged} with \"{tagName}\"",
+      "description": "The title of the page for a docs tag"
+    },
+    "theme.docs.versionBadge.label": {
+      "message": "Version: {versionLabel}"
+    },
+    "theme.docs.versions.unreleasedVersionLabel": {
+      "message": "This is unreleased documentation for {siteTitle} {versionLabel} version.",
+      "description": "The label used to tell the user that he's browsing an unreleased doc version"
+    },
+    "theme.docs.versions.unmaintainedVersionLabel": {
+      "message": "This is documentation for {siteTitle} {versionLabel}, which is no longer actively maintained.",
+      "description": "The label used to tell the user that he's browsing an unmaintained doc version"
+    },
+    "theme.docs.versions.latestVersionSuggestionLabel": {
+      "message": "For up-to-date documentation, see the {latestVersionLink} ({versionLabel}).",
+      "description": "The label used to tell the user to check the latest version"
+    },
+    "theme.docs.versions.latestVersionLinkLabel": {
+      "message": "latest version",
+      "description": "The label used for the latest version suggestion link label"
+    },
+    "theme.common.editThisPage": {
+      "message": "Edit this page",
+      "description": "The link label to edit the current page"
+    },
+    "theme.common.headingLinkTitle": {
+      "message": "Direct link to {heading}",
+      "description": "Title for link to heading"
+    },
+    "theme.lastUpdated.atDate": {
+      "message": " on {date}",
+      "description": "The words used to describe on which date a page has been last updated"
+    },
+    "theme.lastUpdated.byUser": {
+      "message": " by {user}",
+      "description": "The words used to describe by who the page has been last updated"
+    },
+    "theme.lastUpdated.lastUpdatedAtBy": {
+      "message": "Last updated{atDate}{byUser}",
+      "description": "The sentence used to display when a page has been last updated, and by who"
+    },
+    "theme.navbar.mobileVersionsDropdown.label": {
+      "message": "Versions",
+      "description": "The label for the navbar versions dropdown on mobile view"
+    },
+    "theme.tags.tagsListLabel": {
+      "message": "Tags:",
+      "description": "The label alongside a tag list"
+    },
+    "theme.AnnouncementBar.closeButtonAriaLabel": {
+      "message": "Close",
+      "description": "The ARIA label for close button of announcement bar"
+    },
+    "theme.blog.sidebar.navAriaLabel": {
+      "message": "Blog recent posts navigation",
+      "description": "The ARIA label for recent posts in the blog sidebar"
+    },
+    "theme.CodeBlock.copied": {
+      "message": "Copied",
+      "description": "The copied button label on code blocks"
+    },
+    "theme.CodeBlock.copyButtonAriaLabel": {
+      "message": "Copy code to clipboard",
+      "description": "The ARIA label for copy code blocks button"
+    },
+    "theme.CodeBlock.copy": {
+      "message": "Copy",
+      "description": "The copy button label on code blocks"
+    },
+    "theme.CodeBlock.wordWrapToggle": {
+      "message": "Toggle word wrap",
+      "description": "The title attribute for toggle word wrapping button of code block lines"
+    },
+    "theme.DocSidebarItem.toggleCollapsedCategoryAriaLabel": {
+      "message": "Toggle the collapsible sidebar category '{label}'",
+      "description": "The ARIA label to toggle the collapsible sidebar category"
+    },
+    "theme.NavBar.navAriaLabel": {
+      "message": "Main",
+      "description": "The ARIA label for the main navigation"
+    },
+    "theme.navbar.mobileLanguageDropdown.label": {
+      "message": "Languages",
+      "description": "The label for the mobile language switcher dropdown"
+    },
+    "theme.TOCCollapsible.toggleButtonLabel": {
+      "message": "On this page",
+      "description": "The label used by the button on the collapsible TOC component"
+    },
+    "theme.blog.post.readMore": {
+      "message": "Read More",
+      "description": "The label used in blog post item excerpts to link to full blog posts"
+    },
+    "theme.blog.post.readMoreLabel": {
+      "message": "Read more about {title}",
+      "description": "The ARIA label for the link to full blog posts from excerpts"
+    },
+    "theme.blog.post.readingTime.plurals": {
+      "message": "One min read|{readingTime} min read",
+      "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.docs.breadcrumbs.home": {
+      "message": "Home page",
+      "description": "The ARIA label for the home page in the breadcrumbs"
+    },
+    "theme.docs.sidebar.collapseButtonTitle": {
+      "message": "Collapse sidebar",
+      "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonAriaLabel": {
+      "message": "Collapse sidebar",
+      "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.navAriaLabel": {
+      "message": "Docs sidebar",
+      "description": "The ARIA label for the sidebar navigation"
+    },
+    "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
+      "message": "Close navigation bar",
+      "description": "The ARIA label for close button of mobile sidebar"
+    },
+    "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+      "message": "← Back to main menu",
+      "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
+    },
+    "theme.docs.sidebar.expandButtonTitle": {
+      "message": "Expand sidebar",
+      "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.expandButtonAriaLabel": {
+      "message": "Expand sidebar",
+      "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
+      "message": "Toggle navigation bar",
+      "description": "The ARIA label for hamburger menu button of mobile navigation"
+    },
+    "theme.SearchBar.seeAll": {
+      "message": "See all {count} results"
+    },
+    "theme.SearchPage.documentsFound.plurals": {
+      "message": "One document found|{count} documents found",
+      "description": "Pluralized label for \"{count} documents found\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.SearchPage.existingResultsTitle": {
+      "message": "Search results for \"{query}\"",
+      "description": "The search page title for non-empty query"
+    },
+    "theme.SearchPage.emptyResultsTitle": {
+      "message": "Search the documentation",
+      "description": "The search page title for empty query"
+    },
+    "theme.SearchPage.inputPlaceholder": {
+      "message": "Type your search here",
+      "description": "The placeholder for search page input"
+    },
+    "theme.SearchPage.inputLabel": {
+      "message": "Search",
+      "description": "The ARIA label for search page input"
+    },
+    "theme.SearchPage.algoliaLabel": {
+      "message": "Search by Algolia",
+      "description": "The ARIA label for Algolia mention"
+    },
+    "theme.SearchPage.noResultsText": {
+      "message": "No results were found",
+      "description": "The paragraph for empty search result"
+    },
+    "theme.SearchPage.fetchingNewResults": {
+      "message": "Fetching new results...",
+      "description": "The paragraph for fetching new search results"
+    },
+    "theme.SearchBar.label": {
+      "message": "Search",
+      "description": "The ARIA label and placeholder for search button"
+    },
+    "theme.SearchModal.searchBox.resetButtonTitle": {
+      "message": "Clear the query",
+      "description": "The label and ARIA label for search box reset button"
+    },
+    "theme.SearchModal.searchBox.cancelButtonText": {
+      "message": "Cancel",
+      "description": "The label and ARIA label for search box cancel button"
+    },
+    "theme.SearchModal.startScreen.recentSearchesTitle": {
+      "message": "Recent",
+      "description": "The title for recent searches"
+    },
+    "theme.SearchModal.startScreen.noRecentSearchesText": {
+      "message": "No recent searches",
+      "description": "The text when no recent searches"
+    },
+    "theme.SearchModal.startScreen.saveRecentSearchButtonTitle": {
+      "message": "Save this search",
+      "description": "The label for save recent search button"
+    },
+    "theme.SearchModal.startScreen.removeRecentSearchButtonTitle": {
+      "message": "Remove this search from history",
+      "description": "The label for remove recent search button"
+    },
+    "theme.SearchModal.startScreen.favoriteSearchesTitle": {
+      "message": "Favorite",
+      "description": "The title for favorite searches"
+    },
+    "theme.SearchModal.startScreen.removeFavoriteSearchButtonTitle": {
+      "message": "Remove this search from favorites",
+      "description": "The label for remove favorite search button"
+    },
+    "theme.SearchModal.errorScreen.titleText": {
+      "message": "Unable to fetch results",
+      "description": "The title for error screen of search modal"
+    },
+    "theme.SearchModal.errorScreen.helpText": {
+      "message": "You might want to check your network connection.",
+      "description": "The help text for error screen of search modal"
+    },
+    "theme.SearchModal.footer.selectText": {
+      "message": "to select",
+      "description": "The explanatory text of the action for the enter key"
+    },
+    "theme.SearchModal.footer.selectKeyAriaLabel": {
+      "message": "Enter key",
+      "description": "The ARIA label for the Enter key button that makes the selection"
+    },
+    "theme.SearchModal.footer.navigateText": {
+      "message": "to navigate",
+      "description": "The explanatory text of the action for the Arrow up and Arrow down key"
+    },
+    "theme.SearchModal.footer.navigateUpKeyAriaLabel": {
+      "message": "Arrow up",
+      "description": "The ARIA label for the Arrow up key button that makes the navigation"
+    },
+    "theme.SearchModal.footer.navigateDownKeyAriaLabel": {
+      "message": "Arrow down",
+      "description": "The ARIA label for the Arrow down key button that makes the navigation"
+    },
+    "theme.SearchModal.footer.closeText": {
+      "message": "to close",
+      "description": "The explanatory text of the action for Escape key"
+    },
+    "theme.SearchModal.footer.closeKeyAriaLabel": {
+      "message": "Escape key",
+      "description": "The ARIA label for the Escape key button that close the modal"
+    },
+    "theme.SearchModal.footer.searchByText": {
+      "message": "Search by",
+      "description": "The text explain that the search is making by Algolia"
+    },
+    "theme.SearchModal.noResultsScreen.noResultsText": {
+      "message": "No results for",
+      "description": "The text explains that there are no results for the following search"
+    },
+    "theme.SearchModal.noResultsScreen.suggestedQueryText": {
+      "message": "Try searching for",
+      "description": "The text for the suggested query when no results are found for the following search"
+    },
+    "theme.SearchModal.noResultsScreen.reportMissingResultsText": {
+      "message": "Believe this query should return results?",
+      "description": "The text for the question where the user thinks there are missing results"
+    },
+    "theme.SearchModal.noResultsScreen.reportMissingResultsLinkText": {
+      "message": "Let us know.",
+      "description": "The text for the link to report missing results"
+    },
+    "theme.SearchModal.placeholder": {
+      "message": "Search docs",
+      "description": "The placeholder of the input of the DocSearch pop-up modal"
+    },
+    "theme.ErrorPageContent.tryAgain": {
+      "message": "Try again",
+      "description": "The label of the button to try again rendering when the React error boundary captures an error"
+    },
+    "theme.common.skipToMainContent": {
+      "message": "Skip to main content",
+      "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
+    },
+    "theme.tags.tagsPageTitle": {
+      "message": "Tags",
+      "description": "The title of the tag list page"
+    }
+  },
+  "target_i18n_subpath": "code.json",
+  "last_updated_timestamp": "2025-06-05T15:16:18.654644+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "564f69b8cdb362b406c43df3ec2301843f8b695c9ade5714518a68956438e67b"
+  }
+}

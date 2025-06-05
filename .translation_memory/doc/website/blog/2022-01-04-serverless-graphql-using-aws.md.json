@@ -1,0 +1,798 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2022-01-04-serverless-graphql-using-aws.md",
+  "source_file_content_hash": "3c8d50a2b09e712483062a7f8e6f657531e0cd00611779982d1403d63fb1f6d3",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Serverless GraphQL using with AWS and ent\nauthor: Bodo Kaiser\nauthorURL: \"https://github.com/bodokaiser\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/1780466?v=4\"\nimage: https://entgo.io/images/assets/appsync/share.png\n---",
+      "source_content_hash": "8838b0c09b7386653bdc99c943ffcc040ec726e55b4f8f55bd1a4bca3ef5193c",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "[GraphQL][1] is a query language for HTTP APIs, providing a statically-typed interface to conveniently represent today's complex data hierarchies.\nOne way to use GraphQL is to import a library implementing a GraphQL server to which one registers custom resolvers implementing the database interface.\nAn alternative way is to use a GraphQL cloud service to implement the GraphQL server and register serverless cloud functions as resolvers.\nAmong the many benefits of cloud services, one of the biggest practical advantages is the resolvers' independence and composability.\nFor example, we can write one resolver to a relational database and another to a search database.",
+      "source_content_hash": "397f955d4e6e7bfcdb00e3d4763bc0a7abba09cd498152e7e71e1380ad7539b9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[GraphQL][1] 是一种用于 HTTP API 的查询语言，通过静态类型接口便捷地呈现当今复杂的数据层级结构。使用 GraphQL 的一种方式是导入实现 GraphQL 服务器的库，并注册自定义解析器来实现数据库接口。另一种方式是使用 GraphQL 云服务来实现 GraphQL 服务器，并将无服务器云函数注册为解析器。云服务的众多优势中，最显著的实践价值在于解析器的独立性与可组合性——例如可以编写一个解析器连接关系型数据库，另一个连接搜索数据库。"
+      }
+    },
+    {
+      "segment_id": "cf898102",
+      "source_content": "We consider such a kind of setup using [Amazon Web Services (AWS)][2] in the following. In particular, we use [AWS AppSync][3] as the GraphQL cloud service and [AWS Lambda][4] to run a relational database resolver, which we implement using [Go][5] with [Ent][6] as the entity framework.\nCompared to Nodejs, the most popular runtime for AWS Lambda, Go offers faster start times, higher performance, and, from my point of view, an improved developer experience.\nAs an additional complement, Ent presents an innovative approach towards type-safe access to relational databases, which, in my opinion, is unmatched in the Go ecosystem.\nIn conclusion, running Ent with AWS Lambda as AWS AppSync resolvers is an extremely powerful setup to face today's demanding API requirements.",
+      "source_content_hash": "50c03fd85093ef5006fc49565827a7cc35513bc73acef13346f0bb9b6ddd60b8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下文我们将基于 [亚马逊云服务(AWS)][2] 构建此类架构，具体采用 [AWS AppSync][3] 作为 GraphQL 云服务，使用 [AWS Lambda][4] 运行关系型数据库解析器，该解析器采用 [Go][5] 语言开发并以 [Ent][6] 作为实体框架。相较于 AWS Lambda 最流行的运行时 Nodejs，Go 具备更快的启动速度、更高的性能表现，以及（个人认为）更优的开发体验。而 Ent 作为补充，通过类型安全的方式访问关系型数据库的创新方案，在 Go 生态中堪称独树一帜。综上所述，结合 Ent 与 AWS Lambda 作为 AWS AppSync 解析器的架构，能完美应对当今严苛的 API 需求。"
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "In the next sections, we set up GraphQL in AWS AppSync and the AWS Lambda function running Ent.\nSubsequently, we propose a Go implementation integrating Ent and the AWS Lambda event handler, followed by performing a quick test of the Ent function.\nFinally, we register it as a data source to our AWS AppSync API and configure the resolvers, which define the mapping from GraphQL requests to AWS Lambda events.\nBe aware that this tutorial requires an AWS account and **the URL to a publicly-accessible Postgres database**, which may incur costs.",
+      "source_content_hash": "c02f8d8b7d9b132301c5594a393b5653c615ffa09f295fd53fb20c907a876bb1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "后续章节我们将依次完成：在 AWS AppSync 中配置 GraphQL、部署运行 Ent 的 AWS Lambda 函数、提出整合 Ent 与 AWS Lambda 事件处理器的 Go 实现方案、对 Ent 函数进行快速测试，最终将其注册为 AWS AppSync API 的数据源并配置解析器（用于定义 GraphQL 请求到 AWS Lambda 事件的映射）。请注意本教程需要 AWS 账户及**可公开访问的 Postgres 数据库 URL**，可能会产生费用。"
+      }
+    },
+    {
+      "segment_id": "ed7dde9c",
+      "source_content": "### Setting up AWS AppSync schema",
+      "source_content_hash": "85d046afbb1f31afe57020d93f01c2080f8b16a98238b489d6fb4ceeecb0b3c2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 配置 AWS AppSync 架构"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "To set up the GraphQL schema in AWS AppSync, sign in to your AWS account and select the AppSync service through the navbar.\nThe landing page of the AppSync service should render you a \"Create API\" button, which you may click to arrive at the \"Getting Started\" page:",
+      "source_content_hash": "45cc3cd1bd0a815ca3a47beb626cd9c233c8e0887c51759b80e217a85a027dcd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在 AWS AppSync 中配置 GraphQL 架构时，请登录 AWS 账户并通过导航栏选择 AppSync 服务。在 AppSync 服务的落地页点击\"Create API\"按钮，进入\"Getting Started\"页面："
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "In the top panel reading \"Customize your API or import from Amazon DynamoDB\" select the option \"Build from scratch\" and click the \"Start\" button belonging to the panel.\nYou should now see a form where you may insert the API name.\nFor the present tutorial, we type \"Todo\", see the screenshot below, and click the \"Create\" button.",
+      "source_content_hash": "21c8bc5e66deb827a92c21320a057cc2b56f1933d0b79a25eaa16383e4dc1fed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在标有\"Customize your API or import from Amazon DynamoDB\"的面板顶部选择\"Build from scratch\"选项，点击该面板的\"Start\"按钮。此时您将看到可输入 API 名称的表单。本教程中输入\"Todo\"（如下图所示），点击\"Create\"按钮。"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "After creating the AppSync API, you should see a landing page showing a panel to define the schema, a panel to query the API, and a panel on integrating AppSync into your app as captured in the screenshot below.",
+      "source_content_hash": "8be4aaddc5d3a0ad31c2fd57f73c9468a5df272ac59387dbed7fda28b905e7ba",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "创建 AppSync API 后，您将看到包含三个面板的落地页：架构定义面板、API 查询面板、以及 AppSync 应用集成面板（如下图所示）。"
+      }
+    },
+    {
+      "segment_id": "c504c207",
+      "source_content": "Click the \"Edit Schema\" button in the first panel and replace the previous schema with the following GraphQL schema:",
+      "source_content_hash": "9b2cebe9dd6593276d1b7312b5fe47a163fdc0f56e4c0089012e9e93ed24b524",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "点击第一个面板中的\"Edit Schema\"按钮，将原有架构替换为以下 GraphQL 架构："
+      }
+    },
+    {
+      "segment_id": "ac961110",
+      "source_content": "```graphql\ninput AddTodoInput {\n\ttitle: String!\n}\n\ntype AddTodoOutput {\n\ttodo: Todo!\n}\n\ntype Mutation {\n\taddTodo(input: AddTodoInput!): AddTodoOutput!\n\tremoveTodo(input: RemoveTodoInput!): RemoveTodoOutput!\n}\n\ntype Query {\n\ttodos: [Todo!]!\n\ttodo(id: ID!): Todo\n}\n\ninput RemoveTodoInput {\n\ttodoId: ID!\n}\n\ntype RemoveTodoOutput {\n\ttodo: Todo!\n}\n\ntype Todo {\n\tid: ID!\n\ttitle: String!\n}\n\nschema {\n\tquery: Query\n\tmutation: Mutation\n}\n```",
+      "source_content_hash": "add6fd8bd4d64c2df46932db8a9c6309c3f9036b9ef737cb4d21ebd2dab54dd7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "5803caac",
+      "source_content": "After replacing the schema, a short validation runs and you should be able to click the \"Save Schema\" button on the top right corner and find yourself with the following view:",
+      "source_content_hash": "208e446c8f97009de9a2d721560c1135c0d75930028650462d6ba18adb62967e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "替换架构后，系统会进行简短验证，此时您应能点击右上角的\"Save Schema\"按钮，并看到如下界面："
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "If we sent GraphQL requests to our AppSync API, the API would return errors as no resolvers have been attached to the schema.\nWe will configure the resolvers after deploying the Ent function via AWS Lambda.",
+      "source_content_hash": "a8db0cd033270933f3c34d62bcd2265d313b2a29465b1efc77c6ef4b45541fc3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若此时向 AppSync API 发送 GraphQL 请求，由于未配置解析器，API 将返回错误。我们将在通过 AWS Lambda 部署 Ent 函数后配置解析器。"
+      }
+    },
+    {
+      "segment_id": "25212439",
+      "source_content": "Explaining the present GraphQL schema in detail is beyond the scope of this tutorial.\nIn short, the GraphQL schema implements a list todos operation via `Query.todos`, a single read todo operation via `Query.todo`, a create todo operation via `Mutation.createTodo`, and a delete operation via `Mutation.deleteTodo`.\nThe GraphQL API is similar to a simple REST API design of an `/todos` resource, where we would use `GET /todos`, `GET /todos/:id`, `POST /todos`, and `DELETE /todos/:id`.\nFor details on the GraphQL schema design, e.g., the arguments and returns from the `Query` and `Mutation` objects, I follow the practices from the [GitHub GraphQL API](https://docs.github.com/en/graphql/reference/queries).",
+      "source_content_hash": "eaf447614172fc2b44c72555d00d88443d81d9b15c88badd99766dffe9f941ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "详细解释此 GraphQL 架构已超出本教程范围。简而言之，该架构通过 `Query.todos` 实现待办事项列表查询，通过 `Query.todo` 实现单项查询，通过 `Mutation.createTodo` 实现创建事项，通过 `Mutation.deleteTodo` 实现删除操作。该 GraphQL API 类似于简单的 REST API 设计中的 `/todos` 资源端点（对应 `GET /todos`、`GET /todos/:id`、`POST /todos` 和 `DELETE /todos/:id`）。关于 GraphQL 架构设计的细节（如 `Query` 和 `Mutation` 对象的参数与返回值），我遵循 [GitHub GraphQL API](https://docs.github.com/en/graphql/reference/queries) 的实践方案。"
+      }
+    },
+    {
+      "segment_id": "c7c92a79",
+      "source_content": "### Setting up AWS Lambda",
+      "source_content_hash": "b61688a05c6d308c4c7e94861bd0e23283eff287bee046767ddadfd47a9cd4c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 配置 AWS Lambda"
+      }
+    },
+    {
+      "segment_id": "f0984c2a",
+      "source_content": "With the AppSync API in place, our next stop is the AWS Lambda function to run Ent.\nFor this, we navigate to the AWS Lambda service through the navbar, which leads us to the landing page of the AWS Lambda service listing our functions:",
+      "source_content_hash": "bbe4003a5e3b7f9b11b0a90516c3a770d9e61492dfac7c1fd7e65bfaf84d9d7a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在完成AppSync API配置后，下一步是创建运行Ent的AWS Lambda函数。通过导航栏进入AWS Lambda服务，即可看到列出所有函数的服务首页："
+      }
+    },
+    {
+      "segment_id": "d21af28f",
+      "source_content": "We click the \"Create function\" button on the top right and select \"Author from scratch\" in the upper panel.\nFurthermore, we name the function \"ent\", set the runtime to \"Go 1.x\", and click the \"Create function\" button at the bottom.\nWe should then find ourselves viewing the landing page of our \"ent\" function:",
+      "source_content_hash": "a7b48b25b561f0e536c01c609c9ddebf42ac8386f12798c94d87acc68d576988",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "点击右上角的\"创建函数\"按钮，在上方面板选择\"从头开始编写\"。将函数命名为\"ent\"，运行时选择\"Go 1.x\"，然后点击底部的\"创建函数\"按钮。随后将进入\"ent\"函数的详情页面："
+      }
+    },
+    {
+      "segment_id": "b6152880",
+      "source_content": "Before reviewing the Go code and uploading the compiled binary, we need to adjust some default settings of the \"ent\" function.\nFirst, we change the default handler name from `hello` to `main`, which equals the filename of the compiled Go binary:",
+      "source_content_hash": "5832b0d65fe8a454602ae11811cd5765542fa6d3fea0711f2034326cb89475dc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在审查Go代码和上传编译好的二进制文件前，我们需要调整\"ent\"函数的一些默认设置。首先将默认处理程序名称从`hello`改为`main`，这与编译后的Go二进制文件名一致："
+      }
+    },
+    {
+      "segment_id": "9c9e2b64",
+      "source_content": "Second, we add an environment the variable `DATABASE_URL` encoding the database network parameters and credentials:",
+      "source_content_hash": "1bce3a61633c88de20c2e5080ce1c55fd279f86e0e0d8df80c0587d78f0babec",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "其次添加环境变量`DATABASE_URL`，用于配置数据库网络参数和凭据："
+      }
+    },
+    {
+      "segment_id": "e478ec2c",
+      "source_content": "To open a connection to the database, pass in a [DSN](https://en.wikipedia.org/wiki/Data_source_name), e.g., `postgres://username:password@hostname/dbname`.\nBy default, AWS Lambda encrypts the environment variables, making them a fast and safe mechanism to supply database connection parameters.\nAlternatively, one can use the AWS Secretsmanager service and dynamically request credentials during the Lambda function's cold start, allowing, among others, rotating credentials.\nA third option is to use AWS IAM to handle the database authorization.",
+      "source_content_hash": "8b9116b9226f4df4819aa094fea97a3c74e329fefa5652f1485af68888f00416",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要建立数据库连接，需传入[数据源名称(DSN)](https://en.wikipedia.org/wiki/Data_source_name)，例如`postgres://用户名:密码@主机名/数据库名`。AWS Lambda默认会加密环境变量，这是提供数据库连接参数既快速又安全的方式。另一种方案是使用AWS Secretsmanager服务在Lambda函数冷启动时动态获取凭据，这种方式支持凭据轮换等功能。第三种选择是通过AWS IAM处理数据库授权。"
+      }
+    },
+    {
+      "segment_id": "9e90a9b3",
+      "source_content": "If you created your Postgres database in AWS RDS, the default username and database name is `postgres`.\nThe password can be reset by modifying the AWS RDS instance.",
+      "source_content_hash": "d6ceec8b3e8344fd99aa88efa6b33d0d7b471353426fa6c53d6977a06d4e39b0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果在AWS RDS中创建Postgres数据库，默认用户名和数据库名均为`postgres`。可通过修改RDS实例来重置密码。"
+      }
+    },
+    {
+      "segment_id": "dd4905a4",
+      "source_content": "### Setting up Ent and deploying AWS Lambda",
+      "source_content_hash": "ddb9467df44bb2f414b7c8bee6f971eeebf5e387ada90f3f7a8007a64a8c20a0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 配置Ent并部署AWS Lambda"
+      }
+    },
+    {
+      "segment_id": "17b50e81",
+      "source_content": "We now review, compile and deploy the database Go binary to the \"ent\" function.\nYou can find the complete source code in [bodokaiser/entgo-aws-appsync](https://github.com/bodokaiser/entgo-aws-appsync).",
+      "source_content_hash": "9fa1961146511960d3d5adaa013cd93b7466de0d09a1e495d0b4f40f5595b0a6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们将审查、编译数据库Go二进制文件并部署到\"ent\"函数。完整源代码可参考[bodokaiser/entgo-aws-appsync](https://github.com/bodokaiser/entgo-aws-appsync)仓库。"
+      }
+    },
+    {
+      "segment_id": "3e8f45da",
+      "source_content": "First, we create an empty directory to which we change:",
+      "source_content_hash": "1b94d2eb7b303344273b30be41c42ff21cd1e8daeeb0a6cb90e58fc3a3975553",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先创建一个空目录并进入："
+      }
+    },
+    {
+      "segment_id": "d58c5dc0",
+      "source_content": "```console\nmkdir entgo-aws-appsync\ncd entgo-aws-appsync\n```",
+      "source_content_hash": "505771313d7ec5788a607cea373fa9ac92db0997f9df904937f98be2d59d40ea",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d58c5dc0"
+      }
+    },
+    {
+      "segment_id": "a8f09c71",
+      "source_content": "Second, we initiate a new Go module to contain our project:",
+      "source_content_hash": "f6f3ff5d0bccaa8797e0f3094ea90757b1201ae068aa064cd86e564e54081060",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着初始化一个新的Go模块来管理项目："
+      }
+    },
+    {
+      "segment_id": "25a51782",
+      "source_content": "```console\ngo mod init entgo-aws-appsync\n```",
+      "source_content_hash": "304c2eee02a4f5b4f63311a148d509696c6e1d7fdd3e5ff2eb152d17d2c3a158",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_25a51782"
+      }
+    },
+    {
+      "segment_id": "0ddaa835",
+      "source_content": "Third, we create the `Todo` schema while pulling in the ent dependencies:",
+      "source_content_hash": "eec5ea352452ad0a0967bef38453a4c4062562b57730fe330ea1d8fa996f9d9f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后创建`Todo`模型并引入ent依赖："
+      }
+    },
+    {
+      "segment_id": "b5ea89c4",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent new Todo\n```",
+      "source_content_hash": "42a0f1e1f0ed977cfdba00ed3bcfe3afe39681f0c237bde36a528b77361daae1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b5ea89c4"
+      }
+    },
+    {
+      "segment_id": "d636abf8",
+      "source_content": "and add the `title` field:",
+      "source_content_hash": "3bde955f773774c6a8915928b7195fe94e2ed48ed64cbd8fef523a05156a9519",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "并添加`title`字段："
+      }
+    },
+    {
+      "segment_id": "a1af15b5",
+      "source_content": "```go {15-17} title=\"ent/schema/todo.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// Todo holds the schema definition for the Todo entity.\ntype Todo struct {\n\tent.Schema\n}\n\n// Fields of the Todo.\nfunc (Todo) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"title\"),\n\t}\n}\n\n// Edges of the Todo.\nfunc (Todo) Edges() []ent.Edge {\n\treturn nil\n}\n```",
+      "source_content_hash": "dbc6b243b9694d945a01785aaaab5c1f94f78b0108f5b35d6ceccc11619ebc4f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a1af15b5"
+      }
+    },
+    {
+      "segment_id": "f2c67ca5",
+      "source_content": "Finally, we perform the Ent code generation:",
+      "source_content_hash": "e0ac5b82b7ded0d4470c87557f6fa2636848f49f25f869056d657c59fa81c5ec",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后执行Ent代码生成："
+      }
+    },
+    {
+      "segment_id": "ec2ce541",
+      "source_content": "```console\ngo generate ./ent\n```",
+      "source_content_hash": "c0973348962a802c92e5593c9f9a81eb75bfaa2305c100e2924981cdf22269f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ec2ce541"
+      }
+    },
+    {
+      "segment_id": "48249e3c",
+      "source_content": "Using Ent, we write a set of resolver functions, which implement the create, read, and delete operations on the todos:",
+      "source_content_hash": "abdd76f720f3cccb47676a4aeb83ddf96f9dac2cfad75d394248a7f6c16fa829",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用Ent编写一组解析器函数，实现待办事项的创建、读取和删除操作："
+      }
+    },
+    {
+      "segment_id": "cf50de8a",
+      "source_content": "```go title=\"internal/handler/resolver.go\"\npackage resolver\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"strconv\"\n\n\t\"entgo-aws-appsync/ent\"\n\t\"entgo-aws-appsync/ent/todo\"\n)\n\n// TodosInput is the input to the Todos query.\ntype TodosInput struct{}\n\n// Todos queries all todos.\nfunc Todos(ctx context.Context, client *ent.Client, input TodosInput) ([]*ent.Todo, error) {\n\treturn client.Todo.\n\t\tQuery().\n\t\tAll(ctx)\n}\n\n// TodoByIDInput is the input to the TodoByID query.\ntype TodoByIDInput struct {\n\tID string `json:\"id\"`\n}\n\n// TodoByID queries a single todo by its id.\nfunc TodoByID(ctx context.Context, client *ent.Client, input TodoByIDInput) (*ent.Todo, error) {\n\ttid, err := strconv.Atoi(input.ID)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed parsing todo id: %w\", err)\n\t}\n\treturn client.Todo.\n\t\tQuery().\n\t\tWhere(todo.ID(tid)).\n\t\tOnly(ctx)\n}\n\n// AddTodoInput is the input to the AddTodo mutation.\ntype AddTodoInput struct {\n\tTitle string `json:\"title\"`\n}\n\n// AddTodoOutput is the output to the AddTodo mutation.\ntype AddTodoOutput struct {\n\tTodo *ent.Todo `json:\"todo\"`\n}\n\n// AddTodo adds a todo and returns it.\nfunc AddTodo(ctx context.Context, client *ent.Client, input AddTodoInput) (*AddTodoOutput, error) {\n\tt, err := client.Todo.\n\t\tCreate().\n\t\tSetTitle(input.Title).\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed creating todo: %w\", err)\n\t}\n\treturn &AddTodoOutput{Todo: t}, nil\n}\n\n// RemoveTodoInput is the input to the RemoveTodo mutation.\ntype RemoveTodoInput struct {\n\tTodoID string `json:\"todoId\"`\n}\n\n// RemoveTodoOutput is the output to the RemoveTodo mutation.\ntype RemoveTodoOutput struct {\n\tTodo *ent.Todo `json:\"todo\"`\n}\n\n// RemoveTodo removes a todo and returns it.\nfunc RemoveTodo(ctx context.Context, client *ent.Client, input RemoveTodoInput) (*RemoveTodoOutput, error) {\n\tt, err := TodoByID(ctx, client, TodoByIDInput{ID: input.TodoID})\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed querying todo with id %q: %w\", input.TodoID, err)\n\t}\n\terr = client.Todo.\n\t\tDeleteOne(t).\n\t\tExec(ctx)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed deleting todo with id %q: %w\", input.TodoID, err)\n\t}\n\treturn &RemoveTodoOutput{Todo: t}, nil\n}\n```",
+      "source_content_hash": "90be9adf608d02b08c63ad4175894f41004902299ec75ede674789f48ccb5f61",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cf50de8a"
+      }
+    },
+    {
+      "segment_id": "850ec775",
+      "source_content": "Using input structs for the resolver functions allows for mapping the GraphQL request arguments.\nUsing output structs allows for returning multiple objects for more complex operations.",
+      "source_content_hash": "91a1d45f97bf02fe7c08261d64927fa2f2a8d5df58436ce2cc521f7a0f2e72ca",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "解析器函数使用输入结构体来映射GraphQL请求参数，输出结构体则支持返回多个对象以处理复杂操作。"
+      }
+    },
+    {
+      "segment_id": "60e22db4",
+      "source_content": "To map the Lambda event to a resolver function, we implement a Handler, which performs the mapping according to an `action` field in the event:",
+      "source_content_hash": "e67cc3ff0a49dd9d460ebaa923bfd9b0c2941cae26a15b3290491415ff91035d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了将Lambda事件映射到解析器函数，我们实现了一个根据事件中`action`字段进行路由的处理器："
+      }
+    },
+    {
+      "segment_id": "d0a5d100",
+      "source_content": "```go title=\"internal/handler/handler.go\"\npackage handler\n\nimport (\n\t\"context\"\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"log\"\n\n\t\"entgo-aws-appsync/ent\"\n\t\"entgo-aws-appsync/internal/resolver\"\n)\n\n// Action specifies the event type.\ntype Action string\n\n// List of supported event actions.\nconst (\n\tActionMigrate Action = \"migrate\"\n\n\tActionTodos      = \"todos\"\n\tActionTodoByID   = \"todoById\"\n\tActionAddTodo    = \"addTodo\"\n\tActionRemoveTodo = \"removeTodo\"\n)\n\n// Event is the argument of the event handler.\ntype Event struct {\n\tAction Action          `json:\"action\"`\n\tInput  json.RawMessage `json:\"input\"`\n}\n\n// Handler handles supported events.\ntype Handler struct {\n\tclient *ent.Client\n}\n\n// Returns a new event handler.\nfunc New(c *ent.Client) *Handler {\n\treturn &Handler{\n\t\tclient: c,\n\t}\n}\n\n// Handle implements the event handling by action.\nfunc (h *Handler) Handle(ctx context.Context, e Event) (interface{}, error) {\n\tlog.Printf(\"action %s with payload %s\\n\", e.Action, e.Input)\n\n\tswitch e.Action {\n\tcase ActionMigrate:\n\t\treturn nil, h.client.Schema.Create(ctx)\n\tcase ActionTodos:\n\t\tvar input resolver.TodosInput\n\t\treturn resolver.Todos(ctx, h.client, input)\n\tcase ActionTodoByID:\n\t\tvar input resolver.TodoByIDInput\n\t\tif err := json.Unmarshal(e.Input, &input); err != nil {\n\t\t\treturn nil, fmt.Errorf(\"failed parsing %s params: %w\", ActionTodoByID, err)\n\t\t}\n\t\treturn resolver.TodoByID(ctx, h.client, input)\n\tcase ActionAddTodo:\n\t\tvar input resolver.AddTodoInput\n\t\tif err := json.Unmarshal(e.Input, &input); err != nil {\n\t\t\treturn nil, fmt.Errorf(\"failed parsing %s params: %w\", ActionAddTodo, err)\n\t\t}\n\t\treturn resolver.AddTodo(ctx, h.client, input)\n\tcase ActionRemoveTodo:\n\t\tvar input resolver.RemoveTodoInput\n\t\tif err := json.Unmarshal(e.Input, &input); err != nil {\n\t\t\treturn nil, fmt.Errorf(\"failed parsing %s params: %w\", ActionRemoveTodo, err)\n\t\t}\n\t\treturn resolver.RemoveTodo(ctx, h.client, input)\n\t}\n\n\treturn nil, fmt.Errorf(\"invalid action %q\", e.Action)\n}\n```",
+      "source_content_hash": "d98b87c591a0b6d0cccdc2b155e8a1691cc3934f23202a415a4576832b768f4a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d0a5d100"
+      }
+    },
+    {
+      "segment_id": "4bfb1f31",
+      "source_content": "In addition to the resolver actions, we also added a migration action, which is a convenient way to expose database migrations.",
+      "source_content_hash": "3317ebc5f3d1bea7bb28a1e7953045ec4264ac982f6b0915f5bf9c79564d1d21",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "除了解析器操作外，我们还添加了迁移操作，这是暴露数据库迁移的便捷方式。"
+      }
+    },
+    {
+      "segment_id": "dbea1fe8",
+      "source_content": "Finally, we need to register an instance of the `Handler` type to the AWS Lambda library.",
+      "source_content_hash": "b94ac499aa96148681a632f87bf2e311600e3a1dca6c40c68990525a467411ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后需要将`Handler`类型的实例注册到AWS Lambda库："
+      }
+    },
+    {
+      "segment_id": "4590a1f9",
+      "source_content": "```go title=\"lambda/main.go\"\npackage main\n\nimport (\n\t\"database/sql\"\n\t\"log\"\n\t\"os\"\n\n\t\"entgo.io/ent/dialect\"\n\tentsql \"entgo.io/ent/dialect/sql\"\n\n\t\"github.com/aws/aws-lambda-go/lambda\"\n\t_ \"github.com/jackc/pgx/v4/stdlib\"\n\n\t\"entgo-aws-appsync/ent\"\n\t\"entgo-aws-appsync/internal/handler\"\n)\n\nfunc main() {\n\t// open the database connection using the pgx driver\n\tdb, err := sql.Open(\"pgx\", os.Getenv(\"DATABASE_URL\"))\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening database connection: %v\", err)\n\t}\n\n\t// initiate the ent database client for the Postgres database\n\tclient := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.Postgres, db)))\n\tdefer client.Close()\n\n\t// register our event handler to listen on Lambda events\n\tlambda.Start(handler.New(client).Handle)\n}\n```",
+      "source_content_hash": "e5412daedde171b3a4e85b876de3e57ead34db51b1faf833a282980a86e23e76",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4590a1f9"
+      }
+    },
+    {
+      "segment_id": "94a47b80",
+      "source_content": "The function body of `main` is executed whenever an AWS Lambda performs a cold start.\nAfter the cold start, a Lambda function is considered \"warm,\" with only the event handler code being executed, making Lambda executions very efficient.",
+      "source_content_hash": "0c0dde4e4785e985c7ad3376b7bbc50e7361a70638e8547228460e117cfee2c3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`main`的函数体会在AWS Lambda冷启动时执行。冷启动后Lambda函数进入\"热\"状态，此时仅执行事件处理代码，这使得Lambda执行非常高效。"
+      }
+    },
+    {
+      "segment_id": "e3448845",
+      "source_content": "To compile and deploy the Go code, we run:",
+      "source_content_hash": "35434ee45316c27c4be88e8474a011ac6e6fd643bd57d3c065a3f1414a159684",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令编译并部署Go代码："
+      }
+    },
+    {
+      "segment_id": "5fe43ac2",
+      "source_content": "```console\nGOOS=linux go build -o main ./lambda\nzip function.zip main\naws lambda update-function-code --function-name ent --zip-file fileb://function.zip\n```",
+      "source_content_hash": "ccce194bc5f2e0d7c4a9f38cd34cab9dc0beccdc72e254677469b513e475c569",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5fe43ac2"
+      }
+    },
+    {
+      "segment_id": "2fc2d2cf",
+      "source_content": "The first command creates a compiled binary named `main`.\nThe second command compresses the binary to a ZIP archive, required by AWS Lambda.\nThe third command replaces the function code of the AWS Lambda named `ent` with the new ZIP archive.\nIf you work with multiple AWS accounts you want to use the `--profile <your aws profile>` switch.",
+      "source_content_hash": "04564e7e3b99f37b1ff3dfddbb8c5df583381a8acba6c2734309327c5a8674a6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第一条命令生成名为`main`的编译二进制文件。第二条命令将二进制文件压缩为ZIP归档，这是AWS Lambda要求的格式。第三条命令用新的ZIP归档替换名为`ent`的AWS Lambda函数代码。若使用多个AWS账户，可通过`--profile <你的aws配置>`参数指定。"
+      }
+    },
+    {
+      "segment_id": "bab6f28b",
+      "source_content": "After you successfully deployed the AWS Lambda, open the \"Test\" tab of the \"ent\" function in the web console and invoke it with a \"migrate\" action:",
+      "source_content_hash": "0a34cdd947ca63f2744e8b1620ef22e590bbea199fa0ce5912819c5c9248f2c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "成功部署AWS Lambda后，在网页控制台中打开\"ent\"函数的\"测试\"选项卡，使用\"migrate\"操作进行调用："
+      }
+    },
+    {
+      "segment_id": "ac7dd250",
+      "source_content": "On success, you should get a green feedback box and test the result of a \"todos\" action:",
+      "source_content_hash": "5c35f06c8d3117fc7079cf61c7eddb2d95cc9b4c8f4bc92de55e40a5af9dc7c2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若操作成功，您将看到绿色反馈框，此时可测试\"todos\"操作的结果："
+      }
+    },
+    {
+      "segment_id": "13c7706c",
+      "source_content": "In case the test executions fail, you most probably have an issue with your database connection.",
+      "source_content_hash": "dbabd01d5f029add74b24bd1d4b6e89036760ef1967e3193709b8819601d405c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果测试执行失败，很可能是数据库连接存在问题。"
+      }
+    },
+    {
+      "segment_id": "a796dfea",
+      "source_content": "### Configuring AWS AppSync resolvers",
+      "source_content_hash": "afdcf7ebc57938204b679fe31c689cc1ebac9eeb0363bed912d5a795638814a2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 配置AWS AppSync解析器"
+      }
+    },
+    {
+      "segment_id": "0400d81e",
+      "source_content": "With the \"ent\" function successfully deployed, we are left to register the ent Lambda as a data source to our AppSync API and configure the schema resolvers to map the AppSync requests to Lambda events.\nFirst, open our AWS AppSync API in the web console and move to \"Data Sources\", which you find in the navigation pane on the left.",
+      "source_content_hash": "73166f85801c8a1a83476dc5c990de1ace035e338516a9a86e982a04a410684d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "成功部署\"ent\"函数后，我们需要将其注册为AppSync API的数据源，并配置模式解析器以将AppSync请求映射到Lambda事件。首先在网页控制台中打开AWS AppSync API，左侧导航面板进入\"数据源\"。"
+      }
+    },
+    {
+      "segment_id": "5e15188a",
+      "source_content": "Click the \"Create data source\" button in the top right to start registering the \"ent\" function as data source:",
+      "source_content_hash": "9a6bce45f9ec48826e3c4f3959fc736f6e65d17acdd518f6e1475fb6321cac30",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "点击右上角的\"创建数据源\"按钮，开始注册\"ent\"函数作为数据源："
+      }
+    },
+    {
+      "segment_id": "0dcd0a42",
+      "source_content": "Now, open the GraphQL schema of the AppSync API and search for the `Query` type in the sidebar to the right.\nClick the \"Attach\" button next to the `Query.Todos` type:",
+      "source_content_hash": "ae750bd534e0a56021d1fe1dde4376b660503e773764c55ed862d3ad3daa4e1a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在打开AppSync API的GraphQL模式，在右侧边栏中找到`Query`类型。点击`Query.Todos`类型旁的\"附加\"按钮："
+      }
+    },
+    {
+      "segment_id": "c829cc4b",
+      "source_content": "In the resolver view for `Query.todos`, select the Lambda function as data source, enable the request mapping template option,",
+      "source_content_hash": "97ce7865fea36982342437be52c593e7edbec26b01f1dc149106eb492cd36234",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在`Query.todos`的解析器视图中，选择Lambda函数作为数据源，启用请求映射模板选项，"
+      }
+    },
+    {
+      "segment_id": "96bae975",
+      "source_content": "and copy the following template:",
+      "source_content_hash": "4b3c66f936306725a5bc8ce0f5a5af77a9caa94f03d0b84dead31f367299ce34",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "并复制以下模板："
+      }
+    },
+    {
+      "segment_id": "b4347cec",
+      "source_content": "```vtl title=\"Query.todos\"\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  \"payload\": {\n    \"action\": \"todos\"\n  }\n}\n```",
+      "source_content_hash": "00cd651cf0110cfe6d94c7eb9bf12860a642db4b9c3d16a40239ea8ad8f4c592",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b4347cec"
+      }
+    },
+    {
+      "segment_id": "a1988152",
+      "source_content": "Repeat the same procedure for the remaining `Query` and `Mutation` types:",
+      "source_content_hash": "1952f85b3b0a5d545b76fefd1d4ccf61b63e272f8c2574857b12e529a5b7b12f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对剩余的`Query`和`Mutation`类型重复相同流程："
+      }
+    },
+    {
+      "segment_id": "de546337",
+      "source_content": "```vtl title=\"Query.todo\"\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  \"payload\": {\n    \"action\": \"todo\",\n    \"input\": $util.toJson($context.args.input)\n  }\n}\n```",
+      "source_content_hash": "9da0c142483dc0a465b8cdf5ee97a486934d6f78c9dfa4285d0340845dd21032",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de546337"
+      }
+    },
+    {
+      "segment_id": "f3e9a624",
+      "source_content": "```vtl title=\"Mutation.addTodo\"\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  \"payload\": {\n    \"action\": \"addTodo\",\n    \"input\": $util.toJson($context.args.input)\n  }\n}\n```",
+      "source_content_hash": "4055324a12fd71f8ab012c76cf4a181e5ca67f438fa179043094592568757def",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f3e9a624"
+      }
+    },
+    {
+      "segment_id": "1d1ebb99",
+      "source_content": "```vtl title=\"Mutation.removeTodo\"\n{\n  \"version\" : \"2017-02-28\",\n  \"operation\": \"Invoke\",\n  \"payload\": {\n    \"action\": \"removeTodo\",\n    \"input\": $util.toJson($context.args.input)\n  }\n}\n```",
+      "source_content_hash": "3a6c56c65ba86acff5f96043cfb267f97b528d3677c7371cc4f00d236af4d0b7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1d1ebb99"
+      }
+    },
+    {
+      "segment_id": "7b046f1b",
+      "source_content": "The request mapping templates let us construct the event objects with which we invoke the Lambda functions.\nThrough the `$context` object, we have access to the GraphQL request and the authentication session.\nIn addition, it is possible to arrange multiple resolvers sequentially and reference the respective outputs via the `$context` object.\nIn principle, it is also possible to define response mapping templates.\nHowever, in most cases it is sufficient enough to return the response object \"as is\".",
+      "source_content_hash": "db8abc597f4e2b53b9355f31eacd566446a2d6bd11245780edd9d732a08fd75f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请求映射模板让我们能构造调用Lambda函数的事件对象。通过`$context`对象，我们可以访问GraphQL请求和认证会话。此外，还可以顺序排列多个解析器，并通过`$context`对象引用各自的输出。原则上也可以定义响应映射模板，但多数情况下直接返回响应对象即可。"
+      }
+    },
+    {
+      "segment_id": "41e20c06",
+      "source_content": "### Testing AppSync using the Query explorer",
+      "source_content_hash": "1e14d2735d7f978a60027980c11fdaa5d89a028bff1f6975fa335561694b27e6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 使用查询浏览器测试AppSync"
+      }
+    },
+    {
+      "segment_id": "decf378b",
+      "source_content": "The easiest way to test the API is to use the Query Explorer in AWS AppSync.\nAlternatively, one can register an API key in the settings of their AppSync API and use any standard GraphQL client.",
+      "source_content_hash": "b9b1f1a37ee5cdc186f7ac17fdb4aadb5ac2d5f58e7003e78836b567f2674bda",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最简单的测试方式是使用AWS AppSync中的查询浏览器。另一种方法是在AppSync API设置中注册API密钥，使用任何标准GraphQL客户端。"
+      }
+    },
+    {
+      "segment_id": "6342da55",
+      "source_content": "Let us first create a todo with the title `foo`:",
+      "source_content_hash": "0fe1dab25f2a82368b9ca6565b5ffab8594efb23b598661fd6fdf53775b114b5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先创建标题为`foo`的待办事项："
+      }
+    },
+    {
+      "segment_id": "62a62859",
+      "source_content": "```graphql\nmutation MyMutation {\n  addTodo(input: {title: \"foo\"}) {\n    todo {\n      id\n      title\n    }\n  }\n}\n```",
+      "source_content_hash": "ca4d923c6f5b6c5215ac8e36bde752c18d4c696fa20945fa17c366b6acb61084",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_62a62859"
+      }
+    },
+    {
+      "segment_id": "5fe249dd",
+      "source_content": "Requesting a list of the todos should return a single todo with title `foo`:",
+      "source_content_hash": "036de57b12b0ff441c49dacb32c68a96502694f2385ffca465d44afd18468ec2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请求待办事项列表应返回一个标题为`foo`的待办事项："
+      }
+    },
+    {
+      "segment_id": "79094e7f",
+      "source_content": "```graphql\nquery MyQuery {\n  todos {\n    title\n    id\n  }\n}\n```",
+      "source_content_hash": "41289fc3695dcf92789bf808bf446f48cfd97e20958471df9dab9debba171990",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_79094e7f"
+      }
+    },
+    {
+      "segment_id": "c25bcc17",
+      "source_content": "Requesting the `foo` todo by id should work too:",
+      "source_content_hash": "c0eff8bfd29de371df6343727cc8d9089698b735cdb042547eb5a024b7d722ae",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过ID查询`foo`待办事项也应成功："
+      }
+    },
+    {
+      "segment_id": "7c969fa1",
+      "source_content": "```graphql\nquery MyQuery {\n  todo(id: \"1\") {\n    title\n    id\n  }\n}\n```",
+      "source_content_hash": "9077cf85f27cf30b46b8aa2252c951dccaea7420702cb7a6ace9ae3ca55e6cec",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7c969fa1"
+      }
+    },
+    {
+      "segment_id": "b9697cbb",
+      "source_content": "### Wrapping Up",
+      "source_content_hash": "6df1295c536bdf3cf58241755891051d109001c784cced5b33a00f70983bc553",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "d89c044a",
+      "source_content": "We successfully deployed a serverless GraphQL API for managing simple todos using AWS AppSync, AWS Lambda, and Ent.\nIn particular, we provided step-by-step instructions on configuring AWS AppSync and AWS Lambda through the web console.\nIn addition, we discussed a proposal for how to structure our Go code.",
+      "source_content_hash": "8d95c3866e23b78bd5a9873d07d186f7b351c9a15c37f45e02e6bdfab21b1701",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们成功部署了用于管理简单待办事项的无服务器GraphQL API，使用AWS AppSync、AWS Lambda和Ent框架。特别提供了通过网页控制台配置AWS AppSync和AWS Lambda的分步指南，并讨论了Go代码结构的设计方案。"
+      }
+    },
+    {
+      "segment_id": "0638c630",
+      "source_content": "We did not cover testing and setting up a database infrastructure in AWS.\nThese aspects become more challenging in the serverless than the traditional paradigm.\nFor example, when many Lambda functions are cold started in parallel, we quickly exhaust the database's connection pool and need some database proxy.\nIn addition, we need to rethink testing as we only have access to local and end-to-end tests because we cannot run cloud services easily in isolation.",
+      "source_content_hash": "0c6e11c6c0ced7a40706c4a09c9852506df8925e886fc506ad3cd490b201225a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文未涵盖测试和AWS数据库基础设施搭建。这些方面在无服务器范式下比传统模式更具挑战性。例如当多个Lambda函数并行冷启动时，数据库连接池会快速耗尽，需要数据库代理。此外由于难以隔离运行云服务，我们只能进行本地和端到端测试。"
+      }
+    },
+    {
+      "segment_id": "e5a40cc3",
+      "source_content": "Nevertheless, the proposed GraphQL server scales well into the complex demands of real-world applications benefiting from the serverless infrastructure and Ent's pleasurable developer experience.",
+      "source_content_hash": "97131b4ad8b959b5814ba367b911918903a589040868366db639542870c0e4a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "尽管如此，所提出的GraphQL服务器方案能良好扩展到实际应用的复杂需求，既能受益于无服务器基础设施，又能享受Ent框架带来的愉悦开发体验。"
+      }
+    },
+    {
+      "segment_id": "efd1b767",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "313807522dfcbc1a501107e16f2e3e23bcd5158bc085b06e9f74cd9f29152471",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有问题需要帮助？欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack/)。"
+      }
+    },
+    {
+      "segment_id": "947bb8f7",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多 Ent 资讯与更新：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 在[Twitter](https://twitter.com/entgo_io)上关注我们\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的 #ent 频道\n- 加入[Ent Discord 服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    },
+    {
+      "segment_id": "2ad6a7db",
+      "source_content": "[1]: https://graphql.org",
+      "source_content_hash": "1c9e1ff609fd5b0164e281e4e0c8522b5cbe6f176bc8ce1a7c914455acb900ad",
+      "node_type": "definition",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[1]: https://graphql.org"
+      }
+    },
+    {
+      "segment_id": "7b7aadba",
+      "source_content": "[2]: https://aws.amazon.com",
+      "source_content_hash": "9fc0b554b29ea58f88c16790796d5ec326dbeca133ec7fc2bf7ba0483394a465",
+      "node_type": "definition",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[2]: https://aws.amazon.com"
+      }
+    },
+    {
+      "segment_id": "b08947ff",
+      "source_content": "[3]: https://aws.amazon.com/appsync/",
+      "source_content_hash": "d77cd0eea978e9edefd0b0ee0799682efaf5b4c03b7c73e955b3fd1a264bc119",
+      "node_type": "definition",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[3]: https://aws.amazon.com/appsync/"
+      }
+    },
+    {
+      "segment_id": "dba442ba",
+      "source_content": "[4]: https://aws.amazon.com/lambda/",
+      "source_content_hash": "85a2473cc50341f125ae635c2891936618d860b3578c5ae80cb0b04e3034abad",
+      "node_type": "definition",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[4]: https://aws.amazon.com/lambda/"
+      }
+    },
+    {
+      "segment_id": "5d2c9c0e",
+      "source_content": "[5]: https://go.dev",
+      "source_content_hash": "9112458f37c9ed09b6586058e6037411ce92b0987858690655211561d3adfcc0",
+      "node_type": "definition",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[5]: https://go.dev"
+      }
+    },
+    {
+      "segment_id": "27c43f73",
+      "source_content": "[6]: https://entgo.io",
+      "source_content_hash": "32210536a18ef395c9ff18be2f74f58fc0214be011f594e2ae3989c0036cc853",
+      "node_type": "definition",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[6]: https://entgo.io"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2022-01-04-serverless-graphql-using-aws.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.659987+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "3c8d50a2b09e712483062a7f8e6f657531e0cd00611779982d1403d63fb1f6d3"
+  }
+}

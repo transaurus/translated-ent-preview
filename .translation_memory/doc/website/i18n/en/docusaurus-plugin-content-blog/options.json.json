@@ -1,0 +1,65 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "i18n/en/docusaurus-plugin-content-blog/options.json",
+  "source_file_content_hash": "ca461d8da826fd293ea18bc71f5073c4422cd1a919a51918f5f3ffbd7c8526c7",
+  "segments": [
+    {
+      "segment_id": "title",
+      "source_content": "Blog",
+      "source_content_hash": "8c6bc099534a0251b576f6b88bd2db124ae9497c64bd9242e92a6aec23e6a73a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "博客"
+      },
+      "metadata": {
+        "json_description": "The title for the blog used in SEO"
+      }
+    },
+    {
+      "segment_id": "description",
+      "source_content": "Blog",
+      "source_content_hash": "8c6bc099534a0251b576f6b88bd2db124ae9497c64bd9242e92a6aec23e6a73a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "博客"
+      },
+      "metadata": {
+        "json_description": "The description for the blog used in SEO"
+      }
+    },
+    {
+      "segment_id": "sidebar.title",
+      "source_content": "All our posts",
+      "source_content_hash": "4d3a64375d87fc51c296a800cfa67d122b7fdb115d18fe0c58b03befd669060f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "全部文章"
+      },
+      "metadata": {
+        "json_description": "The label for the left sidebar"
+      }
+    }
+  ],
+  "original_json_structure": {
+    "title": {
+      "message": "Blog",
+      "description": "The title for the blog used in SEO"
+    },
+    "description": {
+      "message": "Blog",
+      "description": "The description for the blog used in SEO"
+    },
+    "sidebar.title": {
+      "message": "All our posts",
+      "description": "The label for the left sidebar"
+    }
+  },
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/options.json",
+  "last_updated_timestamp": "2025-06-05T15:16:18.653668+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "ca461d8da826fd293ea18bc71f5073c4422cd1a919a51918f5f3ffbd7c8526c7"
+  }
+}

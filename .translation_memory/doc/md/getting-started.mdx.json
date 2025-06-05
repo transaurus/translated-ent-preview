@@ -1,0 +1,852 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/getting-started.mdx",
+  "source_file_content_hash": "bf8c598ca589f43509a85f4f4da5bc613b89a275627ee513c1dacf078e096167",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: getting-started\ntitle: Quick Introduction\nsidebar_label: Quick Introduction\n---",
+      "source_content_hash": "42be0d1c30ead0041a845f6a994cd47d631a69b8a985fd9a3081c88d68775cd7",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';\nimport AtlasMigrateDiff from './components/_atlas_migrate_diff.mdx';\nimport AtlasMigrateApply from './components/_atlas_migrate_apply.mdx';\nimport InstallationInstructions from './components/_installation_instructions.mdx';",
+      "source_content_hash": "a22484c0d18568f0472c708aa3d9e284856d38930f0766da63a12ac2c418787b",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_10c4cb47"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "**ent** is a simple, yet powerful entity framework for Go, that makes it easy to build\nand maintain applications with large data-models and sticks with the following principles:",
+      "source_content_hash": "501cba3761e7f337e6ec82d74b0da72b5cfa56368b631e86c4d2cd06b6f85984",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**ent** 是一个简洁而强大的 Go 语言实体框架，它遵循以下原则，使得构建和维护具有大型数据模型的应用变得简单："
+      }
+    },
+    {
+      "segment_id": "4ddf6ae7",
+      "source_content": "- Easily model database schema as a graph structure.\n- Define schema as a programmatic Go code.\n- Static typing based on code generation.\n- Database queries and graph traversals are easy to write.\n- Simple to extend and customize using Go templates.",
+      "source_content_hash": "a370c4e3af3a3f0176d5161df101d7a5229fbe58497fd630f87f213949cfcfe5",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 轻松将数据库模式建模为图结构\n- 通过编程式 Go 代码定义模式\n- 基于代码生成的静态类型系统\n- 简化的数据库查询与图遍历编写\n- 使用 Go 模板轻松扩展和定制"
+      }
+    },
+    {
+      "segment_id": "2df4f75f",
+      "source_content": "![gopher-schema-as-code](https://entgo.io/images/assets/gopher-schema-as-code.png)",
+      "source_content_hash": "0cfd246998b1fbe0bb1af39632723c9f122ed9131efefa9927d099cf81a3b357",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![gopher-schema-as-code](https://entgo.io/images/assets/gopher-schema-as-code.png)"
+      }
+    },
+    {
+      "segment_id": "95b38f97",
+      "source_content": "## Setup A Go Environment",
+      "source_content_hash": "b869a016d8aa4be49a379d3f95cca024df6ff6d67484e4996a16a9440b02df20",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 配置 Go 环境"
+      }
+    },
+    {
+      "segment_id": "ccc88b4c",
+      "source_content": "If your project directory is outside [GOPATH](https://github.com/golang/go/wiki/GOPATH) or you are not familiar with\nGOPATH, setup a [Go module](https://github.com/golang/go/wiki/Modules#quick-start) project as follows:",
+      "source_content_hash": "d1b4fa3de3d325b00a19d1bd677b047f8026c9a1ba1251ce57e8ecfba1873d7b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若您的项目目录不在 [GOPATH](https://github.com/golang/go/wiki/GOPATH) 中或不熟悉 GOPATH，请按以下方式设置 [Go Modules](https://github.com/golang/go/wiki/Modules#quick-start) 项目："
+      }
+    },
+    {
+      "segment_id": "0c911872",
+      "source_content": "```console\ngo mod init entdemo\n```",
+      "source_content_hash": "c5bfcff3769065c808cf8cc6de9c117c910d10ea5be8822d3a8ee53d0a4fe084",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0c911872"
+      }
+    },
+    {
+      "segment_id": "0037ff70",
+      "source_content": "## Create Your First Schema",
+      "source_content_hash": "5ca7db966e5a4125c26d63073b0cc9581edfa9c986f3f0a50eb4a789dc976c83",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 创建第一个模式"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "Go to the root directory of your project, and run:",
+      "source_content_hash": "691dd5854e8ca75b1808e3b4c843177754d8dd0dd7c5bb6e7b8a4a38ba619e83",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "进入项目根目录并运行："
+      }
+    },
+    {
+      "segment_id": "be2d5397",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent new User\n```",
+      "source_content_hash": "a2bdf6896e1c9f236ac8def5dab27404f92f4ddef0f8569e28ba09e86daa2fd6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be2d5397"
+      }
+    },
+    {
+      "segment_id": "3cfe6286",
+      "source_content": "The command above will generate the schema for `User` under `entdemo/ent/schema/` directory:",
+      "source_content_hash": "a5d33882a34356ca002c6b7c026cda5f210407132b43128e0d78184967c25d36",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述命令将在 `entdemo/ent/schema/` 目录下生成 `User` 模式："
+      }
+    },
+    {
+      "segment_id": "d9330cd7",
+      "source_content": "```go title=\"entdemo/ent/schema/user.go\"\n\npackage schema\n\nimport \"entgo.io/ent\"\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn nil\n}\n\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn nil\n}\n\n```",
+      "source_content_hash": "a008347b9c640fb18913b347f61cee305db2dc6e0f08fe9ab59e165aca16df33",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9330cd7"
+      }
+    },
+    {
+      "segment_id": "531437ca",
+      "source_content": "Add 2 fields to the `User` schema:",
+      "source_content_hash": "0ba6e08cb98d2044b15ff5e3a64912e1f6023c572028494c709937fab942189b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为 `User` 模式添加两个字段："
+      }
+    },
+    {
+      "segment_id": "67b24fc5",
+      "source_content": "```go title=\"entdemo/ent/schema/user.go\"\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"age\").\n\t\t\tPositive(),\n\t\tfield.String(\"name\").\n\t\t\tDefault(\"unknown\"),\n\t}\n}\n```",
+      "source_content_hash": "2d39ceb364bb4c3bf9e78ed35b37a9edc2c3c1c0f7284ca5d2f7a41f459de267",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_67b24fc5"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "Run `go generate` from the root directory of the project as follows:",
+      "source_content_hash": "d3a72d4484658ca46d99591eeaa165bdc33ca3b6508eb213cc3d4fe18446058e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "从项目根目录运行以下命令："
+      }
+    },
+    {
+      "segment_id": "a716abf2",
+      "source_content": "```go\ngo generate ./ent\n```",
+      "source_content_hash": "13c9b319597aae0b6d8fe3e535f28cc78f88079c3ce2921cf623d09058ff897b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a716abf2"
+      }
+    },
+    {
+      "segment_id": "ec619944",
+      "source_content": "This produces the following files:",
+      "source_content_hash": "0d53cc51cf7d4730c984ad4e60b69cd71d5e522a16cb543b6e47e41d1d1be32f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这将生成以下文件："
+      }
+    },
+    {
+      "segment_id": "b73a4a7a",
+      "source_content": "```console {12-20}\nent\n├── client.go\n├── config.go\n├── context.go\n├── ent.go\n├── generate.go\n├── mutation.go\n... truncated\n├── schema\n│   └── user.go\n├── tx.go\n├── user\n│   ├── user.go\n│   └── where.go\n├── user.go\n├── user_create.go\n├── user_delete.go\n├── user_query.go\n└── user_update.go\n```",
+      "source_content_hash": "779abccdc8212bddd1aa461921cd3063066626ad4ede8a43fcfc7a070f6f5af0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b73a4a7a"
+      }
+    },
+    {
+      "segment_id": "56bc971f",
+      "source_content": "## Create Your First Entity",
+      "source_content_hash": "384d9bcfc3d2c2ff0b4b0a6eb3f41e62d64df2e14695d7b2bd6bbff0423e7268",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 创建第一个实体"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "To get started, create a new `Client` to run schema migration and interact with your entities:",
+      "source_content_hash": "7b80b58133f0e88aa198a413c12f3fe934c4fc1d4b20066192f5f24244e16783",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先创建新的 `Client` 来执行模式迁移并与实体交互："
+      }
+    },
+    {
+      "segment_id": "0de3740b",
+      "source_content": "<Tabs\ndefaultValue=\"sqlite\"\nvalues={[\n{label: 'SQLite', value: 'sqlite'},\n{label: 'PostgreSQL', value: 'postgres'},\n{label: 'MySQL (MariaDB)', value: 'mysql'},\n]}>\n<TabItem value=\"sqlite\">\n\n```go title=\"entdemo/start.go\"\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n    \"entdemo/ent\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer client.Close()\n\t// Run the auto migration tool.\n\t// highlight-start\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\t// highlight-end\n}\n```\n\n</TabItem>\n<TabItem value=\"postgres\">\n\n```go title=\"entdemo/start.go\"\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n    \"entdemo/ent\"\n\n\t_ \"github.com/lib/pq\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"postgres\",\"host=<host> port=<port> user=<user> dbname=<database> password=<pass>\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to postgres: %v\", err)\n\t}\n\tdefer client.Close()\n\t// Run the auto migration tool.\n\t// highlight-start\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\t// highlight-end\n}\n```\n\n</TabItem>\n<TabItem value=\"mysql\">\n\n```go title=\"entdemo/start.go\"\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n\t\"entdemo/ent\"\n\n\t_ \"github.com/go-sql-driver/mysql\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"mysql\", \"<user>:<pass>@tcp(<host>:<port>)/<database>?parseTime=True\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\t// Run the auto migration tool.\n\t// highlight-start\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\t// highlight-end\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "2b0d5f73bc0d68cbea5cdfc76897486802643cf0d9396324cc64b836b6296be1",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0de3740b"
+      }
+    },
+    {
+      "segment_id": "e4d8cd8a",
+      "source_content": "After running schema migration, we're ready to create our user. For the sake of this example, let's name this function\n_CreateUser_:",
+      "source_content_hash": "fd6abd75f0bea74ee47b93f7abcb6220a56d124769827149cb5bfc062f42f32a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成模式迁移后，即可创建用户。为此示例创建名为 _CreateUser_ 的函数："
+      }
+    },
+    {
+      "segment_id": "af7c5c4e",
+      "source_content": "```go title=\"entdemo/start.go\"\nfunc CreateUser(ctx context.Context, client *ent.Client) (*ent.User, error) {\n\tu, err := client.User.\n\t\tCreate().\n\t\tSetAge(30).\n\t\tSetName(\"a8m\").\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed creating user: %w\", err)\n\t}\n\tlog.Println(\"user was created: \", u)\n\treturn u, nil\n}\n```",
+      "source_content_hash": "84d8acccee9f219ef2dec7ff93d8da6dbf496bea8d41e2e2c71be58c3be5b107",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_af7c5c4e"
+      }
+    },
+    {
+      "segment_id": "200685d4",
+      "source_content": "## Query Your Entities",
+      "source_content_hash": "97e255d54dc2451a4fb654b2a1a3fdcfad0238bbe17eb8bdbe5b348839c236a7",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 查询实体"
+      }
+    },
+    {
+      "segment_id": "09d52457",
+      "source_content": "`ent` generates a package for each entity schema that contains its predicates, default values, validators\nand additional information about storage elements (column names, primary keys, etc).",
+      "source_content_hash": "6834cfb4d27f6586045b4e089a7c22b49169d7077f853384441d566187a738ec",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent` 会为每个实体模式生成包含谓词、默认值、验证器以及存储元素信息（列名、主键等）的包。"
+      }
+    },
+    {
+      "segment_id": "d1a6eaaa",
+      "source_content": "```go title=\"entdemo/start.go\"\nfunc QueryUser(ctx context.Context, client *ent.Client) (*ent.User, error) {\n\tu, err := client.User.\n\t\tQuery().\n\t\tWhere(user.Name(\"a8m\")).\n\t\t// `Only` fails if no user found,\n\t\t// or more than 1 user returned.\n\t\tOnly(ctx)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed querying user: %w\", err)\n\t}\n\tlog.Println(\"user returned: \", u)\n\treturn u, nil\n}\n```",
+      "source_content_hash": "bffd4b487609c139b23f54b82ab13036be442e23c0dabd8b93cc35bfe7adf906",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d1a6eaaa"
+      }
+    },
+    {
+      "segment_id": "89d451de",
+      "source_content": "## Add Your First Edge (Relation)",
+      "source_content_hash": "d462b6c6c57c66590fe9aa1d4f2b640b5c77fc5b9fd7f82b494e8968d02eb0a0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 添加第一条边（关系）"
+      }
+    },
+    {
+      "segment_id": "32fb7230",
+      "source_content": "In this part of the tutorial, we want to declare an edge (relation) to another entity in the schema.  \nLet's create 2 additional entities named `Car` and `Group` with a few fields. We use `ent` CLI\nto generate the initial schemas:",
+      "source_content_hash": "821a1c54dc49c6b94b31cd37aa3b3f28af5f655587b889252bb175ebe7be49fc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程部分将声明模式中到其他实体的边（关系）。  \n我们使用 `ent` CLI 创建两个名为 `Car` 和 `Group` 的新实体并添加若干字段："
+      }
+    },
+    {
+      "segment_id": "2ef49e00",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent new Car Group\n```",
+      "source_content_hash": "379ae95bcb8dbfc7a20cf1949dae404f9d53af9a59aaba5fe1677e5e261b1f70",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2ef49e00"
+      }
+    },
+    {
+      "segment_id": "070ff7a2",
+      "source_content": "And then we add the rest of the fields manually:",
+      "source_content_hash": "82faa134e77cf46d5e9ab3ef7503e0cbfd1f5bb09a6cb281c4287122ae89ac0e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后手动添加其余字段："
+      }
+    },
+    {
+      "segment_id": "703442ed",
+      "source_content": "```go title=\"entdemo/ent/schema/car.go\"\n// Fields of the Car.\nfunc (Car) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"model\"),\n\t\tfield.Time(\"registered_at\"),\n\t}\n}\n```",
+      "source_content_hash": "53c8302dcce49d7068fbebfb11b341be82e1e7b4518e996af54eb8ddc784b19d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_703442ed"
+      }
+    },
+    {
+      "segment_id": "229a037e",
+      "source_content": "```go title=\"entdemo/ent/schema/group.go\"\n// Fields of the Group.\nfunc (Group) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\t// Regexp validation for group name.\n\t\t\tMatch(regexp.MustCompile(\"[a-zA-Z_]+$\")),\n\t}\n}\n```",
+      "source_content_hash": "b30966a8a88eadb8fa5593e2078a5b97cf72a26c51f4e7a4f2b9ebc7fd75c059",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229a037e"
+      }
+    },
+    {
+      "segment_id": "46e586a3",
+      "source_content": "Let's define our first relation. An edge from `User` to `Car` defining that a user\ncan **have 1 or more** cars, but a car **has only one** owner (one-to-many relation).",
+      "source_content_hash": "3ae523b4af05e300f1b7491df57a2b94540c379f82f96064c444c90b4618043c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "定义第一个关系：从 `User` 到 `Car` 的边，表示一个用户可以**拥有多辆**汽车，但每辆汽车**仅属于一个**所有者（一对多关系）。"
+      }
+    },
+    {
+      "segment_id": "7fa65ec5",
+      "source_content": "![er-user-cars](https://entgo.io/images/assets/re_user_cars.png)",
+      "source_content_hash": "6024569b0f9a363dbb46882670f8b95b7b67e333209398c66f0326120bc44ed4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![er-user-cars](https://entgo.io/images/assets/re_user_cars.png)"
+      }
+    },
+    {
+      "segment_id": "7eb5b32d",
+      "source_content": "Let's add the `\"cars\"` edge to the `User` schema, and run `go generate ./ent`:",
+      "source_content_hash": "e56f011255d7d03d5937e844551b25222a07dcc55190c6db2fc1bdcc822db712",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "将 `\"cars\"` 边添加至 `User` 模式，并运行 `go generate ./ent`："
+      }
+    },
+    {
+      "segment_id": "00c94fa3",
+      "source_content": "```go title=\"entdemo/ent/schema/user.go\"\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"cars\", Car.Type),\n\t}\n}\n```",
+      "source_content_hash": "ff04bbf3c4381b374c31829a59f05884e7b1677556e37dd4fda5142481402873",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_00c94fa3"
+      }
+    },
+    {
+      "segment_id": "4786f22b",
+      "source_content": "We continue our example by creating 2 cars and adding them to a user.",
+      "source_content_hash": "402a7fb604d3a2d001931647a64f6124ecd12ccb83fc90799712f58cfa194201",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "继续示例：创建两辆汽车并将其关联到用户"
+      }
+    },
+    {
+      "segment_id": "999199d1",
+      "source_content": "```go title=\"entdemo/start.go\"\nfunc CreateCars(ctx context.Context, client *ent.Client) (*ent.User, error) {\n\t// Create a new car with model \"Tesla\".\n\ttesla, err := client.Car.\n\t\tCreate().\n\t\tSetModel(\"Tesla\").\n\t\tSetRegisteredAt(time.Now()).\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed creating car: %w\", err)\n\t}\n\tlog.Println(\"car was created: \", tesla)\n\n\t// Create a new car with model \"Ford\".\n\tford, err := client.Car.\n\t\tCreate().\n\t\tSetModel(\"Ford\").\n\t\tSetRegisteredAt(time.Now()).\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed creating car: %w\", err)\n\t}\n\tlog.Println(\"car was created: \", ford)\n\n\t// Create a new user, and add it the 2 cars.\n\ta8m, err := client.User.\n\t\tCreate().\n\t\tSetAge(30).\n\t\tSetName(\"a8m\").\n\t\tAddCars(tesla, ford).\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn nil, fmt.Errorf(\"failed creating user: %w\", err)\n\t}\n\tlog.Println(\"user was created: \", a8m)\n\treturn a8m, nil\n}\n```",
+      "source_content_hash": "f71a7d1a4baca996ffc9f47604a0a695b534a939eadb5284f97b42e5b7b6fec0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_999199d1"
+      }
+    },
+    {
+      "segment_id": "647ea627",
+      "source_content": "But what about querying the `cars` edge (relation)? Here's how we do it:",
+      "source_content_hash": "180ff267fd0fb8329f596000672d0ed3354468d410fa145892eab1d4a8648a42",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如何查询 `cars` 边（关系）？操作如下："
+      }
+    },
+    {
+      "segment_id": "73ce3ba5",
+      "source_content": "```go title=\"entdemo/start.go\"\nfunc QueryCars(ctx context.Context, a8m *ent.User) error {\n\tcars, err := a8m.QueryCars().All(ctx)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed querying user cars: %w\", err)\n\t}\n\tlog.Println(\"returned cars:\", cars)\n\n\t// What about filtering specific cars.\n\tford, err := a8m.QueryCars().\n\t\tWhere(car.Model(\"Ford\")).\n\t\tOnly(ctx)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed querying user cars: %w\", err)\n\t}\n\tlog.Println(ford)\n\treturn nil\n}\n```",
+      "source_content_hash": "61dfd6a016fb9a16459ce1b36de6ce576a09a188b5ebbb9670ae8fb3569eb693",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_73ce3ba5"
+      }
+    },
+    {
+      "segment_id": "a6f3574e",
+      "source_content": "## Add Your First Inverse Edge (BackRef)",
+      "source_content_hash": "71713eb3386b5831d186c548753e40e8a23d7326439d38ea8dd89cf59d0c5863",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 添加第一条反向边（反向引用）"
+      }
+    },
+    {
+      "segment_id": "c08b6492",
+      "source_content": "Assume we have a `Car` object and we want to get its owner; the user that this car belongs to.\nFor this, we have another type of edge called \"inverse edge\" that is defined using the `edge.From`\nfunction.",
+      "source_content_hash": "7ae37ced95a893e94d65c9c1f6f1db4dbd026e9d17c162924648874989dbc5ab",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "假设我们有一个 `Car` 对象，想要获取其所有者（该汽车所属的用户）。为此可使用另一种称为\"反向边\"的边类型，通过 `edge.From` 函数定义。"
+      }
+    },
+    {
+      "segment_id": "56f32447",
+      "source_content": "![er-cars-owner](https://entgo.io/images/assets/re_cars_owner.png)",
+      "source_content_hash": "5cfced852bc41568f074ffeb7ba672e26cf0922d6713fb54a1a496037bcfcd61",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![er-cars-owner](https://entgo.io/images/assets/re_cars_owner.png)"
+      }
+    },
+    {
+      "segment_id": "b41b4d77",
+      "source_content": "The new edge created in the diagram above is translucent, to emphasize that we don't create another\nedge in the database. It's just a back-reference to the real edge (relation).",
+      "source_content_hash": "748c7bf702727fd360268753d022ed14700cedff115a50d300bff1c3adb33312",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "图中新创建的边呈现半透明效果，旨在强调我们并未在数据库中实际创建新边，而仅是对真实边（关系）的反向引用。"
+      }
+    },
+    {
+      "segment_id": "e91bdcd9",
+      "source_content": "Let's add an inverse edge named `owner` to the `Car` schema, reference it to the `cars` edge\nin the `User` schema, and run `go generate ./ent`.",
+      "source_content_hash": "18af1a926f14589f026299ee83e558d9c901a7377ecfc1e29a866e371fc2a26f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们在`Car`模式中添加名为`owner`的反向边，将其关联至`User`模式中的`cars`边，并执行`go generate ./ent`。"
+      }
+    },
+    {
+      "segment_id": "29431851",
+      "source_content": "```go title=\"entdemo/ent/schema/car.go\"\n// Edges of the Car.\nfunc (Car) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\t// Create an inverse-edge called \"owner\" of type `User`\n\t \t// and reference it to the \"cars\" edge (in User schema)\n\t \t// explicitly using the `Ref` method.\n\t \tedge.From(\"owner\", User.Type).\n\t \t\tRef(\"cars\").\n\t\t\t// setting the edge to unique, ensure\n\t\t\t// that a car can have only one owner.\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "03a0b78ab0a19f202baa8d633fdd6fd63b4d8536188f87b6887f0e5e91ae203a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_29431851"
+      }
+    },
+    {
+      "segment_id": "fee14fdc",
+      "source_content": "We'll continue the user/cars example above by querying the inverse edge.",
+      "source_content_hash": "7ae757a70492a2c164dfff88f2abb6654e757ab2cda4f5f16f1670993c2c00e3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将继续通过查询反向边来扩展上述用户/汽车的示例。"
+      }
+    },
+    {
+      "segment_id": "7329258e",
+      "source_content": "```go title=\"entdemo/start.go\"\nfunc QueryCarUsers(ctx context.Context, a8m *ent.User) error {\n\tcars, err := a8m.QueryCars().All(ctx)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed querying user cars: %w\", err)\n\t}\n\t// Query the inverse edge.\n\tfor _, c := range cars {\n\t\towner, err := c.QueryOwner().Only(ctx)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"failed querying car %q owner: %w\", c.Model, err)\n\t\t}\n\t\tlog.Printf(\"car %q owner: %q\\n\", c.Model, owner.Name)\n\t}\n\treturn nil\n}\n```",
+      "source_content_hash": "edc3143fd7c05b29d0e4f13b20e581be54b718304c6f940c0192443e6681e12e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7329258e"
+      }
+    },
+    {
+      "segment_id": "086e47bd",
+      "source_content": "## Visualize the Schema",
+      "source_content_hash": "50dc98b8368eb62ccb725d50d9e3993829f1d5c3dc5f42b0725f4f95d8beaab2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 可视化模式"
+      }
+    },
+    {
+      "segment_id": "94a47b80",
+      "source_content": "If you have reached this point, you have successfully executed the schema migration and created several entities in the\ndatabase. To view the SQL schema generated by Ent for the database, install [Atlas](https://github.com/ariga/atlas)\nand run the following command:",
+      "source_content_hash": "e10abd79128fbbc88d4e328ccb94d96c9167b3e0a0defb8f9a34d980b64e2369",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若已完成前述步骤，您已成功执行模式迁移并在数据库中创建了若干实体。要查看Ent为数据库生成的SQL模式，请安装[Atlas](https://github.com/ariga/atlas)并运行以下命令："
+      }
+    },
+    {
+      "segment_id": "ad3aada7",
+      "source_content": "#### Install Atlas",
+      "source_content_hash": "08f2d499876f0b1f30158ae7420247081706effe9161b05a5ab07aac6c425a64",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 安装Atlas"
+      }
+    },
+    {
+      "segment_id": "bd205151",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bd205151"
+      }
+    },
+    {
+      "segment_id": "6728aadb",
+      "source_content": "<Tabs>\n<TabItem value=\"ERD Schema\">\n\n#### Inspect The Ent Schema\n\n```bash\natlas schema inspect \\\n  -u \"ent://ent/schema\" \\\n  --dev-url \"sqlite://file?mode=memory&_fk=1\" \\\n  -w\n```\n\n#### ERD and SQL Schema\n\n[![erd](https://atlasgo.io/uploads/erd-example.png)](https://gh.atlasgo.cloud/explore/40d83919)\n\n</TabItem>\n<TabItem value=\"SQL Schema\">\n\n#### Inspect The Ent Schema\n\n```bash\natlas schema inspect \\\n  -u \"ent://ent/schema\" \\\n  --dev-url \"sqlite://file?mode=memory&_fk=1\" \\\n  --format '{{ sql . \"  \" }}'\n```\n\n#### SQL Output\n\n```sql\n-- Create \"cars\" table\nCREATE TABLE `cars` (\n  `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,\n  `model` text NOT NULL,\n  `registered_at` datetime NOT NULL,\n  `user_cars` integer NULL,\n  CONSTRAINT `cars_users_cars` FOREIGN KEY (`user_cars`) REFERENCES `users` (`id`) ON DELETE SET NULL\n);\n\n-- Create \"users\" table\nCREATE TABLE `users` (\n  `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,\n  `age` integer NOT NULL,\n  `name` text NOT NULL DEFAULT 'unknown'\n);\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "37b70f6ba7e865ace4ef0fd0e029ac8854da744280e6a69e34e1cc456058d328",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6728aadb"
+      }
+    },
+    {
+      "segment_id": "18cd16ae",
+      "source_content": "## Create Your Second Edge",
+      "source_content_hash": "1d977bda158be15a3b4339e0daaa4d063c46a9104043f6677dc64f3b40047ce6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 创建第二条边"
+      }
+    },
+    {
+      "segment_id": "b4098d8a",
+      "source_content": "We'll continue our example by creating a M2M (many-to-many) relationship between users and groups.",
+      "source_content_hash": "4809a1f288013cf2c069209017bcb34481800448a433ee5ce5475eeb5b4999ad",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将通过创建用户与组之间的多对多（M2M）关系来继续示例。"
+      }
+    },
+    {
+      "segment_id": "57450780",
+      "source_content": "![er-group-users](https://entgo.io/images/assets/re_group_users.png)",
+      "source_content_hash": "03aec043af48367a3a9ad8827bee3519d8c6f8505512289a52aace84a12b396a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![er-group-users](https://entgo.io/images/assets/re_group_users.png)"
+      }
+    },
+    {
+      "segment_id": "cb857be4",
+      "source_content": "As you can see, each group entity can **have many** users, and a user can **be connected to many** groups;\na simple \"many-to-many\" relationship. In the above illustration, the `Group` schema is the owner\nof the `users` edge (relation), and the `User` entity has a back-reference/inverse edge to this\nrelationship named `groups`. Let's define this relationship in our schemas:",
+      "source_content_hash": "f7c9c367592baad3954f6c35f18306367c3dbfbeb8f1a031a3bec4bf5770a591",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如图所示，每个组实体可**包含多个**用户，而用户可**关联至多个**组——这是典型的多对多关系。图中`Group`模式是`users`边（关系）的拥有者，`User`实体则通过名为`groups`的反向边引用该关系。让我们在模式中定义此关系："
+      }
+    },
+    {
+      "segment_id": "a7d76929",
+      "source_content": "```go title=\"entdemo/ent/schema/group.go\"\n// Edges of the Group.\nfunc (Group) Edges() []ent.Edge {\n   return []ent.Edge{\n       edge.To(\"users\", User.Type),\n   }\n}\n```",
+      "source_content_hash": "f68af8d18adf2fced0512c5c78d0ae5f25cc27707a7f0bca9da32f4dc6216cb2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a7d76929"
+      }
+    },
+    {
+      "segment_id": "de546337",
+      "source_content": "```go title=\"entdemo/ent/schema/user.go\"\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n   return []ent.Edge{\n       edge.To(\"cars\", Car.Type),\n       // Create an inverse-edge called \"groups\" of type `Group`\n       // and reference it to the \"users\" edge (in Group schema)\n       // explicitly using the `Ref` method.\n       edge.From(\"groups\", Group.Type).\n           Ref(\"users\"),\n   }\n}\n```",
+      "source_content_hash": "f7cd45cf1b4a0dd3664f49abdf1a571a8acd6a509210d5293d79f91f50f36a74",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de546337"
+      }
+    },
+    {
+      "segment_id": "698d0e82",
+      "source_content": "We run `ent` on the schema directory to re-generate the assets.",
+      "source_content_hash": "5f93133ac72c7f2a6d530a6ccdc27563b109e6d3523566d2b822e2377c41c0c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们在模式目录上运行`ent`以重新生成资源。"
+      }
+    },
+    {
+      "segment_id": "647125dc",
+      "source_content": "```console\ngo generate ./ent\n```",
+      "source_content_hash": "c0973348962a802c92e5593c9f9a81eb75bfaa2305c100e2924981cdf22269f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_647125dc"
+      }
+    },
+    {
+      "segment_id": "2649c530",
+      "source_content": "## Run Your First Graph Traversal",
+      "source_content_hash": "934784db1cd93a6ecdd699a41803accdbc6a4ac7a7e43bf9ce4730a5815d96ae",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 执行首次图遍历"
+      }
+    },
+    {
+      "segment_id": "3adcb0ad",
+      "source_content": "In order to run our first graph traversal, we need to generate some data (nodes and edges, or in other words, \nentities and relations). Let's create the following graph using the framework:",
+      "source_content_hash": "ef6bcf66d7675f2529858cddcb805865df01d235fb023a0cda82cc82f52223d0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要执行首次图遍历，需先创建一些数据（节点和边，即实体和关系）。让我们使用框架构建以下图结构："
+      }
+    },
+    {
+      "segment_id": "8a5228e1",
+      "source_content": "![re-graph](https://entgo.io/images/assets/re_graph_getting_started.png)",
+      "source_content_hash": "067f30c37ac32ad06935e02ab7966d247ca20abfb609f00f741aa566d0e67176",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![re-graph](https://entgo.io/images/assets/re_graph_getting_started.png)"
+      }
+    },
+    {
+      "segment_id": "9ba63803",
+      "source_content": "```go title=\"entdemo/start.go\"\nfunc CreateGraph(ctx context.Context, client *ent.Client) error {\n\t// First, create the users.\n\ta8m, err := client.User.\n\t\tCreate().\n\t\tSetAge(30).\n\t\tSetName(\"Ariel\").\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\tneta, err := client.User.\n\t\tCreate().\n\t\tSetAge(28).\n\t\tSetName(\"Neta\").\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\t// Then, create the cars, and attach them to the users created above.\n\terr = client.Car.\n\t\tCreate().\n\t\tSetModel(\"Tesla\").\n\t\tSetRegisteredAt(time.Now()).\n\t\t// Attach this car to Ariel.\n\t\tSetOwner(a8m).\n\t\tExec(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\terr = client.Car.\n\t\tCreate().\n\t\tSetModel(\"Mazda\").\n\t\tSetRegisteredAt(time.Now()).\n\t\t// Attach this car to Ariel.\n\t\tSetOwner(a8m).\n\t\tExec(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\terr = client.Car.\n\t\tCreate().\n\t\tSetModel(\"Ford\").\n\t\tSetRegisteredAt(time.Now()).\n\t\t// Attach this car to Neta.\n\t\tSetOwner(neta).\n\t\tExec(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\t// Create the groups, and add their users in the creation.\n\terr = client.Group.\n\t\tCreate().\n\t\tSetName(\"GitLab\").\n\t\tAddUsers(neta, a8m).\n\t\tExec(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\terr = client.Group.\n\t\tCreate().\n\t\tSetName(\"GitHub\").\n\t\tAddUsers(a8m).\n\t\tExec(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\tlog.Println(\"The graph was created successfully\")\n\treturn nil\n}\n```",
+      "source_content_hash": "7e787ccff63b0e1531f953b2866feac4198bbfb6a34e25d334953cd5f9eb04b0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9ba63803"
+      }
+    },
+    {
+      "segment_id": "11ca2290",
+      "source_content": "Now when we have a graph with data, we can run a few queries on it:",
+      "source_content_hash": "050c216ecda91a33a9972fcbf164efe6017a528e149fbd1e1d083a4c0889f68f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当数据图构建完成后，即可对其运行若干查询："
+      }
+    },
+    {
+      "segment_id": "89dcd9a9",
+      "source_content": "1. Get all user's cars within the group named \"GitHub\":\n\n\t```go title=\"entdemo/start.go\"\n\tfunc QueryGithub(ctx context.Context, client *ent.Client) error {\n\t\tcars, err := client.Group.\n\t\t\tQuery().\n\t\t\tWhere(group.Name(\"GitHub\")). // (Group(Name=GitHub),)\n\t\t\tQueryUsers().                // (User(Name=Ariel, Age=30),)\n\t\t\tQueryCars().                 // (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Mazda, RegisteredAt=<Time>),)\n\t\t\tAll(ctx)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"failed getting cars: %w\", err)\n\t\t}\n\t\tlog.Println(\"cars returned:\", cars)\n\t\t// Output: (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Mazda, RegisteredAt=<Time>),)\n\t\treturn nil\n\t}\n\t```\n\n2. Change the query above, so that the source of the traversal is the user *Ariel*:\n   \n\t```go title=\"entdemo/start.go\"\n\tfunc QueryArielCars(ctx context.Context, client *ent.Client) error {\n\t\t// Get \"Ariel\" from previous steps.\n\t\ta8m := client.User.\n\t\t\tQuery().\n\t\t\tWhere(\n\t\t\t\tuser.HasCars(),\n\t\t\t\tuser.Name(\"Ariel\"),\n\t\t\t).\n\t\t\tOnlyX(ctx)\n\t\tcars, err := a8m. \t\t\t\t\t\t// Get the groups, that a8m is connected to:\n\t\t\t\tQueryGroups(). \t\t\t\t\t// (Group(Name=GitHub), Group(Name=GitLab),)\n\t\t\t\tQueryUsers().  \t\t\t\t\t// (User(Name=Ariel, Age=30), User(Name=Neta, Age=28),)\n\t\t\t\tQueryCars().   \t\t\t\t\t//\n\t\t\t\tWhere(         \t\t\t\t\t//\n\t\t\t\t\tcar.Not( \t\t\t\t\t//\tGet Neta and Ariel cars, but filter out\n\t\t\t\t\t\tcar.Model(\"Mazda\"),\t\t//\tthose who named \"Mazda\"\n\t\t\t\t\t), \t\t\t\t\t\t\t//\n\t\t\t\t). \t\t\t\t\t\t\t\t//\n\t\t\t\tAll(ctx)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"failed getting cars: %w\", err)\n\t\t}\n\t\tlog.Println(\"cars returned:\", cars)\n\t\t// Output: (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Ford, RegisteredAt=<Time>),)\n\t\treturn nil\n\t}\n\t```\n\n3. Get all groups that have users (query with a look-aside predicate):\n\n\t```go title=\"entdemo/start.go\"\n\tfunc QueryGroupWithUsers(ctx context.Context, client *ent.Client) error {\n    \tgroups, err := client.Group.\n    \t\tQuery().\n    \t\tWhere(group.HasUsers()).\n    \t\tAll(ctx)\n    \tif err != nil {\n    \t\treturn fmt.Errorf(\"failed getting groups: %w\", err)\n    \t}\n    \tlog.Println(\"groups returned:\", groups)\n    \t// Output: (Group(Name=GitHub), Group(Name=GitLab),)\n    \treturn nil\n    }\n    ```",
+      "source_content_hash": "09c88f2dda8b9493905fbd47c2796c6f39046d937335ae4d37e67c65cc8941ba",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 获取名为 \"GitHub\" 的群组中所有用户的汽车：\n\n\t```go title=\"entdemo/start.go\"\n\tfunc QueryGithub(ctx context.Context, client *ent.Client) error {\n\t\tcars, err := client.Group.\n\t\t\tQuery().\n\t\t\tWhere(group.Name(\"GitHub\")). // (Group(Name=GitHub),)\n\t\t\tQueryUsers().                // (User(Name=Ariel, Age=30),)\n\t\t\tQueryCars().                 // (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Mazda, RegisteredAt=<Time>),)\n\t\t\tAll(ctx)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"failed getting cars: %w\", err)\n\t\t}\n\t\tlog.Println(\"cars returned:\", cars)\n\t\t// Output: (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Mazda, RegisteredAt=<Time>),)\n\t\treturn nil\n\t}\n\t```\n\n2. 修改上述查询，使遍历的源头为用户 *Ariel*：\n   \n\t```go title=\"entdemo/start.go\"\n\tfunc QueryArielCars(ctx context.Context, client *ent.Client) error {\n\t\t// 从先前步骤获取 \"Ariel\"。\n\t\ta8m := client.User.\n\t\t\tQuery().\n\t\t\tWhere(\n\t\t\t\tuser.HasCars(),\n\t\t\t\tuser.Name(\"Ariel\"),\n\t\t\t).\n\t\t\tOnlyX(ctx)\n\t\tcars, err := a8m. \t\t\t\t\t\t// 获取 a8m 所属的群组：\n\t\t\t\tQueryGroups(). \t\t\t\t\t// (Group(Name=GitHub), Group(Name=GitLab),)\n\t\t\t\tQueryUsers().  \t\t\t\t\t// (User(Name=Ariel, Age=30), User(Name=Neta, Age=28),)\n\t\t\t\tQueryCars().   \t\t\t\t\t//\n\t\t\t\tWhere(         \t\t\t\t\t//\n\t\t\t\t\tcar.Not( \t\t\t\t\t//\t获取 Neta 和 Ariel 的汽车，但过滤掉\n\t\t\t\t\t\tcar.Model(\"Mazda\"),\t\t//\t名为 \"Mazda\" 的汽车\n\t\t\t\t\t), \t\t\t\t\t\t\t//\n\t\t\t\t). \t\t\t\t\t\t\t\t//\n\t\t\t\tAll(ctx)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"failed getting cars: %w\", err)\n\t\t}\n\t\tlog.Println(\"cars returned:\", cars)\n\t\t// Output: (Car(Model=Tesla, RegisteredAt=<Time>), Car(Model=Ford, RegisteredAt=<Time>),)\n\t\treturn nil\n\t}\n\t```\n\n3. 获取所有拥有用户的群组（使用旁路谓词查询）：\n\n\t```go title=\"entdemo/start.go\"\n\tfunc QueryGroupWithUsers(ctx context.Context, client *ent.Client) error {\n    \tgroups, err := client.Group.\n    \t\tQuery().\n    \t\tWhere(group.HasUsers()).\n    \t\tAll(ctx)\n    \tif err != nil {\n    \t\treturn fmt.Errorf(\"failed getting groups: %w\", err)\n    \t}\n    \tlog.Println(\"groups returned:\", groups)\n    \t// Output: (Group(Name=GitHub), Group(Name=GitLab),)\n    \treturn nil\n    }\n    ```"
+      }
+    },
+    {
+      "segment_id": "60e0dd0f",
+      "source_content": "## Schema Migration",
+      "source_content_hash": "68ef3a5e4e6c27835a19c68f520909085f5492a62b801c0cbda1efb27fd766b7",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 模式迁移"
+      }
+    },
+    {
+      "segment_id": "7102fa78",
+      "source_content": "Ent provides two approaches for running schema migrations: [Automatic Migrations](/docs/migrate) and\n[Versioned migrations](/docs/versioned-migrations). Here is a brief overview of each approach:",
+      "source_content_hash": "27543a09f89d7744ece22aa6ef529b24b744d6343536f6bee9e3aa74c016a0cf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent 提供了两种运行模式迁移的方法：[自动迁移](/docs/migrate)和\n[版本化迁移](/docs/versioned-migrations)。以下是每种方法的简要概述："
+      }
+    },
+    {
+      "segment_id": "5c9af42c",
+      "source_content": "### Automatic Migrations",
+      "source_content_hash": "8c934898b47d686b992a9b7a2b754d5ac6c7ac363ef9c648da1a191a258c32e5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 自动迁移"
+      }
+    },
+    {
+      "segment_id": "ba86e796",
+      "source_content": "With Automatic Migrations, users can use the following API to keep the database schema aligned with the schema objects\ndefined in the generated SQL schema `ent/migrate/schema.go`:",
+      "source_content_hash": "30faa42548a4ad480abe8bc14b54a5ff74c732afdf6a7e9f6ad747d83633071e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用自动迁移时，用户可以通过以下 API 保持数据库模式与生成的 SQL 模式 `ent/migrate/schema.go` 中定义的模式对象一致："
+      }
+    },
+    {
+      "segment_id": "50216bc1",
+      "source_content": "```go\nif err := client.Schema.Create(ctx); err != nil {\n    log.Fatalf(\"failed creating schema resources: %v\", err)\n}\n```",
+      "source_content_hash": "abcb26feb933a18d4fab90377e8a73dfc0632be4aacb0f4fa205e0efa914a03a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_50216bc1"
+      }
+    },
+    {
+      "segment_id": "4b874e17",
+      "source_content": "This approach is mostly useful for prototyping, development, or testing. Therefore, it is recommended to use the\n_Versioned Migration_ approach for mission-critical production environments. By using versioned migrations, users know\nbeforehand what changes are being applied to their database, and can easily tune them depending on their needs.",
+      "source_content_hash": "0979da35c0f9755b2774c7557b17602fcf0fb926eb20ff7918be0017145b54cd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这种方法主要用于原型设计、开发或测试。因此，对于关键生产环境，建议使用\n_版本化迁移_ 方法。通过版本化迁移，用户可以预先了解数据库将应用哪些更改，并根据需要轻松调整这些更改。"
+      }
+    },
+    {
+      "segment_id": "89663107",
+      "source_content": "Read more about this approach in the [Automatic Migration](/docs/migrate) documentation.",
+      "source_content_hash": "35e947624a5d98949b7582843defd628a019217f9b1ab236b3e7c0072da47506",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有关此方法的更多信息，请参阅 [自动迁移](/docs/migrate) 文档。"
+      }
+    },
+    {
+      "segment_id": "eb6eb0e8",
+      "source_content": "### Versioned Migrations",
+      "source_content_hash": "51f332e5f09e6e9adcc317ab6d2580b08ac739597e048a08df02465a7678dc2f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 版本化迁移"
+      }
+    },
+    {
+      "segment_id": "74ff82c1",
+      "source_content": "Unlike _Automatic Migrations_, the _Version Migrations_ approach uses Atlas to automatically generate a set of migration\nfiles containing the necessary SQL statements to migrate the database. These files can be edited to meet specific needs\nand applied using existing migration tools like Atlas, golang-migrate, Flyway, and Liquibase. The API for this approach\ninvolves two primary steps.",
+      "source_content_hash": "4c720733f3e9e203ffd6ffd33cec812591e78afd62d171908d3524842c8c0844",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "与 _自动迁移_ 不同，_版本化迁移_ 方法使用 Atlas 自动生成一组迁移\n文件，其中包含迁移数据库所需的 SQL 语句。这些文件可以根据特定需求进行编辑，\n并使用现有的迁移工具（如 Atlas、golang-migrate、Flyway 和 Liquibase）进行应用。此方法的 API\n主要涉及两个步骤。"
+      }
+    },
+    {
+      "segment_id": "2c3117df",
+      "source_content": "#### Generating migrations",
+      "source_content_hash": "80d0967a23f10c73177676fb5c1c46824e3d3964edcb9a376114ebf8f7849bc9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 生成迁移"
+      }
+    },
+    {
+      "segment_id": "61305def",
+      "source_content": "<AtlasMigrateDiff/>",
+      "source_content_hash": "08a27d764bf978af393b00de0c8d024c7b6e62116bdcfa9087d08b2d34fb95f0",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_61305def"
+      }
+    },
+    {
+      "segment_id": "40d62bc1",
+      "source_content": "#### Applying migrations",
+      "source_content_hash": "d6a2ae5747db714cd7ece5c83a29395cfb648648fc8b1b2ed024134a992edf22",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "14d70e86",
+      "source_content": "<AtlasMigrateApply/>",
+      "source_content_hash": "298dd65bebb3e57ebdc80bf60180d36429a4c8f98b29fd718dd7b6f64f8ed394",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_14d70e86"
+      }
+    },
+    {
+      "segment_id": "ec74b948",
+      "source_content": "Read more about this approach in the [Versioned Migrations](/docs/versioned-migrations) documentation.",
+      "source_content_hash": "fdddd188d005241788da3acbf327551e1755e8de6bc29dacf6240c9550c78679",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有关此方法的更多信息，请参阅[版本化迁移](/docs/versioned-migrations)文档。"
+      }
+    },
+    {
+      "segment_id": "06a92ef6",
+      "source_content": "## Full Example",
+      "source_content_hash": "a176dbf8681099ca73c467e932771b0e5380ee01835f6006f0fc74cdcbe9492d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 完整示例"
+      }
+    },
+    {
+      "segment_id": "3026c350",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/start).",
+      "source_content_hash": "b4bd0f65878a6c415761832a55398eb0df308811450b66ca9909b23c8ab9fa6a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例可在[GitHub](https://github.com/ent/ent/tree/master/examples/start)上查看。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/getting-started.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.654204+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "bf8c598ca589f43509a85f4f4da5bc613b89a275627ee513c1dacf078e096167"
+  }
+}

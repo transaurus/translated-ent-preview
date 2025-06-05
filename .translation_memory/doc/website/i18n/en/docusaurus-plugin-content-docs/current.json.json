@@ -1,0 +1,320 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "i18n/en/docusaurus-plugin-content-docs/current.json",
+  "source_file_content_hash": "f30c11a1d461f5990cddeb9e51e882383fbb8ed91239bc42716dcbbc5c1474e1",
+  "segments": [
+    {
+      "segment_id": "version.label",
+      "source_content": "Next",
+      "source_content_hash": "1ff57a29d7c9d11bdf61c1b80f2b289b44c1ea844824d4b94a0d52b6ba5fc858",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下一个版本"
+      },
+      "metadata": {
+        "json_description": "The label for version current"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.category.Getting Started",
+      "source_content": "Getting Started",
+      "source_content_hash": "d00eca1bae6742803906ab42a831e8b5396d15b6573ea13c139ec31631208ec1",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "入门指南"
+      },
+      "metadata": {
+        "json_description": "The label for category Getting Started in sidebar md"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.category.Schema",
+      "source_content": "Schema",
+      "source_content_hash": "07b091a3fdc4e4c03cd047b5264e61241f20fe8dbc36a4c796d46cd8dc3e7d03",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "数据模型"
+      },
+      "metadata": {
+        "json_description": "The label for category Schema in sidebar md"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.category.Code Generation",
+      "source_content": "Code Generation",
+      "source_content_hash": "6dd237e349c99620af1ffd81b68fa6e2dc4b067259633dbbb78c05b5249d6085",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "代码生成"
+      },
+      "metadata": {
+        "json_description": "The label for category Code Generation in sidebar md"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.category.Migration",
+      "source_content": "Migration",
+      "source_content_hash": "cc149190687e0c3fcc7a9ee1c83d2da2a0dbbd63a897daeb4f217f8f5b79388b",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "迁移"
+      },
+      "metadata": {
+        "json_description": "The label for category Migration in sidebar md"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.category.External Objects",
+      "source_content": "External Objects",
+      "source_content_hash": "c22e67509fb578840dbc20fd8a16b9bf5956d7a3b4f8f318dd11ef02054ccadb",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "外部对象"
+      },
+      "metadata": {
+        "json_description": "The label for category External Objects in sidebar md"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.category.Misc",
+      "source_content": "Misc",
+      "source_content_hash": "048cb0a340e5e54a7833ae8e933c5d7248fde422c92ec8ca5484cd1eeb2cc1c7",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "其他"
+      },
+      "metadata": {
+        "json_description": "The label for category Misc in sidebar md"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.doc.Composite Types",
+      "source_content": "Composite Types",
+      "source_content_hash": "114c62edaf51e857ce0aea23fa5b4e749b5d3affdfd615f32ca9beb25d130177",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "复合类型"
+      },
+      "metadata": {
+        "json_description": "The label for the doc item Composite Types in sidebar md, linking to the doc migration/composite"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.doc.Domain Types",
+      "source_content": "Domain Types",
+      "source_content_hash": "37c9af6b0b26c8c98688a4032aec0a4a3fe7dc37846a5c9ecfd3341d9d62804c",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "领域类型"
+      },
+      "metadata": {
+        "json_description": "The label for the doc item Domain Types in sidebar md, linking to the doc migration/domain"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.doc.Enum Types",
+      "source_content": "Enum Types",
+      "source_content_hash": "7e006276e2960caa884b501b0d7d66b46239c8db25a2f8149126872f1f47647f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "枚举类型"
+      },
+      "metadata": {
+        "json_description": "The label for the doc item Enum Types in sidebar md, linking to the doc migration/enum"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.doc.Extensions",
+      "source_content": "Extensions",
+      "source_content_hash": "fe3436af86b47d22f22d93da68119fcb749dbed0335b4dc99f254e02db236156",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "扩展功能"
+      },
+      "metadata": {
+        "json_description": "The label for the doc item Extensions in sidebar md, linking to the doc migration/extension"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.doc.Functional Indexes",
+      "source_content": "Functional Indexes",
+      "source_content_hash": "cac01dc17c878a6b4a0ccb71992c9e1bbbc0dd8448aa7bbe2a82a70093b8ef2f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "函数索引"
+      },
+      "metadata": {
+        "json_description": "The label for the doc item Functional Indexes in sidebar md, linking to the doc migration/functional-indexes"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.doc.Row-Level Security",
+      "source_content": "Row-Level Security",
+      "source_content_hash": "80deed509ee49ecf6bb260d1807666f7741a731119e8088a2a21eba59239d231",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "行级安全"
+      },
+      "metadata": {
+        "json_description": "The label for the doc item Row-Level Security in sidebar md, linking to the doc migration/rls"
+      }
+    },
+    {
+      "segment_id": "sidebar.md.doc.Triggers",
+      "source_content": "Triggers",
+      "source_content_hash": "e62f2148a64d96bbe686416d73a233e656bf7e9fb9c2160598b525f6a99c8de6",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "触发器"
+      },
+      "metadata": {
+        "json_description": "The label for the doc item Triggers in sidebar md, linking to the doc migration/trigger"
+      }
+    },
+    {
+      "segment_id": "sidebar.tutorial.category.First Steps",
+      "source_content": "First Steps",
+      "source_content_hash": "a07a7da3d0936e98ea4b1e486c4c99a332ae0eea58e3d2784da8153d308d856d",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第一步"
+      },
+      "metadata": {
+        "json_description": "The label for category First Steps in sidebar tutorial"
+      }
+    },
+    {
+      "segment_id": "sidebar.tutorial.category.GraphQL Basics",
+      "source_content": "GraphQL Basics",
+      "source_content_hash": "64d6cc6ff580a33470abdeb15d01c045d6265289a55c3ed317da7d9a155b9620",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "GraphQL基础"
+      },
+      "metadata": {
+        "json_description": "The label for category GraphQL Basics in sidebar tutorial"
+      }
+    },
+    {
+      "segment_id": "sidebar.tutorial.category.gRPC",
+      "source_content": "gRPC",
+      "source_content_hash": "fd2bab6ab1ea670888fa46bd8c7bbb44d2565a098d4e7255e7928fbf8b50ff47",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "gRPC"
+      },
+      "metadata": {
+        "json_description": "The label for category gRPC in sidebar tutorial"
+      }
+    },
+    {
+      "segment_id": "sidebar.tutorial.category.Versioned Migrations",
+      "source_content": "Versioned Migrations",
+      "source_content_hash": "afc2ffeee547ac3e21aaa5bda458259008d3a6adfcd8db0b655cfaf51a1e4f4c",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "版本化迁移"
+      },
+      "metadata": {
+        "json_description": "The label for category Versioned Migrations in sidebar tutorial"
+      }
+    }
+  ],
+  "original_json_structure": {
+    "version.label": {
+      "message": "Next",
+      "description": "The label for version current"
+    },
+    "sidebar.md.category.Getting Started": {
+      "message": "Getting Started",
+      "description": "The label for category Getting Started in sidebar md"
+    },
+    "sidebar.md.category.Schema": {
+      "message": "Schema",
+      "description": "The label for category Schema in sidebar md"
+    },
+    "sidebar.md.category.Code Generation": {
+      "message": "Code Generation",
+      "description": "The label for category Code Generation in sidebar md"
+    },
+    "sidebar.md.category.Migration": {
+      "message": "Migration",
+      "description": "The label for category Migration in sidebar md"
+    },
+    "sidebar.md.category.External Objects": {
+      "message": "External Objects",
+      "description": "The label for category External Objects in sidebar md"
+    },
+    "sidebar.md.category.Misc": {
+      "message": "Misc",
+      "description": "The label for category Misc in sidebar md"
+    },
+    "sidebar.md.doc.Composite Types": {
+      "message": "Composite Types",
+      "description": "The label for the doc item Composite Types in sidebar md, linking to the doc migration/composite"
+    },
+    "sidebar.md.doc.Domain Types": {
+      "message": "Domain Types",
+      "description": "The label for the doc item Domain Types in sidebar md, linking to the doc migration/domain"
+    },
+    "sidebar.md.doc.Enum Types": {
+      "message": "Enum Types",
+      "description": "The label for the doc item Enum Types in sidebar md, linking to the doc migration/enum"
+    },
+    "sidebar.md.doc.Extensions": {
+      "message": "Extensions",
+      "description": "The label for the doc item Extensions in sidebar md, linking to the doc migration/extension"
+    },
+    "sidebar.md.doc.Functional Indexes": {
+      "message": "Functional Indexes",
+      "description": "The label for the doc item Functional Indexes in sidebar md, linking to the doc migration/functional-indexes"
+    },
+    "sidebar.md.doc.Row-Level Security": {
+      "message": "Row-Level Security",
+      "description": "The label for the doc item Row-Level Security in sidebar md, linking to the doc migration/rls"
+    },
+    "sidebar.md.doc.Triggers": {
+      "message": "Triggers",
+      "description": "The label for the doc item Triggers in sidebar md, linking to the doc migration/trigger"
+    },
+    "sidebar.tutorial.category.First Steps": {
+      "message": "First Steps",
+      "description": "The label for category First Steps in sidebar tutorial"
+    },
+    "sidebar.tutorial.category.GraphQL Basics": {
+      "message": "GraphQL Basics",
+      "description": "The label for category GraphQL Basics in sidebar tutorial"
+    },
+    "sidebar.tutorial.category.gRPC": {
+      "message": "gRPC",
+      "description": "The label for category gRPC in sidebar tutorial"
+    },
+    "sidebar.tutorial.category.Versioned Migrations": {
+      "message": "Versioned Migrations",
+      "description": "The label for category Versioned Migrations in sidebar tutorial"
+    }
+  },
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current.json",
+  "last_updated_timestamp": "2025-06-05T15:16:18.675402+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "f30c11a1d461f5990cddeb9e51e882383fbb8ed91239bc42716dcbbc5c1474e1"
+  }
+}

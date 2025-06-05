@@ -1,0 +1,202 @@
+---
+id: programmatically
+title: "Appendix: programmatic planning"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+在前面的章节中，我们了解了如何使用Atlas CLI生成迁移文件。但其实我们也可以通过编程方式生成这些文件。本节将介绍如何编写用于自动规划迁移文件的Go代码。
+
+## 1. 启用版本化迁移功能标志
+
+:::info[配套代码库]
+
+本节的修改内容可在配套代码库的PR [#2](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/2/files)中查看。
+
+:::
+
+第一步是通过传入`sql/versioned-migration`功能标志来启用版本化迁移。根据执行Ent代码生成器的方式不同，您需要选择以下两种方式之一：
+
+<Tabs
+defaultValue="ent"
+values={[
+{label: 'Using Ent CLI', value: 'ent'},
+{label: 'Using the entc package', value: 'entc'},
+]}>
+<TabItem value="ent">
+
+If you are using the default go generate configuration, simply add the `--feature sql/versioned-migration` to
+the `ent/generate.go` file as follows:
+
+```go
+package ent
+
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature sql/versioned-migration ./schema
+```
+
+</TabItem>
+<TabItem value="entc">
+
+If you are using the code generation package (e.g. if you are using an Ent extension like `entgql`),
+add the feature flag as follows:
+
+```go
+//go:build ignore
+
+package main
+
+import (
+	"log"
+
+	"entgo.io/ent/entc"
+	"entgo.io/ent/entc/gen"
+)
+
+func main() {
+	err := entc.Generate("./schema", &gen.Config{
+		//highlight-next-line
+		Features: []gen.Feature{gen.FeatureVersionedMigration},
+	})
+	if err != nil {
+		log.Fatalf("running ent codegen: %v", err)
+	}
+}
+```
+
+</TabItem>
+</Tabs>
+
+接着重新运行代码生成：
+
+```shell
+go generate ./...
+```
+
+运行代码生成后，您会看到以下
+[新增的方法](https://github.com/rotemtam/ent-versioned-migrations-demo/commit/e724fa32330d920fd405b9785fcfece2a46ea56c#diff-370235e5107bbdd35861063f3beff1507723ebdda6e29a39cdde1f1a944594d8)
+出现在`ent/migrate/migrate.go`文件中：
+
+* `Diff`
+* `NamedDiff`
+
+这些方法用于将从数据库连接或迁移目录读取的状态与Ent模式定义的状态进行比较。
+
+## 2. 自动迁移规划脚本
+
+:::info[配套代码库]
+
+本节的修改内容可在配套代码库的PR [#4](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/4/files)中查看。
+
+:::
+
+### 开发数据库
+
+为了能规划准确且一致的迁移文件，Atlas引入了
+[开发数据库](https://atlasgo.io/concepts/dev-database)的概念，这是一个用于模拟数据库在不同变更后状态的临时数据库。因此，要使用Atlas自动规划迁移，我们需要在迁移规划脚本中提供连接到此数据库的连接字符串。通常我们会使用本地Docker容器来启动这样的数据库。现在运行以下命令来配置：
+
+```shell
+docker run --rm --name atlas-db-dev -d -p 3306:3306 -e MYSQL_DATABASE=dev -e MYSQL_ROOT_PASSWORD=pass mysql:8
+```
+
+使用刚配置好的开发数据库，我们可以编写一个利用Atlas为我们规划迁移文件的脚本。在项目的`ent/migrate`目录下新建一个名为`main.go`的文件：
+
+```go title=ent/migrate/main.go
+//go:build ignore
+
+package main
+
+import (
+    "context"
+    "log"
+    "os"
+
+    // highlight-next-line
+    "<project>/ent/migrate"
+
+    atlas "ariga.io/atlas/sql/migrate"
+    "entgo.io/ent/dialect"
+    "entgo.io/ent/dialect/sql/schema"
+    _ "github.com/go-sql-driver/mysql"
+)
+
+const (
+	dir = "ent/migrate/migrations"
+)
+
+func main() {
+    ctx := context.Background()
+    // Create a local migration directory able to understand Atlas migration file format for replay.
+    if err := os.MkdirAll(dir, 0755); err != nil {
+		log.Fatalf("creating migration directory: %v", err)
+	}
+    dir, err := atlas.NewLocalDir(dir)
+    if err != nil {
+        log.Fatalf("failed creating atlas migration directory: %v", err)
+    }
+    // Migrate diff options.
+    opts := []schema.MigrateOption{
+        schema.WithDir(dir),                         // provide migration directory
+        schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
+        schema.WithDialect(dialect.MySQL),           // Ent dialect to use
+        schema.WithFormatter(atlas.DefaultFormatter),
+    }
+    if len(os.Args) != 2 {
+        log.Fatalln("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'")
+    }
+    // Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
+    //highlight-next-line
+    err = migrate.NamedDiff(ctx, "mysql://root:pass@localhost:3306/dev", os.Args[1], opts...)
+    if err != nil {
+        log.Fatalf("failed generating migration file: %v", err)
+    }
+}
+```
+
+:::info
+
+注意您需要修改上述脚本中标出的部分：调整`migrate`包的导入路径以匹配您的项目，并提供开发数据库的连接字符串。
+
+:::
+
+运行脚本前，先在项目的`ent/migrate`目录下创建`migrations`目录：
+
+```text
+mkdir ent/migrate/migrations
+```
+
+然后运行脚本来为项目创建初始迁移文件：
+
+```shell
+go run -mod=mod ent/migrate/main.go initial
+```
+
+注意这里的`initial`只是迁移文件的标签，您可以使用任意名称。
+
+运行脚本后，您会看到`ent/migrate/migrations`目录下生成了两个新文件。第一个是名为`atlas.sum`的校验文件，Atlas用它来确保迁移历史的线性完整性：
+
+```text title=ent/migrate/migrations/atlas.sum
+h1:Dt6N5dIebSto365ZEyIqiBKDqp4INvd7xijLIokqWqA=
+20221114165732_initialize.sql h1:/33+7ubMlxuTkW6Ry55HeGEZQ58JqrzaAl2x1TmUTdE=
+```
+
+第二个文件是实际的迁移文件，其名称基于我们传给脚本的标签：
+
+```sql title=ent/migrate/migrations/20221114165732_initial.sql
+-- create "users" table
+CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `email` (`email`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+-- create "blogs" table
+CREATE TABLE `blogs` (`id` bigint NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `body` longtext NOT NULL, `created_at` timestamp NOT NULL, `user_blog_posts` bigint NULL, PRIMARY KEY (`id`), CONSTRAINT `blogs_users_blog_posts` FOREIGN KEY (`user_blog_posts`) REFERENCES `users` (`id`) ON DELETE SET NULL) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+```
+
+## 其他迁移工具
+
+Atlas 与 Ent 的集成非常出色，但它并非唯一可用于管理 Ent 项目数据库模式的迁移工具。以下是其他受支持的迁移工具列表：
+
+* [Goose](https://github.com/pressly/goose)
+* [Golang Migrate](https://github.com/golang-migrate/migrate)
+* [Flyway](https://flywaydb.org)
+* [Liquibase](https://www.liquibase.org)
+* [dbmate](https://github.com/amacneil/dbmate)
+
+要了解如何将这些工具与 Ent 结合使用，请参阅相关[文档](https://entgo.io/docs/versioned-migrations#create-a-migration-files-generator)。

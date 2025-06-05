@@ -1,0 +1,172 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-grpc-ext-service.md",
+  "source_file_content_hash": "54a0941f3de96bc3196630c3657f2a2cd1ed4df836a81983ae0d39709268090a",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: grpc-external-service\ntitle: Working with External gRPC Services\nsidebar_label: External gRPC Services\n---",
+      "source_content_hash": "4e5d26a98facf573b6184daacbc3d816ee7a22b534bc1727d4f1f2f537e68d5c",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "Oftentimes, you will want to include in your gRPC server, methods that are not automatically generated from\nyour Ent schema. To achieve this result, define the methods in an additional service in an additional `.proto` file\nin your `entpb` directory. ",
+      "source_content_hash": "0615b9967b4bb4e2d09c4eb385d7ae8f341f8d8b7d25a6e960e7715cc4b0c27e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通常，您会希望在gRPC服务器中包含那些无法从Ent模式自动生成的方法。为实现这一目标，可以在`entpb`目录下的额外`.proto`文件中定义这些方法，并将其作为附加服务声明。"
+      }
+    },
+    {
+      "segment_id": "6cae1da3",
+      "source_content": ":::info[]\n\nFind the changes described in this section in  [this pull request](https://github.com/rotemtam/ent-grpc-example/pull/7/files).\n\n:::",
+      "source_content_hash": "6cfbf31e50e26c7ef4d826fd17711fc2e82c224da384ca0f1eb7e16809239389",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[]\n\n本节描述的变更可参考[此拉取请求](https://github.com/rotemtam/ent-grpc-example/pull/7/files)。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "42ad8e83",
+      "source_content": "For example, suppose you want to add a method named `TopUser` which will return the user with the highest ID number.\nTo do this, create a new `.proto` file in your `entpb` directory, and define a new service:",
+      "source_content_hash": "ae553d79c03e9cf0a1b6003d2f1143e9d0032f1a8d9eeb8944ba880859d0795f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "例如，假设需要添加名为`TopUser`的方法来返回ID号最大的用户。为此，在`entpb`目录下创建新的`.proto`文件并定义服务："
+      }
+    },
+    {
+      "segment_id": "166426c2",
+      "source_content": "```protobuf title=\"ent/proto/entpb/ext.proto\"\nsyntax = \"proto3\";\n\npackage entpb;\n\noption go_package = \"github.com/rotemtam/ent-grpc-example/ent/proto/entpb\";\n\nimport \"entpb/entpb.proto\";\n\nimport \"google/protobuf/empty.proto\";\n\n\nservice ExtService {\n  rpc TopUser ( google.protobuf.Empty ) returns ( User );\n}\n```",
+      "source_content_hash": "933c9915d7eaf3297a6068ec4c3e267f0789f6d3b807b8b9bdd12d4a3f1055e8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_166426c2"
+      }
+    },
+    {
+      "segment_id": "97ae4a01",
+      "source_content": "Next, update `entpb/generate.go` to include the new file in the `protoc` command input:",
+      "source_content_hash": "138ec89bf4271efbf3412e9537b078ebbd08b03befff590e31e01233e7a98ade",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着更新`entpb/generate.go`文件，将新文件加入`protoc`命令的输入参数："
+      }
+    },
+    {
+      "segment_id": "de8f60af",
+      "source_content": "```diff title=\"ent/proto/entpb/generate.go\"\n- //go:generate protoc -I=.. --go_out=.. --go-grpc_out=.. --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative --entgrpc_out=.. --entgrpc_opt=paths=source_relative,schema_path=../../schema entpb/entpb.proto \n+ //go:generate protoc -I=.. --go_out=.. --go-grpc_out=.. --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative --entgrpc_out=.. --entgrpc_opt=paths=source_relative,schema_path=../../schema entpb/entpb.proto entpb/ext.proto\n```",
+      "source_content_hash": "d3256e9b158b02bbd5875837e754fcfe8a69a7a52fcaa55a13302a8d00b4e6d5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de8f60af"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "Next, re-run code generation:",
+      "source_content_hash": "2a491bc91c6d60036ca5ef9cd919e6c1a4227a50f4d84ee944894ea32fb5e2e7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重新运行代码生成命令："
+      }
+    },
+    {
+      "segment_id": "4ec2920d",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4ec2920d"
+      }
+    },
+    {
+      "segment_id": "a44047a5",
+      "source_content": "Observe some new files were generated in the `ent/proto/entpb` directory:",
+      "source_content_hash": "13ad13273a3462bca76576f423a03d5d2afc8c3bf2b1a83adc4d6b209b9f8239",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察`ent/proto/entpb`目录下生成的新文件："
+      }
+    },
+    {
+      "segment_id": "64b6f348",
+      "source_content": "```shell\ntree\n.\n|-- entpb.pb.go\n|-- entpb.proto\n|-- entpb_grpc.pb.go\n|-- entpb_user_service.go\n// highlight-start\n|-- ext.pb.go\n|-- ext.proto\n|-- ext_grpc.pb.go\n// highlight-end\n`-- generate.go\n\n0 directories, 9 files\n```",
+      "source_content_hash": "d5e44682b88b9839466d86a1f86b0f615d655c22e41a288e40141f44d1a31de1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_64b6f348"
+      }
+    },
+    {
+      "segment_id": "657c2b20",
+      "source_content": "Now, you can implement the `TopUser` method in `ent/proto/entpb/ext.go`:",
+      "source_content_hash": "32937b84e9634ec5c5c47a047b3c01e49a12a66054bbc45437a410a0b364de3d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在可以在`ent/proto/entpb/ext.go`中实现`TopUser`方法："
+      }
+    },
+    {
+      "segment_id": "17c579d2",
+      "source_content": "```go title=\"ent/proto/entpb/ext.go\"\npackage entpb\n\nimport (\n\t\"context\"\n\n\t\"github.com/rotemtam/ent-grpc-example/ent\"\n\t\"github.com/rotemtam/ent-grpc-example/ent/user\"\n\t\"google.golang.org/protobuf/types/known/emptypb\"\n)\n\n// ExtService implements ExtServiceServer.\ntype ExtService struct {\n\tclient *ent.Client\n\tUnimplementedExtServiceServer\n}\n\n// TopUser returns the user with the highest ID.\nfunc (s *ExtService) TopUser(ctx context.Context, _ *emptypb.Empty) (*User, error) {\n\tid := s.client.User.Query().Aggregate(ent.Max(user.FieldID)).IntX(ctx)\n\tuser := s.client.User.GetX(ctx, id)\n\treturn toProtoUser(user)\n}\n\n// NewExtService returns a new ExtService.\nfunc NewExtService(client *ent.Client) *ExtService {\n\treturn &ExtService{\n\t\tclient: client,\n\t}\n}\n\n```",
+      "source_content_hash": "e561d5247a2ca79b966979960a39b1ecf439a33f3e1ae395c9ab56b1904b3724",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_17c579d2"
+      }
+    },
+    {
+      "segment_id": "71169a2d",
+      "source_content": "### Adding the New Service to the gRPC Server",
+      "source_content_hash": "d419743412620c7f048766984705898b43f6250dbeddc9510b5cc4ff853645a5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 将新服务添加至gRPC服务器"
+      }
+    },
+    {
+      "segment_id": "c1eaf30b",
+      "source_content": "Finally, update `cmd/server.go` to include the new service:",
+      "source_content_hash": "914f5bc7a6582ef2b2bb94c8325c9a7257020dae8a2483cba08c7593690b5655",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后更新`cmd/server.go`以包含新服务："
+      }
+    },
+    {
+      "segment_id": "c4c0fc07",
+      "source_content": "```go title=\"cmd/server.go\"\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"net\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n\t\"github.com/rotemtam/ent-grpc-example/ent\"\n\t\"github.com/rotemtam/ent-grpc-example/ent/proto/entpb\"\n\t\"google.golang.org/grpc\"\n)\n\nfunc main() {\n\t// Initialize an ent client.\n\tclient, err := ent.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer client.Close()\n\n\t// Run the migration tool (creating tables, etc).\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\n\t// Initialize the generated User service.\n\tsvc := entpb.NewUserService(client)\n\n\t// Create a new gRPC server (you can wire multiple services to a single server).\n\tserver := grpc.NewServer()\n\n    // highlight-start\n\t// Register the User service with the server.\n\tentpb.RegisterUserServiceServer(server, svc)\n\t// highlight-end\n\n\t// Register the external ExtService service with the server.\n\tentpb.RegisterExtServiceServer(server, entpb.NewExtService(client))\n\n\t// Open port 5000 for listening to traffic.\n\tlis, err := net.Listen(\"tcp\", \":5000\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed listening: %s\", err)\n\t}\n\n\t// Listen for traffic indefinitely.\n\tif err := server.Serve(lis); err != nil {\n\t\tlog.Fatalf(\"server ended: %s\", err)\n\t}\n}\n\n```",
+      "source_content_hash": "03eacb04ce3750f5fab7bf002d3b55d9b9c32f38f8ce7e6af479a355acb8c40e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c4c0fc07"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-grpc-ext-service.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.664295+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "54a0941f3de96bc3196630c3657f2a2cd1ed4df836a81983ae0d39709268090a"
+  }
+}

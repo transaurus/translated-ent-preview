@@ -1,0 +1,122 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/sql-integration.md",
+  "source_file_content_hash": "7649ea23a84bb19842f99271d7504405422bdb639c7046defd4fbdeee26fd747",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: sql-integration\ntitle: sql.DB Integration\n---",
+      "source_content_hash": "41897fe68bf36a5fe5f674f1431e9c383d1af861df84985d20ced3cec67351c2",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "The following examples show how to pass a custom `sql.DB` object to `ent.Client`.",
+      "source_content_hash": "049ddebdc397216996277a41f08cb3c42f4a09fdb608cfd8f490acb032619182",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下示例展示如何将自定义的 `sql.DB` 对象传递给 `ent.Client`。"
+      }
+    },
+    {
+      "segment_id": "cc3c868d",
+      "source_content": "## Configure `sql.DB`",
+      "source_content_hash": "4c7972d3d8d094f2f90f8b40e5ac199412c3060581df7b4536edd715b421587c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 配置 `sql.DB`"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "First option:",
+      "source_content_hash": "f88752446f02f4c43b4b74fb29d0d5effbbeaf41545347bb17c61711b9c4f9a2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第一种方式："
+      }
+    },
+    {
+      "segment_id": "ee201347",
+      "source_content": "```go\npackage main\n\nimport (\n    \"time\"\n\n    \"<your_project>/ent\"\n    \"entgo.io/ent/dialect/sql\"\n)\n\nfunc Open() (*ent.Client, error) {\n    drv, err := sql.Open(\"mysql\", \"<mysql-dsn>\")\n    if err != nil {\n    \treturn nil, err\n    }\n    // Get the underlying sql.DB object of the driver.\n    db := drv.DB()\n    db.SetMaxIdleConns(10)\n    db.SetMaxOpenConns(100)\n    db.SetConnMaxLifetime(time.Hour)\n    return ent.NewClient(ent.Driver(drv)), nil\n}\n```",
+      "source_content_hash": "46afafc57d5ce90cdeed5396cd85cbcaefa296b9b69b3c2977056785789c59d9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ee201347"
+      }
+    },
+    {
+      "segment_id": "517051a7",
+      "source_content": "Second option:",
+      "source_content_hash": "64bcff8f9302d4ec3a910ec3d7a65c45bf940022a60b8cec5fd1b2ec0c247eee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第二种方式："
+      }
+    },
+    {
+      "segment_id": "4dd51304",
+      "source_content": "```go\npackage main\n\nimport (\n    \"database/sql\"\n    \"time\"\n\n    \"<your_project>/ent\"\n    entsql \"entgo.io/ent/dialect/sql\"\n)\n\nfunc Open() (*ent.Client, error) {\n    db, err := sql.Open(\"mysql\", \"<mysql-dsn>\")\n    if err != nil {\n    \treturn nil, err\n    }\n    db.SetMaxIdleConns(10)\n    db.SetMaxOpenConns(100)\n    db.SetConnMaxLifetime(time.Hour)\n    // Create an ent.Driver from `db`.\n    drv := entsql.OpenDB(\"mysql\", db)\n    return ent.NewClient(ent.Driver(drv)), nil\n}\n```",
+      "source_content_hash": "0646978ca10bf6012505215ba1c7d89f7e7180bc2c458eaff88ace6eb1180f83",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4dd51304"
+      }
+    },
+    {
+      "segment_id": "9e95fc4a",
+      "source_content": "## Use Opencensus With MySQL",
+      "source_content_hash": "cf5dcb1bb28bf99649e4da804f100196704bbdb45f92de7cebffff6b79a060f8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 在MySQL中使用Opencensus"
+      }
+    },
+    {
+      "segment_id": "7a577a50",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"database/sql\"\n\t\"database/sql/driver\"\n\n\t\"<project>/ent\"\n\n\t\"contrib.go.opencensus.io/integrations/ocsql\"\n\t\"entgo.io/ent/dialect\"\n\tentsql \"entgo.io/ent/dialect/sql\"\n\t\"github.com/go-sql-driver/mysql\"\n)\n\ntype connector struct {\n\tdsn string\n}\n\nfunc (c connector) Connect(context.Context) (driver.Conn, error) {\n\treturn c.Driver().Open(c.dsn)\n}\n\nfunc (connector) Driver() driver.Driver {\n\treturn ocsql.Wrap(\n\t\tmysql.MySQLDriver{},\n\t\tocsql.WithAllTraceOptions(),\n\t\tocsql.WithRowsClose(false),\n\t\tocsql.WithRowsNext(false),\n\t\tocsql.WithDisableErrSkip(true),\n\t)\n}\n\n// Open new connection and start stats recorder.\nfunc Open(dsn string) *ent.Client {\n\tdb := sql.OpenDB(connector{dsn})\n\t// Create an ent.Driver from `db`.\n\tdrv := entsql.OpenDB(dialect.MySQL, db)\n\treturn ent.NewClient(ent.Driver(drv))\n}\n```",
+      "source_content_hash": "e57ff40a2bd9abc6b2831bbfd6f0ee038d87c07bc854aecd32f34a1c089c6de5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7a577a50"
+      }
+    },
+    {
+      "segment_id": "f947c8e4",
+      "source_content": "## Use pgx with PostgreSQL",
+      "source_content_hash": "875ddc8e4d88a869f0cb7ec95b48cf7f5e4b9603c921d726ce8abd704b9fc5e2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 在PostgreSQL中使用pgx"
+      }
+    },
+    {
+      "segment_id": "59534425",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"database/sql\"\n\t\"log\"\n\n\t\"<project>/ent\"\n\n\t\"entgo.io/ent/dialect\"\n\tentsql \"entgo.io/ent/dialect/sql\"\n\t_ \"github.com/jackc/pgx/v5/stdlib\"\n)\n\n// Open new connection\nfunc Open(databaseUrl string) *ent.Client {\n\tdb, err := sql.Open(\"pgx\", databaseUrl)\n\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\n\t// Create an ent.Driver from `db`.\n\tdrv := entsql.OpenDB(dialect.Postgres, db)\n\treturn ent.NewClient(ent.Driver(drv))\n}\n\nfunc main() {\n\tclient := Open(\"postgresql://user:password@127.0.0.1/database\")\n\n\t// Your code. For example:\n\tctx := context.Background()\n\tif err := client.Schema.Create(ctx); err != nil {\n\t\tlog.Fatal(err)\n\t}\n\tusers, err := client.User.Query().All(ctx)\n\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\tlog.Println(users)\n}\n```",
+      "source_content_hash": "019bd6ffbaee84de0364dde372980cf161d880a9977c88a8a14048d37c66f4d3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_59534425"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/sql-integration.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.657861+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "7649ea23a84bb19842f99271d7504405422bdb639c7046defd4fbdeee26fd747"
+  }
+}

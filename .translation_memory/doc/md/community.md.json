@@ -1,0 +1,82 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/community.md",
+  "source_file_content_hash": "e4bda1e0035f70bc5ae0ae30dc0454bc5ab434a0fa2648a2595176e8b666ca63",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: community\ntitle: Join our Community\n---",
+      "source_content_hash": "7781b9e0c7aaaecd2227f0cb7d3e7b75bf4ed19e65a73a85cfe927c6d6ec0304",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "Ent maintainers, contributors and users hang out in our Discord server and the #ent channel in the Gophers Slack workspace.",
+      "source_content_hash": "4f5ead037c66549066329d8df970b26ae6dc8c3c89b8ef2bee3137ded9ba7ab9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent 的维护者、贡献者和用户活跃于我们的 Discord 服务器以及 Gophers Slack 工作区的 #ent 频道。"
+      }
+    },
+    {
+      "segment_id": "cc3c868d",
+      "source_content": "### Discord",
+      "source_content_hash": "adfa4f4baf92afb97124ea3a1a231180254d84d9c3204178d6f7e89f60545caa",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Discord"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "To Join our Discord server, click [here](https://discord.gg/qZmPgTE6RX).",
+      "source_content_hash": "786921620160bcabe1233325e7313c7a0a3f2c4409ae0e257f1ec94cfb64ab3b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "点击[此处](https://discord.gg/qZmPgTE6RX)加入我们的 Discord 服务器。"
+      }
+    },
+    {
+      "segment_id": "9fcbdce9",
+      "source_content": "### Slack",
+      "source_content_hash": "a3f32a7dd64b8751aa3ea16b6fb98aad4b589b6835ac965ad0737a5408b87307",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Slack"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "To join the discussion in slack:",
+      "source_content_hash": "a1d780bd2a8e14b77b4bba5db4140dd188072e0abce9153d0360bb8442d06f1c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "加入 Slack 讨论的步骤："
+      }
+    },
+    {
+      "segment_id": "4ddf6ae7",
+      "source_content": "1. Sign up to the Gophers Slack workspace via the [invite link](https://invite.slack.golangbridge.org/).\n2. Join the #ent channel manually or via [this link](https://app.slack.com/client/T029RQSE6/C01FMSQDT53). (it will work only if you are logged in to slack from your browser)",
+      "source_content_hash": "63c1e32af71081e729058ed8b9bc27d29bb0d3640da5483b50b5c4a7f62e02d5",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 通过[邀请链接](https://invite.slack.golangbridge.org/)注册 Gophers Slack 工作区。\n2. 手动加入 #ent 频道，或通过[此链接](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)加入（仅当您已通过浏览器登录 Slack 时有效）。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/community.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.659015+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "e4bda1e0035f70bc5ae0ae30dc0454bc5ab434a0fa2648a2595176e8b666ca63"
+  }
+}

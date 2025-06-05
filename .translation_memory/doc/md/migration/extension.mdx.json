@@ -1,0 +1,372 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/migration/extension.mdx",
+  "source_file_content_hash": "4498b793c10bfbbfe24571ccd1fef40a1ed6eff9c57e3cb12559eea274ef5e72",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Using Postgres Extensions in Ent Schema\nid: extension\nslug: extensions\n---",
+      "source_content_hash": "1de9b9799261d931892eb6d63f7c586a09dc28bc400c27496141a370ab1e1781",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';\nimport InstallationInstructions from '../components/_installation_instructions.mdx';",
+      "source_content_hash": "ffc742d78eb313c2e57a6a0244a32ba45938e009a6b63b1af7b9e28de9f1658b",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_10c4cb47"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "[Postgres extensions](https://www.postgresql.org/docs/current/sql-createextension.html) are add-on modules that extend\nthe functionality of the database by providing new data types, operators, functions, procedural languages, and more.",
+      "source_content_hash": "e3341fe7116578218bb8e90ac5abf5aa796b74a563f9d4173d9d5a7eece2904c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[Postgres扩展](https://www.postgresql.org/docs/current/sql-createextension.html)是通过提供新数据类型、操作符、函数、过程语言等功能来增强数据库的附加模块。"
+      }
+    },
+    {
+      "segment_id": "cf898102",
+      "source_content": "This guide explains how to define a schema field that uses a data type provided by the PostGIS extension, and configure\nthe schema migration to manage both Postgres extension installations and the Ent schema as a single migration unit using\nAtlas.",
+      "source_content_hash": "30d58cb49bc3f835a4de40b6a8a904d1a405201a31f29280c698e5f4af675b03",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南将说明如何定义一个使用PostGIS扩展提供的数据类型的模式字段，并通过Atlas配置模式迁移，将Postgres扩展安装与Ent模式作为单一迁移单元进行管理。"
+      }
+    },
+    {
+      "segment_id": "f55b9485",
+      "source_content": ":::info[[Atlas Pro Feature](https://atlasgo.io/features#pro-plan)]\nAtlas support for [Extensions](https://atlasgo.io/atlas-schema/hcl#extension) is available exclusively to Pro users.\nTo use this feature, run:\n```\natlas login\n```\n:::",
+      "source_content_hash": "9516e3e88e1671dcd9a44127da44403512a17e4803f78c35c309c36469b88c39",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[Atlas Pro功能](https://atlasgo.io/features#pro-plan)]\nAtlas对[扩展](https://atlasgo.io/atlas-schema/hcl#extension)的支持仅限Pro用户使用。要使用此功能，请运行：\n```\natlas login\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "fa430ad4",
+      "source_content": "## Install Atlas",
+      "source_content_hash": "bf92a270e324b46f2c1d6f24555018906dc2df68b19873079220409508dabfad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装Atlas"
+      }
+    },
+    {
+      "segment_id": "9329e3e0",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9329e3e0"
+      }
+    },
+    {
+      "segment_id": "48847fd4",
+      "source_content": "## Login to Atlas",
+      "source_content_hash": "e256bf54631891b6388a26350087fe6f85606d3b82220c15db06e45dc9ae443c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 登录Atlas"
+      }
+    },
+    {
+      "segment_id": "a2110253",
+      "source_content": "```shell\n$ atlas login a8m\n//highlight-next-line-info\nYou are now connected to \"a8m\" on Atlas Cloud.\n```",
+      "source_content_hash": "496821c033e70d4510db88b24c2448b81f6a4860a232e94aa6828c08a6979cd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a2110253"
+      }
+    },
+    {
+      "segment_id": "62a6890b",
+      "source_content": "## Composite Schema",
+      "source_content_hash": "bba3d45312f3e0d6b9188ea0568fe93b6ecf4dd0b5f18da48a134b0a61d8e55c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 复合模式"
+      }
+    },
+    {
+      "segment_id": "3cfe6286",
+      "source_content": "An `ent/schema` package is mostly used for defining Ent types (objects), their fields, edges and logic. Extensions like\n`postgis` or `hstore` do not have representation in Ent schema. A Postgres extension can be installed once in your\nPostgres database, and may be used multiple times in different schemas.",
+      "source_content_hash": "ede5826f566dcbfdf295fdeb6061b6a047669b5e1093fc1d68c6d302f3015720",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema`包主要用于定义Ent类型（对象）、字段、边和逻辑。像`postgis`或`hstore`这样的扩展在Ent模式中没有表示形式。Postgres扩展只需在Postgres数据库中安装一次，便可在不同模式中多次使用。"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "In order to extend our PostgreSQL schema migration to include both extensions and our Ent types, we configure Atlas to\nread the state of the schema from a [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)\ndata source. Follow the steps below to configure this for your project:",
+      "source_content_hash": "37edcb0edae4d992edfc460991dcec91ea6891f279031d7ace73e491cff3870a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了将PostgreSQL模式迁移扩展到包括扩展和Ent类型，我们配置Atlas从[复合模式](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)数据源读取模式状态。按照以下步骤为项目进行配置："
+      }
+    },
+    {
+      "segment_id": "29528c8d",
+      "source_content": "1\\. Create a `schema.sql` that defines the necessary extensions used by your database. In the same way, you can define\nthe extensions in [Atlas Schema HCL language](https://atlasgo.io/atlas-schema/hcl-types#extension):",
+      "source_content_hash": "a08643aa61cef919aa134412ef7a477b52b00b1cbef19841017560783b92b813",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 创建一个`schema.sql`文件，定义数据库所需的扩展。同样，你也可以使用[Atlas Schema HCL语言](https://atlasgo.io/atlas-schema/hcl-types#extension)来定义扩展："
+      }
+    },
+    {
+      "segment_id": "b72935b5",
+      "source_content": "<Tabs>\n<TabItem value={\"sql\"} label={\"Using SQL\"}>\n\n```sql title=\"schema.sql\"\n-- Install PostGIS extension.\nCREATE EXTENSION postgis;\n```\n\n</TabItem>\n<TabItem value={\"hcl\"} label={\"Using HCL\"}>\n\n```hcl title=\"schema.hcl\"\nschema \"public\" {}\n\nextension \"postgis\" {\n  schema  = schema.public\n  version = \"3.4.2\"\n  comment = \"PostGIS geometry and geography spatial types and functions\"\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "de67c4b7bf5b8786d47b1dbfd10e91ffa4ed9d6669c4bd23651209b8d67b9b64",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b72935b5"
+      }
+    },
+    {
+      "segment_id": "6cc549f2",
+      "source_content": "2\\. In your Ent schema, define a field that uses the data type provided by the extension. In this example, we use the\n`GEOMETRY(Point, 4326)` data type provided by the `postgis` extension:",
+      "source_content_hash": "dfb4e034f88527b505982d7a9413a887bc6ffab2d94fe79487846a1b5793bd4d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在Ent模式中，定义一个使用扩展提供的数据类型的字段。在本例中，我们使用`postgis`扩展提供的`GEOMETRY(Point, 4326)`数据类型："
+      }
+    },
+    {
+      "segment_id": "a89f84e1",
+      "source_content": "```go title=\"ent/schema/user.go\" {7-9}\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Bytes(\"location\").\n\t\t\t// Ideally, we would use a custom GoType\n\t\t\t// to represent the \"geometry\" type.\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.Postgres: \"GEOMETRY(Point, 4326)\",\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "1ca1e2c9898619457a8bb04afca36ae40de6e722cba30363934fb772427a5b02",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a89f84e1"
+      }
+    },
+    {
+      "segment_id": "51867d16",
+      "source_content": "3\\. Create a simple `atlas.hcl` config file with a `composite_schema` that includes both the extensions defined in\n   `schema.sql` and your Ent schema:",
+      "source_content_hash": "2ae220ac4168a6d24d29119fcb418fb24e6753b1a429b68b91553b7508d57fe1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 创建一个简单的`atlas.hcl`配置文件，其中包含一个`composite_schema`，该模式同时包括`schema.sql`中定义的扩展和你的Ent模式："
+      }
+    },
+    {
+      "segment_id": "19913a56",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"app\" {\n  # Install extensions first (PostGIS).\n  schema \"public\" {\n    url = \"file://schema.sql\"\n  }\n  # Then, load the Ent schema.\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n}\n\nenv \"local\" {\n  src = data.composite_schema.app.url\n  dev = \"docker://postgis/latest/dev\"\n  format {\n    migrate {\n      diff = \"{{ sql . \\\"  \\\" }}\"\n    }\n  }\n}\n```",
+      "source_content_hash": "78ac003cf11a12baeec27b983b6b529229fe1006075214e5d64c331569bba57a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_19913a56"
+      }
+    },
+    {
+      "segment_id": "37fca32e",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用"
+      }
+    },
+    {
+      "segment_id": "a8610918",
+      "source_content": "After setting up our composite schema, we can get its representation using the `atlas schema inspect` command, generate\nschema migrations for it, apply them to a database, and more. Below are a few commands to get you started with Atlas:",
+      "source_content_hash": "665f7c10dd9ccd55a0fe15b7cac8c2271c2ad26f6f52e51576798c2cc754ff7e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "设置好复合模式后，我们可以使用`atlas schema inspect`命令获取其表示，为其生成模式迁移，将其应用到数据库等。以下是一些帮助你开始使用Atlas的命令："
+      }
+    },
+    {
+      "segment_id": "64d57278",
+      "source_content": "#### Inspect the Schema",
+      "source_content_hash": "0b8da15efa6536bf3d7ba2b7c234ece1c6fd8c165a258f150b75f3c4a8a94775",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查模式"
+      }
+    },
+    {
+      "segment_id": "5f82a1e9",
+      "source_content": "The `atlas schema inspect` command is commonly used to inspect databases. However, we can also use it to inspect our\n`composite_schema` and print the SQL representation of it:",
+      "source_content_hash": "f3dbe5302e7d37e03961c48a085104e5315169634c3bc3ce4a8eebe0448f4f5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas schema inspect`命令通常用于检查数据库。不过，我们也可以用它来检查`composite_schema`并打印其SQL表示："
+      }
+    },
+    {
+      "segment_id": "2f34b0ad",
+      "source_content": "```shell\natlas schema inspect \\\n  --env local \\\n  --url env://src \\\n  --format '{{ sql . }}'\n```",
+      "source_content_hash": "1842ce4f48f94bbd6a5aa04c673ac0b32a2a5303e5c49b31790f7f34cba2e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2f34b0ad"
+      }
+    },
+    {
+      "segment_id": "383fbdd2",
+      "source_content": "The command above prints the following SQL.",
+      "source_content_hash": "e4d848e44e0672c7680ec296daadadf0bdab13317a651b3852b5d3f028cfb56b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述命令将打印以下SQL。"
+      }
+    },
+    {
+      "segment_id": "8d1b00fd",
+      "source_content": "```sql\n-- Add new schema named \"public\"\nCREATE SCHEMA IF NOT EXISTS \"public\";\n-- Set comment to schema: \"public\"\nCOMMENT ON SCHEMA \"public\" IS 'standard public schema';\n-- Create extension \"postgis\"\nCREATE EXTENSION \"postgis\" WITH SCHEMA \"public\" VERSION \"3.4.2\";\n-- Create \"users\" table\nCREATE TABLE \"public\".\"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"location\" public.geometry(point,4326) NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "dc3645629ab56438541b29d25aea94a2261f0fbf1c96da7ab48ddf70333e2e92",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8d1b00fd"
+      }
+    },
+    {
+      "segment_id": "85b122c2",
+      "source_content": ":::info[Extensions Are Database-Level Objects]\nAlthough the `SCHEMA` argument is supported by the `CREATE EXTENSION` command, it only indicates where the extension's\nobjects will be installed. The extension itself is installed at the database level and cannot be loaded multiple times\ninto different schemas.\n\nTherefore, to avoid conflicts with other schemas, when working with extensions, the scope of the migration should be set\nto the database, where objects are qualified with the schema name. Hence, the `search_path` is dropped from the dev-database\nURL in the `atlas.hcl` file.\n:::",
+      "source_content_hash": "3fc9a11361b2d9e853769df067ad72e88cb4f63c45a7ebb33cd0eee6a522b8dd",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[扩展是数据库级对象]\n尽管`CREATE EXTENSION`命令支持`SCHEMA`参数，但它仅指示扩展对象的安装位置。扩展本身是在数据库级别安装的，无法多次加载到不同的模式中。\n\n因此，为了避免与其他模式冲突，在使用扩展时，迁移的范围应设置为数据库，其中对象使用模式名称限定。因此，在`atlas.hcl`文件中，开发数据库URL中的`search_path`被移除。\n:::"
+      }
+    },
+    {
+      "segment_id": "c6b2ca77",
+      "source_content": "#### Generate Migrations For the Schema",
+      "source_content_hash": "c5990cc35443eac491da766def9a4b660ae86e07358dc8ba13ee7cc4264ae8c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 为模式生成迁移"
+      }
+    },
+    {
+      "segment_id": "dce16ab4",
+      "source_content": "To generate a migration for the schema, run the following command:",
+      "source_content_hash": "d37793d5ce1c9d58e36c9034b73243a6673c73c3d2019a3fc933949148642be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要为模式生成迁移，请运行以下命令："
+      }
+    },
+    {
+      "segment_id": "0029045f",
+      "source_content": "```shell\natlas migrate diff \\\n  --env local\n```",
+      "source_content_hash": "6b7403f27f8ed223e30c839e71ca4751a7ab8d6c8cadab93c9b0579c577ecadd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0029045f"
+      }
+    },
+    {
+      "segment_id": "fd7ed056",
+      "source_content": "Note that a new migration file is created with the following content:",
+      "source_content_hash": "9e85891e456985b55c4c4723d5a20a256836ff963d5bacf28310685aeb824a89",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意，将创建一个新的迁移文件，内容如下："
+      }
+    },
+    {
+      "segment_id": "dddc2d3c",
+      "source_content": "```sql title=\"migrations/20240712090543.sql\"\n-- Create extension \"postgis\"\nCREATE EXTENSION \"postgis\" WITH SCHEMA \"public\" VERSION \"3.4.2\";\n-- Create \"users\" table\nCREATE TABLE \"public\".\"users\" (\n  \"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY,\n  \"location\" public.geometry(point,4326) NOT NULL,\n  PRIMARY KEY (\"id\")\n);\n```",
+      "source_content_hash": "db91b9c2288b998a854ee966919e3f45eb21b67403f53bf4a73d5247b5a5a15b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dddc2d3c"
+      }
+    },
+    {
+      "segment_id": "2b5df263",
+      "source_content": "#### Apply the Migrations",
+      "source_content_hash": "dd262c901209a83701a71368b18fd88b248797d69ab716e0faf1fbcc27203f95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "e29bd639",
+      "source_content": "To apply the migration generated above to a database, run the following command:",
+      "source_content_hash": "3b0f09a477a570f0dbe9432e3bfda1ef4da42bb2a1a2169041bbd1dde36f254d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要将上述生成的迁移应用到数据库，请运行以下命令："
+      }
+    },
+    {
+      "segment_id": "44ecd2e3",
+      "source_content": "```\natlas migrate apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```",
+      "source_content_hash": "9ac63adaa93ec903e09e8bf048fee595f2113774afd394318a89f192a26e03e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_44ecd2e3"
+      }
+    },
+    {
+      "segment_id": "2369e16f",
+      "source_content": ":::info[Apply the Schema Directly on the Database]\n\nSometimes, there is a need to apply the schema directly to the database without generating a migration file. For example,\nwhen experimenting with schema changes, spinning up a database for testing, etc. In such cases, you can use the command\nbelow to apply the schema directly to the database:\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?sslmode=disable\"\n```\n\nOr, using the [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk):\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// Automatically update the database with the desired schema.\n// Another option, is to use 'migrate apply' or 'schema apply' manually.\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::",
+      "source_content_hash": "f37fb752a98f73320b043278cfdb458471851e159fd8a686142da7113af1da94",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[直接向数据库应用模式]\n\n有时需要直接将模式应用到数据库而不生成迁移文件。例如，在试验模式变更、为测试启动数据库等场景下，可以使用以下命令直接将模式应用到数据库：\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?sslmode=disable\"\n```\n\n或者使用 [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk)：\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// 自动用目标模式更新数据库\n// 另一种选择是手动使用 'migrate apply' 或 'schema apply'\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "e4945edb",
+      "source_content": "The code for this guide can be found in [GitHub](https://github.com/ent/ent/tree/master/examples/enumtypes).",
+      "source_content_hash": "3d70c168779c07a89bf797b40694bc4678ecacad1f4b49d5bdc14b541209eaa6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南的代码可在 [GitHub](https://github.com/ent/ent/tree/master/examples/enumtypes) 获取。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/migration/extension.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.668620+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "4498b793c10bfbbfe24571ccd1fef40a1ed6eff9c57e3cb12559eea274ef5e72"
+  }
+}

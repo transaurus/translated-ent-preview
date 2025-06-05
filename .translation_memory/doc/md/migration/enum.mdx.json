@@ -1,0 +1,372 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/migration/enum.mdx",
+  "source_file_content_hash": "4daf05848eac530a401d35cae071ede4c33b482d1f7001c3d2ce3c67f2b11c76",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Using Postgres Enum Types in Ent Schema\nid: enum\nslug: enum-types\n---",
+      "source_content_hash": "f86bb2ac4f2dd756ffd26117f41838f14d4dc504ea33c569d4b207d323ac843d",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';\nimport InstallationInstructions from '../components/_installation_instructions.mdx';",
+      "source_content_hash": "ffc742d78eb313c2e57a6a0244a32ba45938e009a6b63b1af7b9e28de9f1658b",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_10c4cb47"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "Enum types are data structures that consist of a predefined, ordered set of values. By default, when using `field.Enum`\nin your Ent schema, Ent uses simple string types to represent the enum values in **PostgreSQL and SQLite**. However, in some\ncases, you may want to use the native enum types provided by the database.",
+      "source_content_hash": "a2e2c82a19b3eafdfca1ac885e17145b7ff1ba72d9d038f88760a6d9f46efae4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "枚举类型是由预定义有序值集合构成的数据结构。默认情况下，在Ent模式中使用`field.Enum`时，Ent会使用简单的字符串类型来表示**PostgreSQL和SQLite**中的枚举值。但在某些场景下，您可能需要使用数据库原生提供的枚举类型。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "This guide explains how to define a schema field that uses a native PostgreSQL enum type and configure the schema migration\nto manage both Postgres enums and the Ent schema as a single migration unit using Atlas.",
+      "source_content_hash": "b2ddc911c869b1d5d7987aa14c88e10d0689a4adf64b32083b7d21caf9948566",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南将阐述如何定义使用PostgreSQL原生枚举类型的模式字段，并通过Atlas配置模式迁移，将Postgres枚举与Ent模式作为单一迁移单元进行管理。"
+      }
+    },
+    {
+      "segment_id": "f55b9485",
+      "source_content": ":::info[[Atlas Pro Feature](https://atlasgo.io/features#pro-plan)]\nAtlas support for [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema) used in this\nguide is available exclusively to Pro users. To use this feature, run:\n```\natlas login\n```\n:::",
+      "source_content_hash": "8edd037f30566c228d128ab1e7476e83826e96db9f47adebaf7d7458dd97b980",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[Atlas专业版功能](https://atlasgo.io/features#pro-plan)]\n本指南使用的[复合模式](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)支持是专业版专属功能。使用前请执行：\n```\natlas login\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "fa430ad4",
+      "source_content": "## Install Atlas",
+      "source_content_hash": "bf92a270e324b46f2c1d6f24555018906dc2df68b19873079220409508dabfad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装Atlas"
+      }
+    },
+    {
+      "segment_id": "9329e3e0",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9329e3e0"
+      }
+    },
+    {
+      "segment_id": "48847fd4",
+      "source_content": "## Login to Atlas",
+      "source_content_hash": "e256bf54631891b6388a26350087fe6f85606d3b82220c15db06e45dc9ae443c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 登录Atlas"
+      }
+    },
+    {
+      "segment_id": "a2110253",
+      "source_content": "```shell\n$ atlas login a8m\n//highlight-next-line-info\nYou are now connected to \"a8m\" on Atlas Cloud.\n```",
+      "source_content_hash": "496821c033e70d4510db88b24c2448b81f6a4860a232e94aa6828c08a6979cd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a2110253"
+      }
+    },
+    {
+      "segment_id": "62a6890b",
+      "source_content": "## Composite Schema",
+      "source_content_hash": "bba3d45312f3e0d6b9188ea0568fe93b6ecf4dd0b5f18da48a134b0a61d8e55c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 复合模式"
+      }
+    },
+    {
+      "segment_id": "3cfe6286",
+      "source_content": "An `ent/schema` package is mostly used for defining Ent types (objects), their fields, edges and logic. External enum types,\nor any other database objects do not have representation in Ent models - A Postgres enum type can be defined once in your Postgres\nschema, and may be used multiple times in different fields and models.",
+      "source_content_hash": "77a3c62baa25f665535f63c9af4307d13a71f032a533d1f975eabbb87e95f2cb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema`包主要用于定义Ent类型（对象）、字段、边及业务逻辑。外部枚举类型或其他数据库对象在Ent模型中并无直接体现——Postgres枚举类型只需在Postgres模式中定义一次，即可在不同字段和模型中多次复用。"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "In order to extend our PostgreSQL schema to include both custom enum types and our Ent types, we configure Atlas to\nread the state of the schema from a [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)\ndata source. Follow the steps below to configure this for your project:",
+      "source_content_hash": "1b16f8a4ad449e435619a30730506f0e77e31fc28707a82753962d1a80fefe7c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了扩展PostgreSQL模式以同时包含自定义枚举类型和Ent类型，我们需要配置Atlas通过[复合模式](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)数据源读取模式状态。请按以下步骤配置项目："
+      }
+    },
+    {
+      "segment_id": "29528c8d",
+      "source_content": "1\\. Create a `schema.sql` that defines the necessary enum type there. In the same way, you can define the enum type in\n   [Atlas Schema HCL language](https://atlasgo.io/atlas-schema/hcl-types#enum):",
+      "source_content_hash": "7537213c7815d4101db31928fc91b69800a9266ecaf12bd52ea494a7b1cc9d8b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 创建`schema.sql`文件定义枚举类型。您也可以使用[Atlas Schema HCL语言](https://atlasgo.io/atlas-schema/hcl-types#enum)定义："
+      }
+    },
+    {
+      "segment_id": "b72935b5",
+      "source_content": "<Tabs>\n<TabItem value={\"sql\"} label={\"Using SQL\"}>\n\n```sql title=\"schema.sql\"\nCREATE TYPE status AS ENUM ('active', 'inactive', 'pending');\n```\n\n</TabItem>\n<TabItem value={\"hcl\"} label={\"Using HCL\"}>\n\n```hcl title=\"schema.hcl\"\nschema \"public\" {}\n\nenum \"status\" {\n  schema = schema.public\n  values = [\"active\", \"inactive\", \"pending\"]\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "0ec25608af01e6741100201351a3e951beb1104a5a8f05ac5515df1c3784ed76",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b72935b5"
+      }
+    },
+    {
+      "segment_id": "883231d4",
+      "source_content": "2\\. In your Ent schema, define an enum field that uses the underlying Postgres `ENUM` type:",
+      "source_content_hash": "a10e568c04c7a9644420b253c592d1e5363e979d42d3b31ea66cff936c70d390",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在Ent模式中定义使用底层Postgres `ENUM`类型的枚举字段："
+      }
+    },
+    {
+      "segment_id": "468b36ba",
+      "source_content": "```go title=\"ent/schema/user.go\" {6-8}\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Enum(\"status\").\n\t\t\tValues(\"active\", \"inactive\", \"pending\").\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.Postgres: \"status\",\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "0d5443b639328987eaa0ea31063d5249859da85a5d8ea3feb91714c120063e5f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_468b36ba"
+      }
+    },
+    {
+      "segment_id": "09f6e084",
+      "source_content": ":::note\nIn case a schema with custom driver-specific types is used with other databases, Ent falls back to the default type\nused by the driver (e.g., `TEXT` in SQLite and `ENUM (...)` in MariaDB or MySQL)s.\n:::",
+      "source_content_hash": "a56143df8d9143851373ca3f282a741e3fdd500ddb36d93edb39da858a43c799",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n当包含驱动特定类型的模式用于其他数据库时，Ent会回退到驱动默认类型（例如SQLite中使用`TEXT`，MariaDB或MySQL中使用`ENUM (...)`）。\n:::"
+      }
+    },
+    {
+      "segment_id": "6b77b644",
+      "source_content": "3\\. Create a simple `atlas.hcl` config file with a `composite_schema` that includes both your custom enum types defined in\n   `schema.sql` and your Ent schema:",
+      "source_content_hash": "316f97e51aad7432259b4f026df049390d6f8e39a694f25807b6b1cfe32e7c2e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 创建简单的`atlas.hcl`配置文件，通过`composite_schema`同时包含`schema.sql`中定义的自定义枚举类型和Ent模式："
+      }
+    },
+    {
+      "segment_id": "ec99e704",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"app\" {\n  # Load first custom types first.\n  schema \"public\" {\n    url = \"file://schema.sql\"\n  }\n  # Second, load the Ent schema.\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n}\n\nenv \"local\" {\n  src = data.composite_schema.app.url\n  dev = \"docker://postgres/15/dev?search_path=public\"\n}\n```",
+      "source_content_hash": "feba72d4fbbff1d3db918705869e392925919d2cc90d5fc0edf887d69bad5264",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ec99e704"
+      }
+    },
+    {
+      "segment_id": "8172a0a5",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用指南"
+      }
+    },
+    {
+      "segment_id": "1b4de6df",
+      "source_content": "After setting up our composite schema, we can get its representation using the `atlas schema inspect` command, generate\nschema migrations for it, apply them to a database, and more. Below are a few commands to get you started with Atlas:",
+      "source_content_hash": "665f7c10dd9ccd55a0fe15b7cac8c2271c2ad26f6f52e51576798c2cc754ff7e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "配置复合模式后，可通过`atlas schema inspect`命令获取其表示形式，生成模式迁移文件，应用到数据库等。以下是Atlas的入门命令示例："
+      }
+    },
+    {
+      "segment_id": "638efb88",
+      "source_content": "#### Inspect the Schema",
+      "source_content_hash": "0b8da15efa6536bf3d7ba2b7c234ece1c6fd8c165a258f150b75f3c4a8a94775",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查模式"
+      }
+    },
+    {
+      "segment_id": "558df877",
+      "source_content": "The `atlas schema inspect` command is commonly used to inspect databases. However, we can also use it to inspect our\n`composite_schema` and print the SQL representation of it:",
+      "source_content_hash": "f3dbe5302e7d37e03961c48a085104e5315169634c3bc3ce4a8eebe0448f4f5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas schema inspect`命令通常用于检查数据库，但也可用于检查`composite_schema`并输出其SQL表示："
+      }
+    },
+    {
+      "segment_id": "3917a88d",
+      "source_content": "```shell\natlas schema inspect \\\n  --env local \\\n  --url env://src \\\n  --format '{{ sql . }}'\n```",
+      "source_content_hash": "1842ce4f48f94bbd6a5aa04c673ac0b32a2a5303e5c49b31790f7f34cba2e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3917a88d"
+      }
+    },
+    {
+      "segment_id": "f45239ba",
+      "source_content": "The command above prints the following SQL. Note, the `status` enum type is defined in the schema before\nits usage in the `users.status` column:",
+      "source_content_hash": "a2b42c58708bcb792630bf88218c6f5774859a7f0503638b9d3fb2c051ee86f0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该命令输出如下SQL。注意`status`枚举类型在`schema.sql`中定义后，才被`users.status`列使用："
+      }
+    },
+    {
+      "segment_id": "43cca4d3",
+      "source_content": "```sql\n-- Create enum type \"status\"\nCREATE TYPE \"status\" AS ENUM ('active', 'inactive', 'pending');\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"status\" \"status\" NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "3f0a980934075f7dda74fafee84827dcc8c247d4b7c32dcef2e33d7baa3bfc10",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_43cca4d3"
+      }
+    },
+    {
+      "segment_id": "9c2ab4c8",
+      "source_content": "#### Generate Migrations For the Schema",
+      "source_content_hash": "c5990cc35443eac491da766def9a4b660ae86e07358dc8ba13ee7cc4264ae8c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 生成模式迁移"
+      }
+    },
+    {
+      "segment_id": "a9c2a503",
+      "source_content": "To generate a migration for the schema, run the following command:",
+      "source_content_hash": "d37793d5ce1c9d58e36c9034b73243a6673c73c3d2019a3fc933949148642be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行以下命令生成模式迁移文件："
+      }
+    },
+    {
+      "segment_id": "4fe849d4",
+      "source_content": "```shell\natlas migrate diff \\\n  --env local\n```",
+      "source_content_hash": "6b7403f27f8ed223e30c839e71ca4751a7ab8d6c8cadab93c9b0579c577ecadd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4fe849d4"
+      }
+    },
+    {
+      "segment_id": "ad3e22c6",
+      "source_content": "Note that a new migration file is created with the following content:",
+      "source_content_hash": "9e85891e456985b55c4c4723d5a20a256836ff963d5bacf28310685aeb824a89",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的迁移文件包含如下内容："
+      }
+    },
+    {
+      "segment_id": "cf5bbc3b",
+      "source_content": "```sql title=\"migrations/20240712090543.sql\"\n-- Create enum type \"status\"\nCREATE TYPE \"status\" AS ENUM ('active', 'inactive', 'pending');\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"status\" \"status\" NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "3c688f10105936523da87c74a1a8fd38854860fb23f00e3bf56992c8fa7eeeb3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cf5bbc3b"
+      }
+    },
+    {
+      "segment_id": "531ec0bb",
+      "source_content": "#### Apply the Migrations",
+      "source_content_hash": "dd262c901209a83701a71368b18fd88b248797d69ab716e0faf1fbcc27203f95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "d2a3d4c7",
+      "source_content": "To apply the migration generated above to a database, run the following command:",
+      "source_content_hash": "3b0f09a477a570f0dbe9432e3bfda1ef4da42bb2a1a2169041bbd1dde36f254d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行以下命令将生成的迁移应用到数据库："
+      }
+    },
+    {
+      "segment_id": "75daf40d",
+      "source_content": "```\natlas migrate apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```",
+      "source_content_hash": "9ac63adaa93ec903e09e8bf048fee595f2113774afd394318a89f192a26e03e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_75daf40d"
+      }
+    },
+    {
+      "segment_id": "773252df",
+      "source_content": ":::info[Apply the Schema Directly on the Database]\n\nSometimes, there is a need to apply the schema directly to the database without generating a migration file. For example,\nwhen experimenting with schema changes, spinning up a database for testing, etc. In such cases, you can use the command\nbelow to apply the schema directly to the database:\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\nOr, using the [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk):\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// Automatically update the database with the desired schema.\n// Another option, is to use 'migrate apply' or 'schema apply' manually.\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::",
+      "source_content_hash": "952a10b8a5fa910f71bdf85eddb61c04951369a6d1fc33bb3bbbecc57bee9b2b",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[直接向数据库应用模式]\n\n有时需要直接将模式应用到数据库而不生成迁移文件，例如在测试模式变更或启动测试数据库等场景。此时可使用以下命令直接将模式应用到数据库：\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\n或使用 [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk)：\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// 自动用目标模式更新数据库\n// 另一种方式是手动使用 'migrate apply' 或 'schema apply'\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "6e5d54a8",
+      "source_content": "The code for this guide can be found in [GitHub](https://github.com/ent/ent/tree/master/examples/enumtypes).",
+      "source_content_hash": "3d70c168779c07a89bf797b40694bc4678ecacad1f4b49d5bdc14b541209eaa6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南完整代码可在 [GitHub](https://github.com/ent/ent/tree/master/examples/enumtypes) 获取。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/migration/enum.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.662989+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "4daf05848eac530a401d35cae071ede4c33b482d1f7001c3d2ce3c67f2b11c76"
+  }
+}

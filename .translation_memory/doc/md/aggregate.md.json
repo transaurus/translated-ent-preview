@@ -1,0 +1,202 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/aggregate.md",
+  "source_file_content_hash": "54d420ce222caeeff14815cbfb94464dc6fd5aad08e9b068f360496fe87c251e",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: aggregate\ntitle: Aggregation\n---",
+      "source_content_hash": "11159958fa2a7e8bb8b2631310dab2d485875572789cfa40720756c8954ab1c1",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "## Aggregation",
+      "source_content_hash": "dc342dbf913bf8d114c21be852359e292ecded71b149b698b8b5895c692ec7c1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 聚合"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "The `Aggregate` option allows adding one or more aggregation functions.",
+      "source_content_hash": "c191882157425021d550d63d3639fa7c6bc26fc507280ae745b2cd8b7a0b6f1e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Aggregate` 选项允许添加一个或多个聚合函数。"
+      }
+    },
+    {
+      "segment_id": "71b63116",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\n\t\"<project>/ent\"\n\t\"<project>/ent/payment\"\n\t\"<project>/ent/pet\"\n)\n\nfunc Do(ctx context.Context, client *ent.Client) {\n\t// Aggregate one field.\n\tsum, err := client.Payment.Query().\n\t\tAggregate(\n\t\t\tent.Sum(payment.Amount),\n\t\t).\n\t\tInt(ctx)\n\n\t// Aggregate multiple fields.\n\tvar v []struct {\n\t\tSum, Min, Max, Count int\n\t}\n\terr := client.Pet.Query().\n\t\tAggregate(\n\t\t\tent.Sum(pet.FieldAge),\n\t\t\tent.Min(pet.FieldAge),\n\t\t\tent.Max(pet.FieldAge),\n\t\t\tent.Count(),\n\t\t).\n\t\tScan(ctx, &v)\n}\n```",
+      "source_content_hash": "d49f51d0a32c793d7ee8850b9690edd104280f5b04d601abee1e4503ba604f11",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_71b63116"
+      }
+    },
+    {
+      "segment_id": "54268405",
+      "source_content": "## Group By",
+      "source_content_hash": "1b51f3e76a7965726316005c92fba655cd8ea2629f0e142b8167c5462318d927",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 分组查询"
+      }
+    },
+    {
+      "segment_id": "8af76f3d",
+      "source_content": "Group by `name` and `age` fields of all users, and sum their total age.",
+      "source_content_hash": "8b2b3a442d200f29dbb53d5f5c9b12eef405f70b69686c0069f12b17281f5f58",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "按所有用户的 `name` 和 `age` 字段分组，并计算其年龄总和。"
+      }
+    },
+    {
+      "segment_id": "48ec8149",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\n\t\"<project>/ent\"\n\t\"<project>/ent/user\"\n)\n\nfunc Do(ctx context.Context, client *ent.Client) {\n\tvar v []struct {\n\t\tName  string `json:\"name\"`\n\t\tAge   int    `json:\"age\"`\n\t\tSum   int    `json:\"sum\"`\n\t\tCount int    `json:\"count\"`\n\t}\n\terr := client.User.Query().\n\t\tGroupBy(user.FieldName, user.FieldAge).\n\t\tAggregate(ent.Count(), ent.Sum(user.FieldAge)).\n\t\tScan(ctx, &v)\n}\n```",
+      "source_content_hash": "37ced59f1b374304a52cc11f6217ce63bbd82d18b289003e452e1c7ce6d365a6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_48ec8149"
+      }
+    },
+    {
+      "segment_id": "147e8550",
+      "source_content": "Group by one field.",
+      "source_content_hash": "906ee8ccf1935633acaa63300a60b6c60d4f49eae1a13c5258ef5123b0aa5ade",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "按单个字段分组。"
+      }
+    },
+    {
+      "segment_id": "af983f82",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\n\t\"<project>/ent\"\n\t\"<project>/ent/user\"\n)\n\nfunc Do(ctx context.Context, client *ent.Client) {\n\tnames, err := client.User.\n\t\tQuery().\n\t\tGroupBy(user.FieldName).\n\t\tStrings(ctx)\n}\n```",
+      "source_content_hash": "2cf5d6de57b9f6c4169971321f2c7bcd16777f89082bdaa7aed2b06468d1eb1f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_af983f82"
+      }
+    },
+    {
+      "segment_id": "bd30d33e",
+      "source_content": "## Group By Edge",
+      "source_content_hash": "c0d2eb9df18dc76e8c880d9be2b4a849e9cb8fb20fb163af15776078b54cbf6e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 按关联边分组"
+      }
+    },
+    {
+      "segment_id": "6b77b644",
+      "source_content": "Custom aggregation functions can be useful if you want to write your own storage-specific logic.",
+      "source_content_hash": "328d05b43977ccd9e7c68d5303b5c714bab5b48da5172e6fe923e9b04d02d6ae",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "自定义聚合函数在需要编写特定存储逻辑时非常有用。"
+      }
+    },
+    {
+      "segment_id": "a311e967",
+      "source_content": "The following shows how to group by the `id` and the `name` of all users and calculate the average `age` of their pets.",
+      "source_content_hash": "f2a99f7d64e6734edf41c566f6dfcf151dd3efc05a2021f5436181a31a389b36",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下示例展示如何按所有用户的 `id` 和 `name` 分组，并计算其宠物年龄的平均值。"
+      }
+    },
+    {
+      "segment_id": "7fa46732",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n\t\"<project>/ent\"\n\t\"<project>/ent/pet\"\n\t\"<project>/ent/user\"\n)\n\nfunc Do(ctx context.Context, client *ent.Client) {\n\tvar users []struct {\n\t\tID      int\n\t\tName    string\n\t\tAverage float64\n\t}\n\terr := client.User.Query().\n\t\tGroupBy(user.FieldID, user.FieldName).\n\t\tAggregate(func(s *sql.Selector) string {\n\t\t\tt := sql.Table(pet.Table)\n\t\t\ts.Join(t).On(s.C(user.FieldID), t.C(pet.OwnerColumn))\n\t\t\treturn sql.As(sql.Avg(t.C(pet.FieldAge)), \"average\")\n\t\t}).\n\t\tScan(ctx, &users)\n}\n```",
+      "source_content_hash": "7e8d4bb2d54470864210b1b4f1fcff2d20d8603373292b103fb04d8a2383263f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7fa46732"
+      }
+    },
+    {
+      "segment_id": "23b96cc0",
+      "source_content": "## Having + Group By",
+      "source_content_hash": "54f645b321d0ae5677f950afb2bfe7ed32379ee31a4918d38df0786a276876bb",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## Having 条件与分组查询"
+      }
+    },
+    {
+      "segment_id": "8fcdd6d4",
+      "source_content": "[Custom SQL modifiers](https://entgo.io/docs/feature-flags/#custom-sql-modifiers) can be useful if you want to control all query parts.\nThe following shows how to retrieve the oldest users for each role.",
+      "source_content_hash": "31672ef1aae7c7140f6bc6c45bb8c26164b2eb5f63353d5383bc8039bed71f7a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[自定义 SQL 修饰符](https://entgo.io/docs/feature-flags/#custom-sql-modifiers) 可用于全面控制查询各部分。以下示例展示如何检索每个角色中最年长的用户。"
+      }
+    },
+    {
+      "segment_id": "18fb666f",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n\t\"entgo.io/ent/dialect/sql\"\n\t\"<project>/ent\"\n\t\"<project>/ent/user\"\n)\n\nfunc Do(ctx context.Context, client *ent.Client) {\n\tvar users []struct {\n\t\tId    \tInt\n\t\tAge     Int\n\t\tRole    string\n\t}\n\terr := client.User.Query().\n\t\tModify(func(s *sql.Selector) {\n\t\t\ts.GroupBy(user.Role)\n\t\t\ts.Having(\n\t\t\t\tsql.EQ(\n\t\t\t\t\tuser.FieldAge,\n\t\t\t\t\tsql.Raw(sql.Max(user.FieldAge)),\n\t\t\t\t),\n\t\t\t)\n\t\t}).\n\t\tScanX(ctx, &users)\n}\n\n```",
+      "source_content_hash": "4eae312b547145bad1302313d295071663a125206416d00cebe458fd57faa40b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_18fb666f"
+      }
+    },
+    {
+      "segment_id": "0ddaa835",
+      "source_content": "**Note:** The `sql.Raw` is crucial to have. It tells the predicate that `sql.Max` is not an argument.",
+      "source_content_hash": "a0241dac2992c98b43c33690d470b000cdd742853d49ebd3da9dcaf7909a7165",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**注意：** `sql.Raw` 至关重要，它向谓词表明 `sql.Max` 不是参数。"
+      }
+    },
+    {
+      "segment_id": "fd7ed056",
+      "source_content": "The above code essentially generates the following SQL query:",
+      "source_content_hash": "682c8251a73ec02b0370d86e9434a34ec3e4b618291884db2b87d41afce17088",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码实际生成的 SQL 查询如下："
+      }
+    },
+    {
+      "segment_id": "dddc2d3c",
+      "source_content": "```sql\nSELECT * FROM user GROUP BY user.role HAVING user.age = MAX(user.age)\n```",
+      "source_content_hash": "b15e74819aa9ade951f294be58d6980624623b21fc4d3aaff8e79f7b871123a0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dddc2d3c"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/aggregate.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.664025+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "54d420ce222caeeff14815cbfb94464dc6fd5aad08e9b068f360496fe87c251e"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/versioned/02-auto-plan.mdx",
+  "source_file_content_hash": "aca28fc00a3368cb5b8704a3878352062ad07d2f31feac4af558acfa5a498cb8",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Automatic migration planning\nid: auto-plan\n---",
+      "source_content_hash": "f7232d60fd694c466583f31504551870d01560ae51e16517d73d87b0a4e580b2",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import InstallationInstructions from '../components/_installation_instructions.mdx';\nimport AtlasMigrateDiff from '../components/_atlas_migrate_diff.mdx';",
+      "source_content_hash": "8d016aacee3e7058d04ba99c21ebc5d8b19f9fa8a9faed1f3d68c4d6e9bf4d81",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "## Automatic migration planning",
+      "source_content_hash": "a80318da38a575fd52e77b71859cce0816ba79a7724cf2ec89417ec911f32fac",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自动迁移规划"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "One of the convenient features of Automatic Migrations is that developers do not\nneed to write the SQL statements to create or modify the database schema. To \nachieve similar benefits, we will now add a script to our project that will \nautomatically plan migration files for us based on the changes to our schema. ",
+      "source_content_hash": "3153708297c0914b0eaca5a822aea46a09823740887d32393ad6abf7403db8dc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "自动迁移的便利特性之一在于开发者无需手动编写创建或修改数据库结构的SQL语句。为实现类似优势，我们将在项目中添加一个脚本，该脚本能根据模式变更自动为我们规划迁移文件。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "To do this, Ent uses [Atlas](https://atlasgo.io), an open-source tool for managing database\nschemas, created by the same people behind Ent. ",
+      "source_content_hash": "d98f29d28b0581d68710a012b2330afeda27eb3763b39ec2025ee443e69efcf4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为此，Ent使用[Atlas](https://atlasgo.io)——一个由Ent团队开发的开源数据库结构管理工具。"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "If you have been following our example repo, we have been using SQLite as our database\nuntil this point. To demonstrate a more realistic use case, we will now switch to MySQL.\nSee this change in [PR #3](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/3/files).",
+      "source_content_hash": "9990511e8842dbfacf07ad5be6f4759397400a6909ce14d509f905725d4da4dd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若您一直跟随示例仓库操作，此前我们使用的是SQLite数据库。为演示更贴近实际的用例，现我们将切换至MySQL。具体变更请参见[PR #3](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/3/files)。"
+      }
+    },
+    {
+      "segment_id": "40f9552a",
+      "source_content": "## Using the Atlas CLI to plan migrations",
+      "source_content_hash": "fd8cb4451c7c05e19a8075a32789a9f8098409231fcdf13a435d41f0779c9cde",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用Atlas CLI规划迁移"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "In this section, we will demonstrate how to use the Atlas CLI to automatically plan\nschema migrations for us. In the past, users had to create a custom Go program to\ndo this (as described [here](07-programmatically.mdx)). With recent versions of Atlas,\nthis is no longer necessary: Atlas can natively load the desired database schema from an Ent schema.",
+      "source_content_hash": "58172d03e3a886ff6a4bbfb2e7b2ad72d01e0713984048da5849a4544c0b64f5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节将演示如何通过Atlas CLI自动规划结构迁移。过去用户需要编写自定义Go程序实现此功能（如[此文档](07-programmatically.mdx)所述），而新版Atlas已原生支持直接从Ent模式加载目标数据库结构。"
+      }
+    },
+    {
+      "segment_id": "599822a5",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_599822a5"
+      }
+    },
+    {
+      "segment_id": "73ab96a3",
+      "source_content": "Then, run the following command to automatically generate migration files for your Ent schema:",
+      "source_content_hash": "9d0fbd305649e420a9f8d29f62d075092da90f3ea49c801ea13e74a5f4f1ba42",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令为Ent模式自动生成迁移文件："
+      }
+    },
+    {
+      "segment_id": "d0d484a6",
+      "source_content": "<AtlasMigrateDiff/>",
+      "source_content_hash": "08a27d764bf978af393b00de0c8d024c7b6e62116bdcfa9087d08b2d34fb95f0",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d0d484a6"
+      }
+    },
+    {
+      "segment_id": "cd591557",
+      "source_content": ":::info[The role of the [dev database](https://atlasgo.io/concepts/dev-database)]\nAtlas loads the **current state** by executing the SQL files stored in the migration directory onto the provided\n[dev database](https://atlasgo.io/concepts/dev-database). It then compares this state against the **desired state**\ndefined by the `ent/schema` package and writes a migration plan for moving from the current state to the desired state.\n:::",
+      "source_content_hash": "3420cc8e9033dc2575c4eff85e8cccf7a6892e74c4d3ba4cd759a1d9cf828014",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[关于[开发数据库](https://atlasgo.io/concepts/dev-database)的作用]\nAtlas通过将迁移目录中的SQL文件执行到指定的[开发数据库](https://atlasgo.io/concepts/dev-database)来加载当前状态，随后将其与`ent/schema`包定义的目标状态对比，最终生成从当前状态到目标状态的迁移方案。\n:::"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "Next, let's see how to upgrade an existing production database to be managed with versioned migrations. ",
+      "source_content_hash": "35b47697fcee642b038ca39a425ff7c3bfe2ad4a46b9f7e45c1b8d2f4f6a9f09",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来我们将探讨如何将现有生产数据库升级至版本化迁移管理模式。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/versioned/02-auto-plan.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.669887+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "aca28fc00a3368cb5b8704a3878352062ad07d2f31feac4af558acfa5a498cb8"
+  }
+}

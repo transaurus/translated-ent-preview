@@ -1,0 +1,222 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2023-01-26-visualizing-with-entviz.md",
+  "source_file_content_hash": "db23e6fbae3a7c3a75f6c050014c28c7c9462d2c127fd43b429d975677ac660b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Quickly visualize your Ent schemas with entviz\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\nimage: \"https://entgo.io/images/assets/entviz-v2.png\"\n---",
+      "source_content_hash": "350c767b7e59a3f62516be6886f2740a6f5f08827aedf47386fb3dac255c9510",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "1cc03ec8",
+      "source_content": "### TL;DR",
+      "source_content_hash": "216375cfd413556232ef4b112b7b069b33f020b9b60abe44f9d205111340c7b9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 快速概览"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "To get a public link to a visualization of your Ent schema, run:",
+      "source_content_hash": "affe8360a72e23cb300bb96db842b3164a61b6c686749b13931a56548501207f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要获取Ent模式的可视化公开链接，请运行："
+      }
+    },
+    {
+      "segment_id": "5564d81d",
+      "source_content": "```\ngo run -mod=mod ariga.io/entviz ./path/to/ent/schema \n```",
+      "source_content_hash": "59f5a49fd6968575f8028d9f2662b5f4a36bf3ca8f5dfc3865b020e14a33c6d0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5564d81d"
+      }
+    },
+    {
+      "segment_id": "39b3772c",
+      "source_content": "![](https://entgo.io/images/assets/erd/edges-quick-summary.png)",
+      "source_content_hash": "1e180abb86cac2370c919fd51cb4d389b5062ef14f32706da998507bd26702da",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![](https://entgo.io/images/assets/erd/edges-quick-summary.png)"
+      }
+    },
+    {
+      "segment_id": "bc633244",
+      "source_content": "### Visualizing Ent schemas",
+      "source_content_hash": "bcb097703251bd12aa9bc4fcb3f05887a0a2af824441a133273792673d13e440",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 可视化Ent模式"
+      }
+    },
+    {
+      "segment_id": "2df4f75f",
+      "source_content": "Ent enables developers to build complex application data models\nusing [graph semantics](https://en.wikipedia.org/wiki/Graph_theory): instead of defining tables, columns, association\ntables and foreign keys, Ent models are simply defined in terms of [Nodes](https://entgo.io/docs/schema-fields)\nand [Edges](https://entgo.io/docs/schema-edges):",
+      "source_content_hash": "978c6d43c21b95fc3c1ff75c31b9974b4cac2ac733550b022bd6857f0a63aaa5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent允许开发者使用[图论语义](https://en.wikipedia.org/wiki/Graph_theory)构建复杂的应用数据模型：无需定义表、列、关联表和外键，Ent模型仅通过[节点](https://entgo.io/docs/schema-fields)和[边](https://entgo.io/docs/schema-edges)即可定义："
+      }
+    },
+    {
+      "segment_id": "08021a08",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/edge\"\n)\n\n// User schema.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\t// ...\n\t}\n}\n\n// Edges of the user.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"pets\", Pet.Type),\n\t}\n}\n```",
+      "source_content_hash": "b394dbb1325d098a409ca2a842e032e085aaf67b5127623ae35b0605e2dfcc0f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_08021a08"
+      }
+    },
+    {
+      "segment_id": "d3649a1e",
+      "source_content": "Modeling data this way has many benefits such as being able to\neasily [traverse](https://entgo.io/docs/traversals) an application's data graph in an intuitive API, automatically\ngenerating [GraphQL](https://entgo.io/docs/tutorial-todo-gql) servers and more.",
+      "source_content_hash": "9c0a6527bc08778537dfd801face50bda13d6ffdd574eab0df21607b5817843a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这种建模方式具有诸多优势，例如能够直观地[遍历](https://entgo.io/docs/traversals)应用数据图、自动生成[GraphQL](https://entgo.io/docs/tutorial-todo-gql)服务等。"
+      }
+    },
+    {
+      "segment_id": "23dfb152",
+      "source_content": "While Ent can use a Graph database as its storage layer, most Ent users use common relational databases such as MySQL,\nPostgreSQL or MariaDB for their applications. In these use-cases, developers often ponder, *what actual database schema\nwill Ent create from my application's schema?*",
+      "source_content_hash": "5c392658d0fce3ab4c2e06164a047369f85ed3f2aa9ef09d4236122a08c8c1ea",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "虽然Ent可以使用图数据库作为存储层，但大多数用户会选择MySQL、PostgreSQL或MariaDB等关系型数据库。此时开发者常会思考：*Ent最终会为我的应用模式生成怎样的实际数据库结构？*"
+      }
+    },
+    {
+      "segment_id": "8b2a52b1",
+      "source_content": "Whether you're a new Ent user learning the basics of creating Ent schemas or an expert dealing with optimizing the\nresulting database schema for performance reasons, being able to easily visualize your Ent schema's backing database\nschema can be very useful.",
+      "source_content_hash": "f9cf38b91f2358543162b66d0c6c390977129fc494f622e8d04a8e46c0212870",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "无论您是学习Ent模式基础的新用户，还是需要优化生成数据库结构性能的专家，能够便捷地可视化Ent模式对应的底层数据库结构都极具价值。"
+      }
+    },
+    {
+      "segment_id": "a5a4323e",
+      "source_content": "#### Introducing the new `entviz`",
+      "source_content_hash": "f0dcbdf04dda7c62a950fb6518a6076c9d44071031c0d6d8589e977d8eebf360",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 全新`entviz`工具"
+      }
+    },
+    {
+      "segment_id": "657c2b20",
+      "source_content": "A year and a half ago\nwe [shared an Ent extension named entviz](https://entgo.io/blog/2021/08/26/visualizing-your-data-graph-using-entviz),\nthat extension enabled users to generate simple, local HTML documents containing entity-relationship diagrams describing\nan application's Ent schema.",
+      "source_content_hash": "6f546b8a1d26763bd5aec78873216bb2afbddbf2be83aaa9b93b01f36ab267b4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "一年半前，我们曾[分享过名为entviz的Ent扩展](https://entgo.io/blog/2021/08/26/visualizing-your-data-graph-using-entviz)，该扩展可生成描述应用Ent模式的本地HTML格式实体关系图。"
+      }
+    },
+    {
+      "segment_id": "883231d4",
+      "source_content": "Today, we're happy to share a [super cool tool](https://github.com/ariga/entviz) by the same name created\nby [Pedro Henrique (crossworth)](https://github.com/crossworth) which is a completely fresh take on the same problem.\nWith (the new) entviz you run a simple Go command:",
+      "source_content_hash": "77c8e72783aab8d45e8f73aef212b213c0d41eaeeb225b7717d24c3790f6ec05",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如今，我们很高兴分享由[crossworth](https://github.com/crossworth)开发的[全新工具](https://github.com/ariga/entviz)，它对这个问题的解决方案进行了彻底革新。使用新版entviz时，只需运行简单Go命令："
+      }
+    },
+    {
+      "segment_id": "8a9e710a",
+      "source_content": "```\ngo run -mod=mod ariga.io/entviz ./path/to/ent/schema \n```",
+      "source_content_hash": "59f5a49fd6968575f8028d9f2662b5f4a36bf3ca8f5dfc3865b020e14a33c6d0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8a9e710a"
+      }
+    },
+    {
+      "segment_id": "6270d577",
+      "source_content": "The tool will analyze your Ent schema and create a visualization on the [Atlas Playground](https://gh.atlasgo.cloud) and\ncreate a shareable, public [link](https://gh.atlasgo.cloud/explore/saved/60129542154) for you:",
+      "source_content_hash": "3ca177b4f1fd2b66cf78e4a36d2c27e791beca80f0737b8b47453cf67cc1fa7b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该工具会分析您的Ent模式，在[Atlas Playground](https://gh.atlasgo.cloud)创建可视化图表，并生成可公开分享的[链接](https://gh.atlasgo.cloud/explore/saved/60129542154)："
+      }
+    },
+    {
+      "segment_id": "65400624",
+      "source_content": "```\nHere is a public link to your schema visualization:\n\t    https://gh.atlasgo.cloud/explore/saved/60129542154\n```",
+      "source_content_hash": "7fa9dd1b87be156f6eb161adbc94fd8d3d8de92dafd6c2987c27a02703f4d941",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_65400624"
+      }
+    },
+    {
+      "segment_id": "0750bfa1",
+      "source_content": "In this link you will be able to see your schema visually as an ERD or textually as either a SQL\nor [Atlas HCL](https://atlasgo.io/atlas-schema/sql-resources) document.",
+      "source_content_hash": "6b7ab71aabe38bb2f892703a4d732d7f631fa06fcc480c91c6f73f3b287bf27e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过该链接，您既可以查看ERD形式的结构图，也可以查看[Atlas HCL](https://atlasgo.io/atlas-schema/sql-resources)或SQL格式的文本描述。"
+      }
+    },
+    {
+      "segment_id": "39db08de",
+      "source_content": "### Wrapping up",
+      "source_content_hash": "a3785475b5dd9a66ae4506648eaafecb51ead6eb80351473642adc6a4aba69b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "785750ac",
+      "source_content": "In this blog post we discussed some scenarios where you might find it useful to quickly get a visualization of your Ent\napplication's schema, we then showed how creating such visualizations can be achieved\nusing [entviz](https://github.com/ariga/entviz). If you like the idea, we'd be super happy if you tried it today and\ngave us feedback!",
+      "source_content_hash": "ba3fb6294496320db48317520186beca03f645f9d59b8f459f31ce4af71ad90b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文探讨了需要快速可视化Ent应用模式的若干场景，并演示了如何使用[entviz](https://github.com/ariga/entviz)实现这一目标。如果您喜欢这个创意，欢迎立即试用并给我们反馈！"
+      }
+    },
+    {
+      "segment_id": "5e56b3b9",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n  :::",
+      "source_content_hash": "030cfbb41ec6c8fe28ceaeffbb3d9b0879f5d7fe8fe47a7b535f0879178653ef",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n  :::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2023-01-26-visualizing-with-entviz.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.684005+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "db23e6fbae3a7c3a75f6c050014c28c7c9462d2c127fd43b429d975677ac660b"
+  }
+}

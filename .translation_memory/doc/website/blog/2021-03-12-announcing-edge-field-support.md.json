@@ -1,0 +1,340 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-03-12-announcing-edge-field-support.md",
+  "source_file_content_hash": "0f8bb93a0cea6e5cec36ffd6ca4c6d060aa6046c6fb35e6436c34591adb513ff",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Announcing Edge-field Support in v0.7.0\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\n---",
+      "source_content_hash": "b66bb0d434fe5d4d55d5486bb4dcfe5dde58896f31acabda6368b11855c98d08",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "Over the past few months, there has been much discussion in the Ent project [issues](https://github.com/ent/ent/issues) about adding support for the retrieval of the foreign key field when retrieving entities with One-to-One or One-to-Many edges.  We are happy to announce that as of [v0.7.0](https://github.com/ent/ent/releases/tag/v0.7.0) ent supports this feature.",
+      "source_content_hash": "d1efc97754b02a2e0ca113dbff8484b609d95428ba79be96ac9c277a36ef9e6f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "过去几个月，Ent项目的[issues](https://github.com/ent/ent/issues)中有大量关于为一对一或一对多边关系实体检索添加外键字段支持的讨论。我们很高兴地宣布，从[v0.7.0](https://github.com/ent/ent/releases/tag/v0.7.0)版本开始，ent已支持该功能。"
+      }
+    },
+    {
+      "segment_id": "1cc03ec8",
+      "source_content": "### Before Edge-field Support",
+      "source_content_hash": "9da0c124df2ed66c0ff66d1c3c888a734004d6ba10d39b08b50ad9808c8b83c9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 支持边字段之前"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "Prior to merging this branch, a user that wanted to retrieve the foreign-key field for an entity needed to use eager-loading. Suppose our schema looked like this:",
+      "source_content_hash": "89f81a25132d8f081320c532531d4e9fc96b097a55e9f2ef567c19ab9bbabf1d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在合并该分支前，用户若想获取实体的外键字段，必须使用预加载机制。假设我们的模式如下："
+      }
+    },
+    {
+      "segment_id": "5564d81d",
+      "source_content": "```go\n// ent/schema/user.go:\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tUnique().\n\t\t\tNotEmpty(),\n\t}\n}\n\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.From(\"pets\", Pet.Type).\n\t\t\tRef(\"owner\"),\n\t}\n}\n\n// ent/schema/pet.go\n\n// Pet holds the schema definition for the Pet entity.\ntype Pet struct {\n\tent.Schema\n}\n\n// Fields of the Pet.\nfunc (Pet) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tNotEmpty(),\n\t}\n}\n\n// Edges of the Pet.\nfunc (Pet) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"owner\", User.Type).\n\t\t\tUnique().\n\t\t\tRequired(),\n\t}\n}\n```",
+      "source_content_hash": "5c8f3e34e02cd9fc811d1f400024be60f7be9b776e14369d38152e91df3e68c7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5564d81d"
+      }
+    },
+    {
+      "segment_id": "79ad944d",
+      "source_content": "The schema describes two related entities: `User` and `Pet`, with a One-to-Many edge between them: a user can own many pets and a pet can have one owner.",
+      "source_content_hash": "c4ebbdaeb838c8e71f0cb157e665de6d58b4b76a082d7c4233cfa891f0779af7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该模式描述了两个关联实体：`User`和`Pet`，它们之间存在一对多边关系：一个用户可以拥有多只宠物，而一只宠物只能有一个主人。"
+      }
+    },
+    {
+      "segment_id": "531437ca",
+      "source_content": "When retrieving pets from the data storage, it is common for developers to want to access the foreign-key field on the pet. However, because this field is created implicitly from the `owner` edge it was automatically accessible when retrieving an entity. To retrieve this from the storage a developer needed to do something like:",
+      "source_content_hash": "03a9ee05c5b5ca79b7b004ea7d51451840a3e6bcca4a03fca4166b0af3d6877c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "从数据存储中检索宠物时，开发者通常需要访问宠物上的外键字段。但由于该字段是由`owner`边隐式创建的，检索实体时无法直接获取。开发者需要通过如下方式从存储中获取："
+      }
+    },
+    {
+      "segment_id": "67b24fc5",
+      "source_content": "```go\nfunc Test(t *testing.T) {\n    ctx := context.Background()\n\tc := enttest.Open(t, dialect.SQLite, \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tdefer c.Close()\n\t\n\t// Create the User\n\tu := c.User.Create().\n\t\tSetUserName(\"rotem\").\n\t\tSaveX(ctx)\n\n\t// Create the Pet\n\tp := c.Pet.\n\t\tCreate().\n\t\tSetOwner(u). // Associate with the user\n\t\tSetName(\"donut\").\n\t\tSaveX(ctx)\n\n\tpetWithOwnerId := c.Pet.Query().\n\t\tWhere(pet.ID(p.ID)).\n\t\tWithOwner(func(query *ent.UserQuery) {\n\t\t\tquery.Select(user.FieldID)\n\t\t}).\n\t\tOnlyX(ctx)\n\tfmt.Println(petWithOwnerId.Edges.Owner.ID)\n\t// Output: 1\n}\n```",
+      "source_content_hash": "d747b37359206c6ae2a9e04fb89b1996863ff5ade2723df0709f284b73b8df95",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_67b24fc5"
+      }
+    },
+    {
+      "segment_id": "82e90254",
+      "source_content": "Aside from being very verbose, retrieving the pet with the owner this way was inefficient in-terms of database queries. If we execute the query with the `.Debug()` we can see the DB queries ent generates to satisfy this call:",
+      "source_content_hash": "ba77e67f6bc9d92cdcbba9248c6e2b0fc94593041b3efd5d84d8d2175ef53d26",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这种方式不仅冗长，而且从数据库查询效率来看也较低效。若使用`.Debug()`执行查询，可以看到ent为满足该调用生成的数据库查询："
+      }
+    },
+    {
+      "segment_id": "890e01bc",
+      "source_content": "```sql\nSELECT DISTINCT `pets`.`id`, `pets`.`name`, `pets`.`pet_owner` FROM `pets` WHERE `pets`.`id` = ? LIMIT 2 \nSELECT DISTINCT `users`.`id` FROM `users` WHERE `users`.`id` IN (?)\n```",
+      "source_content_hash": "65c09a0f92e360bfb2aadbc1034282af45c577202e130a955db89c71db2393ce",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_890e01bc"
+      }
+    },
+    {
+      "segment_id": "a2c0166e",
+      "source_content": "In this example, Ent first retrieves the Pet with an ID of `1`, then redundantly fetches the `id` field from the `users` table for users with an ID of `1`.",
+      "source_content_hash": "92d85399ce2ad186c357cf5307f826f29c9dfa7bdbb91a063edeea1a4e22a5fa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此例中，Ent首先获取ID为`1`的Pet，然后冗余地从`users`表中再次获取ID为`1`用户的`id`字段。"
+      }
+    },
+    {
+      "segment_id": "c7c92a79",
+      "source_content": "### With Edge-field Support",
+      "source_content_hash": "ff780f78dee617d82ac89324e81a8904d93e0227f803d304f187705dd72e445e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 边字段支持方案"
+      }
+    },
+    {
+      "segment_id": "f0984c2a",
+      "source_content": "[Edge-field support](https://entgo.io/docs/schema-edges/#edge-field) greatly simplifies and improves the efficiency of this flow. With this feature, developers can define the foreign key field as part of the schemas `Fields()`, and by using the `.Field(..)` modifier on the edge definition instruct Ent to expose and map the foreign column to this field.  So, in our example schema, we would modify it to be:",
+      "source_content_hash": "4de190991a103cdf8afbf15c9bcc29898f5ebf263b07382aac331ced76ac0942",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "7ded566f",
+      "source_content": "```go\n// user.go stays the same\n\n// pet.go\n// Fields of the Pet.\nfunc (Pet) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tNotEmpty(),\n\t\tfield.Int(\"owner_id\"), // <-- explicitly add the field we want to contain the FK\n\t}\n}\n\n// Edges of the Pet.\nfunc (Pet) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"owner\", User.Type).\n\t\t\tField(\"owner_id\"). // <-- tell ent which field holds the reference to the owner\n\t\t\tUnique().\n\t\t\tRequired(),\n\t}\n}\n```",
+      "source_content_hash": "203edcacba4c42fa2d1cb4657fd41c167d2c84a0d308f30dd53bcdc86588b04e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7ded566f"
+      }
+    },
+    {
+      "segment_id": "692c6053",
+      "source_content": "In order to update our client code we need to re-run code generation:",
+      "source_content_hash": "5726b865538805698670ebcf3a7df36ec6f651628046eb3eb60d863f916d514b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更新客户端代码前需重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "601bdf38",
+      "source_content": "```sql\ngo generate ./...\n```",
+      "source_content_hash": "67d5d18ebaa84d7268eeebbb14be0fb76835ebff575ed159164e0e0f06e08132",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_601bdf38"
+      }
+    },
+    {
+      "segment_id": "e478ec2c",
+      "source_content": "We can now modify our query to be much simpler:",
+      "source_content_hash": "6fd0dec1d611f9c50fdc8ff04c31286a458cd9c78a1a4226d4ec3a95ba9da5e5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们可以将查询简化为："
+      }
+    },
+    {
+      "segment_id": "e908327f",
+      "source_content": "```go\nfunc Test(t *testing.T) {\n\tctx := context.Background()\n\tc := enttest.Open(t, dialect.SQLite, \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tdefer c.Close()\n\n\tu := c.User.Create().\n\t\tSetUserName(\"rotem\").\n\t\tSaveX(ctx)\n\n\tp := c.Pet.Create().\n\t\tSetOwner(u).\n\t\tSetName(\"donut\").\n\t\tSaveX(ctx)\n\n\tpetWithOwnerId := c.Pet.GetX(ctx, p.ID) // <-- Simply retrieve the Pet\n\n\tfmt.Println(petWithOwnerId.OwnerID)\n\t// Output: 1\n}\n```",
+      "source_content_hash": "8b8a0b4076cf649b2ea74a140601a2f20780d513e1d6d7a560628f901365bf21",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e908327f"
+      }
+    },
+    {
+      "segment_id": "008183b0",
+      "source_content": "Running with the `.Debug()` modifier we can see that the DB queries make more sense now:",
+      "source_content_hash": "c39cfbbff2432d04b6ffcff858d492ce0aae8acf2e8ac7bb0a267732f0b596db",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用`.Debug()`修饰符运行时，可见数据库查询逻辑现已合理："
+      }
+    },
+    {
+      "segment_id": "71779666",
+      "source_content": "```sql\nSELECT DISTINCT `pets`.`id`, `pets`.`name`, `pets`.`owner_id` FROM `pets` WHERE `pets`.`id` = ? LIMIT 2\n```",
+      "source_content_hash": "41cdda3605f9803ec0baf7b5fbe4918ec6ea6e50eeeb94f8166bc7041cc66751",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_71779666"
+      }
+    },
+    {
+      "segment_id": "b08ad0b4",
+      "source_content": "Hooray 🎉!",
+      "source_content_hash": "5eef37527340485c532955003aa87233bcfadb6c62a8f63abdf72d569bfeac5c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了 🎉！"
+      }
+    },
+    {
+      "segment_id": "89b740fe",
+      "source_content": "### Migrating Existing Schemas to Edge Fields",
+      "source_content_hash": "c995f918d3661352fa8b555a7a8e380bdf29932b2bc088bb4ec1409277399380",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 现有模式迁移至边字段"
+      }
+    },
+    {
+      "segment_id": "99840f13",
+      "source_content": "If you are already using Ent with an existing schema, you may already have O2M relations whose foreign-key columns already exist in your database.  Depending on how you configured your schema, chances are that they may be stored in a column by a different name than the field you are now adding. For instance, you want to create an `owner_id` field, but Ent auto-created the column foreign-key column as `pet_owner`.",
+      "source_content_hash": "f2daba2fe7739b6ab00cffb4bfc3895d9835cf162d16552fcb6135457eda4d3b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若您已在现有模式中使用Ent，可能已存在外键列的一对多关系。根据模式配置方式，这些列可能以不同于新添加字段的名称存储。例如您想创建`owner_id`字段，但Ent自动生成的外键列名为`pet_owner`。"
+      }
+    },
+    {
+      "segment_id": "85ea22dd",
+      "source_content": "To check what column name Ent is using for this field you can look in the `./ent/migrate/schema.go` file:",
+      "source_content_hash": "29f014d253a9f9fa430f8c3dccaf25931811b0e1aadce0eda8b6c173a068330a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过查看`./ent/migrate/schema.go`文件确认Ent使用的列名："
+      }
+    },
+    {
+      "segment_id": "9bc650e1",
+      "source_content": "```go\nPetsColumns = []*schema.Column{\n\t{Name: \"id\", Type: field.TypeInt, Increment: true},\n\t{Name: \"name\", Type: field.TypeString},\n\t{Name: \"pet_owner\", Type: field.TypeInt, Nullable: true}, // <-- this is our FK\n}\n```",
+      "source_content_hash": "d41f7c6e2cf21c15ae0c0cc02cccf3b3ad641db424dbaea41c1f25a2d386347b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9bc650e1"
+      }
+    },
+    {
+      "segment_id": "c8a6ab3e",
+      "source_content": "To allow for a smooth migration, you must explicitly tell Ent to keep using the existing column name. You can do this by using the `StorageKey` modifier (either on the field or on the edge). For example:",
+      "source_content_hash": "02e2ff8c9dea549e2b0ade95421bf9518ef65360022d53146539e9533d6cd9c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为实现平滑迁移，必须显式告知Ent继续使用现有列名。可通过在字段或边上使用`StorageKey`修饰符实现，例如："
+      }
+    },
+    {
+      "segment_id": "f02969e0",
+      "source_content": "```go\n// In schema/pet.go:\n\n// Fields of the Pet.\nfunc (Pet) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tNotEmpty(),\n\t\tfield.Int(\"owner_id\").\n\t\t\tStorageKey(\"pet_owner\"), // <-- explicitly set the column name\n\t}\n}\n```",
+      "source_content_hash": "83db2d0b7bb3a8a7dfb4ef6b8931dfcf9847954a951f5304efea6fbed2daa43d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f02969e0"
+      }
+    },
+    {
+      "segment_id": "6e5d54a8",
+      "source_content": "In the near future we plan to implement Schema Versioning, which will store the history of schema changes alongside the code. Having this information will allow ent to support such migrations in an automatic and predictable way.",
+      "source_content_hash": "cf23e9cc062e3fc2270ba693cbf5abc1be269e6e8963f0c4f554bf47b87f32c4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "近期我们计划实现模式版本控制功能，将模式变更历史与代码共同存储。该信息将使ent能以自动化且可预测的方式支持此类迁移。"
+      }
+    },
+    {
+      "segment_id": "e29294bd",
+      "source_content": "### Wrapping Up",
+      "source_content_hash": "6df1295c536bdf3cf58241755891051d109001c784cced5b33a00f70983bc553",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "ebfad7e4",
+      "source_content": "Edge-field support is readily available and can be installed by `go get -u entgo.io/ent@v0.7.0`.",
+      "source_content_hash": "e4eecc25ae7aa2f4c62fac73c6bd2365f15e1607180abe71a06582553ba1e729",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "边字段支持功能已正式发布，可通过`go get -u entgo.io/ent@v0.7.0`安装使用。"
+      }
+    },
+    {
+      "segment_id": "7e563909",
+      "source_content": "Many thanks 🙏 to all the good people who took the time to give feedback and helped design this feature properly: [Alex Snast](https://github.com/alexsn), [Ruben de Vries](https://github.com/rubensayshi), [Marwan Sulaiman](https://github.com/marwan-at-work), [Andy Day](https://github.com/adayNU), [Sebastian Fekete](https://github.com/aight8) and [Joe Harvey](https://github.com/errorhandler).",
+      "source_content_hash": "deb664f99e8db439774a75bcd2aff531dccd9eb8c1d698980183447364510756",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "衷心感谢以下各位抽出时间提供反馈并协助完善此功能设计： [Alex Snast](https://github.com/alexsn)、[Ruben de Vries](https://github.com/rubensayshi)、[Marwan Sulaiman](https://github.com/marwan-at-work)、[Andy Day](https://github.com/adayNU)、[Sebastian Fekete](https://github.com/aight8) 以及 [Joe Harvey](https://github.com/errorhandler)。🙏"
+      }
+    },
+    {
+      "segment_id": "bf3eb388",
+      "source_content": "### For more Ent news and updates:",
+      "source_content_hash": "a4b3cc842e86e4cb6686a3bb52fe93303cae6738523ab773ad72b0a7e58d51a4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 获取更多Ent资讯与更新："
+      }
+    },
+    {
+      "segment_id": "7425ba22",
+      "source_content": "- Follow us on [twitter.com/entgo_io](https://twitter.com/entgo_io)\n- Subscribe to our [newsletter](https://entgo.substack.com/)\n- Join us on #ent on the [Gophers slack](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)",
+      "source_content_hash": "1c44ec6c22c806ec55af6511440f8bbb11d60dc90870a5e293a3068882d744cf",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 关注我们的Twitter账号 [twitter.com/entgo_io](https://twitter.com/entgo_io)\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 加入[Gophers Slack](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-03-12-announcing-edge-field-support.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.659178+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "0f8bb93a0cea6e5cec36ffd6ca4c6d060aa6046c6fb35e6436c34591adb513ff"
+  }
+}

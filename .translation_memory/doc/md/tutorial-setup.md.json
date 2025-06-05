@@ -1,0 +1,272 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-setup.md",
+  "source_file_content_hash": "3766560761a5cf9b4ad7ad790dc962e54aafde6bd0515e874501abb97a2b5177",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-setup\ntitle: Setting Up\nsidebar_label: Setting Up\n---",
+      "source_content_hash": "2ae837d0fbb8ef517333019e4bb7883ad27b9cbc7ba997cdce2ff8deb54a831e",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "This guide is intended for first-time users who want instructions on how to set up an Ent project from scratch.\nBefore we get started, make sure you have the following prerequisites installed on your machine.",
+      "source_content_hash": "5523d43de41435f4279cc603642ce1b138ebe6005cff34bc901b9a477197fc0a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南面向首次使用者，提供从零搭建Ent项目的详细说明。开始前请确保已安装以下环境依赖。"
+      }
+    },
+    {
+      "segment_id": "1cc03ec8",
+      "source_content": "## Prerequisites",
+      "source_content_hash": "bbd3d4949a6f237efd8d4ff5c7c5f30d968e7a989ad12f3d7dcef69c98053912",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 环境准备"
+      }
+    },
+    {
+      "segment_id": "143e51c1",
+      "source_content": "- [Go](https://go.dev/doc/install)\n- [Docker](https://docs.docker.com/get-docker) (optional)",
+      "source_content_hash": "14f912371cf5f860062aa0c40bdc3aaa902125bdb5eefc1c8d7e79381e7c9e2e",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- [Go](https://go.dev/doc/install)\n- [Docker](https://docs.docker.com/get-docker) (可选)"
+      }
+    },
+    {
+      "segment_id": "cf898102",
+      "source_content": "After installing these dependencies, create a directory for the project and initialize a Go module:",
+      "source_content_hash": "04167436b0c8acdeec9f88b3d997a7851f78138c709470877868e9d3a5f82364",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "安装完依赖后，为项目创建目录并初始化Go模块："
+      }
+    },
+    {
+      "segment_id": "93be3c14",
+      "source_content": "```console\nmkdir todo\ncd $_\ngo mod init todo\n```",
+      "source_content_hash": "552febd29535e62c2185cba53af35de819e3282bd49ad4be49311d938c8e7570",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_93be3c14"
+      }
+    },
+    {
+      "segment_id": "40f9552a",
+      "source_content": "## Installation",
+      "source_content_hash": "a15d12503bf00f654df068bd9e5af6259db1703ac04a61365b991ce52557e5ea",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装步骤"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "Run the following Go commands to install Ent, and tell it to initialize the project structure along with a `Todo` schema.",
+      "source_content_hash": "eeef66fc79c3476df588e3470915993675f1f9a04028918ae7f3ef991c35b3ae",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行以下Go命令安装Ent，并初始化项目结构及`Todo`数据模型："
+      }
+    },
+    {
+      "segment_id": "08021a08",
+      "source_content": "```console\ngo get entgo.io/ent/cmd/ent\n```",
+      "source_content_hash": "c81c2cef241db6fb10f3c4b3ab1659e9839d8db32584d26d05c3438a24695ec4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_08021a08"
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent new Todo\n```",
+      "source_content_hash": "42a0f1e1f0ed977cfdba00ed3bcfe3afe39681f0c237bde36a528b77361daae1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cb57d798"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "After installing Ent and running `ent new`, your project directory should look like this:",
+      "source_content_hash": "021f677958a7832ebbfbe7a83f2f1816a9ae41b27dcce1da8622d300322f6cdb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成Ent安装并运行`ent new`后，项目目录结构应如下所示："
+      }
+    },
+    {
+      "segment_id": "be2d5397",
+      "source_content": "```console\n.\n├── ent\n│   ├── generate.go\n│   └── schema\n│       └── todo.go\n├── go.mod\n└── go.sum\n```",
+      "source_content_hash": "c1da40f72154c9231192f622c9e94970cb15a196809c54cf0af273aab85852a8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be2d5397"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "The `ent` directory holds the generated assets (see the next section), and the `ent/schema` directory contains your\nentity schemas.",
+      "source_content_hash": "019abb29039cb3e43e3b87c73a0c3c198cdbde94cef45a496f1761f9b3148097",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent`目录存放生成的代码资产（详见下节），`ent/schema`目录则包含实体数据模型定义。"
+      }
+    },
+    {
+      "segment_id": "6d28a77c",
+      "source_content": "## Code Generation",
+      "source_content_hash": "faa99061912fad50906786578e2084a72500c44f4e37b4f565fd4b4b9ed91fe0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 代码生成"
+      }
+    },
+    {
+      "segment_id": "f7ef78f9",
+      "source_content": "When we ran `ent new Todo` above, a schema named `Todo`  was created in the `todo.go` file under the`todo/ent/schema/` directory:",
+      "source_content_hash": "4378ae0ef643e5d94d965c60061e4025f0592656bfce9cab09f37ceabdc2fdbe",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "前文执行`ent new Todo`时，已在`todo/ent/schema/`目录下创建了名为`Todo`的模型文件`todo.go`："
+      }
+    },
+    {
+      "segment_id": "3ce8f045",
+      "source_content": "```go\npackage schema\n\nimport \"entgo.io/ent\"\n\n// Todo holds the schema definition for the Todo entity.\ntype Todo struct {\n\tent.Schema\n}\n\n// Fields of the Todo.\nfunc (Todo) Fields() []ent.Field {\n\treturn nil\n}\n\n// Edges of the Todo.\nfunc (Todo) Edges() []ent.Edge {\n\treturn nil\n}\n```",
+      "source_content_hash": "b63c441aaff48ead8fda8285ced6e038c70e1dd5482d0cb9468c577b6d6b69aa",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ce8f045"
+      }
+    },
+    {
+      "segment_id": "f01228d3",
+      "source_content": "As you can see, initially, the schema has no fields or edges defined. Let's run the command for generating assets to interact with\nthe `Todo` entity:",
+      "source_content_hash": "aebdd9b7abdc025d91955bd6892475d5e82d322fb53fe4ca60b4f5238473084b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可见初始模型未定义任何字段或关联关系。现在运行以下命令生成与`Todo`实体交互的代码资产："
+      }
+    },
+    {
+      "segment_id": "8a9e710a",
+      "source_content": "```console\ngo generate ./ent\n```",
+      "source_content_hash": "c0973348962a802c92e5593c9f9a81eb75bfaa2305c100e2924981cdf22269f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8a9e710a"
+      }
+    },
+    {
+      "segment_id": "8a9b6c26",
+      "source_content": "## Create a Test Case",
+      "source_content_hash": "ca54425054679438137a6b5a0f92664c817652b432886f1ccd9d37e0047f0560",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 创建测试用例"
+      }
+    },
+    {
+      "segment_id": "a1fa5396",
+      "source_content": "Running `go generate ./ent` invoked Ent's automatic code generation tool, which uses the schemas we define in our `schema` package to generate the actual Go code which we will now use to interact with a database. At this stage, you can find under `./ent/client.go`, client code that is capable of  querying and mutating the `Todo` entities. Let's create a\n[testable example](https://go.dev/blog/examples) to use this. We'll use [SQLite](https://github.com/mattn/go-sqlite3)\nin this test-case for testing Ent.",
+      "source_content_hash": "b02066c378d376d1df993043747d620f405fd02cef25c7af54713d3eb24b1d47",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行`go generate ./ent`会触发Ent的自动代码生成工具，该工具根据`schema`包中的模型定义生成可操作数据库的Go代码。此时在`./ent/client.go`中可找到用于查询和修改`Todo`实体的客户端代码。我们将创建一个[可测试示例](https://go.dev/blog/examples)进行验证，测试中使用[SQLite](https://github.com/mattn/go-sqlite3)作为数据库驱动。"
+      }
+    },
+    {
+      "segment_id": "26f7c825",
+      "source_content": "```console\ngo get github.com/mattn/go-sqlite3\ntouch example_test.go\n```",
+      "source_content_hash": "a54d50f5b0d34cd82d49abc7618eb9cf7879e4fdeda4df3d73d53647e452088c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_26f7c825"
+      }
+    },
+    {
+      "segment_id": "51867d16",
+      "source_content": "Paste the following code in `example_test.go` that instantiates an `ent.Client` and automatically creates all schema resources\nin the database (tables, columns, etc).",
+      "source_content_hash": "b03e124d6f363de5928372c923734642b5e0833ee621966ea827408edc2dc036",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "将以下代码粘贴至`example_test.go`，该代码会实例化`ent.Client`并自动在数据库中创建所有模型资源（表、列等）："
+      }
+    },
+    {
+      "segment_id": "19913a56",
+      "source_content": "```go\npackage todo\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"todo/ent\"\n\n\t\"entgo.io/ent/dialect\"\n\t_ \"github.com/mattn/go-sqlite3\"\n)\n\nfunc Example_Todo() {\n\t// Create an ent.Client with in-memory SQLite database.\n\tclient, err := ent.Open(dialect.SQLite, \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer client.Close()\n\tctx := context.Background()\n\t// Run the automatic migration tool to create all schema resources.\n\tif err := client.Schema.Create(ctx); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\t// Output:\n}\n```",
+      "source_content_hash": "f8d5bcf957100cfde3ee0e33d68a4927400587cd36de4d2da68aab3c9efad79d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_19913a56"
+      }
+    },
+    {
+      "segment_id": "f38d1cb0",
+      "source_content": "Then, run `go test` to verify that everything works as expected.",
+      "source_content_hash": "c1fc14da9d5d84d3a89031e58d4024f4cab0281cc7493bdcde1161585d08c5bf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行`go test`验证功能是否正常。"
+      }
+    },
+    {
+      "segment_id": "e2c67c87",
+      "source_content": "```console\ngo test\n```",
+      "source_content_hash": "13915e13009a61d5f749ea060aca4dc3afdbc4f8ce596d3e62c6ea242b3f99e7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e2c67c87"
+      }
+    },
+    {
+      "segment_id": "c364340c",
+      "source_content": "After setting up our project, we're ready to create our Todo list.",
+      "source_content_hash": "9cc143089d78ba0cb427ab05308f87d25255803e9736573b193ae287f1d679fe",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成项目初始化后，即可开始创建待办事项列表。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-setup.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.679692+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "3766560761a5cf9b4ad7ad790dc962e54aafde6bd0515e874501abb97a2b5177"
+  }
+}

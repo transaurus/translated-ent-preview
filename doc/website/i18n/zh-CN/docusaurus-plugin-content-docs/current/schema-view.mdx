@@ -1,0 +1,401 @@
+---
+id: schema-views
+title: Views
+slug: /schema-views
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Ent支持操作数据库视图。与通常由表支撑的常规Ent类型（模式）不同，视图作为"虚拟表"存在，其数据来源于查询结果。以下示例演示如何在Ent中定义`VIEW`。更多选项细节，请参阅指南后续内容。
+
+<Tabs>
+<TabItem value="Builder Definition">
+
+```go title="ent/schema/user.go"
+// CleanUser represents a user without its PII field.
+type CleanUser struct {
+	ent.View
+}
+
+// Annotations of the CleanUser.
+func (CleanUser) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.ViewFor(dialect.Postgres, func(s *sql.Selector) {
+			s.Select("name", "public_info").From(sql.Table("users"))
+		}),
+	}
+}
+
+// Fields of the CleanUser.
+func (CleanUser) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name"),
+		field.String("public_info"),
+	}
+}
+```
+</TabItem>
+<TabItem value="Raw Definition">
+
+```go title="ent/schema/user.go"
+// CleanUser represents a user without its PII field.
+type CleanUser struct {
+	ent.View
+}
+
+// Annotations of the CleanUser.
+func (CleanUser) Annotations() []schema.Annotation {
+    return []schema.Annotation{
+        // Alternatively, you can use raw definitions to define the view.
+        // But note, this definition is skipped if the ViewFor annotation
+        // is defined for the dialect we generated migration to (Postgres).
+        entsql.View(`SELECT name, public_info FROM users`),
+    }
+}
+
+// Fields of the CleanUser.
+func (CleanUser) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name"),
+		field.String("public_info"),
+	}
+}
+```
+</TabItem>
+<TabItem value="External Definition">
+
+```go title="ent/schema/user.go"
+// CleanUser represents a user without its PII field.
+type CleanUser struct {
+	ent.View
+}
+
+// View definition is specified in a separate file (`schema.sql`),
+// and loaded using Atlas' `composite_schema` data-source.
+
+// Fields of the CleanUser.
+func (CleanUser) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name"),
+		field.String("public_info"),
+	}
+}
+```
+</TabItem>
+</Tabs>
+
+:::info[表与视图的关键区别]
+- 视图是只读的，因此不会为其生成变更构建器。如需定义可插入/更新的视图，请将其定义为常规模式并按照下文指南配置迁移。
+- 与`ent.Schema`不同，`ent.View`默认不包含`ID`字段。如需在视图中包含`id`字段，可显式定义该字段。
+- 由于视图只读特性，无法注册钩子。
+- Atlas为Ent视图提供开箱即用的支持，包括版本化迁移和测试。但若未使用Atlas，需手动管理视图迁移，因Ent不提供其模式迁移功能。
+:::
+
+## 简介
+
+定义在`ent/schema`包中的视图需嵌入`ent.View`类型而非`ent.Schema`类型。除字段外，它们可包含边、拦截器和注解以实现额外集成。例如：
+
+```go title="ent/schema/user.go"
+// CleanUser represents a user without its PII field.
+type CleanUser struct {
+	ent.View
+}
+
+// Fields of the CleanUser.
+func (CleanUser) Fields() []ent.Field {
+	return []ent.Field{
+		// Note, unlike real schemas (tables, defined with ent.Schema),
+		// the "id" field should be defined manually if needed.
+		field.Int("id"),
+		field.String("name"),
+		field.String("public_info"),
+	}
+}
+```
+
+定义完成后，可运行`go generate ./ent`生成与该视图交互所需的资源。例如：
+
+```go
+client.CleanUser.Query().OnlyX(ctx)
+```
+
+注意：`ent.View`不会生成`Create`/`Update`/`Delete`构建器。
+
+## 迁移与测试
+
+定义视图模式后，需向Ent（及Atlas）声明定义该视图的SQL查询。若未配置，运行Ent查询（如上述定义）将因缺少`clean_users`表而失败。
+
+:::note[Atlas指南]
+本文档后续内容假设您使用[Atlas Pro](https://atlasgo.io/features#pro-plan)，因Ent本身不支持视图或其他非表对象的迁移。但使用Atlas或其专业订阅<u>非强制要求</u>。Ent不依赖特定迁移引擎，只要视图存在于数据库中，客户端即可查询。
+:::
+
+配置视图定义(`AS SELECT ...`)有两种方案：
+
+1. 在Go代码的`ent/schema`内定义
+2. 保持`ent/schema`独立于视图定义，通过外部方式（手动或Atlas自动）创建
+
+下面分别探讨这两种方案：
+
+### Go代码定义
+
+本示例演示如何在Ent模式中定义`ent.View`并指定其SQL定义(`AS ...`)。
+
+此方案优势在于：`CREATE VIEW`的正确性会在迁移阶段而非查询阶段被验证。例如若`ent/schema`中定义的`ent.Field`在SQL定义中缺失，PostgreSQL将返回如下错误：
+
+```text
+// highlight-next-line-error-message
+create "clean_users" view: pq: CREATE VIEW specifies more column names than columns
+```
+
+以下是包含字段定义及其`SELECT`查询的视图示例：
+
+<Tabs>
+<TabItem value="Builder Definition">
+
+Using the `entsql.ViewFor` API, you can use a dialect-aware builder to define the view. Note that you can have multiple
+view definitions for different dialects, and Atlas will use the one that matches the dialect of the migration.
+
+```go title="ent/schema/user.go"
+// CleanUser represents a user without its PII field.
+type CleanUser struct {
+	ent.View
+}
+
+// Annotations of the CleanUser.
+func (CleanUser) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.ViewFor(dialect.Postgres, func(s *sql.Selector) {
+			s.Select("id", "name", "public_info").From(sql.Table("users"))
+		}),
+	}
+}
+
+// Fields of the CleanUser.
+func (CleanUser) Fields() []ent.Field {
+	return []ent.Field{
+		// Note, unlike real schemas (tables, defined with ent.Schema),
+		// the "id" field should be defined manually if needed.
+		field.Int("id"),
+		field.String("name"),
+		field.String("public_info"),
+	}
+}
+```
+</TabItem>
+<TabItem value="Raw Definition">
+
+Alternatively, you can use raw definitions to define the view. But note, this definition is skipped if the `ViewFor`
+annotation is defined for the dialect we generated migration to (Postgres in this case).
+
+```go title="ent/schema/user.go"
+// CleanUser represents a user without its PII field.
+type CleanUser struct {
+	ent.View
+}
+
+// Annotations of the CleanUser.
+func (CleanUser) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+        entsql.View(`SELECT id, name, public_info FROM users`),
+	}
+}
+
+// Fields of the CleanUser.
+func (CleanUser) Fields() []ent.Field {
+	return []ent.Field{
+		// Note, unlike real schemas (tables, defined with ent.Schema),
+		// the "id" field should be defined manually if needed.
+		field.Int("id"),
+		field.String("name"),
+		field.String("public_info"),
+	}
+}
+```
+</TabItem>
+</Tabs>
+
+通过创建包含必要参数的`atlas.hcl`文件简化配置，该配置文件将在下文[使用](#usage)环节使用：
+
+```hcl title="atlas.hcl"
+env "local" {
+  src = "ent://ent/schema"
+  dev = "docker://postgres/16/dev?search_path=public"
+}
+```
+
+完整示例参见[Ent代码库](https://github.com/ent/ent/tree/master/examples/viewschema)。
+
+### 外部定义
+
+此示例演示如何定义一个`ent.View`，但将其定义保留在单独的文件（`schema.sql`）中或手动在数据库中创建。
+
+```go title="ent/schema/user.go"
+// CleanUser represents a user without its PII field.
+type CleanUser struct {
+	ent.View
+}
+
+// Fields of the CleanUser.
+func (CleanUser) Fields() []ent.Field {
+	return []ent.Field{
+		field.Int("id"),
+		field.String("name"),
+		field.String("public_info"),
+	}
+}
+```
+
+在Ent中定义视图模式后，需要单独配置（或创建）SQL的`CREATE VIEW`定义，以确保在Ent运行时查询时该视图已存在于数据库中。
+
+对于此示例，我们将使用Atlas的`composite_schema`数据源，从我们的`ent/schema`包和一个描述此视图的SQL文件构建模式图。让我们创建一个名为`schema.sql`的文件，并将视图定义粘贴到其中：
+
+```sql title="schema.sql"
+-- Create "clean_users" view
+CREATE VIEW "clean_users" ("id", "name", "public_info") AS SELECT id,
+    name,
+    public_info
+   FROM users;
+```
+
+接下来，我们创建一个`atlas.hcl`配置文件，其中包含一个`composite_schema`，该模式包括我们的`ent/schema`和`schema.sql`文件：
+
+```hcl title="atlas.hcl"
+data "composite_schema" "app" {
+  # Load the ent schema first with all its tables.
+  schema "public" {
+    url = "ent://ent/schema"
+  }
+  # Then, load the views defined in the schema.sql file.
+  schema "public" {
+    url = "file://schema.sql"
+  }
+}
+
+env "local" {
+  src = data.composite_schema.app.url
+  dev = "docker://postgres/15/dev?search_path=public"
+}
+```
+
+完整示例可在[Ent仓库](https://github.com/ent/ent/tree/master/examples/viewcomposite)中找到。
+
+## 使用
+
+设置好模式后，我们可以使用`atlas schema inspect`命令获取其表示，为其生成迁移，将其应用到数据库等。以下是一些使用Atlas入门的命令：
+
+#### 检查模式
+
+`atlas schema inspect`命令通常用于检查数据库。然而，我们也可以用它来检查我们的`ent/schema`并打印其SQL表示：
+
+```shell
+atlas schema inspect \
+  --env local \
+  --url env://src \
+  --format '{{ sql . }}'
+```
+
+上述命令打印以下SQL。注意，`clean_users`视图在`users`表之后定义于模式中：
+
+```sql
+-- Create "users" table
+CREATE TABLE "users" ("id" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, "name" character varying NOT NULL, "public_info" character varying NOT NULL, "private_info" character varying NOT NULL, PRIMARY KEY ("id"));
+-- Create "clean_users" view
+CREATE VIEW "clean_users" ("id", "name", "public_info") AS SELECT id,
+    name,
+    public_info
+   FROM users;
+```
+
+#### 为模式生成迁移
+
+要为模式生成迁移，请运行以下命令：
+
+```shell
+atlas migrate diff \
+  --env local
+```
+
+注意，会创建一个新的迁移文件，其内容如下：
+
+```sql title="migrations/20240712090543.sql"
+-- Create "users" table
+CREATE TABLE "users" ("id" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, "name" character varying NOT NULL, "public_info" character varying NOT NULL, "private_info" character varying NOT NULL, PRIMARY KEY ("id"));
+-- Create "clean_users" view
+CREATE VIEW "clean_users" ("id", "name", "public_info") AS SELECT id,
+    name,
+    public_info
+   FROM users;
+```
+
+#### 应用迁移
+
+要将上述生成的迁移应用到数据库，请运行以下命令：
+
+```
+atlas migrate apply \
+  --env local \
+  --url "postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable"
+```
+
+:::info[直接在数据库上应用模式]
+
+有时，需要直接将模式应用到数据库而不生成迁移文件。例如，在试验模式更改、为测试启动数据库等情况下。在这种情况下，可以使用以下命令直接将模式应用到数据库：
+
+```shell
+atlas schema apply \
+  --env local \
+  --url "postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable"
+```
+
+或者在编写测试时，可以使用[Atlas Go SDK](https://github.com/ariga/atlas-go-sdk)在运行断言之前将模式与数据库对齐：
+
+```go
+ac, err := atlasexec.NewClient(".", "atlas")
+if err != nil {
+	log.Fatalf("failed to initialize client: %w", err)
+}
+// 自动更新数据库以匹配所需模式。
+// 另一个选项是手动使用'migrate apply'或'schema apply'。
+if _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{
+	Env: "local",
+	URL: "postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable",
+	AutoApprove: true,
+}); err != nil {
+    log.Fatalf("failed to apply schema changes: %w", err)
+}
+// 运行断言。
+u1 := client.User.Create().SetName("a8m").SetPrivateInfo("secret").SetPublicInfo("public").SaveX(ctx)
+v1 := client.CleanUser.Query().OnlyX(ctx)
+require.Equal(t, u1.ID, v1.ID)
+require.Equal(t, u1.Name, v1.Name)
+require.Equal(t, u1.PublicInfo, v1.PublicInfo)
+```
+:::
+
+## 可插入/可更新视图
+
+如需定义[可插入/可更新视图](https://dev.mysql.com/doc/refman/8.4/en/view-updatability.html)，可将其设置为常规类型（`ent.Schema`）并添加`entsql.Skip()`注解，以避免Ent为此视图生成`CREATE TABLE`语句。随后，按照上文[外部定义](#external-definition)章节所述方式在数据库中定义该视图。
+
+```go title="ent/schema/user.go"
+// CleanUser represents a user without its PII field.
+type CleanUser struct {
+    ent.Schema
+}
+
+// Annotations of the CleanUser.
+func (CleanUser) Annotations() []schema.Annotation {
+    return []schema.Annotation{
+        entsql.Skip(),
+    }
+}
+
+// Fields of the CleanUser.
+func (CleanUser) Fields() []ent.Field {
+    return []ent.Field{
+        field.Int("id"),
+        field.String("name"),
+        field.String("public_info"),
+    }
+}
+```

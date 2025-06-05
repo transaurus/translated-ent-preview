@@ -1,0 +1,283 @@
+---
+title: Appending values to JSON fields with Ent
+author: Rotem Tamir
+authorURL: "https://github.com/rotemtam"
+authorImageURL: "https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80"
+authorTwitter: _rtam
+image: "https://entgo.io/images/assets/ent-json-append.png"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+### 内容提要
+
+* 大多数关系型数据库都支持存储非结构化JSON值的列
+* Ent为操作关系型数据库中的JSON值提供了出色支持
+* 如何以原子方式向JSON数组追加值
+* Ent近期新增了对JSON字段值原子化追加的支持
+
+### SQL数据库中的JSON值
+
+尽管关系型数据库以存储结构化表格数据著称，但几乎所有现代关系型数据库都支持JSON列来存储非结构化数据。例如在MySQL中可以创建如下表：
+
+```sql
+CREATE TABLE t1 (jdoc JSON);
+```
+
+该列允许存储任意结构的JSON对象：
+
+```sql
+INSERT INTO t1 VALUES('{"key1": "value1", "key2": "value2"}');
+```
+
+由于JSON文档始终可以表示为字符串，它们可以被存储在常规VARCHAR或TEXT列中。但当列被声明为JSON类型时，数据库会强制校验JSON语法。例如如果我们尝试向该MySQL表写入格式错误的JSON文档：
+
+```sql
+INSERT INTO t1 VALUES('[1, 2,');
+```
+
+将会收到如下错误：
+
+```console
+ERROR 3140 (22032) at line 2: Invalid JSON text:
+"Invalid value." at position 6 in value (or column) '[1, 2,'.
+```
+
+此外，可以通过[JSON路径](https://dev.mysql.com/doc/refman/8.0/en/json.html#json-path-syntax)表达式在SELECT语句中访问JSON文档内部的值，也能在谓词(WHERE子句)中用于数据过滤：
+
+```sql
+select c->'$.hello' as greeting from t where c->'$.hello' = 'world';;
+```
+
+执行结果：
+
+```text
++--------------+
+| greeting     |
++--------------+
+| "world"      |
++--------------+
+1 row in set (0.00 sec)
+```
+
+### Ent中的JSON值
+
+在Ent中，用户可以通过`field.JSON`定义JSON字段，指定字段名称和底层Go类型。例如：
+
+```go
+type Tag struct {
+	Name    string    `json:"name"`
+	Created time.Time `json:"created"`
+}
+
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.JSON("tags", []Tag{}),
+	}
+}
+```
+
+Ent提供了便捷的API来读写JSON列中的值，并支持使用[`sqljson`](https://entgo.io/docs/predicates/#json-predicates)谓词进行查询：
+
+```go
+func TestEntJSON(t *testing.T) {
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	ctx := context.Background()
+	// Insert a user with two comments.
+	client.User.Create().
+		SetTags([]schema.Tag{
+			{Name: "hello", Created: time.Now()},
+			{Name: "goodbye", Created: time.Now()},
+		}).
+		SaveX(ctx)
+
+	// Count how many users have more than zero tags.
+	count := client.User.Query().
+		Where(func(s *sql.Selector) {
+			s.Where(
+				sqljson.LenGT(user.FieldTags, 0),
+			)
+		}).
+		CountX(ctx)
+	fmt.Printf("count: %d", count)
+	// Prints: count: 1
+}
+```
+
+### 向JSON列中的字段追加值
+
+许多场景下需要向JSON列中的列表追加值。理想情况下，追加操作应以原子方式实现，即无需读取当前值就能写入完整新值。这是因为如果两个并发调用尝试追加值，两者会从数据库读取相同的当前值，并几乎同时写入各自更新的版本。除非使用[乐观锁](2021-07-22-database-locking-techniques-with-ent.md)，否则两次写入都会成功，但最终结果只会包含其中一个新值。
+
+为解决这个竞态条件，我们可以通过巧妙的UPDATE查询让数据库处理调用间的同步。这个解决方案的直觉类似于许多应用中计数器递增的实现。与其执行：
+
+```sql
+SELECT points from leaderboard where user='rotemtam' 
+```
+
+读取结果(假设是1000)，在进程中递增(1000+1=1001)并原样写入新值：
+
+```sql
+UPDATE leaderboard SET points=1001 where user='rotemtam'
+```
+
+开发者可以使用如下查询：
+
+```sql
+UPDATE leaderboard SET points=points+1 where user='rotemtam'
+```
+
+为避免需要通过乐观锁或其他机制同步写入，下面我们看看如何类似地利用数据库能力安全地并发执行这些操作。
+
+构建此类查询时需注意两点：首先，不同数据库厂商处理JSON值的语法略有差异(如下例所示)；其次，向JSON文档列表追加值的查询需要至少处理两种边界情况：
+
+1. 目标JSON字段在文档中尚不存在。
+2. 字段存在但其值为JSON `null`。
+
+以下是针对不同数据库方言，在表`t`的列`c`中向名为`a`的字段追加值`new_val`的查询示例：
+
+<Tabs
+    defaultValue="mysql"
+    values={[
+        {label: 'MySQL', value: 'mysql'},
+        {label: 'PostgeSQL', value: 'pgsql'},
+        {label: 'SQLite', value: 'sqlite'},
+    ]}>
+<TabItem value="mysql">
+
+```sql
+UPDATE `t` SET `c` = CASE
+WHEN
+    (JSON_TYPE(JSON_EXTRACT(`c`, '$.a')) IS NULL
+    OR JSON_TYPE(JSON_EXTRACT(`c`, '$.a')) = 'NULL')
+THEN
+    JSON_SET(`c`, '$.a', JSON_ARRAY('new_val'))
+ELSE
+    JSON_ARRAY_APPEND(`c`, '$.a', 'new_val')
+END
+```
+
+</TabItem>
+<TabItem value="pgsql">
+
+```sql
+UPDATE "t" SET "c" = CASE
+WHEN
+    (("c"->'a')::jsonb IS NULL
+    OR ("c"->'a')::jsonb = 'null'::jsonb)
+THEN
+    jsonb_set("c", '{a}', 'new_val', true)
+ELSE
+    jsonb_set("c", '{a}', "c"->'a' || 'new_val', true)
+END
+```
+
+</TabItem>
+<TabItem value="sqlite">
+
+```sql
+UPDATE `t` SET `c` = CASE
+WHEN
+    (JSON_TYPE(`c`, '$') IS NULL
+    OR JSON_TYPE(`c`, '$') = 'null')
+THEN
+    JSON_ARRAY(?)
+ELSE
+    JSON_INSERT(`c`, '$[#]', ?)
+END
+```
+
+</TabItem>
+</Tabs>
+
+### 使用Ent向JSON字段追加值
+
+Ent近期新增了对JSON列字段原子化追加值的支持，下面演示具体使用方法。
+
+若JSON字段的底层类型是切片，例如：
+
+```go
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		// highlight-start
+		field.JSON("tags", []string{}),
+		// highlight-end
+	}
+}
+```
+
+Ent会在更新突变构建器上生成`AppendTags`方法，调用方式如下：
+
+```go
+func TestAppend(t *testing.T) {
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	ctx := context.Background()
+	// Insert a user with two tags.
+	u := client.User.Create().
+		SetTags([]string{"hello", "world"}).
+		SaveX(ctx)
+
+	// highlight-start
+	u.Update().AppendTags([]string{"goodbye"}).ExecX(ctx)
+	// highlight-end
+
+	again := client.User.GetX(ctx, u.ID)
+	fmt.Println(again.Tags)
+	// Prints: [hello world goodbye]
+}
+```
+
+若JSON字段的底层类型是包含列表的结构体，例如：
+
+```go
+type Meta struct {
+	Tags []string `json:"tags"'`
+}
+
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.JSON("meta", &Meta{}),
+	}
+}
+```
+
+可通过[sql/modifier](https://entgo.io/docs/feature-flags/#custom-sql-modifiers)选项让Ent生成`Modify`方法，调用示例如下：
+
+```go
+func TestAppendSubfield(t *testing.T) {
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	ctx := context.Background()
+	// Insert a user with two tags.
+	u := client.User.Create().
+		SetMeta(&schema.Meta{
+			Tags: []string{"hello", "world"},
+		}).
+		SaveX(ctx)
+
+	// highlight-start
+	u.Update().
+		Modify(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, user.FieldMeta, []string{"goodbye"}, sqljson.Path("tags"))
+		}).
+		ExecX(ctx)
+	// highlight-end
+
+	again := client.User.GetX(ctx, u.ID)
+	fmt.Println(again.Meta.Tags)
+	// Prints: [hello world goodbye]
+}
+```
+
+### 总结
+
+本文探讨了SQL与Ent中的JSON字段，分析了主流SQL数据库实现JSON字段原子化追加的原理，最后演示了Ent的实现方案。您认为是否需要增加Remove/Slice操作？欢迎反馈意见！
+
+:::note[获取更多Ent资讯：]
+
+- 订阅[新闻通讯](https://entgo.substack.com/)
+- 关注[Twitter](https://twitter.com/entgo_io)
+- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道
+- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)
+:::

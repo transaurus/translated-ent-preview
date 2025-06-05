@@ -1,0 +1,69 @@
+---
+id: upgrade-prod
+title: Upgrading Production
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::info[支持仓库]
+
+本节描述的变更可在配套仓库的
+[PR #5](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/5/files)
+中找到。
+
+:::
+
+## 将生产数据库升级为使用版本化迁移
+
+如果您一直跟随本教程至此，可能会思考如何将生产环境的数据库实例升级为由版本化迁移工作流管理？
+在本地开发中，我们可以直接删除数据库重新开始，但这显然不适用于生产环境。
+
+与其他数据库模式管理工具类似，[Atlas](https://atlasgo.io)通过在目标数据库上维护元数据表来追踪已应用的迁移。
+当我们在现有数据库上开始使用Atlas时，必须告知Atlas某个版本之前的所有迁移都已被应用。
+
+为演示这一点，让我们尝试在已通过自动迁移工作流管理的数据库上运行Atlas的`migrate apply`命令（注意我们使用带有`/db`后缀的连接字符串，表示要连接到已包含应用模式的`db`数据库）。
+
+```text
+atlas migrate apply --dir file://ent/migrate/migrations --url mysql://root:pass@localhost:3306/db
+```
+
+Atlas返回错误：
+
+```text
+Error: sql/migrate: connected database is not clean: found table "atlas_schema_revisions" in schema "db". baseline version or allow-dirty is required
+```
+
+这个错误符合预期，因为这是我们首次在该数据库上运行Atlas。如错误所述，我们需要对数据库进行"基线标记"——即告知Atlas数据库当前状态已对应迁移目录中的某个版本。
+
+通过`--baseline`标志可指定数据库的基线版本：
+
+```text
+atlas migrate apply --dir file://ent/migrate/migrations --url mysql://root:pass@localhost:3306/db --baseline 20221114165732
+```
+
+Atlas报告无需执行新操作：
+
+```text
+No migration files to execute
+```
+
+现在情况好转了！接下来通过`migrate status`命令验证Atlas是否已正确识别已应用的迁移：
+
+```text
+atlas migrate status --dir file://ent/migrate/migrations --url mysql://root:pass@localhost:3306/db
+```
+
+Atlas显示：
+
+```text
+Migration Status: OK
+  -- Current Version: 20221114165732
+  -- Next Version:    Already at latest version
+  -- Executed Files:  1
+  -- Pending Files:   0
+```
+
+成功！我们已将项目升级为使用Atlas的版本化迁移工作流。
+
+接下来我们将看到，当修改Ent模式时如何为项目添加新的迁移。

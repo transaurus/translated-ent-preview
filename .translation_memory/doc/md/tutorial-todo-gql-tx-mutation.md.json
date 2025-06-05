@@ -1,0 +1,202 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-gql-tx-mutation.md",
+  "source_file_content_hash": "d1fbca2dd7d1c35dc9350cddd230b1016ce170ec6eb66c5635ae533a37a47f46",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-gql-tx-mutation\ntitle: Transactional Mutations\nsidebar_label: Transactional Mutations\n---",
+      "source_content_hash": "d789efe64399c806f470fb6bc97bf29de2c830e4f333d41bec3e233574ddb3cf",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "In this section, we continue the [GraphQL example](tutorial-todo-gql.mdx) by explaining how to set our GraphQL mutations\nto be transactional. That means, to automatically wrap our GraphQL mutations with a database transaction and either\ncommit at the end, or rollback the transaction in case of a GraphQL error.",
+      "source_content_hash": "4f28d2e120727b77979743cc4c33c312a5d12f37cc7e72a543aa0974bdb86deb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节我们将延续[GraphQL示例](tutorial-todo-gql.mdx)，讲解如何将GraphQL变更加载为事务性操作。这意味着系统会自动用数据库事务包装GraphQL变更操作，最终执行提交，或在发生GraphQL错误时回滚事务。"
+      }
+    },
+    {
+      "segment_id": "8a5f6a7b",
+      "source_content": "#### Clone the code (optional)",
+      "source_content_hash": "b068b18a91c2d1cb5709786f96baae783976def17ac4580a202a72c3f85fa808",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 克隆代码（可选）"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "The code for this tutorial is available under [github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example),\nand tagged (using Git) in each step. If you want to skip the basic setup and start with the initial version of the GraphQL\nserver, you can clone the repository and checkout `v0.1.0` as follows:",
+      "source_content_hash": "8da4f38fa5709047cb46010640c072d4972d63317aa84b3c7997367a6bcb077b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程代码存放于[github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example)，每个步骤都对应Git标签。若想跳过基础配置直接使用GraphQL服务器的初始版本，可通过以下命令克隆仓库并检出v0.1.0版本："
+      }
+    },
+    {
+      "segment_id": "93be3c14",
+      "source_content": "```console\ngit clone git@github.com:a8m/ent-graphql-example.git\ncd ent-graphql-example \ngo run ./cmd/todo/\n```",
+      "source_content_hash": "2fa40aa0226f164db69ac24b995a3ed9a55deb1c19c3ff3ea6301a27aaf46a06",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_93be3c14"
+      }
+    },
+    {
+      "segment_id": "40f9552a",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用方式"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "The GraphQL extensions provides a handler named `entgql.Transactioner` that executes each GraphQL mutation in a\ntransaction. The injected client for the resolver is a [transactional `ent.Client`](transactions.md#transactional-client).\nHence, GraphQL resolvers that uses `ent.Client` won't need to be changed. In order to add it to our todo list application\nwe follow these steps:",
+      "source_content_hash": "3a61f22a4169c823d1c64f45dbb0a4caec9ee9e0f33dd45e3d5073950258b911",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "GraphQL扩展提供了名为`entgql.Transactioner`的处理器，该处理器会在事务中执行每个GraphQL变更操作。注入到解析器的客户端是[事务型ent.Client](transactions.md#transactional-client)，因此使用`ent.Client`的GraphQL解析器无需修改。要为待办事项应用添加此功能，请按以下步骤操作："
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "1\\. Edit the `cmd/todo/main.go` and add to the GraphQL server initialization the `entgql.Transactioner` handler as\nfollows:",
+      "source_content_hash": "ae61df1ac1f884a616890ed45bda811c7298c79867505264c92df9bd0d9b13cd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 编辑`cmd/todo/main.go`文件，在GraphQL服务器初始化时添加`entgql.Transactioner`处理器："
+      }
+    },
+    {
+      "segment_id": "a2110253",
+      "source_content": "```diff title=\"cmd/todo/main.go\"\nsrv := handler.NewDefaultServer(todo.NewSchema(client))\n+srv.Use(entgql.Transactioner{TxOpener: client})\n```",
+      "source_content_hash": "c986ff7f5a59feaea2ddcaaf0a7b082504a176a62334e8d70b49f4db66a3fb04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a2110253"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "2\\. Then, in the GraphQL mutations, use the client from context as follows:",
+      "source_content_hash": "05e22a4176429ca034e039b08466a3dc30ede6ccdf7c438e3eb837832d8c8a38",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在GraphQL变更操作中，通过上下文获取客户端使用："
+      }
+    },
+    {
+      "segment_id": "de8f60af",
+      "source_content": "```diff title=\"todo.resolvers.go\"\n}\n+func (mutationResolver) CreateTodo(ctx context.Context, input ent.CreateTodoInput) (*ent.Todo, error) {\n+\tclient := ent.FromContext(ctx)\n+\treturn client.Todo.Create().SetInput(input).Save(ctx)\n-func (r *mutationResolver) CreateTodo(ctx context.Context, input ent.CreateTodoInput) (*ent.Todo, error) {\n-\treturn r.client.Todo.Create().SetInput(input).Save(ctx)\n}\n```",
+      "source_content_hash": "124a990de810b5eecc44e5d5c8d71692b4f1d100faeb078597fc8ce2a993ef6e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de8f60af"
+      }
+    },
+    {
+      "segment_id": "6f930b2f",
+      "source_content": "## Isolation Levels",
+      "source_content_hash": "da6445169b1ad6d9fd09da7d74c46ad0c6d20b81d7d0e7f2568eab9a03a48143",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 隔离级别"
+      }
+    },
+    {
+      "segment_id": "c504c207",
+      "source_content": "If you'd like to tweak the transaction's isolation level, you can do so by implementing your own `TxOpener`. For example:",
+      "source_content_hash": "405f25015272777f5c6a549ddcef88981ed33983a0a3be2aa016be8f0259ad29",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如需调整事务隔离级别，可通过实现自定义`TxOpener`实现。例如："
+      }
+    },
+    {
+      "segment_id": "ac961110",
+      "source_content": "```go title=\"cmd/todo/main.go\"\nsrv.Use(entgql.Transactioner{\n\tTxOpener: entgql.TxOpenerFunc(func(ctx context.Context) (context.Context, driver.Tx, error) {\n\t\ttx, err := client.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})\n\t\tif err != nil {\n\t\t\treturn nil, nil, err\n\t\t}\n\t\tctx = ent.NewTxContext(ctx, tx)\n\t\tctx = ent.NewContext(ctx, tx.Client())\n\t\treturn ctx, tx, nil\n\t}),\n})\n```",
+      "source_content_hash": "458f76235d8cc292c90c0e55f946bd9721cf3f3efb0b88eb0483794fb1220880",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ac961110"
+      }
+    },
+    {
+      "segment_id": "a5a4323e",
+      "source_content": "## Skip Operations",
+      "source_content_hash": "1d77c8ebe3046cbf17cc4ab85ed20e91287cdbd632fb5578c53d5a8f4d817abb",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 跳过操作"
+      }
+    },
+    {
+      "segment_id": "657c2b20",
+      "source_content": "By default, `entgql.Transactioner` wraps all mutations within a transaction. However, there are mutations or operations\nthat don't require database access or need special handling. In these cases, you can instruct `entgql.Transactioner` to\nskip the transaction by setting a custom `SkipTxFunc` function or using one of the built-in ones.",
+      "source_content_hash": "60e3f07a578025439d18b1ead54539135d15fa4c52f6016be6ef6a0a8f331f52",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，`entgql.Transactioner`会使用事务包装所有变更操作。但对于不需要数据库访问或需要特殊处理的变更操作，可通过设置自定义`SkipTxFunc`函数或使用内置函数来跳过事务处理。"
+      }
+    },
+    {
+      "segment_id": "bc137a19",
+      "source_content": "```go title=\"cmd/todo/main.go\" {4,10,16-18}\nsrv.Use(entgql.Transactioner{\n\tTxOpener: client,\n\t// Skip the given operation names from running under a transaction.\n\tSkipTxFunc: entgql.SkipOperations(\"operation1\", \"operation2\"),\n})\n\nsrv.Use(entgql.Transactioner{\n\tTxOpener: client,\n\t// Skip if the operation has a mutation field with the given names.\n\tSkipTxFunc: entgql.SkipIfHasFields(\"field1\", \"field2\"),\n})\n\nsrv.Use(entgql.Transactioner{\n\tTxOpener: client,\n\t// Custom skip function.\n\tSkipTxFunc: func(*ast.OperationDefinition) bool {\n\t    // ...\n    },\n})\n```",
+      "source_content_hash": "a3da226a44e15fa776117c328997f8c84a727a7448535438214daa695e70127d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bc137a19"
+      }
+    },
+    {
+      "segment_id": "b805e2c6",
+      "source_content": "---",
+      "source_content_hash": "cb3f91d54eee30e53e35b2b99905f70f169ed549fd78909d3dac2defc9ed8d3b",
+      "node_type": "thematicBreak",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "---"
+      }
+    },
+    {
+      "segment_id": "82e90254",
+      "source_content": "Great! With a few lines of code, our application now supports automatic transactional mutations. Please continue to the\nnext section where we explain how to extend the Ent code generator and generate [GraphQL input types](https://graphql.org/graphql-js/mutations-and-input-types/)\nfor our GraphQL mutations.",
+      "source_content_hash": "5a78d61398d0d5b7f2301b338220c58808fe0e1150cc16f1c1682983d1d2f2b6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了！仅需几行代码，我们的应用就支持了自动事务化变更操作。请继续阅读下一节，我们将讲解如何扩展Ent代码生成器并为GraphQL变更操作生成[GraphQL输入类型](https://graphql.org/graphql-js/mutations-and-input-types/)。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-gql-tx-mutation.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.680128+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "d1fbca2dd7d1c35dc9350cddd230b1016ce170ec6eb66c5635ae533a37a47f46"
+  }
+}

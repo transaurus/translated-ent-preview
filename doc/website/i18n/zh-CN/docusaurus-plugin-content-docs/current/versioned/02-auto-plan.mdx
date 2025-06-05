@@ -1,0 +1,31 @@
+---
+title: Automatic migration planning
+id: auto-plan
+---
+
+import InstallationInstructions from '../components/_installation_instructions.mdx';
+import AtlasMigrateDiff from '../components/_atlas_migrate_diff.mdx';
+
+## 自动迁移规划
+
+自动迁移的便利特性之一在于开发者无需手动编写创建或修改数据库结构的SQL语句。为实现类似优势，我们将在项目中添加一个脚本，该脚本能根据模式变更自动为我们规划迁移文件。
+
+为此，Ent使用[Atlas](https://atlasgo.io)——一个由Ent团队开发的开源数据库结构管理工具。
+
+若您一直跟随示例仓库操作，此前我们使用的是SQLite数据库。为演示更贴近实际的用例，现我们将切换至MySQL。具体变更请参见[PR #3](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/3/files)。
+
+## 使用Atlas CLI规划迁移
+
+本节将演示如何通过Atlas CLI自动规划结构迁移。过去用户需要编写自定义Go程序实现此功能（如[此文档](07-programmatically.mdx)所述），而新版Atlas已原生支持直接从Ent模式加载目标数据库结构。
+
+<InstallationInstructions />
+
+运行以下命令为Ent模式自动生成迁移文件：
+
+<AtlasMigrateDiff/>
+
+:::info[关于[开发数据库](https://atlasgo.io/concepts/dev-database)的作用]
+Atlas通过将迁移目录中的SQL文件执行到指定的[开发数据库](https://atlasgo.io/concepts/dev-database)来加载当前状态，随后将其与`ent/schema`包定义的目标状态对比，最终生成从当前状态到目标状态的迁移方案。
+:::
+
+接下来我们将探讨如何将现有生产数据库升级至版本化迁移管理模式。

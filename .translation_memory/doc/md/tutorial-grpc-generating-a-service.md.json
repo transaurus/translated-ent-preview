@@ -1,0 +1,152 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-grpc-generating-a-service.md",
+  "source_file_content_hash": "760b7e89f37d70532a6202b829152d4fbc9b22e16c98ee84bc054bc10b2fa43f",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: grpc-generating-a-service\ntitle: Generating a gRPC Service\nsidebar_label: Generating a Service\n---",
+      "source_content_hash": "2e25a19547ae6af0a2589a4909ced8991130407b47316815e5486b63d1eda0ea",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "Generating Protobuf structs generated from our `ent.Schema` can be useful, but what we're really interested in is getting an actual server that can create, read, update, and delete entities from an actual database. To do that, we need to update just one line of code! When we annotate a schema with `entproto.Service`, we tell the `entproto` code-gen that we are interested in generating a gRPC service definition, from the `protoc-gen-entgrpc` will read our definition and generate a service implementation. Edit `ent/schema/user.go` and modify the schema's `Annotations`:",
+      "source_content_hash": "8c1bcc8d293063cca48e48a65f30bf33623c7626dc659e3ad2f3904bf26c3afb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "从 `ent.Schema` 生成 Protobuf 结构体固然有用，但我们真正的目标是获得一个能够对数据库实体进行增删改查的实际服务端。为此，只需修改一行代码！当我们为 schema 添加 `entproto.Service` 注解时，即告知 `entproto` 代码生成器我们需要生成 gRPC 服务定义，随后 `protoc-gen-entgrpc` 将读取该定义并生成服务实现。编辑 `ent/schema/user.go` 并修改 schema 的 `Annotations`："
+      }
+    },
+    {
+      "segment_id": "e6a5da7c",
+      "source_content": "```go title=\"ent/schema/user.go\" {4}\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentproto.Message(),\n\t\tentproto.Service(), // <-- add this\n\t}\n}\n```",
+      "source_content_hash": "03d636a8bb8603c52df8c8b9f4b3da85d70fd0eb690419f185f78708a1fe3de2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e6a5da7c"
+      }
+    },
+    {
+      "segment_id": "42ad8e83",
+      "source_content": "Now re-run code-generation:",
+      "source_content_hash": "4ba7894f1cc660abc626ca34d41f778ba0c66935bf6fb7e16763aaa0c67c247c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "940e34e3",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_940e34e3"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "Observe some interesting changes in `ent/proto/entpb`:",
+      "source_content_hash": "0758de89fd6ae8851a0882400b9c5810db1ce4d23146d4ebdc4a4329cf2ee650",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察 `ent/proto/entpb` 目录下出现的重要变化："
+      }
+    },
+    {
+      "segment_id": "3569d545",
+      "source_content": "```console\nent/proto/entpb\n├── entpb.pb.go\n├── entpb.proto\n├── entpb_grpc.pb.go\n├── entpb_user_service.go\n└── generate.go\n```",
+      "source_content_hash": "4dba5a25126083a157ca7a96a2d490b968741d28cb2f44aaa5f3ba85bea1628e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3569d545"
+      }
+    },
+    {
+      "segment_id": "7499a4e7",
+      "source_content": "First, `entproto` added a service definition to `entpb.proto`:",
+      "source_content_hash": "6ff8f40673a57ed7e026614be1cfd9ef0f0e455826a3d6e40116d5c5d3ee752b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先，`entproto` 向 `entpb.proto` 添加了服务定义："
+      }
+    },
+    {
+      "segment_id": "076d64d1",
+      "source_content": "```protobuf title=\"ent/proto/entpb/entpb.proto\"\nservice UserService {\n  rpc Create ( CreateUserRequest ) returns ( User );\n\n  rpc Get ( GetUserRequest ) returns ( User );\n\n  rpc Update ( UpdateUserRequest ) returns ( User );\n\n  rpc Delete ( DeleteUserRequest ) returns ( google.protobuf.Empty );\n\n  rpc List ( ListUserRequest ) returns ( ListUserResponse );\n\n  rpc BatchCreate ( BatchCreateUsersRequest ) returns ( BatchCreateUsersResponse );\n}\n```",
+      "source_content_hash": "5fe2899ea93161692ba248f4e90bc1d80d22d4cb32a3bcef9208cb24153bdcc0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_076d64d1"
+      }
+    },
+    {
+      "segment_id": "f7ef78f9",
+      "source_content": "In addition, two new files were created. The first, `entpb_grpc.pb.go`, contains the gRPC client stub and the interface definition. If you open the file, you will find in it (among many other things):",
+      "source_content_hash": "477e9bf3d2d8ef97b41d50f5b399326bfbaf653f00ddfafddff314dff175f590",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此外还新增了两个文件。第一个文件 `entpb_grpc.pb.go` 包含 gRPC 客户端存根和接口定义。打开该文件可以看到（除其他内容外）："
+      }
+    },
+    {
+      "segment_id": "3ce8f045",
+      "source_content": "```go title=\"ent/proto/entpb/entpb_grpc.pb.go\"\n// UserServiceClient is the client API for UserService service.\n//\n// For semantics around ctx use and closing/ending streaming RPCs, please\n// refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.\ntype UserServiceClient interface {\n\tCreate(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)\n\tGet(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)\n\tUpdate(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)\n\tDelete(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)\n\tList(ctx context.Context, in *ListUserRequest, opts ...grpc.CallOption) (*ListUserResponse, error)\n\tBatchCreate(ctx context.Context, in *BatchCreateUsersRequest, opts ...grpc.CallOption) (*BatchCreateUsersResponse, error)\n}\n```",
+      "source_content_hash": "5f821845f62391f80aad0f97b66baf9979b6663638ab2a6531ae82f7f8b86795",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ce8f045"
+      }
+    },
+    {
+      "segment_id": "657c2b20",
+      "source_content": "The second file, `entpub_user_service.go` contains a generated implementation for this interface. For example, an implementation for the `Get` method:",
+      "source_content_hash": "78d4ae4330f3bdf38994c177de1a1c3042e60c3e4dcd71050a55ab1abe054c26",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第二个文件 `entpub_user_service.go` 包含该接口的生成实现。例如针对 `Get` 方法的实现："
+      }
+    },
+    {
+      "segment_id": "17c579d2",
+      "source_content": "```go title=\"ent/proto/entpb/entpb_user_service.go\"\n// Get implements UserServiceServer.Get\nfunc (svc *UserService) Get(ctx context.Context, req *GetUserRequest) (*User, error) {\n\tvar (\n\t\terr error\n\t\tget *ent.User\n\t)\n\tid := int(req.GetId())\n\tswitch req.GetView() {\n\tcase GetUserRequest_VIEW_UNSPECIFIED, GetUserRequest_BASIC:\n\t\tget, err = svc.client.User.Get(ctx, id)\n\tcase GetUserRequest_WITH_EDGE_IDS:\n\t\tget, err = svc.client.User.Query().\n\t\t\tWhere(user.ID(id)).\n\t\t\tOnly(ctx)\n\tdefault:\n\t\treturn nil, status.Error(codes.InvalidArgument, \"invalid argument: unknown view\")\n\t}\n\tswitch {\n\tcase err == nil:\n\t\treturn toProtoUser(get)\n\tcase ent.IsNotFound(err):\n\t\treturn nil, status.Errorf(codes.NotFound, \"not found: %s\", err)\n\tdefault:\n\t\treturn nil, status.Errorf(codes.Internal, \"internal error: %s\", err)\n\t}\n}\n\n```",
+      "source_content_hash": "55b07989dfc9425ce83349170ef1faa4e087b2aca9c1430495170f65a8d32ff4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_17c579d2"
+      }
+    },
+    {
+      "segment_id": "25212439",
+      "source_content": "Not bad! Next, let's create a gRPC server that can serve requests to our service.",
+      "source_content_hash": "3304487430155ce7c6433b44410c61315fdfb4c6189943f434d4fe388d94118f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "效果不错！接下来让我们创建能够响应服务请求的 gRPC 服务器。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-grpc-generating-a-service.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.669648+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "760b7e89f37d70532a6202b829152d4fbc9b22e16c98ee84bc054bc10b2fa43f"
+  }
+}

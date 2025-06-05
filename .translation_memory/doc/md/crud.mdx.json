@@ -1,0 +1,782 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/crud.mdx",
+  "source_file_content_hash": "707c1e75d1fa49840f6a6b7067d23fb4478d0a8dc7b8ba5f9b25d4282d4979bb",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: crud\ntitle: CRUD API\n---",
+      "source_content_hash": "92c0eeacb571e5e6a4c56e5b2900da67c4d18f8e4303d4a8ef07793ca1349a03",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "As mentioned in the [introduction](code-gen.md) section, running `ent` on the schemas,\nwill generate the following assets:",
+      "source_content_hash": "81d0335a00d629293eabc6b7cdd9fdd7a1b073362dc8849fca47f19b103663c1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如[介绍章节](code-gen.md)所述，在schema上运行`ent`将生成以下资源："
+      }
+    },
+    {
+      "segment_id": "143e51c1",
+      "source_content": "- `Client` and `Tx` objects used for interacting with the graph.\n- CRUD builders for each schema type.\n- Entity object (Go struct) for each of the schema type.\n- Package containing constants and predicates used for interacting with the builders.\n- A `migrate` package for SQL dialects. See [Migration](migrate.md) for more info.",
+      "source_content_hash": "b247ca6760411b6d4bf128fb5401435a75e818956e70f0b1379738d93315b27a",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 用于与图交互的`Client`和`Tx`对象\n- 每个schema类型的CRUD构建器\n- 每个schema类型的实体对象（Go结构体）\n- 包含与构建器交互所用常量和谓词的包\n- 用于SQL方言的`migrate`包，详见[迁移指南](migrate.md)"
+      }
+    },
+    {
+      "segment_id": "d350c018",
+      "source_content": "## Create A New Client",
+      "source_content_hash": "28f0e6db28bf414e241e1adf31db943af1ae864e88724dff6de5e0112c23da06",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 创建新客户端"
+      }
+    },
+    {
+      "segment_id": "8f488ab5",
+      "source_content": "<Tabs\ndefaultValue=\"sqlite\"\nvalues={[\n{label: 'SQLite', value: 'sqlite'},\n{label: 'PostgreSQL', value: 'postgres'},\n{label: 'MySQL', value: 'mysql'},\n{label: 'Gremlin (AWS Neptune)', value: 'gremlin'},\n]}>\n<TabItem value=\"sqlite\">\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n    \"entdemo/ent\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer client.Close()\n\t// Run the auto migration tool.\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n}\n```\n\n</TabItem>\n<TabItem value=\"postgres\">\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n    \"entdemo/ent\"\n\n\t_ \"github.com/lib/pq\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"postgres\",\"host=<host> port=<port> user=<user> dbname=<database> password=<pass>\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to postgres: %v\", err)\n\t}\n\tdefer client.Close()\n\t// Run the auto migration tool.\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n}\n```\n\n</TabItem>\n<TabItem value=\"mysql\">\n\n```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n\t\"entdemo/ent\"\n\n\t_ \"github.com/go-sql-driver/mysql\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"mysql\", \"<user>:<pass>@tcp(<host>:<port>)/<database>?parseTime=True\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\t// Run the auto migration tool.\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n}\n```\n\n</TabItem>\n<TabItem value=\"gremlin\">\n\n```go\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entdemo/ent\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"gremlin\", \"http://localhost:8182\")\n\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "b78f25b3f828b89e84626919afaa94b8bd68497f2b29c86537b3e2b37a11e0f1",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8f488ab5"
+      }
+    },
+    {
+      "segment_id": "8f1c1cd6",
+      "source_content": "## Create An Entity",
+      "source_content_hash": "514d0dd3157779f57d0fae7320bc164b99fbba547f4380248a6e3beb0bdee592",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 创建实体"
+      }
+    },
+    {
+      "segment_id": "383fbdd2",
+      "source_content": "**Save** a user.",
+      "source_content_hash": "3c091818177fc9de1688f503830d222af00fd16af0eb784879858edbda591287",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**保存**用户"
+      }
+    },
+    {
+      "segment_id": "8d1b00fd",
+      "source_content": "```go\na8m, err := client.User.\t// UserClient.\n\tCreate().\t\t\t\t// User create builder.\n\tSetName(\"a8m\").\t\t\t// Set field value.\n\tSetNillableAge(age).\t// Avoid nil checks.\n\tAddGroups(g1, g2).\t\t// Add many edges.\n\tSetSpouse(nati).\t\t// Set unique edge.\n\tSave(ctx)\t\t\t\t// Create and return.\n```",
+      "source_content_hash": "331f09a1f629ce6db8c2259610d5103f26daf4cc34b42ad3bbd3e244a5786d29",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8d1b00fd"
+      }
+    },
+    {
+      "segment_id": "f7e6e884",
+      "source_content": "**SaveX** a pet; Unlike **Save**, **SaveX** panics if an error occurs.",
+      "source_content_hash": "dd0c4a18223bc64084cc4c0bb814c09b70b9ab6cb3037644f0d5cbebcbe0f62b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**保存X**宠物；与**Save**不同，**SaveX**在出错时会触发panic"
+      }
+    },
+    {
+      "segment_id": "ad3cd2f7",
+      "source_content": "```go\npedro := client.Pet.\t// PetClient.\n\tCreate().\t\t\t// Pet create builder.\n\tSetName(\"pedro\").\t// Set field value.\n\tSetOwner(a8m).\t\t// Set owner (unique edge).\n\tSaveX(ctx)\t\t\t// Create and return.\n```",
+      "source_content_hash": "e53a0661ed9ee70c59fffd42c44ed3f1416ca8a76b5647826d744c2bd1e3ec15",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ad3cd2f7"
+      }
+    },
+    {
+      "segment_id": "97afbaf0",
+      "source_content": "## Create Many",
+      "source_content_hash": "2d5bb412837222a3d0fbe0146152b732d9da968d84f94d2cb639ef6b3ac7ea4a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 批量创建"
+      }
+    },
+    {
+      "segment_id": "a8f09c71",
+      "source_content": "**Save** a bulk of pets.",
+      "source_content_hash": "409900904d5123e4771f8cd9c9b3017b9fa6d2b494543a44b6c66927ea3b8e81",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**保存**多个宠物"
+      }
+    },
+    {
+      "segment_id": "25a51782",
+      "source_content": "```go {1,8}\npets, err := client.Pet.CreateBulk(\n    client.Pet.Create().SetName(\"pedro\").SetOwner(a8m),\n    client.Pet.Create().SetName(\"xabi\").SetOwner(a8m),\n    client.Pet.Create().SetName(\"layla\").SetOwner(a8m),\n).Save(ctx)\n\nnames := []string{\"pedro\", \"xabi\", \"layla\"}\npets, err := client.Pet.MapCreateBulk(names, func(c *ent.PetCreate, i int) {\n    c.SetName(names[i]).SetOwner(a8m)\n}).Save(ctx)\n```",
+      "source_content_hash": "c483039791eaf87a8a0e3db38e7e9a021fd7d904286283a4da503ebb64976f5d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_25a51782"
+      }
+    },
+    {
+      "segment_id": "a49ac2ed",
+      "source_content": "## Update One",
+      "source_content_hash": "50cda70ba9a83ecb213cade26ddc0b8cc155b807015046638ed6ca7c7f83f80f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 更新单个"
+      }
+    },
+    {
+      "segment_id": "808b0414",
+      "source_content": "Update an entity that was returned from the database.",
+      "source_content_hash": "8ac08a965b570acab5507d436022c2dc623b6c3c1ecf23c2638ffb08e089cfce",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更新从数据库返回的实体"
+      }
+    },
+    {
+      "segment_id": "028bef0a",
+      "source_content": "```go\na8m, err = a8m.Update().\t// User update builder.\n\tRemoveGroup(g2).\t\t// Remove a specific edge.\n\tClearCard().\t\t\t// Clear a unique edge.\n\tSetAge(30).\t\t\t\t// Set a field value.\n\tAddRank(10).            // Increment a field value.\n\tAppendInts([]int{1}).   // Append values to a JSON array.\n\tSave(ctx)\t\t\t\t// Save and return.\n```",
+      "source_content_hash": "7fc12b3aef10bb2d26c29109a92b20e09ad2cb74c7035ac07b3706776c48216f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_028bef0a"
+      }
+    },
+    {
+      "segment_id": "4b62f7d8",
+      "source_content": "## Update By ID",
+      "source_content_hash": "05d17dd9c77c756058c0682b81c456dd093a1884670851bad4d841f20d34a32b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 按ID更新"
+      }
+    },
+    {
+      "segment_id": "0152e600",
+      "source_content": "```go\npedro, err := client.Pet.\t// PetClient.\n\tUpdateOneID(id).\t\t// Pet update builder.\n\tSetName(\"pedro\").\t\t// Set field name.\n\tSetOwnerID(owner).\t\t// Set unique edge, using id.\n\tSave(ctx)\t\t\t\t// Save and return.\n```",
+      "source_content_hash": "994916aad5813b859d511bcf6177c895c2c2cae03f39ead369aff089340d791b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0152e600"
+      }
+    },
+    {
+      "segment_id": "4d7a4554",
+      "source_content": "#### Update One With Condition",
+      "source_content_hash": "d5076233bbbd4a4462d3056bbad8c1305576099bd658b421b9efedaf1f82101a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 带条件的单条更新"
+      }
+    },
+    {
+      "segment_id": "38f964f1",
+      "source_content": "In some projects, the \"update many\" operation is not allowed and is blocked using hooks. However, there is still a need\nto update a single entity by its ID while ensuring it meets a specific condition. In this case, you can use the `Where`\noption as follows:",
+      "source_content_hash": "c9fe7b11e67ba8fd314a61c0e042eef417b99faf9e8ae4dbb74ddff8ded01859",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在某些项目中，\"批量更新\"操作被禁止并通过钩子拦截。但仍需通过ID更新单条记录并确保其满足特定条件。此时可使用`Where`选项如下："
+      }
+    },
+    {
+      "segment_id": "1390ac43",
+      "source_content": "<Tabs>\n<TabItem label=\"By ID\" value=\"by-id\" default>\n\n```go\nerr := client.Todo.\n    UpdateOneID(id).\n    SetStatus(todo.StatusDone).\n    AddVersion(1).\n    Where(\n        todo.Version(currentVersion),\n    ).\n    Exec(ctx)\nswitch {\n// If the entity does not meet a specific condition,\n// the operation will return an \"ent.NotFoundError\".\ncase ent.IsNotFound(err):\n    fmt.Println(\"todo item was not found\")\n// Any other error.\ncase err != nil:\n    fmt.Println(\"update error:\", err)\n}\n```\n</TabItem>\n<TabItem label=\"By Entity\" value=\"by-entity\" default>\n\n```go\nerr := client.Todo.\n    UpdateOne(node).\n    SetStatus(todo.StatusDone).\n    AddVersion(1).\n    Where(\n        todo.Version(currentVersion),\n    ).\n    Exec(ctx)\nswitch {\n// If the entity does not meet a specific condition,\n// the operation will return an \"ent.NotFoundError\".\ncase ent.IsNotFound(err):\n    fmt.Println(\"todo item was not found\")\n// Any other error.\ncase err != nil:\n    fmt.Println(\"update error:\", err)\n}\n```\n</TabItem>\n<TabItem label=\"Update Directly\" value=\"update-directly\" default>\n\n```go\nfirstTodo, err = firstTodo.\n    Update().\n    SetStatus(todo.StatusDone).\n    AddVersion(1).\n    Where(\n        // Ensure the current version matches the one in the database.\n        todo.Version(firstTodo.Version),\n    ).\n    Save(ctx)\nswitch {\n// If the entity does not meet a specific condition,\n// the operation will return an \"ent.NotFoundError\".\ncase ent.IsNotFound(err):\n    fmt.Println(\"todo item was not found\")\n// Any other error.\ncase err != nil:\n    fmt.Println(\"update error:\", err)\n}\n```\n</TabItem>\n</Tabs>",
+      "source_content_hash": "8030f908640496d93ef5bffd6924f803d2eee58fea7504c9c35b240ad8d9afc3",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1390ac43"
+      }
+    },
+    {
+      "segment_id": "846134ef",
+      "source_content": "## Update Many",
+      "source_content_hash": "b1a4930433774f34b9bd54ee5604763858a90c399c8d536255a0c5ed0e5665b0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 批量更新"
+      }
+    },
+    {
+      "segment_id": "53e725dc",
+      "source_content": "Filter using predicates.",
+      "source_content_hash": "2042802f5f4fb32b93d1274fb18d5a822f8df162eb58a993db2781fe963a67e4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用谓词筛选"
+      }
+    },
+    {
+      "segment_id": "79d8cec2",
+      "source_content": "```go\nn, err := client.User.\t\t\t// UserClient.\n\tUpdate().\t\t\t\t\t// User update builder.\n\tWhere(\t\t\t\t\t\t//\n\t\tuser.Or(\t\t\t\t// (age >= 30 OR name = \"bar\") \n\t\t\tuser.AgeGT(30), \t//\n\t\t\tuser.Name(\"bar\"),\t// AND\n\t\t),\t\t\t\t\t\t//  \n\t\tuser.HasFollowers(),\t// UserHasFollowers()  \n\t).\t\t\t\t\t\t\t//\n\tSetName(\"foo\").\t\t\t\t// Set field name.\n\tSave(ctx)\t\t\t\t\t// exec and return.\n```",
+      "source_content_hash": "3a25870f5277c5cd1e87214e619524df848f1e673dc3d9c4f619b02fcaa0e838",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_79d8cec2"
+      }
+    },
+    {
+      "segment_id": "858b0a05",
+      "source_content": "Query edge-predicates.",
+      "source_content_hash": "09acceb20726913c24107fc7acb14ecf88ee45042307070eb7f56a24851b8a41",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "查询边谓词"
+      }
+    },
+    {
+      "segment_id": "98fbc9ce",
+      "source_content": "```go\nn, err := client.User.\t\t\t// UserClient.\n\tUpdate().\t\t\t\t\t// User update builder.\n\tWhere(\t\t\t\t\t\t// \n\t\tuser.HasFriendsWith(\t// UserHasFriendsWith (\n\t\t\tuser.Or(\t\t\t//   age = 20\n\t\t\t\tuser.Age(20),\t//      OR\n\t\t\t\tuser.Age(30),\t//   age = 30\n\t\t\t)\t\t\t\t\t// )\n\t\t), \t\t\t\t\t\t//\n\t).\t\t\t\t\t\t\t//\n\tSetName(\"a8m\").\t\t\t\t// Set field name.\n\tSave(ctx)\t\t\t\t\t// exec and return.\n```",
+      "source_content_hash": "fac14149ae32afadf83dcf02fa0134a33fe723d79da284036e1ed03afc889eee",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_98fbc9ce"
+      }
+    },
+    {
+      "segment_id": "db1c4f18",
+      "source_content": "## Upsert One",
+      "source_content_hash": "89496efee0016569c65b694f6efd34e6e79c4f29a74b44c9875f4e52e451cab6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 单条Upsert"
+      }
+    },
+    {
+      "segment_id": "45d5dee4",
+      "source_content": "Ent supports [upsert](https://en.wikipedia.org/wiki/Merge_(SQL)) records using the [`sql/upsert`](features.md#upsert)\nfeature-flag.",
+      "source_content_hash": "028401d3b5d83e22766f943369a66f204e9a1846085a0366368d38d490cfe96e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent通过[`sql/upsert`](features.md#upsert)特性标志支持[upsert](https://en.wikipedia.org/wiki/Merge_(SQL))操作"
+      }
+    },
+    {
+      "segment_id": "d7bc17bf",
+      "source_content": "```go\nerr := client.User.\n\tCreate().\n\tSetAge(30).\n\tSetName(\"Ariel\").\n\tOnConflict().\n\t// Use the new values that were set on create.\n\tUpdateNewValues().\n\tExec(ctx)\n\nid, err := client.User.\n\tCreate().\n\tSetAge(30).\n\tSetName(\"Ariel\").\n\tOnConflict().\n\t// Use the \"age\" that was set on create.\n\tUpdateAge().\n\t// Set a different \"name\" in case of conflict.\n\tSetName(\"Mashraki\").\n\tID(ctx)\n\n// Customize the UPDATE clause.\nerr := client.User.\n\tCreate().\n\tSetAge(30).\n\tSetName(\"Ariel\").\n\tOnConflict().\n\tUpdateNewValues().\n\t// Override some of the fields with a custom update.\n\tUpdate(func(u *ent.UserUpsert) {\n\t\tu.SetAddress(\"localhost\")\n\t\tu.AddCount(1)\n\t\tu.ClearPhone()\n\t}).\n\tExec(ctx)\n```",
+      "source_content_hash": "192b287ba6839a2a6f20f3db201cd508394386c02d3c0c21649a93a1711e6217",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d7bc17bf"
+      }
+    },
+    {
+      "segment_id": "eb398072",
+      "source_content": "In PostgreSQL, the [conflict target](https://www.postgresql.org/docs/current/sql-insert.html#SQL-ON-CONFLICT) is required:",
+      "source_content_hash": "fccd9aee92d37376d7cfd2d307da04f9664dbc896c9b89f79a733f0b7af81b79",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "PostgreSQL中必须指定[冲突目标](https://www.postgresql.org/docs/current/sql-insert.html#SQL-ON-CONFLICT)："
+      }
+    },
+    {
+      "segment_id": "b9ddb766",
+      "source_content": "```go\n// Setting the column names using the fluent API.\nerr := client.User.\n\tCreate().\n\tSetName(\"Ariel\").\n\tOnConflictColumns(user.FieldName).\n\tUpdateNewValues().\n\tExec(ctx)\n\n// Setting the column names using the SQL API.\nerr := client.User.\n\tCreate().\n\tSetName(\"Ariel\").\n\tOnConflict(\n\t    sql.ConflictColumns(user.FieldName),\t\n\t).\n\tUpdateNewValues().\n\tExec(ctx)\n\n// Setting the constraint name using the SQL API.\nerr := client.User.\n\tCreate().\n\tSetName(\"Ariel\").\n\tOnConflict(\n\t    sql.ConflictConstraint(constraint),\t\n\t).\n\tUpdateNewValues().\n\tExec(ctx)\n```",
+      "source_content_hash": "663c189280925d7e28f284e3c902cf83dc781b84c68f9846d34fca16ab513419",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b9ddb766"
+      }
+    },
+    {
+      "segment_id": "fe2c7f95",
+      "source_content": "In order to customize the executed statement, use the SQL API:",
+      "source_content_hash": "6b8bf1d420a6c933f1b9c8125a11ba320c3def95fbc0ecd2b5ae01e2dfeed31d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如需自定义执行语句，请使用SQL API："
+      }
+    },
+    {
+      "segment_id": "be9750ef",
+      "source_content": "```go\nid, err := client.User.\n\tCreate().\n\tOnConflict(\n\t\tsql.ConflictColumns(...),\n\t\tsql.ConflictWhere(...),\n\t\tsql.UpdateWhere(...),\n\t).\n\tUpdate(func(u *ent.UserUpsert) {\n\t\tu.SetAge(30)\n\t\tu.UpdateName()\n\t}).\n\tID(ctx)\n\n// INSERT INTO \"users\" (...) VALUES (...) ON CONFLICT WHERE ... DO UPDATE SET ... WHERE ...\n```",
+      "source_content_hash": "f01c46fb04a3507ff7e605ed930a3ce9f8636e0b87764a415e316a552f172991",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be9750ef"
+      }
+    },
+    {
+      "segment_id": "9253f076",
+      "source_content": ":::info\nSince the upsert API is implemented using the `ON CONFLICT` clause (and `ON DUPLICATE KEY` in MySQL),\nEnt executes only one statement to the database, and therefore, only create [hooks](hooks.md) are applied\nfor such operations.\n:::",
+      "source_content_hash": "439de85d23e8045ea0d8a8ce65dbbc1fbbf2d29b1ea2335dd24ce991be1562c4",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n由于upsert API基于`ON CONFLICT`子句实现（MySQL中使用`ON DUPLICATE KEY`），Ent仅向数据库执行单条语句，因此此类操作仅会触发创建[钩子](hooks.md)\n:::"
+      }
+    },
+    {
+      "segment_id": "96cd7bb6",
+      "source_content": "## Upsert Many",
+      "source_content_hash": "aaaaa4dd3c76da1c9ed8b5bf780d70108bc6b89c2325a71c3d9f95f08dc325da",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 批量Upsert"
+      }
+    },
+    {
+      "segment_id": "9d50f875",
+      "source_content": "```go\nerr := client.User.             // UserClient\n\tCreateBulk(builders...).    // User bulk create.\n\tOnConflict().               // User bulk upsert.\n\tUpdateNewValues().          // Use the values that were set on create in case of conflict.\n\tExec(ctx)                   // Execute the statement.\n```",
+      "source_content_hash": "253867e481d2289567b1212de8787e4d9986e5044675abf4d7d338610e713014",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9d50f875"
+      }
+    },
+    {
+      "segment_id": "81e59017",
+      "source_content": "## Query The Graph",
+      "source_content_hash": "abf1063d13c91cb90f6e5fc349b648a3fc156d929bb40411ac89478f2446e906",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 图查询"
+      }
+    },
+    {
+      "segment_id": "ca714988",
+      "source_content": "Get all users with followers.",
+      "source_content_hash": "0da166ed313e1e6bdb4ab4fb96a35bdacbff1f5daa674493bf80accfa5cce7d4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "获取所有有粉丝的用户"
+      }
+    },
+    {
+      "segment_id": "691f84c2",
+      "source_content": "```go\nusers, err := client.User.\t\t// UserClient.\n\tQuery().\t\t\t\t\t// User query builder.\n\tWhere(user.HasFollowers()).\t// filter only users with followers.\n\tAll(ctx)\t\t\t\t\t// query and return.\n```",
+      "source_content_hash": "338b9d607d16963de01a429bec28c23b8901ea99051152d3246c6e57152263ed",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_691f84c2"
+      }
+    },
+    {
+      "segment_id": "72dd1482",
+      "source_content": "Get all followers of a specific user; Start the traversal from a node in the graph.",
+      "source_content_hash": "bd7e35be36a1855b024d9132f22d7cb4181ecccd4b50561425b3c2590ed2ed39",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "获取特定用户的所有粉丝；从图中的某个节点开始遍历"
+      }
+    },
+    {
+      "segment_id": "e62154c6",
+      "source_content": "```go\nusers, err := a8m.\n\tQueryFollowers().\n\tAll(ctx)\n```",
+      "source_content_hash": "81e96aec1798e9384464234c0eeaf0a533f6495c801bf9abc202195b84154657",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e62154c6"
+      }
+    },
+    {
+      "segment_id": "1e0d7fbe",
+      "source_content": "Get all pets of the followers of a user.",
+      "source_content_hash": "fa6b61eeb94699768eea7e4ffc1a4ddef09c5d52295b2b3b2dc3920fe0b39185",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "获取某用户粉丝的所有宠物"
+      }
+    },
+    {
+      "segment_id": "a7e04391",
+      "source_content": "```go\nusers, err := a8m.\n\tQueryFollowers().\n\tQueryPets().\n\tAll(ctx)\n```",
+      "source_content_hash": "84640c1d14dee8ae9510aec32ff56f9fee6cd2bbd712a490c2ba7ed12dac8198",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a7e04391"
+      }
+    },
+    {
+      "segment_id": "36b947e5",
+      "source_content": "Count the number of posts without comments.",
+      "source_content_hash": "fe073a2a541187979cf98b3a4922e606bb5a611e6dfe7ee58f18e6291e4bb3f5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "统计没有评论的帖子数量"
+      }
+    },
+    {
+      "segment_id": "8ea5b4e4",
+      "source_content": "```go\nn, err := client.Post.\n\tQuery().\n\tWhere(\n\t\tpost.Not(\n\t\t    post.HasComments(),\t\n\t\t)\n\t).\n\tCount(ctx)\n```",
+      "source_content_hash": "3d50228669b4fdaae5b4c0ae0bca020b2405ffe3f378382c53a0758edb301146",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8ea5b4e4"
+      }
+    },
+    {
+      "segment_id": "db871df4",
+      "source_content": "More advance traversals can be found in the [next section](traversals.md). ",
+      "source_content_hash": "8b9c7cd5645a18df9fe967e4bfa5e0f030abfee094e14211b146fdb48309dfc1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更高级的遍历方法可在[下一章节](traversals.md)找到"
+      }
+    },
+    {
+      "segment_id": "6ff5a621",
+      "source_content": "## Field Selection",
+      "source_content_hash": "c81286f2697e13d0368e11e0bd4ed8d59208e24f34a778787f4b217fc84afbbc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 字段选择"
+      }
+    },
+    {
+      "segment_id": "9bc9e142",
+      "source_content": "Get all pet names.",
+      "source_content_hash": "9317360e4b050de73b47cf1160adb56ee86dcaf157246624415f6642bd4183c3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "获取所有宠物名称"
+      }
+    },
+    {
+      "segment_id": "a949b2e2",
+      "source_content": "```go\nnames, err := client.Pet.\n\tQuery().\n\tSelect(pet.FieldName).\n\tStrings(ctx)\n```",
+      "source_content_hash": "fe50979630ff4a9ace7de6b0fc3de8f4e85fdd1b2c786e343eb91af6efbe8bff",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a949b2e2"
+      }
+    },
+    {
+      "segment_id": "c829cc4b",
+      "source_content": "Get all unique pet names.",
+      "source_content_hash": "436ff965f1b4467b32dcf336affe94e4179acbdf99ce47706c08d14172858eb9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "获取所有唯一的宠物名称"
+      }
+    },
+    {
+      "segment_id": "d27cbc80",
+      "source_content": "```go\nnames, err := client.Pet.\n\tQuery().\n\tUnique(true).\n\tSelect(pet.FieldName).\n\tStrings(ctx)\n```",
+      "source_content_hash": "be48eaf9856e09795733bbcb350f337b577017673285701f2f7ea0d85b0a3f05",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d27cbc80"
+      }
+    },
+    {
+      "segment_id": "ae95f665",
+      "source_content": "Count the number of unique pet names.",
+      "source_content_hash": "ccfd32e176c0b5b40f8dd86baf8f8e6e183179d108b466a716398e01a334cb6f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "统计唯一宠物名称的数量"
+      }
+    },
+    {
+      "segment_id": "86aac3bf",
+      "source_content": "```go\nn, err := client.Pet.\n\tQuery().\n\tUnique(true).\n\tSelect(pet.FieldName).\n\tCount(ctx)\n```",
+      "source_content_hash": "62c42d7102ab4421180a866fb73a77de30bc0da1c39ef8011a3999a98b107680",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_86aac3bf"
+      }
+    },
+    {
+      "segment_id": "cbbdf094",
+      "source_content": "Select partial objects and partial associations.\nGet all pets and their owners, but select and fill only the `ID` and `Name` fields.",
+      "source_content_hash": "8605b473615472e33e092573b22fff616571944bbe18f8b02cf6307bcc401d8f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "选择部分对象和部分关联关系。\n获取所有宠物及其主人，但仅选择并填充 `ID` 和 `Name` 字段。"
+      }
+    },
+    {
+      "segment_id": "33d86a40",
+      "source_content": "```go\npets, err := client.Pet.\n    Query().\n    Select(pet.FieldName).\n    WithOwner(func (q *ent.UserQuery) {\n        q.Select(user.FieldName)\n    }).\n    All(ctx)\n```",
+      "source_content_hash": "d8d84dd653ec68dec9836a36e508486bc4816aaf6b0ef3be1f8d849a582ab705",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_33d86a40"
+      }
+    },
+    {
+      "segment_id": "81ed2b45",
+      "source_content": "Scan all pet names and ages to custom struct.",
+      "source_content_hash": "a0a129c7fcd3002b5d5474fdc584d5f650f1842bff356479ff8dea2f4bef90e1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "将所有宠物名称和年龄扫描到自定义结构体。"
+      }
+    },
+    {
+      "segment_id": "5018db49",
+      "source_content": "```go\nvar v []struct {\n\tAge  int    `json:\"age\"`\n\tName string `json:\"name\"`\n}\nerr := client.Pet.\n\tQuery().\n\tSelect(pet.FieldAge, pet.FieldName).\n\tScan(ctx, &v)\nif err != nil {\n\tlog.Fatal(err)\n}\n```",
+      "source_content_hash": "e999b0d0889534271fef61b1a52803951a0a6b90ceed7eb4d9eaf27d96afb732",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5018db49"
+      }
+    },
+    {
+      "segment_id": "6dbe7a7e",
+      "source_content": "Update an entity and return a partial of it.",
+      "source_content_hash": "c079fb16f3e469ed914aab6004190fc099e3f1d801b8f15087a72fd86cbe31cb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更新实体并返回其部分字段。"
+      }
+    },
+    {
+      "segment_id": "65df932e",
+      "source_content": "```go\npedro, err := client.Pet.\n\tUpdateOneID(id).\n\tSetAge(9).\n\tSetName(\"pedro\").\n\t// Select allows selecting one or more fields (columns) of the returned entity.\n\t// The default is selecting all fields defined in the entity schema.\n\tSelect(pet.FieldName).\n\tSave(ctx)\n```",
+      "source_content_hash": "0d500ddab3c3d5ce5a60a9c7a523302a501629bb56fdf01daf17e55e996b4ac7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_65df932e"
+      }
+    },
+    {
+      "segment_id": "e9a726de",
+      "source_content": "## Delete One ",
+      "source_content_hash": "92de3ea5e65e0517f8bc613f7acad21283a10fb5867a41656b3044ce120e978b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 删除单个实体"
+      }
+    },
+    {
+      "segment_id": "71c1aac0",
+      "source_content": "Delete an entity:",
+      "source_content_hash": "2b5270af4c9ba0af37e4f60552c593d96c1f4d5430d2f5dd71556d4c78688f59",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "删除实体："
+      }
+    },
+    {
+      "segment_id": "d3541dbe",
+      "source_content": "```go\nerr := client.User.\n\tDeleteOne(a8m).\n\tExec(ctx)\n```",
+      "source_content_hash": "364a469b3ef76bb245e63bec9fb16187ca78b0c84a39cf3380f47b8e94f0f91b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d3541dbe"
+      }
+    },
+    {
+      "segment_id": "4a2bee77",
+      "source_content": "Delete by ID:",
+      "source_content_hash": "bdd59f5c8228466df63f3f05e8fed23792870755b6285a5d403700237b04ab80",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "根据ID删除："
+      }
+    },
+    {
+      "segment_id": "08404d6e",
+      "source_content": "```go\nerr := client.User.\n\tDeleteOneID(id).\n\tExec(ctx)\n```",
+      "source_content_hash": "2c3430d517e2afc5fd55c2eeb3e3090c1fa3a713b57f784e3a0b06d89e899390",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_08404d6e"
+      }
+    },
+    {
+      "segment_id": "600c566a",
+      "source_content": "#### Delete One With Condition",
+      "source_content_hash": "481bce708b88ad1511b564c7c9eb238889b4d9367a350c09a53cbc4917a229dc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 带条件的单条删除"
+      }
+    },
+    {
+      "segment_id": "17b95bd5",
+      "source_content": "In some projects, the \"delete many\" operation is not allowed and is blocked using hooks. However, there is still a need\nto delete a single entity by its ID while ensuring it meets a specific condition. In this case, you can use the `Where`\noption as follows:",
+      "source_content_hash": "cb0d6bf0d6d8faadb351b8153f734f39736ba98a3fcac4ed3086ac8575e05129",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在某些项目中，\"批量删除\"操作被禁止并通过钩子拦截。但仍需根据ID删除单个实体并确保其满足特定条件。此时可使用 `Where` 选项如下："
+      }
+    },
+    {
+      "segment_id": "79094e7f",
+      "source_content": "```go\nerr := client.Todo.\n    DeleteOneID(id).\n    Where(\n        // Allow deleting only expired todos.\n        todo.ExpireLT(time.Now()),\n    ).\n    Exec(ctx)\nswitch {\n// If the entity does not meet a specific condition,\n// the operation will return an \"ent.NotFoundError\".\ncase ent.IsNotFound(err):\n    fmt.Println(\"todo item was not found\")\n// Any other error.\ncase err != nil:\n    fmt.Println(\"deletion error:\", err)\n}\n```",
+      "source_content_hash": "7feb9543df062eafd8e17df294a184756671c606966867067d05633567ead4d8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_79094e7f"
+      }
+    },
+    {
+      "segment_id": "b8d76c94",
+      "source_content": "## Delete Many",
+      "source_content_hash": "860e995c29967cdcad295bc19802390730987bf44141ea357fb2c9096380c4ff",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 批量删除"
+      }
+    },
+    {
+      "segment_id": "cff30da4",
+      "source_content": "Delete using predicates:",
+      "source_content_hash": "5dcaec0dcb31b17a7d14eef1de1e616368cc2f5d285faca9aa4d8e057a3fd1b8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用谓词条件删除："
+      }
+    },
+    {
+      "segment_id": "07592e34",
+      "source_content": "```go\naffected, err := client.File.\n\tDelete().\n\tWhere(file.UpdatedAtLT(date)).\n\tExec(ctx)\n```",
+      "source_content_hash": "29127dce829cf3f076455423c0ab42e4739065b35179bd966cfe2d995e33e209",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_07592e34"
+      }
+    },
+    {
+      "segment_id": "08ad3c7d",
+      "source_content": "## Mutation",
+      "source_content_hash": "b328cef3a8465d1e2f7bdef044f9203cf5c0b7018746917c69e755a6c2dc7d8d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 变更操作"
+      }
+    },
+    {
+      "segment_id": "c6dee347",
+      "source_content": "Each generated node type has its own type of mutation. For example, all [`User` builders](crud.mdx#create-an-entity), share\nthe same generated `UserMutation` object.\nHowever, all builder types implement the generic <a target=\"_blank\" href=\"https://pkg.go.dev/entgo.io/ent?tab=doc#Mutation\">`ent.Mutation`</a> interface.",
+      "source_content_hash": "ab8ef640ebf535cc3e2a4a95bdcc1a20fa264fdca880825ad08c2e72243499d9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "每个生成的节点类型都有其专属的变更类型。例如所有[`User`构建器](crud.mdx#create-an-entity)共享同一个生成的`UserMutation`对象。\n但所有构建器类型都实现了通用的<a target=\"_blank\" href=\"https://pkg.go.dev/entgo.io/ent?tab=doc#Mutation\">`ent.Mutation`</a>接口。"
+      }
+    },
+    {
+      "segment_id": "f585071d",
+      "source_content": "For example, in order to write a generic code that apply a set of methods on both `ent.UserCreate`\nand `ent.UserUpdate`, use the `UserMutation` object:",
+      "source_content_hash": "dcc66de115d4774875bae99d5af0645db8676a974bf607930c33c4846ba6fee5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "例如，若需编写通用代码对`ent.UserCreate`和`ent.UserUpdate`应用相同方法集，可使用`UserMutation`对象："
+      }
+    },
+    {
+      "segment_id": "a399ada9",
+      "source_content": "```go\nfunc Do() {\n    creator := client.User.Create()\n    SetAgeName(creator.Mutation())\n\tupdater := client.User.UpdateOneID(id)\n\tSetAgeName(updater.Mutation())\n}\n\n// SetAgeName sets the age and the name for any mutation.\nfunc SetAgeName(m *ent.UserMutation) {\n    m.SetAge(32)\n    m.SetName(\"Ariel\")\n}\n```",
+      "source_content_hash": "6e73cef3e9dc8e84e4fb238ff54978f2c500e48c8449d577362c06879394a4bc",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a399ada9"
+      }
+    },
+    {
+      "segment_id": "79dbe3da",
+      "source_content": "In some cases, you want to apply a set of methods on multiple types.\nFor cases like this, either use the generic `ent.Mutation` interface,\nor create your own interface.",
+      "source_content_hash": "c03527c707def481458b0a23fbca4097ac5b3458ad621b14af84e1f2a569e84e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "某些场景下需要对多种类型应用相同方法集。\n此类情况可选择使用通用`ent.Mutation`接口，\n或创建自定义接口。"
+      }
+    },
+    {
+      "segment_id": "0c3af00a",
+      "source_content": "```go\nfunc Do() {\n\tcreator1 := client.User.Create()\n\tSetName(creator1.Mutation(), \"a8m\")\n\n\tcreator2 := client.Pet.Create()\n\tSetName(creator2.Mutation(), \"pedro\")\n}\n\n// SetNamer wraps the 2 methods for getting\n// and setting the \"name\" field in mutations.\ntype SetNamer interface {\n\tSetName(string)\n\tName() (string, bool)\n}\n\nfunc SetName(m SetNamer, name string) {\n    if _, exist := m.Name(); !exist {\n    \tm.SetName(name)\n    }\n}\n```",
+      "source_content_hash": "036f2c0340de7019e9a073bfb281eb0d80fcb6a93312849511790027b1370a41",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0c3af00a"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/crud.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.674570+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "707c1e75d1fa49840f6a6b7067d23fb4478d0a8dc7b8ba5f9b25d4282d4979bb"
+  }
+}

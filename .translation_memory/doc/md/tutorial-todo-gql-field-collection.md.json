@@ -1,0 +1,332 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-gql-field-collection.md",
+  "source_file_content_hash": "c0ae7d403e41a2fee10e79888855585d6a45d601d465ff17677e56056682beaa",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-gql-field-collection\ntitle: GraphQL Field Collection\nsidebar_label: Field Collection\n---",
+      "source_content_hash": "2fd38408766f7b4dc1d85c86e178b6290171c3207b01f98a40ad9b83dd681a24",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "In this section, we continue our [GraphQL example](tutorial-todo-gql.mdx) by explaining how Ent implements\n[GraphQL Field Collection](https://spec.graphql.org/June2018/#sec-Field-Collection) for our GraphQL schema and solves the\n\"N+1 Problem\" in our resolvers.",
+      "source_content_hash": "f6bffce72fb4c136978c764496400a3ea5dc5c3030c7c9ad19e8a0376238a3df",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节我们将延续[GraphQL示例](tutorial-todo-gql.mdx)，阐述Ent如何为GraphQL模式实现[字段收集机制](https://spec.graphql.org/June2018/#sec-Field-Collection)，并解决解析器中的\"N+1问题\"。"
+      }
+    },
+    {
+      "segment_id": "8a5f6a7b",
+      "source_content": "#### Clone the code (optional)",
+      "source_content_hash": "b068b18a91c2d1cb5709786f96baae783976def17ac4580a202a72c3f85fa808",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 克隆代码（可选）"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "The code for this tutorial is available under [github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example),\nand tagged (using Git) in each step. If you want to skip the basic setup and start with the initial version of the GraphQL\nserver, you can clone the repository as follows:",
+      "source_content_hash": "130dc9705ca054f7d2b7ce3568a91cd71f8fc55480dc49b78770948ef2ea18e9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程代码库位于[github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example)，每个步骤都有对应的Git标签。若想跳过基础配置直接使用GraphQL服务器的初始版本，可通过以下命令克隆仓库："
+      }
+    },
+    {
+      "segment_id": "93be3c14",
+      "source_content": "```console\ngit clone git@github.com:a8m/ent-graphql-example.git\ncd ent-graphql-example \ngo run ./cmd/todo/\n```",
+      "source_content_hash": "2fa40aa0226f164db69ac24b995a3ed9a55deb1c19c3ff3ea6301a27aaf46a06",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_93be3c14"
+      }
+    },
+    {
+      "segment_id": "40f9552a",
+      "source_content": "## Problem",
+      "source_content_hash": "70a969dce32838240cf51560886c5158a613d5cb4258b7d7101d0b627acad35f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 问题描述"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "The *\"N+1 problem\"* in GraphQL means that a server executes unnecessary database queries to get node associations (i.e. edges)\nwhen it can be avoided. The number of queries that will be potentially executed (N+1) is a factor of the number of the \nnodes returned by the root query, their associations, and so on recursively. Meaning, this can potentially be a very big number (much bigger than N+1).",
+      "source_content_hash": "40fcc2a639af5d201602420abfc2a635fc5f6a3e36433224a127be86850cacf0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "GraphQL中的*\"N+1问题\"*指服务器为获取节点关联（即边关系）执行了不必要的数据库查询。潜在查询数量（N+1）与根查询返回的节点数、其关联节点数等呈递归级数关系，实际可能远超N+1量级。"
+      }
+    },
+    {
+      "segment_id": "4b1d2d7d",
+      "source_content": "Let's try to explain this with the following query:",
+      "source_content_hash": "cd887c5ded3f30c0504b254808c79e562beace8729570632941025f93d9caf32",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下列查询为例说明："
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```graphql\nquery {\n    users(first: 50) {\n        edges {\n            node {\n                photos {\n                    link\n                }\n                posts {\n                    content\n                    comments {\n                        content\n                    }\n                }\n            }\n        }\n    }\n}\n```",
+      "source_content_hash": "42f1bc708ef5f1df33d38f2c5d26aba822d429f17c876311e0467ec6ffbfc738",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cb57d798"
+      }
+    },
+    {
+      "segment_id": "c504c207",
+      "source_content": "In the query above, we want to fetch the first 50 users with their photos and their posts, including their comments.",
+      "source_content_hash": "1af506c6afa8347e3aa76401d9f1347c5dc7148da35304e7175aa525a67ea893",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该查询试图获取前50个用户及其照片、帖子（含评论）。"
+      }
+    },
+    {
+      "segment_id": "98d26038",
+      "source_content": "**In the naive solution** (the problematic case), a server will fetch the first 50 users in one query, then, for each user\nwill execute a query for getting their photos (50 queries), and another query for getting their posts (50). Let's say\neach user has exactly 10 posts. Therefore, for each post (of each user), the server will execute another query for getting\nits comments (500). That means we will have `1+50+50+500=601` queries in total.",
+      "source_content_hash": "c7502c39cd5c02bc09ad014a2780cdb66c18865b29812a9e3a599ca8035346d1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**在初级解决方案中**（问题场景），服务器会先执行1次查询获取50个用户，随后为每个用户分别执行：获取照片（50次）、获取帖子（50次）。假设每个用户有10篇帖子，则每篇帖子需再执行1次评论查询（共500次）。最终将产生`1+50+50+500=601`次查询。"
+      }
+    },
+    {
+      "segment_id": "e536ea0d",
+      "source_content": "![gql-request-tree](https://entgo.io/images/assets/request-tree.png)",
+      "source_content_hash": "f3260bc99ecf84ab5f35a7a14b2725546afc8645d5fe6e0b484f1de27838ee06",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![gql-请求树](https://entgo.io/images/assets/request-tree.png)"
+      }
+    },
+    {
+      "segment_id": "ab5fc5b5",
+      "source_content": "## Ent Solution",
+      "source_content_hash": "776e075941ca3d49b2bae06c7bc174dd8ecea0dc78d9dc7382aea18f22362ef1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## Ent解决方案"
+      }
+    },
+    {
+      "segment_id": "6ea4c715",
+      "source_content": "The Ent extension for field collection adds support for automatic [GraphQL field collection](https://spec.graphql.org/June2018/#sec-Field-Collection)\nfor associations (i.e. edges) using [eager loading](eager-load.mdx). Meaning, if a query asks for nodes and their edges, \n`entgql` will automatically add [`With<E>`](eager-load.mdx) steps to the root query, and as a result, the client will\nexecute a constant number of queries to the database - and it works recursively.",
+      "source_content_hash": "de4450403acf9d580eba767ef962a0854a8708a22148a5688c85165ac4b2e908",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent的字段收集扩展通过[预加载机制](eager-load.mdx)为关联关系（即边）实现自动化的[GraphQL字段收集](https://spec.graphql.org/June2018/#sec-Field-Collection)。当查询请求节点及其边关系时，`entgql`会自动为根查询添加[`With<E>`](eager-load.mdx)步骤，最终客户端只需执行固定次数的数据库查询——该机制支持递归处理。"
+      }
+    },
+    {
+      "segment_id": "0bb95128",
+      "source_content": "In the GraphQL query above, the client will execute 1 query for getting the users, 1 for getting the photos,\nand another 2 for getting the posts and their comments **(4 in total!)**. This logic works both for root queries/resolvers\nand for the node(s) API.",
+      "source_content_hash": "f291bc9854a4b7ee762c633abbdda138324ce7daf4eec7c6d9065d8d592dbd3c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "针对上述GraphQL查询，客户端仅需执行：1次用户查询、1次照片查询、2次帖子及评论查询（总计4次！）。此逻辑同时适用于根查询/解析器与节点API。"
+      }
+    },
+    {
+      "segment_id": "52388877",
+      "source_content": "## Example",
+      "source_content_hash": "9bf34f44c9d1371f4eda569dfa04ff7830aff81cfa81646e680cef087714cdc1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 示例演示"
+      }
+    },
+    {
+      "segment_id": "eab056be",
+      "source_content": "For the purpose of the example, we **disable the automatic field collection**, change the `ent.Client` to run in\ndebug mode in the `Todos` resolver, and restart our GraphQL server:",
+      "source_content_hash": "5930fec0f48371afa6735408647e4df162c54b0ade23404cb6c27db945ec45e8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为演示效果，我们**暂时禁用自动字段收集**，将`ent.Client`切换为调试模式后重启GraphQL服务器："
+      }
+    },
+    {
+      "segment_id": "468b36ba",
+      "source_content": "```diff title=\"ent.resolvers.go\"\nfunc (r *queryResolver) Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder) (*ent.TodoConnection, error) {\n-\treturn r.client.Todo.Query().\n+\treturn r.client.Debug().Todo.Query().\n\t\tPaginate(ctx, after, first, before, last,\n\t\t\tent.WithTodoOrder(orderBy),\n\t\t)\n}\n```",
+      "source_content_hash": "f2905a80980a9f559139e5f0d5cdfbf01f43e16b8b3ccc9b97cc4561e35ed305",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_468b36ba"
+      }
+    },
+    {
+      "segment_id": "ec619944",
+      "source_content": "We execute the GraphQL query from the [pagination tutorial](tutorial-todo-gql-paginate.md), and add the\n`parent` edge to the result:",
+      "source_content_hash": "ba13adaf512b2ad519d6dd2910034bd8d15deac596a3a35a478e192103e701fd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行[分页教程](tutorial-todo-gql-paginate.md)中的GraphQL查询，并在结果中添加`parent`边关系："
+      }
+    },
+    {
+      "segment_id": "f6563256",
+      "source_content": "```graphql\nquery {\n    todos(last: 10, orderBy: {direction: DESC, field: TEXT}) {\n        edges {\n            node {\n                id\n                text\n                parent {\n                    id\n                }\n            }\n            cursor\n        }\n    }\n}\n```",
+      "source_content_hash": "6b57014ad8f38eca112195b0d8976d456ab4595d63a32d7478711a148255aef3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f6563256"
+      }
+    },
+    {
+      "segment_id": "c1eaf30b",
+      "source_content": "Check the process output, and you will see that the server executed 11 queries to the database. 1 for getting the last\n10 todo items, and another 10 queries for getting the parent of each item:",
+      "source_content_hash": "19f0a163e2a6c40f7a093e9c62b4f5bb2adc8246d17a1e8961fd0ad00968e750",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察进程输出可见：服务器执行了11次查询（1次获取最近10条待办事项，10次获取每条事项的父项）："
+      }
+    },
+    {
+      "segment_id": "c9873cf8",
+      "source_content": "```sql\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` ORDER BY `id` ASC LIMIT 11\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` JOIN (SELECT `todo_parent` FROM `todos` WHERE `id` = ?) AS `t1` ON `todos`.`id` = `t1`.`todo_parent` LIMIT 2\n```",
+      "source_content_hash": "5caf001c1364bfc6af8f9cd0ab5d0d18d5f3fa229d20ac429de22df33f0e5a9b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c9873cf8"
+      }
+    },
+    {
+      "segment_id": "a6c928a1",
+      "source_content": "Let's see how Ent can automatically solve our problem: when defining an Ent edge, `entgql` auto binds it to its usage in\nGraphQL and generates edge-resolvers for the nodes under the `gql_edge.go` file:",
+      "source_content_hash": "2e196f0dc4bb6730d8e67003f3060626a5ef3edcba557412e8b317601daabff9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们看Ent如何自动解决问题：当定义Ent边时，`entgql`会将其自动绑定到GraphQL中的使用场景，并在`gql_edge.go`文件中生成节点解析器："
+      }
+    },
+    {
+      "segment_id": "e2c67c87",
+      "source_content": "```go title=\"ent/gql_edge.go\"\nfunc (t *Todo) Children(ctx context.Context) ([]*Todo, error) {\n\tif fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != \"\" {\n\t\tresult, err = t.NamedChildren(graphql.GetFieldContext(ctx).Field.Alias)\n\t} else {\n\t\tresult, err = t.Edges.ChildrenOrErr()\n\t}\n\tif IsNotLoaded(err) {\n\t\tresult, err = t.QueryChildren().All(ctx)\n\t}\n\treturn result, err\n}\n```",
+      "source_content_hash": "3b6bfe4b6893ae905c33295f5d1230a3df25239dbfe529a0b5a4e1da6b17ee7a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e2c67c87"
+      }
+    },
+    {
+      "segment_id": "e478ec2c",
+      "source_content": "If we check the process' output again without **disabling fields collection**, we will see that this time the server\nexecuted only two queries to the database. One to get the last 10 todo items, and a second for getting\nthe parent-item of each todo-item that was returned to the first query.",
+      "source_content_hash": "3102ec31f3100127c858c19f5a3677aea66e04b365e7e56d99e84801fc25f2bb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若在**不禁用字段收集**的情况下再次检查进程输出，我们会发现这次服务器仅执行了两个数据库查询：一个用于获取最后10条待办事项，另一个用于获取第一条查询返回的每个待办事项的父项。"
+      }
+    },
+    {
+      "segment_id": "01a167f4",
+      "source_content": "```sql\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority`, `todos`.`todo_parent` FROM `todos` ORDER BY `id` DESC LIMIT 11\nSELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` WHERE `todos`.`id` IN (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n```",
+      "source_content_hash": "07a4dc84d837ccbe72a6ac0ec5473ec54059afbf60cf9850b898aec907cfdb02",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_01a167f4"
+      }
+    },
+    {
+      "segment_id": "be17ccc3",
+      "source_content": "If you're having trouble running this example, go to the [first section](#clone-the-code-optional), clone the code\nand run the example.",
+      "source_content_hash": "f8c39a32a1136a3f1af14f16948bcf29c74defb902d45c009b72212dfb9e69fe",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果运行此示例时遇到问题，请跳转到[初始章节](#clone-the-code-optional)，克隆代码并运行示例。"
+      }
+    },
+    {
+      "segment_id": "6ab1b234",
+      "source_content": "## Field Mappings",
+      "source_content_hash": "941041da982808bcd8797682aa49b2c636d66300e817a4f063fb5c36c10a2272",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 字段映射"
+      }
+    },
+    {
+      "segment_id": "42d9ca67",
+      "source_content": "The [`entgql.MapsTo`](https://pkg.go.dev/entgo.io/contrib/entgql#MapsTo) allows you to add a custom field/edge mapping\nbetween the Ent schema and the GraphQL schema. This is useful when you want to expose a field or edge with a different\nname(s) in the GraphQL schema. For example:",
+      "source_content_hash": "726ab219c12d19462be94c3987e829c5e42995578bcdc1e75ed08b58a2694e1e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[`entgql.MapsTo`](https://pkg.go.dev/entgo.io/contrib/entgql#MapsTo) 允许您在Ent模式与GraphQL模式之间添加自定义字段/边映射。当您需要在GraphQL模式中以不同名称暴露字段或边时，此功能非常实用。例如："
+      }
+    },
+    {
+      "segment_id": "9129c0c5",
+      "source_content": "```go\n// One to one mapping.\nfield.Int(\"priority\").\n\tAnnotations(\n\t\tentgql.OrderField(\"PRIORITY_ORDER\"),\n\t\tentgql.MapsTo(\"priorityOrder\"),\n\t)\n\n// Multiple GraphQL fields can map to the same Ent field.\nfield.Int(\"category_id\").\n\tAnnotations(\n\t\tentgql.MapsTo(\"categoryID\", \"category_id\", \"categoryX\"),\n\t)\n```",
+      "source_content_hash": "5c0a363c971f5d166070d477d92d435839eb538d093f361676faa409d7896612",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9129c0c5"
+      }
+    },
+    {
+      "segment_id": "5659490c",
+      "source_content": "---",
+      "source_content_hash": "cb3f91d54eee30e53e35b2b99905f70f169ed549fd78909d3dac2defc9ed8d3b",
+      "node_type": "thematicBreak",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "---"
+      }
+    },
+    {
+      "segment_id": "89cf7bac",
+      "source_content": "Well done! By using automatic field collection for our Ent schema definition, we were able to greatly improve the\nGraphQL query efficiency in our application. In the next section, we will learn how to make our GraphQL mutations\ntransactional.",
+      "source_content_hash": "6976fd82dd381f39e13e812c06d6bcf71dd7d7833226928d8b331a5562506abe",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成！通过对Ent模式定义启用自动字段收集，我们显著提升了应用中GraphQL查询的效率。下一节中，我们将学习如何使GraphQL变更操作具备事务性。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-gql-field-collection.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.662505+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "c0ae7d403e41a2fee10e79888855585d6a45d601d465ff17677e56056682beaa"
+  }
+}

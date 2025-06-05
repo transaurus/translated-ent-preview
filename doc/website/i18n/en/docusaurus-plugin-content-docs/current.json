@@ -1,0 +1,74 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.md.category.Getting Started": {
+    "message": "Getting Started",
+    "description": "The label for category Getting Started in sidebar md"
+  },
+  "sidebar.md.category.Schema": {
+    "message": "Schema",
+    "description": "The label for category Schema in sidebar md"
+  },
+  "sidebar.md.category.Code Generation": {
+    "message": "Code Generation",
+    "description": "The label for category Code Generation in sidebar md"
+  },
+  "sidebar.md.category.Migration": {
+    "message": "Migration",
+    "description": "The label for category Migration in sidebar md"
+  },
+  "sidebar.md.category.External Objects": {
+    "message": "External Objects",
+    "description": "The label for category External Objects in sidebar md"
+  },
+  "sidebar.md.category.Misc": {
+    "message": "Misc",
+    "description": "The label for category Misc in sidebar md"
+  },
+  "sidebar.md.doc.Composite Types": {
+    "message": "Composite Types",
+    "description": "The label for the doc item Composite Types in sidebar md, linking to the doc migration/composite"
+  },
+  "sidebar.md.doc.Domain Types": {
+    "message": "Domain Types",
+    "description": "The label for the doc item Domain Types in sidebar md, linking to the doc migration/domain"
+  },
+  "sidebar.md.doc.Enum Types": {
+    "message": "Enum Types",
+    "description": "The label for the doc item Enum Types in sidebar md, linking to the doc migration/enum"
+  },
+  "sidebar.md.doc.Extensions": {
+    "message": "Extensions",
+    "description": "The label for the doc item Extensions in sidebar md, linking to the doc migration/extension"
+  },
+  "sidebar.md.doc.Functional Indexes": {
+    "message": "Functional Indexes",
+    "description": "The label for the doc item Functional Indexes in sidebar md, linking to the doc migration/functional-indexes"
+  },
+  "sidebar.md.doc.Row-Level Security": {
+    "message": "Row-Level Security",
+    "description": "The label for the doc item Row-Level Security in sidebar md, linking to the doc migration/rls"
+  },
+  "sidebar.md.doc.Triggers": {
+    "message": "Triggers",
+    "description": "The label for the doc item Triggers in sidebar md, linking to the doc migration/trigger"
+  },
+  "sidebar.tutorial.category.First Steps": {
+    "message": "First Steps",
+    "description": "The label for category First Steps in sidebar tutorial"
+  },
+  "sidebar.tutorial.category.GraphQL Basics": {
+    "message": "GraphQL Basics",
+    "description": "The label for category GraphQL Basics in sidebar tutorial"
+  },
+  "sidebar.tutorial.category.gRPC": {
+    "message": "gRPC",
+    "description": "The label for category gRPC in sidebar tutorial"
+  },
+  "sidebar.tutorial.category.Versioned Migrations": {
+    "message": "Versioned Migrations",
+    "description": "The label for category Versioned Migrations in sidebar tutorial"
+  }
+}

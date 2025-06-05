@@ -1,0 +1,124 @@
+---
+title: Planning a Migration
+id: new-migration
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::info[支持仓库]
+
+本节描述的变更可在支持仓库的
+[PR #6](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/6/files)
+中查看。
+
+:::
+
+## 规划迁移方案
+
+本节将讨论当项目Ent模式发生变更时，如何规划新的模式迁移。假设我们需要在`User`实体中添加一个名为`title`的新可选字段：
+
+```go title=ent/schema/user.go
+// Fields of the User.
+func (User) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("name"),
+		field.String("email"). // <-- Our new field
+            Unique(),
+        // highlight-start
+		field.String("title").
+            Optional(),
+        // highlight-end
+	}
+}
+```
+
+添加新字段后，需要重新运行项目的代码生成：
+
+```shell
+go generate ./...
+```
+
+接下来使用Atlas CLI为变更创建新的迁移文件：
+
+<Tabs
+defaultValue="mysql"
+values={[
+{label: 'MySQL', value: 'mysql'},
+{label: 'MariaDB', value: 'maria'},
+{label: 'PostgreSQL', value: 'postgres'},
+{label: 'SQLite', value: 'sqlite'},
+]}>
+<TabItem value="mysql">
+
+```shell
+atlas migrate diff add_user_title \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "docker://mysql/8/ent"
+```
+
+</TabItem>
+<TabItem value="maria">
+
+```shell
+atlas migrate diff add_user_title \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "docker://mariadb/latest/test"
+```
+
+</TabItem>
+<TabItem value="postgres">
+
+```shell
+atlas migrate diff add_user_title \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "docker://postgres/15/test?search_path=public"
+```
+
+</TabItem>
+<TabItem value="sqlite">
+
+```shell
+atlas migrate diff add_user_title \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "sqlite://file?mode=memory&_fk=1"
+```
+
+</TabItem>
+</Tabs>
+
+可以看到在`ent/migrate/migrations/`目录下生成了名为`20221115101649_add_user_title.sql`的新文件，该文件包含在`users`表中创建新增`title`字段的SQL语句：
+
+```sql title=ent/migrate/migrations/20221115101649_add_user_title.sql
+-- modify "users" table
+ALTER TABLE `users` ADD COLUMN `title` varchar(255) NULL;
+```
+
+成功！我们已使用Atlas CLI自动生成了针对变更的新迁移文件。
+
+执行以下命令应用迁移：
+
+```shell
+atlas migrate apply --dir file://ent/migrate/migrations --url mysql://root:pass@localhost:3306/db
+```
+
+Atlas返回报告：
+
+```shell
+Migrating to version 20221115101649 from 20221114165732 (1 migrations in total):
+
+  -- migrating version 20221115101649
+    -> ALTER TABLE `users` ADD COLUMN `title` varchar(255) NULL;
+  -- ok (36.152277ms)
+
+  -------------------------
+  -- 44.1116ms
+  -- 1 migrations
+  -- 1 sql statements
+```
+
+下一节我们将讨论如何为项目规划自定义模式迁移。

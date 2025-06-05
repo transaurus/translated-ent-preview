@@ -1,0 +1,542 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/code-gen.md",
+  "source_file_content_hash": "7f84fdd92c90c9eac5e6e95cfd299f4ffe9a21494e6dedfa237b8fdcf37093c9",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: code-gen\ntitle: Introduction\n---",
+      "source_content_hash": "a3b86aba691069cf99adbab633c3e1d5105de3ea1c7a5f26ac2484beeeba33dd",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "## Installation",
+      "source_content_hash": "a15d12503bf00f654df068bd9e5af6259db1703ac04a61365b991ce52557e5ea",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "The project comes with a codegen tool called `ent`. In order to install\n`ent` run the following command:",
+      "source_content_hash": "2e6ae7cda5a4554a41d03bd6d4cbe4027f91f56a2ff023340f4001e2ae79cc8e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该项目附带一个名为`ent`的代码生成工具。要安装`ent`，请运行以下命令："
+      }
+    },
+    {
+      "segment_id": "43a8bc7e",
+      "source_content": "```bash\ngo get entgo.io/ent/cmd/ent\n``` ",
+      "source_content_hash": "a4c71dd7339fdf47f89826ecfc40c09a2d958b1cb6fdf709c4895b7ce0eb07cb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_43a8bc7e"
+      }
+    },
+    {
+      "segment_id": "e14c9928",
+      "source_content": "## Initialize A New Schema",
+      "source_content_hash": "4c8d7e6d64f6cbad07f48b33798ffbbd4f2e85e52acdc31a9f187e24976e1520",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 初始化新模型"
+      }
+    },
+    {
+      "segment_id": "42ad8e83",
+      "source_content": "In order to generate one or more schema templates, run `ent init` as follows:",
+      "source_content_hash": "1a7ecfda0915ccbed53ef8a3b7fb3e861815b2af812cf2135bdc3d085d72a955",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要生成一个或多个模型模板，按如下方式运行`ent init`："
+      }
+    },
+    {
+      "segment_id": "940e34e3",
+      "source_content": "```bash\ngo run -mod=mod entgo.io/ent/cmd/ent new User Pet\n```",
+      "source_content_hash": "8bca96941b4b9fcbde6090267ed2ed3f0f4c96276291ead7bc33387c3b5d8c9b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_940e34e3"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "`init` will create the 2 schemas (`user.go` and `pet.go`) under the `ent/schema` directory.\nIf the `ent` directory does not exist, it will create it as well. The convention\nis to have an `ent` directory under the root directory of the project.",
+      "source_content_hash": "d6048b7bae5deb9dce0c71d9b607f4298bfe211a5ae4b4030892e688211b9814",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`init`命令将在`ent/schema`目录下创建2个模型文件（`user.go`和`pet.go`）。如果`ent`目录不存在，该命令会自动创建。项目约定是在根目录下创建`ent`目录。"
+      }
+    },
+    {
+      "segment_id": "fa430ad4",
+      "source_content": "## Generate Assets",
+      "source_content_hash": "6f1ac0a6e57f668a026170ef5965099727798b556316a0a1f64f914945e093c5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 生成资源文件"
+      }
+    },
+    {
+      "segment_id": "4b1d2d7d",
+      "source_content": "After adding a few [fields](schema-fields.mdx) and [edges](schema-edges.mdx), you want to generate\nthe assets for working with your entities. Run `ent generate` from the root directory of the project,\nor use `go generate`:",
+      "source_content_hash": "ab293c6c3e9c0388348b938da995b1b3bb58d8a2af7225e8a3a87a7f3d3f6a8f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "添加若干[字段](schema-fields.mdx)和[边](schema-edges.mdx)后，您需要生成实体操作所需的资源文件。在项目根目录下运行`ent generate`，或使用`go generate`："
+      }
+    },
+    {
+      "segment_id": "6543a19e",
+      "source_content": "```bash\ngo generate ./ent\n```",
+      "source_content_hash": "41cc20df76650a4ec60d95197074360bac8fa74b154a68ef9cf77b122e1fe047",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6543a19e"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "The `generate` command generates the following assets for the schemas:",
+      "source_content_hash": "0298c3535575eacb860fd5fbbb6421525b6c61e4cebd75fb3127bfe376438fb9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`generate`命令会为模型生成以下资源："
+      }
+    },
+    {
+      "segment_id": "e7bc8c38",
+      "source_content": "- `Client` and `Tx` objects used for interacting with the graph.\n- CRUD builders for each schema type. See [CRUD](crud.mdx) for more info.\n- Entity object (Go struct) for each of the schema types.\n- Package containing constants and predicates used for interacting with the builders.\n- A `migrate` package for SQL dialects. See [Migration](migrate.md) for more info.\n- A `hook` package for adding mutation middlewares. See [Hooks](hooks.md) for more info.",
+      "source_content_hash": "553dd43bae5b9ab52f724823c7e929a92ea6dff3da6c335f74599e47d28bd6a2",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 用于操作图的`Client`和`Tx`对象\n- 每个模型类型的CRUD构建器，详见[CRUD](crud.mdx)\n- 每个模型对应的实体对象（Go结构体）\n- 包含构建器操作所需的常量和谓词的包\n- 支持SQL方言的`migrate`包，详见[迁移](migrate.md)\n- 用于添加变更中间件的`hook`包，详见[钩子](hooks.md)"
+      }
+    },
+    {
+      "segment_id": "f44c1398",
+      "source_content": "## Version Compatibility Between `entc` And `ent`",
+      "source_content_hash": "d2e6271e3a8c8453ebb64e3830163d8430469adc586139471d93f94c539f80b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## `entc`与`ent`的版本兼容性"
+      }
+    },
+    {
+      "segment_id": "29528c8d",
+      "source_content": "When working with `ent` CLI in a project, you want to make sure the version being\nused by the CLI is **identical** to the `ent` version used by your project.",
+      "source_content_hash": "0a258172e61da187b7a6e97fd99ca83f0e37498026fa26e065f78a9a11874902",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在项目中使用`ent` CLI时，必须确保CLI使用的版本与项目中`ent`的版本完全一致。"
+      }
+    },
+    {
+      "segment_id": "f7ef78f9",
+      "source_content": "One of the options for achieving this is asking `go generate` to use the version\nmentioned in the `go.mod` file when running `ent`. If your project does not use\n[Go modules](https://github.com/golang/go/wiki/Modules#quick-start), setup one as follows:",
+      "source_content_hash": "8191f7fc69e7347460d6d853485c51893eea3e6e30839bf107c8c8a90db35fe0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "实现方式之一是让`go generate`在运行`ent`时使用`go.mod`文件中指定的版本。如果项目未使用[Go modules](https://github.com/golang/go/wiki/Modules#quick-start)，请按以下方式初始化："
+      }
+    },
+    {
+      "segment_id": "eb80afe1",
+      "source_content": "```console\ngo mod init <project>\n```",
+      "source_content_hash": "b84204b6d2b4fc4571df50ddb049d3ce8f24b0abd1f6938b680dee3abe08e3ba",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eb80afe1"
+      }
+    },
+    {
+      "segment_id": "40158b4b",
+      "source_content": "And then, re-run the following command in order to add `ent` to your `go.mod` file:",
+      "source_content_hash": "6c64761f1d7e0555d92250ce8dec0c18618b0c018ed804b55d9b4892e120c178",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后重新运行以下命令将`ent`添加到`go.mod`文件："
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```console\ngo get entgo.io/ent/cmd/ent\n```",
+      "source_content_hash": "c81c2cef241db6fb10f3c4b3ab1659e9839d8db32584d26d05c3438a24695ec4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "531437ca",
+      "source_content": "Add a `generate.go` file to your project under `<project>/ent`:",
+      "source_content_hash": "bf0de69f7e3cc901696561c66920177c45701bc2b02b143f5cf71aafed8858f1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在`<project>/ent`目录下创建`generate.go`文件："
+      }
+    },
+    {
+      "segment_id": "67b24fc5",
+      "source_content": "```go\npackage ent\n\n//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate ./schema\n```",
+      "source_content_hash": "be434b6c89997112f5315c8e28283aeacdc07b5dd862701aa7023916be3337f3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_67b24fc5"
+      }
+    },
+    {
+      "segment_id": "883231d4",
+      "source_content": "Finally, you can run `go generate ./ent` from the root directory of your project\nin order to run `ent` code generation on your project schemas.",
+      "source_content_hash": "1d28606864e1c13e5c85aa9eaa10d05f379b2893d8c02867b562c27ba96b6768",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后，在项目根目录运行`go generate ./ent`即可对项目模型执行`ent`代码生成。"
+      }
+    },
+    {
+      "segment_id": "93028a4e",
+      "source_content": "## Code Generation Options",
+      "source_content_hash": "6cf8514fd7fcb7f0a8c034f978b687d75ffb299c8def3f9c8aa477f61a3516a4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 代码生成选项"
+      }
+    },
+    {
+      "segment_id": "e8e162a9",
+      "source_content": "For more info about codegen options, run `ent generate -h`:",
+      "source_content_hash": "77801bbbc6a65f8a981255eeb92a1425b6c78932e57e3269731f4076d02b714f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行`ent generate -h`查看代码生成选项详情："
+      }
+    },
+    {
+      "segment_id": "9f4336b3",
+      "source_content": "```console\ngenerate go code for the schema directory\n\nUsage:\n  ent generate [flags] path\n\nExamples:\n  ent generate ./ent/schema\n  ent generate github.com/a8m/x\n\nFlags:\n      --feature strings       extend codegen with additional features\n      --header string         override codegen header\n  -h, --help                  help for generate\n      --storage string        storage driver to support in codegen (default \"sql\")\n      --target string         target directory for codegen\n      --template strings      external templates to execute\n```",
+      "source_content_hash": "de6fe8dfc06d325902b508e141f29fc13f7b5de5a0e0399c8cf40a73608c804a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9f4336b3"
+      }
+    },
+    {
+      "segment_id": "c19de48a",
+      "source_content": "## Storage Options",
+      "source_content_hash": "48c08aace7d06df59d64dba0868379fe64de9d01f44fde364dabb4faffeaa3fc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 存储选项"
+      }
+    },
+    {
+      "segment_id": "6ca4479f",
+      "source_content": "`ent` can generate assets for both SQL and Gremlin dialect. The default dialect is SQL.",
+      "source_content_hash": "6247e37dc375139c5817315a37c0cd904e77f67e2bd54d1fc4a12aa0e286844b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent`可为SQL和Gremlin方言生成资源文件，默认使用SQL方言。"
+      }
+    },
+    {
+      "segment_id": "71169a2d",
+      "source_content": "## External Templates",
+      "source_content_hash": "89a1ada9772264769e1ce175f280b9dc845a246b93e20c186752b41c5b34e76a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 外部模板"
+      }
+    },
+    {
+      "segment_id": "c1eaf30b",
+      "source_content": "`ent` accepts external Go templates to execute. If the template name already defined by\n`ent`, it will override the existing one. Otherwise, it will write the execution output to\na file with the same name as the template. The flag format supports  `file`, `dir` and `glob`\nas follows:",
+      "source_content_hash": "c547ae9ffe691306be7ddb3f2be04cd09174bf06084eddb0f04121d4bf6dd76d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent`支持执行外部Go模板。若模板名称与`ent`内置模板重复，将覆盖原有模板；否则会将执行输出写入与模板同名的文件。标志格式支持`file`、`dir`和`glob`模式："
+      }
+    },
+    {
+      "segment_id": "59534425",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent generate --template <dir-path> --template glob=\"path/to/*.tmpl\" ./ent/schema\n```",
+      "source_content_hash": "0f2627e1dc8c7e054c8f27a6c1cdc6bc053c94893cb63f93dfee32347df9f762",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_59534425"
+      }
+    },
+    {
+      "segment_id": "e9313fef",
+      "source_content": "More information and examples can be found in the [external templates doc](templates.md).",
+      "source_content_hash": "8d4fac2a3e881808846fd989ba5b65cef1d4c378f28aa58e43a5c8344127c156",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更多信息和示例请参阅[外部模板文档](templates.md)。"
+      }
+    },
+    {
+      "segment_id": "48155948",
+      "source_content": "## Use `entc` as a Package",
+      "source_content_hash": "8afa4bf4120446a6e21f4fedd22788d313e432cc8ad34b0fdda9739aee9162ba",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 以包形式使用`entc`"
+      }
+    },
+    {
+      "segment_id": "1958bc43",
+      "source_content": "Another option for running `ent` code generation is to create a file named `ent/entc.go` with the following content,\nand then the `ent/generate.go` file to execute it:",
+      "source_content_hash": "dd17cfdc3b3d35b6602ce9574df1eba022965900f4cb2c02857bdb62ec32366a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "另一种运行`ent`代码生成的方式是：先创建包含以下内容的`ent/entc.go`文件，再通过`ent/generate.go`文件执行："
+      }
+    },
+    {
+      "segment_id": "b27056c4",
+      "source_content": "```go title=\"ent/entc.go\"\n// +build ignore\n\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n\t\"entgo.io/ent/schema/field\"\n)\n\nfunc main() {\n\tif err := entc.Generate(\"./schema\", &gen.Config{}); err != nil {\n\t\tlog.Fatal(\"running ent codegen:\", err)\n\t}\n}\n```",
+      "source_content_hash": "bbf4fac66424d596c00a440871f59c867a15145303f899e3312b1ecd0c7a6839",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b27056c4"
+      }
+    },
+    {
+      "segment_id": "e908327f",
+      "source_content": "```go title=\"ent/generate.go\"\npackage ent\n\n//go:generate go run -mod=mod entc.go\n```",
+      "source_content_hash": "f87460630544c392e2b374efc01e30dffdcf71999be137dd8339a110a437849a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e908327f"
+      }
+    },
+    {
+      "segment_id": "f7e6e884",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/entcpkg).",
+      "source_content_hash": "8460c6e08140fa6e2ed26f9c5c058ea96e0b81c166ad504da9d105f57a4525c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例可在 [GitHub](https://github.com/ent/ent/tree/master/examples/entcpkg) 上查看。"
+      }
+    },
+    {
+      "segment_id": "35353302",
+      "source_content": "## Schema Description",
+      "source_content_hash": "cdec14a8755147783d25f4191540723743b4e03e2a6756645178e930fff0fcb8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 模式描述"
+      }
+    },
+    {
+      "segment_id": "719d3997",
+      "source_content": "In order to get a description of your graph schema, run:",
+      "source_content_hash": "38060efc7f59e2e138de623c995285d7c0deb4c9290fef6ae023fd2d837197b2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如需获取图模式的描述信息，请运行："
+      }
+    },
+    {
+      "segment_id": "5d30fd9b",
+      "source_content": "```bash\ngo run -mod=mod entgo.io/ent/cmd/ent describe ./ent/schema\n```",
+      "source_content_hash": "9d61804b19f752cc5ce151d4a12eb0ba413621128ea3183b407a3397d928553b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5d30fd9b"
+      }
+    },
+    {
+      "segment_id": "44285072",
+      "source_content": "An example for the output is as follows:",
+      "source_content_hash": "9596d69a29e658fe9fe540bc13ad60471c4523983b19cec2edd85b82f7ef2eea",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "输出示例如下："
+      }
+    },
+    {
+      "segment_id": "5680b15c",
+      "source_content": "```console\nPet:\n\t+-------+---------+--------+----------+----------+---------+---------------+-----------+-----------------------+------------+\n\t| Field |  Type   | Unique | Optional | Nillable | Default | UpdateDefault | Immutable |       StructTag       | Validators |\n\t+-------+---------+--------+----------+----------+---------+---------------+-----------+-----------------------+------------+\n\t| id    | int     | false  | false    | false    | false   | false         | false     | json:\"id,omitempty\"   |          0 |\n\t| name  | string  | false  | false    | false    | false   | false         | false     | json:\"name,omitempty\" |          0 |\n\t+-------+---------+--------+----------+----------+---------+---------------+-----------+-----------------------+------------+\n\t+-------+------+---------+---------+----------+--------+----------+\n\t| Edge  | Type | Inverse | BackRef | Relation | Unique | Optional |\n\t+-------+------+---------+---------+----------+--------+----------+\n\t| owner | User | true    | pets    | M2O      | true   | true     |\n\t+-------+------+---------+---------+----------+--------+----------+\n\t\nUser:\n\t+-------+---------+--------+----------+----------+---------+---------------+-----------+-----------------------+------------+\n\t| Field |  Type   | Unique | Optional | Nillable | Default | UpdateDefault | Immutable |       StructTag       | Validators |\n\t+-------+---------+--------+----------+----------+---------+---------------+-----------+-----------------------+------------+\n\t| id    | int     | false  | false    | false    | false   | false         | false     | json:\"id,omitempty\"   |          0 |\n\t| age   | int     | false  | false    | false    | false   | false         | false     | json:\"age,omitempty\"  |          0 |\n\t| name  | string  | false  | false    | false    | false   | false         | false     | json:\"name,omitempty\" |          0 |\n\t+-------+---------+--------+----------+----------+---------+---------------+-----------+-----------------------+------------+\n\t+------+------+---------+---------+----------+--------+----------+\n\t| Edge | Type | Inverse | BackRef | Relation | Unique | Optional |\n\t+------+------+---------+---------+----------+--------+----------+\n\t| pets | Pet  | false   |         | O2M      | false  | true     |\n\t+------+------+---------+---------+----------+--------+----------+\n```",
+      "source_content_hash": "a685818dbc7ac142ba70c180b90a93919dacffe502383b8eb5bb88ccefe38094",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5680b15c"
+      }
+    },
+    {
+      "segment_id": "cce332f2",
+      "source_content": "## Code Generation Hooks",
+      "source_content_hash": "6df6896dbc2ac621d764952cc81adb44c0b3dc518c6910c372d4bf477d4de9f4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 代码生成钩子"
+      }
+    },
+    {
+      "segment_id": "9ebd9d9b",
+      "source_content": "The `entc` package provides an option to add a list of hooks (middlewares) to the code-generation phase.\nThis option is ideal for adding custom validators for the schema, or for generating additional assets\nusing the graph schema.",
+      "source_content_hash": "6b919d3724d1dc5780b7cb97bb0e27b4722b707b5ceab7898481d7c4ffe7102b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entc` 包支持通过钩子（中间件）列表来扩展代码生成阶段。此功能适用于为模式添加自定义验证器，或基于图模式生成额外资产。"
+      }
+    },
+    {
+      "segment_id": "edfcc73c",
+      "source_content": "```go\n// +build ignore\n\npackage main\n\nimport (\n\t\"fmt\"\n\t\"log\"\n\t\"reflect\"\n\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n)\n\nfunc main() {\n\terr := entc.Generate(\"./schema\", &gen.Config{\n\t\tHooks: []gen.Hook{\n\t\t\tEnsureStructTag(\"json\"),\n\t\t},\n\t})\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n\n// EnsureStructTag ensures all fields in the graph have a specific tag name.\nfunc EnsureStructTag(name string) gen.Hook {\n\treturn func(next gen.Generator) gen.Generator {\n\t\treturn gen.GenerateFunc(func(g *gen.Graph) error {\n\t\t\tfor _, node := range g.Nodes {\n\t\t\t\tfor _, field := range node.Fields {\n\t\t\t\t\ttag := reflect.StructTag(field.StructTag)\n\t\t\t\t\tif _, ok := tag.Lookup(name); !ok {\n\t\t\t\t\t\treturn fmt.Errorf(\"struct tag %q is missing for field %s.%s\", name, node.Name, field.Name)\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t\treturn next.Generate(g)\n\t\t})\n\t}\n}\n```",
+      "source_content_hash": "c86d5ccddfec918630f0b8219a6666c88cc1c989a8d643db3df38154b92aa41b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_edfcc73c"
+      }
+    },
+    {
+      "segment_id": "67dfd717",
+      "source_content": "## External Dependencies",
+      "source_content_hash": "7deef64b330df7d34d680685cbdc9aef9e62e5d534ae7d71f1cd1d25ef39fd85",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 外部依赖"
+      }
+    },
+    {
+      "segment_id": "ba12acea",
+      "source_content": "In order to extend the generated client and builders under the `ent` package, and inject them external\ndependencies as struct fields, use the `entc.Dependency` option in your [`ent/entc.go`](#use-entc-as-a-package)\nfile:",
+      "source_content_hash": "0e786a27b44a9863f35c98d706008c0b77923ccea8b889498abd86c08e2411c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若需扩展 `ent` 包下的生成客户端和构建器，并注入外部依赖作为结构体字段，请在 [`ent/entc.go`](#use-entc-as-a-package) 文件中使用 `entc.Dependency` 选项："
+      }
+    },
+    {
+      "segment_id": "0869735f",
+      "source_content": "```go title=\"ent/entc.go\" {3-12}\nfunc main() {\n\topts := []entc.Option{\n\t\tentc.Dependency(\n\t\t\tentc.DependencyType(&http.Client{}),\n\t\t),\n\t\tentc.Dependency(\n\t\t\tentc.DependencyName(\"Writer\"),\n\t\t\tentc.DependencyTypeInfo(&field.TypeInfo{\n\t\t\t\tIdent:   \"io.Writer\",\n\t\t\t\tPkgPath: \"io\",\n\t\t\t}),\n\t\t),\n\t}\n\tif err := entc.Generate(\"./schema\", &gen.Config{}, opts...); err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "95eaded60804053f33a076b8a65736a4658a9fec22f806600cec7ffd2e0590d3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0869735f"
+      }
+    },
+    {
+      "segment_id": "93f7c834",
+      "source_content": "Then, use it in your application:",
+      "source_content_hash": "c04144023620654ae0d7957e6595d847cf2fdd9baa8d194743b3a0ba5f8b6c7d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "随后在应用程序中使用："
+      }
+    },
+    {
+      "segment_id": "f3924775",
+      "source_content": "```go title=\"example_test.go\" {5-6,15-16}\nfunc Example_Deps() {\n\tclient, err := ent.Open(\n\t\t\"sqlite3\",\n\t\t\"file:ent?mode=memory&cache=shared&_fk=1\",\n\t\tent.Writer(os.Stdout),\n\t\tent.HTTPClient(http.DefaultClient),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer client.Close()\n\t// An example for using the injected dependencies in the generated builders.\n\tclient.User.Use(func(next ent.Mutator) ent.Mutator {\n\t\treturn hook.UserFunc(func(ctx context.Context, m *ent.UserMutation) (ent.Value, error) {\n\t\t\t_ = m.HTTPClient\n\t\t\t_ = m.Writer\n\t\t\treturn next.Mutate(ctx, m)\n\t\t})\n\t})\n\t// ...\n}\n```",
+      "source_content_hash": "bbadb3c47355d97e638d0f7c1818211bc7eb6e5d7e40f324ad91d6d1f3184ca5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f3924775"
+      }
+    },
+    {
+      "segment_id": "aa705b4d",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/entcpkg).",
+      "source_content_hash": "8460c6e08140fa6e2ed26f9c5c058ea96e0b81c166ad504da9d105f57a4525c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例可在 [GitHub](https://github.com/ent/ent/tree/master/examples/entcpkg) 上查看。"
+      }
+    },
+    {
+      "segment_id": "f996c0b9",
+      "source_content": "## Feature Flags",
+      "source_content_hash": "d1db885265ce6b7c031d7bb1cc109f91fc4188cf79371da77e669ef477009883",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 特性开关"
+      }
+    },
+    {
+      "segment_id": "4e994fc3",
+      "source_content": "The `entc` package provides a collection of code-generation features that be added or removed using flags.",
+      "source_content_hash": "dd469a04394a19b301db216eee48e9d2ba9cc2eb375c60f76652748baa89bbd1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entc` 包提供了一系列可通过标志位添加或移除的代码生成特性。"
+      }
+    },
+    {
+      "segment_id": "60e22db4",
+      "source_content": "For more information, please see the [features-flags page](features.md).",
+      "source_content_hash": "b8dcedcce784e7ad221a025e2a5e10f71a6ae8068bd19bc2596d2fa6efa516da",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更多信息请参阅 [特性开关页面](features.md)。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/code-gen.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.665990+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "7f84fdd92c90c9eac5e6e95cfd299f4ffe9a21494e6dedfa237b8fdcf37093c9"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/translations.md",
+  "source_file_content_hash": "4a99bee3aea324321faacb50133b20657532fa0d22cf4d0ad8cd16d189406f84",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: translations\ntitle: Translations\n---",
+      "source_content_hash": "d6506d5d92c415b3f60f4c5f15fdbed6d16499445a33d68782bf33f98c52e163",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "## Introduction",
+      "source_content_hash": "d753efbab681fa4da82470d9a83b1c202de58f92fd498e77a269c1163bc4714b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 简介"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "To make Ent more accessible to native speakers of other languages we have started a translation initiative.\nOur goal is to make all documents in this website available in both Chinese and Japanese. To facilitate the \ntranslation, approval and deployment process we have integrated this website with [Crowdin](https://crowdin.com).",
+      "source_content_hash": "6c16f346b1b04b7db71b11203e910f2298832b1066fcdb127591973bd15628f5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了让Ent更易于其他母语者使用，我们启动了翻译计划。我们的目标是将本网站所有文档提供中文和日文版本。为简化翻译、审核和部署流程，我们已将本网站与[Crowdin](https://crowdin.com)集成。"
+      }
+    },
+    {
+      "segment_id": "9fcbdce9",
+      "source_content": "## Contributing",
+      "source_content_hash": "47964f2d9e2f904f6d8d7e6a7bc401ec09137d666cb8d4c614b14a329d8a5333",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 参与贡献"
+      }
+    },
+    {
+      "segment_id": "9e760345",
+      "source_content": "1. Sign up as a translator on our [Crowdin project](https://crwd.in/ent)\n2. After registration and sign up, go to our [Project Page](https://crowdin.com/project/ent)\n3. Pick the language you would like to translate a document into.\n4. Pick the document you want to translate:\n   * All Docs are under the `md/` folder\n   * Blog Posts are under `website/blog`\n   * Website UI components are under `website/i18n`\n5. For more information on using the Crowdin UI, please read the [Online Editor documentation](https://support.crowdin.com/online-editor/).\n6. Your suggestions will be reviewed by a proof-reader, and once approved they will be \nincluded in the next website deployment. ",
+      "source_content_hash": "f9384b76b86f5b88285f80e55f8c9087bd9a4ce0c8ba479835ad3bb39da9e03c",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 在我们的[Crowdin项目](https://crwd.in/ent)注册成为译者\n2. 完成注册登录后，访问[项目主页](https://crowdin.com/project/ent)\n3. 选择您要翻译的目标语言\n4. 选择待翻译文档：\n   * 所有文档位于`md/`目录下\n   * 博客文章位于`website/blog`\n   * 网站UI组件位于`website/i18n`\n5. 有关Crowdin编辑器的使用说明，请阅读[在线编辑器文档](https://support.crowdin.com/online-editor/)\n6. 您的翻译建议将由校对人员审核，通过后将随下次网站部署更新"
+      }
+    },
+    {
+      "segment_id": "ed7dde9c",
+      "source_content": "## Joining as a Proof-reader",
+      "source_content_hash": "bd66737dc3f76de15aee82a469d9619cf59431c1c81ce636c66ab8e02619a958",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 申请成为校对员"
+      }
+    },
+    {
+      "segment_id": "ccc88b4c",
+      "source_content": "If you would like to contribute in a more permanent way and become a proof-reader\nfor one of the languages, please ping us via the slack channel.",
+      "source_content_hash": "c8100744997700af36d219b754f01c2e055d8026f0109c086e13db44eb8cb45e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若希望长期参与并担任某语言的校对工作，请通过Slack频道联系我们。"
+      }
+    },
+    {
+      "segment_id": "f2f30ae8",
+      "source_content": "## Important Guidelines",
+      "source_content_hash": "a4257469ccb23b978d5388d65dc13b7f5c765e1b1e651905506769f548907ba9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 重要准则"
+      }
+    },
+    {
+      "segment_id": "c6dea11f",
+      "source_content": "- Most documents begin with a line: `id: <document-id>` - this should NEVER be translated and will actually break the website build if it is.\n- The website build is sensitive to closing of HTML elements, if HTML is needed within the translation it must be closed,\n  or self-closing (i.e. do not leave a dangling `<br>`, make it `<br/>`).",
+      "source_content_hash": "036c9974f2b62c4d8283a6b471b19864b38230ce88bc6a78fa0d23b7a1899a35",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 多数文档首行为`id: <文档ID>`——该行绝对不可翻译，否则将导致网站构建失败\n- 网站构建对HTML标签闭合敏感，若翻译需使用HTML标签，必须确保闭合或使用自闭合标签（例如勿使用未闭合的`<br>`，应使用`<br/>`）"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/translations.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.672027+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "4a99bee3aea324321faacb50133b20657532fa0d22cf4d0ad8cd16d189406f84"
+  }
+}

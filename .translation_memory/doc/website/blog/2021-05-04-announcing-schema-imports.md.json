@@ -1,0 +1,172 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-05-04-announcing-schema-imports.md",
+  "source_file_content_hash": "d6c81e8bbc3178e50c3f3581ab72a14d23171f093405ff710f1c6c2604b57430",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Announcing the \"Schema Import Initiative\" and protoc-gen-ent\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\n---",
+      "source_content_hash": "c675bdfea098debb641b552e8019cfad5163d549e10ec9dac26a8fff36727a47",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Migrating to a new ORM is not an easy process, and the transition cost can be prohibitive to many organizations. As much\nas we developers are enamoured by \"Shiny New Things\", the truth is that we rarely get a chance to work on a\ntruly \"green-field\" project. Most of our careers, we operate in contexts where many technical and business constraints \n(a.k.a legacy systems) dictate and limit our options for moving forward. Developers of new technologies that want to \nsucceed must offer interoperability capability and integration paths to help organizations seamlessly transition to a \nnew way of solving an existing problem.",
+      "source_content_hash": "4e011614ff3f9d90bbcdcc906e9fa2bbe7fb46c501cfd3f39376ee7588819650",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "迁移到新的ORM框架并非易事，其转换成本对许多组织而言可能高不可攀。尽管开发者们总被\"闪亮的新事物\"吸引，但现实是我们很少有机会参与真正的\"绿地\"项目。在职业生涯的大部分时间里，我们都在技术债务和业务约束（即遗留系统）构成的语境中工作，这些因素限制了我们向前演进的选择空间。想要成功的新技术必须提供互操作能力和迁移路径，帮助组织无缝过渡到解决现有问题的新方案。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "To help lower the cost of transitioning to Ent (or simply experimenting with it), we have started the\n\"**Schema Import Initiative**\" to help support many use cases for generating Ent schemas from external resources. \nThe centrepiece of this effort is the `schemast` package ([source code](https://github.com/ent/contrib/tree/master/schemast), \n[docs](https://entgo.io/docs/generating-ent-schemas)) which enables developers to easily write programs that generate\nand manipulate Ent schemas. Using this package, developers can program in a high-level API, relieving them from worrying\nabout code parsing and AST manipulations.",
+      "source_content_hash": "19af563563fdd3a8bce3399a07d854bedbc2e6ce451240d4ca5702058bf4530a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为降低迁移至Ent（或进行技术验证）的成本，我们启动了\"**Schema导入计划**\"，支持从外部资源生成Ent Schema的多种用例。该计划的核心是`schemast`包（[源代码](https://github.com/ent/contrib/tree/master/schemast)，[文档](https://entgo.io/docs/generating-ent-schemas)），开发者可通过高级API编写生成和操作Ent Schema的程序，无需关注代码解析和AST操作等底层细节。"
+      }
+    },
+    {
+      "segment_id": "40f9552a",
+      "source_content": "### Protobuf Import Support",
+      "source_content_hash": "fcc7d001e76aa0e1b4c28b37ace9ec1a0719e47354408ff3fb9d3971a668200f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Protobuf导入支持"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "The first project to use this new API, is `protoc-gen-ent`, a `protoc` plugin to generate Ent schemas from `.proto` \nfiles ([docs](https://github.com/ent/contrib/tree/master/entproto/cmd/protoc-gen-ent)).  Organizations that have existing \nschemas defined in Protobuf can use this tool to generate Ent code automatically. For example, taking a simple\nmessage definition:",
+      "source_content_hash": "2ed5d077c5444834eba31ea5c5a6dbe782fa53c1a18f320697c49164fbd7767b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首个基于该API的项目是`protoc-gen-ent`——一个从`.proto`文件生成Ent Schema的protoc插件（[文档](https://github.com/ent/contrib/tree/master/entproto/cmd/protoc-gen-ent)）。已有Protobuf定义的组织可通过此工具自动生成Ent代码。例如给定简单消息定义："
+      }
+    },
+    {
+      "segment_id": "b7c3dbd1",
+      "source_content": "```protobuf\nsyntax = \"proto3\";\n\npackage entpb;\n\noption go_package = \"github.com/yourorg/project/ent/proto/entpb\";\n\nmessage User {\n  string name = 1;\n  string email_address = 2;\n}\n```",
+      "source_content_hash": "d4bdb20048c465b2b54d247e3433594d824d8a970e1cd2cf359146fc18f96185",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b7c3dbd1"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "And setting the `ent.schema.gen` option to true:",
+      "source_content_hash": "5f02ed60f2c5fd541c854ddbe5ade3e5a9dd0f2341092a02c7f2a16db14e572d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当设置`ent.schema.gen`选项为true时："
+      }
+    },
+    {
+      "segment_id": "6648a219",
+      "source_content": "```diff\nsyntax = \"proto3\";\n\npackage entpb;\n\n+import \"options/opts.proto\";\n \noption go_package = \"github.com/yourorg/project/ent/proto/entpb\";  \n\nmessage User {\n+  option (ent.schema).gen = true; // <-- tell protoc-gen-ent you want to generate a schema from this message\n  string name = 1;\n  string email_address = 2;\n}\n```",
+      "source_content_hash": "f39df74f4db383617d4e0623ff6779fdf40154f47e4fc4e7c7125efeb927d0fa",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6648a219"
+      }
+    },
+    {
+      "segment_id": "1131ef75",
+      "source_content": "Developers can invoke the standard `protoc` (protobuf compiler) command to use this plugin:",
+      "source_content_hash": "eb7e81d3815ab477c729572b9950c44d0d795b856b95e57b345147e65c206481",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "开发者可通过标准protoc命令调用该插件："
+      }
+    },
+    {
+      "segment_id": "750e2f7e",
+      "source_content": "```shell\nprotoc -I=proto/ --ent_out=. --ent_opt=schemadir=./schema proto/entpb/user.proto\n```",
+      "source_content_hash": "7f860694279f76cfffce4889d168c6805bb4e11c71cb94e9c2b972de678b0b15",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_750e2f7e"
+      }
+    },
+    {
+      "segment_id": "0bb95128",
+      "source_content": "To generate Ent schemas from these definitions:",
+      "source_content_hash": "286c61ef32c667104107189962a25977ba504a15c9a796f5242b29b20096b0d4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "即可生成对应的Ent Schema："
+      }
+    },
+    {
+      "segment_id": "29ad5b0e",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\ntype User struct {\n\tent.Schema\n}\n\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{field.String(\"name\"), field.String(\"email_address\")}\n}\nfunc (User) Edges() []ent.Edge {\n\treturn nil\n}\n```",
+      "source_content_hash": "50f69147c49d54a0e998f079c272fb42b742b9efbafe8c894b23eba027791950",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_29ad5b0e"
+      }
+    },
+    {
+      "segment_id": "74dd7937",
+      "source_content": "To start using `protoc-gen-ent` today, and read about all of the different configuration options, head over to \nthe [documentation](https://github.com/ent/contrib/tree/master/entproto/cmd/protoc-gen-ent)!",
+      "source_content_hash": "9ee432e9fbf94bbdc65fea063752cdd9958541221c2d2edbb411986b7e8f65b0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "立即使用`protoc-gen-ent`并了解所有配置选项，请参阅[文档](https://github.com/ent/contrib/tree/master/entproto/cmd/protoc-gen-ent)！"
+      }
+    },
+    {
+      "segment_id": "bd30d33e",
+      "source_content": "### Join the Schema Import Initiative",
+      "source_content_hash": "9a524404d550920a2606fa9a0876f38beff55ad82e826e6d7e0fdacefca24010",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 加入Schema导入计划"
+      }
+    },
+    {
+      "segment_id": "6b77b644",
+      "source_content": "Do you have schemas defined elsewhere that you would like to automatically import in to Ent?  With the `schemast`\npackage, it is easier than ever to write the tool that you need to do that. Not sure how to start? Want to collaborate\nwith the community in planning and building out your idea? Reach out to our great community via our \n[Discord server](https://discord.gg/qZmPgTE6RX), [Slack channel](https://app.slack.com/client/T029RQSE6/C01FMSQDT53) or start a [discussion on GitHub](https://github.com/ent/ent/discussions)!",
+      "source_content_hash": "c048eff4326f3af10be390111913c8b052ebe76312ab780cf58a7021dac56e33",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您是否有需要自动导入Ent的其他Schema定义？借助`schemast`包，编写所需工具比以往更加简单。不确定如何开始？希望与社区协作规划实现您的想法？欢迎通过[Discord服务器](https://discord.gg/qZmPgTE6RX)、[Slack频道](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)或[GitHub讨论区](https://github.com/ent/ent/discussions)联系我们！"
+      }
+    },
+    {
+      "segment_id": "9c85eea9",
+      "source_content": ":::note[For more Ent news and updates:]\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n",
+      "source_content_hash": "29f1b4681027aa4603f9c2f8fcf04cb648e4ca6044e4da678b560842067e94ba",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n- 订阅[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)的#ent频道\n- 加入[Ent Discord服务器](https://discord.gg/qZmPgTE6RX)"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-05-04-announcing-schema-imports.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.682145+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "d6c81e8bbc3178e50c3f3581ab72a14d23171f093405ff710f1c6c2604b57430"
+  }
+}

@@ -1,0 +1,542 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2022-03-14-announcing-versioned-migrations.md",
+  "source_file_content_hash": "f3624f26138e7e97b7c2a8b197db99536065483115fbbcd341876366962ac3bb",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Announcing Versioned Migrations Authoring\nauthor: MasseElch\nauthorURL: \"https://github.com/masseelch\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/12862103?v=4\"\nimage: \"https://entgo.io/images/assets/migrate/versioned-share.png\"\n---",
+      "source_content_hash": "f519e35cb82db7446312eb275ee9c19e745ff39bee719348b1fcde5be084888b",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "When [Ariel](https://github.com/a8m) released Ent v0.10.0 at the end of January,\nhe [introduced](2022-01-20-announcing-new-migration-engine.md) a new migration engine for Ent based on another\nopen-source project called [Atlas](https://github.com/ariga/atlas). ",
+      "source_content_hash": "e5db51365480ad44573fd99a02847b7d4fb1e885fcbde15777135b8b16f00a48",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当[Ariel](https://github.com/a8m)在一月底发布Ent v0.10.0时，他[介绍了](2022-01-20-announcing-new-migration-engine.md)一个基于开源项目[Atlas](https://github.com/ariga/atlas)的新迁移引擎。"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "Initially, Atlas supported a style of managing database schemas that we call \"declarative migrations\". With declarative\nmigrations, the desired state of the database schema is given as input to the migration engine, which plans and executes\na set of actions to change the database to its desired state. This approach has been popularized in the field of\ncloud native infrastructure by projects such as Kubernetes and Terraform. It works great in many cases, in\nfact it has served the Ent framework very well in the past few years. However, database migrations are a very sensitive\ntopic, and many projects require a more controlled approach.",
+      "source_content_hash": "f8bfbea47e4f2962eb483ac4bdf8dc8dd7724e46531dc69f0d9d144dccae5920",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最初，Atlas支持一种称为\"声明式迁移\"的数据库管理模式。通过声明式迁移，数据库模式的期望状态作为输入提供给迁移引擎，引擎会规划并执行一系列操作将数据库变更至目标状态。这种方法在云原生基础设施领域已被Kubernetes和Terraform等项目广泛采用。它在许多场景下表现优异，事实上过去几年也很好地服务了Ent框架。但数据库迁移是个极其敏感的领域，许多项目需要更可控的方式。"
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "For this reason, most industry standard solutions, like [Flyway](https://flywaydb.org/)\n, [Liquibase](https://liquibase.org/), or [golang-migrate/migrate](https://github.com/golang-migrate/migrate) (which is\ncommon in the Go ecosystem), support a workflow that they call \"versioned migrations\".",
+      "source_content_hash": "e7fecbebff6b81dc1b1a64b864aaae46094f6fb328f241de8526a36fd75efc83",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "因此，大多数行业标准解决方案如[Flyway](https://flywaydb.org/)、[Liquibase](https://liquibase.org/)或Go生态常见的[golang-migrate/migrate](https://github.com/golang-migrate/migrate)都支持称为\"版本化迁移\"的工作流。"
+      }
+    },
+    {
+      "segment_id": "98cfbd53",
+      "source_content": "With versioned migrations (sometimes called \"change base migrations\") instead of describing the desired state (\"what the\ndatabase should look like\"), you describe the changes itself (\"how to reach the state\"). Most of the time this is done \nby creating a set of SQL files containing the statements needed. Each of the files is assigned a unique version and a\ndescription of the changes. Tools like the ones mentioned earlier are then able to interpret the migration files and to\napply (some of) them in the correct order to transition to the desired database structure.",
+      "source_content_hash": "91727cf824c912ec668214ffcb23a3d22df737e4d09b23b97a6f4cab5e65ceec",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "版本化迁移（有时称为\"变更基础迁移\"）不是描述期望状态（\"数据库应该是什么样\"），而是描述变更本身（\"如何达到该状态\"）。通常通过创建一组包含所需SQL语句的文件来实现。每个文件都有唯一版本号和变更描述。上述工具能够解析这些迁移文件并按正确顺序应用（部分）文件，从而实现数据库结构的变更。"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "In this post, I want to showcase a new kind of migration workflow that has recently been added to Atlas and Ent. We call\nit \"versioned migration authoring\" and it's an attempt to combine the simplicity and expressiveness of the declarative\napproach with the safety and explicitness of versioned migrations. With versioned migration authoring, users still\ndeclare their desired state and use the Atlas engine to plan a safe migration from the existing to the new state.\nHowever, instead of coupling the planning and execution, it is instead written into a file which can be checked into\nsource control, fine-tuned manually and reviewed in normal code review processes.",
+      "source_content_hash": "65b5d0fc20e646da407841d7fb4a953cc20a68ef032cadb4bbbd83083c4b9380",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文将展示Atlas和Ent新增的一种迁移工作流，我们称之为\"版本化迁移编写\"。它尝试将声明式方法的简洁表达与版本化迁移的安全性、明确性相结合。用户仍声明期望状态，但Atlas引擎会将从当前状态到新状态的迁移方案写入文件，这些文件可提交至代码仓库、人工微调并通过常规代码审查流程。"
+      }
+    },
+    {
+      "segment_id": "97ae4a01",
+      "source_content": "As an example, I will demonstrate the workflow with `golang-migrate/migrate`. ",
+      "source_content_hash": "39e2f57e20a4d95d1fb64523c56e7a8a93745098b290f5cb6dc927298b80c5a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我将以`golang-migrate/migrate`为例演示该工作流。"
+      }
+    },
+    {
+      "segment_id": "62a6890b",
+      "source_content": "### Getting Started",
+      "source_content_hash": "4467215509db0bd0e0f61cf6ee2efa3316c8285b2a46d4449ff85f9ef85923d9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 开始使用"
+      }
+    },
+    {
+      "segment_id": "3cfe6286",
+      "source_content": "The very first thing to do, is to make sure you have an up-to-date Ent version:",
+      "source_content_hash": "5fb5c99e1566c70aeb3a477233f37408bd27ddec7672fe8f85d7d7e37c6bb19c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先需要确保使用最新版Ent："
+      }
+    },
+    {
+      "segment_id": "d9330cd7",
+      "source_content": "```shell\ngo get -u entgo.io/ent@master\n```",
+      "source_content_hash": "865ba8e38119410b7d7c8b2a617efeb074adfba0bc799924a785b88690627796",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9330cd7"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "There are two ways to have Ent generate migration files for schema changes. The first one is to use an instantiated Ent\nclient and the second one to generate the changes from a parsed schema graph. This post will take the second approach,\nif you want to learn how to use the first one you can have a look at\nthe [documentation](./docs/versioned-migrations#from-client).",
+      "source_content_hash": "a69131e069a0146e9823408db01560344dc9a6d3cdc739eb969f2042ff8a7ff2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent生成迁移文件有两种方式：使用实例化Ent客户端，或从解析的模式图中生成变更。本文采用第二种方式，第一种方式可参考[文档](./docs/versioned-migrations#from-client)。"
+      }
+    },
+    {
+      "segment_id": "cb5b269c",
+      "source_content": "### Generating Versioned Migration Files",
+      "source_content_hash": "872ec7a2ec26640a4d547eb4e5a5d246e0c572f356e27632ebc64d77caec75da",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 生成版本化迁移文件"
+      }
+    },
+    {
+      "segment_id": "b36c6338",
+      "source_content": "Since we have enabled the versioned migrations feature now, let's create a small schema and generate the initial set of\nmigration files. Consider the following schema for a fresh Ent project:",
+      "source_content_hash": "8283c57689fb23e375d1c3b449204975bfaed5a52a33726482d9d865c6e9a6ea",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在已启用版本化迁移功能，让我们创建一个小型模式并生成初始迁移文件。考虑以下新Ent项目的模式："
+      }
+    },
+    {
+      "segment_id": "c3955998",
+      "source_content": "```go title=\"ent/schema/user.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n\t\"entgo.io/ent/schema/index\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"username\"),\n\t}\n}\n\n// Indexes of the User.\nfunc (User) Indexes() []ent.Index {\n\treturn []ent.Index{\n\t\tindex.Fields(\"username\").Unique(),\n\t}\n}\n\n```",
+      "source_content_hash": "f377c1724c54554a86aa85a71101c599f26a016f993294769004ad81079ce2ab",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c3955998"
+      }
+    },
+    {
+      "segment_id": "8126f763",
+      "source_content": "As I stated before, we want to use the parsed schema graph to compute the difference between our schema and the\nconnected database. Here is an example of a (semi-)persistent MySQL docker container to use if you want to follow along:",
+      "source_content_hash": "5cbf88529af9c9cc8b15d68d8b014c77142d58e33109bd7f4b8688533d3c890d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如前所述，我们将使用解析的模式图来计算模式与连接数据库间的差异。以下是一个可跟随操作的（半）持久化MySQL Docker容器示例："
+      }
+    },
+    {
+      "segment_id": "7d898a0e",
+      "source_content": "```shell\ndocker run --rm --name ent-versioned-migrations --detach --env MYSQL_ROOT_PASSWORD=pass --env MYSQL_DATABASE=ent -p 3306:3306 mysql\n```",
+      "source_content_hash": "917e4f2aa7173ed82c9e1650f64269e721f879c7da27c9aa776f0110e61d1342",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7d898a0e"
+      }
+    },
+    {
+      "segment_id": "6b77b644",
+      "source_content": "Once you are done, you can shut down the container and remove all resources with `docker stop ent-versioned-migrations`.",
+      "source_content_hash": "98caddc93b0a9dfc29d6ed5bf7650c2b27fbf8156d88f8680c6e210623dfd9a3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "操作完成后，可通过`docker stop ent-versioned-migrations`停止并移除容器所有资源。"
+      }
+    },
+    {
+      "segment_id": "a311e967",
+      "source_content": "Now, let's create a small function that loads the schema graph and generates the migration files. Create a new Go file\nnamed `main.go` and copy the following contents:",
+      "source_content_hash": "419d40a27a995db80344c982b431b01bab79b3a3021ea757fab2333fc30db548",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在创建加载模式图并生成迁移文件的小函数。新建名为`main.go`的Go文件并复制以下内容："
+      }
+    },
+    {
+      "segment_id": "890e01bc",
+      "source_content": "```go title=\"main.go\"\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"os\"\n\n\t\"ariga.io/atlas/sql/migrate\"\n\t\"entgo.io/ent/dialect/sql\"\n\t\"entgo.io/ent/dialect/sql/schema\"\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n\t_ \"github.com/go-sql-driver/mysql\"\n)\n\nfunc main() {\n\t// We need a name for the new migration file.\n\tif len(os.Args) < 2 {\n\t\tlog.Fatalln(\"no name given\")\n\t}\n\t// Create a local migration directory.\n\tdir, err := migrate.NewLocalDir(\"migrations\")\n\tif err != nil {\n\t\tlog.Fatalln(err)\n\t}\n\t// Load the graph.\n\tgraph, err := entc.LoadGraph(\"./ent/schema\", &gen.Config{})\n\tif err != nil {\n\t\tlog.Fatalln(err)\n\t}\n\ttbls, err := graph.Tables()\n\tif err != nil {\n\t\tlog.Fatalln(err)\n\t}\n\t// Open connection to the database.\n\tdrv, err := sql.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/ent\")\n\tif err != nil {\n\t\tlog.Fatalln(err)\n\t}\n\t// Inspect the current database state and compare it with the graph.\n\tm, err := schema.NewMigrate(drv, schema.WithDir(dir))\n\tif err != nil {\n\t\tlog.Fatalln(err)\n\t}\n\tif err := m.NamedDiff(context.Background(), os.Args[1], tbls...); err != nil {\n\t\tlog.Fatalln(err)\n\t}\n}\n```",
+      "source_content_hash": "9cf8d7b6ca009852ad5216586305824f31b9e58bf9804399258afb77157835e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_890e01bc"
+      }
+    },
+    {
+      "segment_id": "17b50e81",
+      "source_content": "All we have to do now is create the migration directory and execute the above Go file:",
+      "source_content_hash": "2dbba9002768e4e8fa40b1ad20afed08e68f86036720da6d737ca819a7d57ee5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后只需创建迁移目录并执行上述Go文件："
+      }
+    },
+    {
+      "segment_id": "3ad9440a",
+      "source_content": "```shell\nmkdir migrations\ngo run -mod=mod main.go initial\n```",
+      "source_content_hash": "758fa3428efd50a9b5593d60630427e24e979a289e00efd52223223ac5c649e9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ad9440a"
+      }
+    },
+    {
+      "segment_id": "63565425",
+      "source_content": "You will now see two new files in the `migrations` directory: `<timestamp>_initial.down.sql`\nand `<timestamp>_initial.up.sql`. The `x.up.sql` files are used to create the database version `x` and `x.down.sql` to\nroll back to the previous version.",
+      "source_content_hash": "e598bbd5e182d00b33695ab61e039b8bbe6edecf70124a26a7a86ca4985077e5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时在`migrations`目录下会生成两个新文件：`<timestamp>_initial.down.sql`和`<timestamp>_initial.up.sql`。其中`x.up.sql`文件用于创建数据库版本`x`，而`x.down.sql`则用于回滚至上一版本。"
+      }
+    },
+    {
+      "segment_id": "b68d496b",
+      "source_content": "```sql title=\"<timestamp>_initial.up.sql\"\nCREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `username` varchar(191) NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `user_username` (`username`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;\n```",
+      "source_content_hash": "1edb0a7ccd5d77ee43e85f28761dd1d76c898a95447b861651611bdd2a40e879",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b68d496b"
+      }
+    },
+    {
+      "segment_id": "7c894678",
+      "source_content": "```sql title=\"<timestamp>_initial.down.sql\"\nDROP TABLE `users`;\n```",
+      "source_content_hash": "937cc5c8383c35dd03f1352b71473c2aabe50d3c5ba41d125346982dfe3e6acf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7c894678"
+      }
+    },
+    {
+      "segment_id": "657bde08",
+      "source_content": "### Applying Migrations",
+      "source_content_hash": "a7fe82fa69b66367547dd44b4c73fab3645388b1cecf9917bd7a501b88d23756",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 执行迁移"
+      }
+    },
+    {
+      "segment_id": "827eb9a3",
+      "source_content": "To apply these migrations on your database, install the `golang-migrate/migrate` tool as described in\ntheir [README](https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md). Then run the following\ncommand to check if everything went as it should.",
+      "source_content_hash": "c9c8a9556acf09caba81dd3e7e65d250455f0a41c678691f93480f1ee1fd1fb1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要执行这些迁移，请先按照`golang-migrate/migrate`工具的[README说明](https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md)进行安装。然后运行以下命令验证配置是否正确。"
+      }
+    },
+    {
+      "segment_id": "7eccd6ba",
+      "source_content": "```shell\nmigrate -help\n```",
+      "source_content_hash": "4218dc2d6fcde32d383805cbed83beff02208b6df1a1c167a3cb6f396c00a74e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7eccd6ba"
+      }
+    },
+    {
+      "segment_id": "9bc650e1",
+      "source_content": "```text\nUsage: migrate OPTIONS COMMAND [arg...]\n       migrate [ -version | -help ]\n\nOptions:\n  -source          Location of the migrations (driver://url)\n  -path            Shorthand for -source=file://path\n  -database        Run migrations against this database (driver://url)\n  -prefetch N      Number of migrations to load in advance before executing (default 10)\n  -lock-timeout N  Allow N seconds to acquire database lock (default 15)\n  -verbose         Print verbose logging\n  -version         Print version\n  -help            Print usage\n\nCommands:\n  create [-ext E] [-dir D] [-seq] [-digits N] [-format] NAME\n               Create a set of timestamped up/down migrations titled NAME, in directory D with extension E.\n               Use -seq option to generate sequential up/down migrations with N digits.\n               Use -format option to specify a Go time format string.\n  goto V       Migrate to version V\n  up [N]       Apply all or N up migrations\n  down [N]     Apply all or N down migrations\n  drop         Drop everything inside database\n  force V      Set version V but don't run migration (ignores dirty state)\n  version      Print current migration version\n```",
+      "source_content_hash": "85516678bd4ea81202c83af206644efc797ba21e301875c88293448ae8d54bdf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9bc650e1"
+      }
+    },
+    {
+      "segment_id": "b4204c03",
+      "source_content": "Now we can execute our initial migration and sync the database with our schema:",
+      "source_content_hash": "293a3e0073f25f0897dc0b5a556a4e7629c5925f6091516ab0d1a102c8b46cd1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在可以执行初始迁移，将数据库与我们的模式同步："
+      }
+    },
+    {
+      "segment_id": "d9ca18af",
+      "source_content": "```shell\nmigrate -source 'file://migrations' -database 'mysql://root:pass@tcp(localhost:3306)/ent' up\n```",
+      "source_content_hash": "50b35e6fe95cf332558a22413c2de05aabc6dd1cc678c9dda2f5adcb2efc6dfe",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9ca18af"
+      }
+    },
+    {
+      "segment_id": "7079d2d5",
+      "source_content": "```text\n<timestamp>/u initial (349.256951ms)\n```",
+      "source_content_hash": "3f45df8c1d3962df3e690c9fafc43c00848dacc2ede9e771ced900fd1fd3ca9a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7079d2d5"
+      }
+    },
+    {
+      "segment_id": "dd21637d",
+      "source_content": "### Workflow",
+      "source_content_hash": "7c1a64943fa667eb1801b353e5023918604aec8dceac590c090ed177fbdc38ae",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 工作流程"
+      }
+    },
+    {
+      "segment_id": "09f901c3",
+      "source_content": "To demonstrate the usual workflow when using versioned migrations we will both edit our schema graph and generate the\nmigration changes for it, and manually create a set of migration files to seed the database with some data. First, we\nwill add a Group schema and a many-to-many relation to the existing User schema, next create an admin Group with an\nadmin User in it. Go ahead and make the following changes:",
+      "source_content_hash": "9b4fdb6319097c5d5d4a9636eb61e6cbd910e0e2290b2b5edbaa278ac0d3c8bf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将通过两个场景演示版本化迁移的标准工作流：1) 编辑模式图并生成迁移变更；2) 手动创建迁移文件来初始化数据。首先添加Group模式及与User的多对多关系，然后创建包含管理员用户的管理员组。请进行以下修改："
+      }
+    },
+    {
+      "segment_id": "7f271936",
+      "source_content": "```go title=\"ent/schema/user.go\" {22-28}\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/edge\"\n\t\"entgo.io/ent/schema/field\"\n\t\"entgo.io/ent/schema/index\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"username\"),\n\t}\n}\n\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.From(\"groups\", Group.Type).\n\t\t\tRef(\"users\"),\n\t}\n}\n\n// Indexes of the User.\nfunc (User) Indexes() []ent.Index {\n\treturn []ent.Index{\n\t\tindex.Fields(\"username\").Unique(),\n\t}\n}\n```",
+      "source_content_hash": "09d66b99a982f47cc16ce25dadc3fe5f0ad7bc28751f44435e814ae949cd4baa",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7f271936"
+      }
+    },
+    {
+      "segment_id": "2ef49e00",
+      "source_content": "```go title=\"ent/schema/group.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/edge\"\n\t\"entgo.io/ent/schema/field\"\n\t\"entgo.io/ent/schema/index\"\n)\n\n// Group holds the schema definition for the Group entity.\ntype Group struct {\n\tent.Schema\n}\n\n// Fields of the Group.\nfunc (Group) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// Edges of the Group.\nfunc (Group) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"users\", User.Type),\n\t}\n}\n\n// Indexes of the Group.\nfunc (Group) Indexes() []ent.Index {\n\treturn []ent.Index{\n\t\tindex.Fields(\"name\").Unique(),\n\t}\n}\n```",
+      "source_content_hash": "cd8d5be8aea47769156565236e6f8cbec69b9691bce5400cb9412b722d1ea090",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2ef49e00"
+      }
+    },
+    {
+      "segment_id": "858b0a05",
+      "source_content": "Once the schema is updated, create a new set of migration files.",
+      "source_content_hash": "2d41b6abf92523925c22fb68800a30925d3a70b6b8181f894200eac651239cec",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "模式更新后，创建新的迁移文件集。"
+      }
+    },
+    {
+      "segment_id": "98fbc9ce",
+      "source_content": "```shell\ngo run -mod=mod main.go add_group_schema\n```",
+      "source_content_hash": "873c14b2b695dfac212099b4aea17d594f40af5234c2b84bed9c57d1286b3256",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_98fbc9ce"
+      }
+    },
+    {
+      "segment_id": "a5a28988",
+      "source_content": "Once again there will be two new files in the `migrations` directory: `<timestamp>_add_group_schema.down.sql`\nand `<timestamp>_add_group_schema.up.sql`.",
+      "source_content_hash": "9277c7e0b44b953bd3ab5503a63998223c311ad1c63aa354abb2187ef7a25fa5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "迁移目录中会再次生成两个新文件：`<timestamp>_add_group_schema.down.sql`和`<timestamp>_add_group_schema.up.sql`。"
+      }
+    },
+    {
+      "segment_id": "999199d1",
+      "source_content": "```sql title=\"<timestamp>_add_group_schema.up.sql\"\nCREATE TABLE `groups` (`id` bigint NOT NULL AUTO_INCREMENT, `name` varchar(191) NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `group_name` (`name`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;\nCREATE TABLE `group_users` (`group_id` bigint NOT NULL, `user_id` bigint NOT NULL, PRIMARY KEY (`group_id`, `user_id`), CONSTRAINT `group_users_group_id` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE, CONSTRAINT `group_users_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE) CHARSET utf8mb4 COLLATE utf8mb4_bin;\n```",
+      "source_content_hash": "0c7e28c77e61be9e4bb68dd634717f8d07458fdd5ea8e7d678d8bf2a21c33e92",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_999199d1"
+      }
+    },
+    {
+      "segment_id": "fa163a68",
+      "source_content": "```sql title=\"<timestamp>_add_group_schema.down.sql\"\nDROP TABLE `group_users`;\nDROP TABLE `groups`;\n```",
+      "source_content_hash": "be4d6f2c3a42830ac8b5299efd224be20eb6666037270c25f7382ac808b9afa8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fa163a68"
+      }
+    },
+    {
+      "segment_id": "45d5dee4",
+      "source_content": "Now you can either edit the generated files to add the seed data or create new files for it. I chose the latter:",
+      "source_content_hash": "c15a551fb91adcdad73868afbdc817a1642ae1bf64f990512ae15649cae85211",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在你可以选择编辑生成的文件来添加种子数据，或新建专用文件。这里选择后者："
+      }
+    },
+    {
+      "segment_id": "b19953ed",
+      "source_content": "```shell\nmigrate create -format unix -ext sql -dir migrations seed_admin\n```",
+      "source_content_hash": "489e194566554082cfda68e1f96f46a6ba3b232a117780ad1d515a9464e8ef77",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b19953ed"
+      }
+    },
+    {
+      "segment_id": "9a01bde3",
+      "source_content": "```text\n[...]/ent-versioned-migrations/migrations/<timestamp>_seed_admin.up.sql\n[...]/ent-versioned-migrations/migrations/<timestamp>_seed_admin.down.sql\n```",
+      "source_content_hash": "f2615c8ad9ba71e795dd5c51c58475003f46de4cf5c2adc0a6944ed62cfcbdbb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9a01bde3"
+      }
+    },
+    {
+      "segment_id": "ebe673d6",
+      "source_content": "You can now edit those files and add statements to create an admin Group and User.",
+      "source_content_hash": "1d31ed4a30b18bcc072c9269378cddafd1626340f74fe15008d85a6d1ef6c5f1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时可编辑这些文件，添加创建管理员组和用户的SQL语句。"
+      }
+    },
+    {
+      "segment_id": "c578d2d4",
+      "source_content": "```sql title=\"migrations/<timestamp>_seed_admin.up.sql\"\nINSERT INTO `groups` (`id`, `name`) VALUES (1, 'Admins');\nINSERT INTO `users` (`id`, `username`) VALUES (1, 'admin');\nINSERT INTO `group_users` (`group_id`, `user_id`) VALUES (1, 1);\n```",
+      "source_content_hash": "4d80ab4824dd1b59a9bead4b95fbd0fc86cac56d3cb36ab12eb5332b3da89945",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c578d2d4"
+      }
+    },
+    {
+      "segment_id": "30d584f8",
+      "source_content": "```sql title=\"migrations/<timestamp>_seed_admin.down.sql\"\nDELETE FROM `group_users` where `group_id` = 1 and `user_id` = 1;\nDELETE FROM `groups` where id = 1;\nDELETE FROM `users` where id = 1;\n```",
+      "source_content_hash": "ffb581e10905b49344c521b2e84de517e6ec19baab5eb8d3785f33c5c3d0c2cb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_30d584f8"
+      }
+    },
+    {
+      "segment_id": "7441a9ec",
+      "source_content": "Apply the migrations once more, and you are done:",
+      "source_content_hash": "28ac70921aab60cfc6ebd1c435670c8bc8ee25f8ebf6854041c280848251347c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "再次应用迁移即可完成："
+      }
+    },
+    {
+      "segment_id": "ee5332da",
+      "source_content": "```shell\nmigrate -source file://migrations -database 'mysql://root:pass@tcp(localhost:3306)/ent' up\n```",
+      "source_content_hash": "38591e74add48c3e48ea28dd92ae5f0020675e781a556648a669c83d48f9ab18",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ee5332da"
+      }
+    },
+    {
+      "segment_id": "73ce3ba5",
+      "source_content": "```text\n<timestamp>/u add_group_schema (417.434415ms)\n<timestamp>/u seed_admin (674.189872ms)\n```",
+      "source_content_hash": "d0e0dd142cca40244e3920cf54d4f151845bf62a8e320bdac8794ede9f5349d3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_73ce3ba5"
+      }
+    },
+    {
+      "segment_id": "1e5c4bc8",
+      "source_content": "### Wrapping Up",
+      "source_content_hash": "6df1295c536bdf3cf58241755891051d109001c784cced5b33a00f70983bc553",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "d8492b16",
+      "source_content": "In this post, we demonstrated the general workflow when using Ent Versioned Migrations with `golang-migate/migrate`. We\ncreated a small example schema, generated the migration files for it and learned how to apply them. We now know the\nworkflow and how to add custom migration files. ",
+      "source_content_hash": "969df8704ab7e2f154ff451efbcdc7f3a2ea82aee4b9c365965a44f0423c012d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文演示了使用Ent版本化迁移与`golang-migate/migrate`的标准工作流。我们创建了示例模式，生成迁移文件并学习如何应用它们，同时掌握了添加自定义迁移文件的方法。"
+      }
+    },
+    {
+      "segment_id": "c419a086",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "d0537932cd96ebc172f07d40432ff073381adb709b3fdc6d263a79438858fef3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若有疑问或需要入门帮助？欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack/)。"
+      }
+    },
+    {
+      "segment_id": "ffe47cd7",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2022-03-14-announcing-versioned-migrations.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.684969+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "f3624f26138e7e97b7c2a8b197db99536065483115fbbcd341876366962ac3bb"
+  }
+}

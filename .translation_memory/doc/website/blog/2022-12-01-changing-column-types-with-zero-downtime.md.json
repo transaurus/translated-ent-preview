@@ -1,0 +1,662 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2022-12-01-changing-column-types-with-zero-downtime.md",
+  "source_file_content_hash": "9d9e78617ff19d3f204b624f42d5bcc073f258180dd8c0339c01c9cd6c7e24be",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Changing a column’s type with zero-downtime using Atlas\nauthor: Ronen Lubin (ronenlu)\nauthorURL: \"https://github.com/ronenlu\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/63970571?v=4\"\n---",
+      "source_content_hash": "da890c4eb1c9759c84a96483f0a67594f6e0466c039da74fa3047d1aedd6a958",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "Changing a column's type in a database schema might seem trivial at first glance, but it is actually a risky operation\nthat can cause compatibility issues between the server and the database. In this blogpost,\nI will explore how developers can perform this type of change without causing downtime to their application.",
+      "source_content_hash": "82da326b2faf89babdcb03917b902ebe45af25958fbd54c65cc6ac6b9efe2650",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "修改数据库表中的列类型看似简单，实则是一项高风险操作，可能导致服务端与数据库的兼容性问题。本文将探讨开发者如何在不造成应用停机的情况下完成此类变更。"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "Recently, while working on a feature for [Ariga Cloud](https://atlasgo.io/cloud/getting-started),\nI was required to change the type of an Ent field from an unstructured blob to a structured JSON field.\nChanging the column type was necessary in order to use [JSON Predicates](https://entgo.io/docs/predicates/#json-predicates)\nfor more efficient queries.",
+      "source_content_hash": "99576e18c9d3ed6ed998ed57af03137d01eee2960856807a03e5b0c5f9e7886d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "近期在为[Ariga Cloud](https://atlasgo.io/cloud/getting-started)开发功能时，我需要将Ent字段类型从非结构化二进制大对象(blob)改为结构化JSON字段。这一变更是为了使用[JSON谓词](https://entgo.io/docs/predicates/#json-predicates)来实现更高效的查询。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "The original schema looked like this on our cloud product’s schema visualization diagram:",
+      "source_content_hash": "2ed993a74b9dd22bc21f4c1b9c20383c8864fa8f9261c85772b510db92fd25b5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "原始模式在我们的云产品可视化图表中呈现如下："
+      }
+    },
+    {
+      "segment_id": "39b3772c",
+      "source_content": "![tutorial image 1](https://entgo.io/images/assets/migrate-column-type/users_table.png)",
+      "source_content_hash": "38c42c81039ea2c86b5a288021412bc0b4f325ef75b8456e07e5a20970bc7aca",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![教程图示1](https://entgo.io/images/assets/migrate-column-type/users_table.png)"
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "In our case, we couldn't just copy the data naively to the new column, since the data is not compatible\nwith the new column type (blob data may not be convertible to JSON).",
+      "source_content_hash": "a1aff1f9c2770e7b6ac1ca614e3ca336744c3120b0c3713b87968cbd91beba77",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于旧数据可能无法直接转换为JSON格式，我们无法简单地将数据复制到新列。"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "In the past, it was considered acceptable to stop the server, migrate the database schema to the next version,\nand only then start the server with the new version that is compatible with the new database schema.\nToday, business requirements often dictate that applications must provide higher availability, leaving engineering teams\nwith the challenge of executing changes like this with zero-downtime.",
+      "source_content_hash": "02bd55caaef88023707bb9a4bd738a45c411971e12645d2a97f5dc60e3cc82ba",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "过去常见的做法是停止服务、执行数据库模式迁移，再启动兼容新模式的服务器版本。但在当今高可用的业务需求下，工程团队需要实现零停机的无缝变更。"
+      }
+    },
+    {
+      "segment_id": "d9172fa4",
+      "source_content": "The common pattern to satisfy this kind of requirement, as defined in \"[Evolutionary Database Design](https://www.martinfowler.com/articles/evodb.html)\" by Martin Fowler,\nis to use a \"transition phase\".",
+      "source_content_hash": "11a4c9712ab144b2d5b8c1add6bdb8b71712c9c2b8b9c567a352ed5f4e56e7ff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "根据Martin Fowler在[《进化式数据库设计》](https://www.martinfowler.com/articles/evodb.html)中提出的模式，这类需求通常通过\"过渡阶段\"来实现。"
+      }
+    },
+    {
+      "segment_id": "22ae2175",
+      "source_content": "> A transition phase is \"a period of time when the database supports both the old access pattern and the new ones simultaneously.\nThis allows older systems time to migrate over to the new structures at their own pace\", as illustrated by this diagram:",
+      "source_content_hash": "8eaa146c4dde4bf0cf68f8ce6da1099589046ef8182b646819bed85762bc09bf",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 过渡阶段指\"数据库同时支持新旧访问模式的时期，让旧系统有充足时间逐步迁移至新结构\"，如下图所示："
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "![tutorial image 2](https://www.martinfowler.com/articles/evodb/stages_refactoring.jpg)\nCredit: martinfowler.com ",
+      "source_content_hash": "919d72bad5ffd564162b65f2ee3039498f2843e8b34b3fab70d632766ecd8760",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![教程图示2](https://www.martinfowler.com/articles/evodb/stages_refactoring.jpg)\n图片来源：martinfowler.com"
+      }
+    },
+    {
+      "segment_id": "517051a7",
+      "source_content": "We planned the change in 5 simple steps, all of which are backward-compatible:",
+      "source_content_hash": "95cd900795226a1ef5ce56332aac478532ca609a4fecf51bfacf45c9e3a0a9a1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们规划了五个向后兼容的简单步骤："
+      }
+    },
+    {
+      "segment_id": "5d66c9dc",
+      "source_content": "* Creating a new column named `meta_json` with the JSON type.\n* Deploy a version of the application that performs dual-writes. Every new record or update is written to both the new column and the old column, while reads still happen from the old column.\n* Backfill data from the old column to the new one.\n* Deploy a version of the application that reads from the new column.\n* Delete the old column.",
+      "source_content_hash": "1ebb77f716e713dca096e62ff9b224ea53d3bbbe442aefd07a08140a231bda23",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 创建名为`meta_json`的JSON类型新列\n* 部署支持双写的应用版本（新记录同时写入新旧列，读取仍使用旧列）\n* 将旧列数据回填至新列\n* 部署从新列读取的应用版本\n* 删除旧列"
+      }
+    },
+    {
+      "segment_id": "06c0f776",
+      "source_content": "### Versioned migrations",
+      "source_content_hash": "73f33e70ba4ffe0e6da4a0e5f28abe1eb833be4c95439724775c6819fca01c6f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 版本化迁移"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "In our project we are using Ent’s [versioned migrations](https://entgo.io/docs/versioned-migrations) workflow for\nmanaging the database schema. Versioned migrations provide teams with granular control on how changes to the application database schema are made.\nThis level of control will be very useful in implementing our plan. If your project uses [Automatic Migrations](https://entgo.io/docs/migrate) and you would like to follow along,\n[first upgrade](https://entgo.io/docs/versioned/intro) your project to use versioned migrations.",
+      "source_content_hash": "b62d6e3fdaad45f3a805876308209ff605d6eded09f017b9f21b5f4ca5872d46",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本项目使用Ent的[版本化迁移](https://entgo.io/docs/versioned-migrations)工作流管理数据库模式。该方案提供对数据库模式变更的精细控制，非常适合实现我们的计划。若您的项目使用[自动迁移](https://entgo.io/docs/migrate)，请先[升级](https://entgo.io/docs/versioned/intro)至版本化迁移方案。"
+      }
+    },
+    {
+      "segment_id": "5a149cd3",
+      "source_content": ":::note\nThe same can be done with automatic migrations as well by using the [Data Migrations](https://entgo.io/docs/data-migrations/#automatic-migrations) feature,\nhowever this post is focusing on versioned migrations\n:::",
+      "source_content_hash": "ec69a983887c4a8f632e01965236441aa81636ef055ec815845d148568b10372",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n通过[数据迁移](https://entgo.io/docs/data-migrations/#automatic-migrations)功能也可实现类似效果，但本文重点讨论版本化迁移方案。\n:::"
+      }
+    },
+    {
+      "segment_id": "60410af6",
+      "source_content": "### Creating a JSON column with Ent:",
+      "source_content_hash": "60b33e3f821cd643fd1889172ea51542bf8c594e4cb0c8cd75bf8b92aebb04c6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 使用Ent创建JSON列："
+      }
+    },
+    {
+      "segment_id": "d3649a1e",
+      "source_content": "First, we will add a new JSON Ent type to the user schema.",
+      "source_content_hash": "878b492cf5a09ec5a4718d4ec053f5438b96b25a7a89d1024c7c9222dc5cbd2e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先在用户模式中添加新的JSON类型字段。"
+      }
+    },
+    {
+      "segment_id": "c3955998",
+      "source_content": "``` go title=\"types/types.go\"\ntype Meta struct {\n\tCreateTime time.Time `json:\"create_time\"`\n\tUpdateTime time.Time `json:\"update_time\"`\n}\n```",
+      "source_content_hash": "f18f9f66ebe1aee8e5060e66c3be02d9e92e5784adb1dcc97b73943d6fe1d31a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c3955998"
+      }
+    },
+    {
+      "segment_id": "750e2f7e",
+      "source_content": "``` go title=\"ent/schema/user.go\"\nfunc (User) Fields() []ent.Field {\n    return []ent.Field{\n        field.Bytes(\"meta\"),\n        field.JSON(\"meta_json\", &types.Meta{}).Optional(),\n    }\n}\n```",
+      "source_content_hash": "ad3c43ae44ba08769555d9c32c15142b543e209c4be6cbbf83a6418e713a88fc",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_750e2f7e"
+      }
+    },
+    {
+      "segment_id": "147e8550",
+      "source_content": "Next, we run codegen to update the application schema:",
+      "source_content_hash": "fcce2fc2268782c88787c568558afc06dd073fb8d9f0c12829d5052e8acc5c03",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着运行代码生成更新应用模式："
+      }
+    },
+    {
+      "segment_id": "bc137a19",
+      "source_content": "``` shell\ngo generate ./...\n```",
+      "source_content_hash": "5e4c7861e8e9c734d24d73776c820d9e790458fd9732a9370494ef5916bdafb2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bc137a19"
+      }
+    },
+    {
+      "segment_id": "afa378f7",
+      "source_content": "Next, we run our [automatic migration planning](https://entgo.io/docs/versioned/auto-plan) script that generates a set of\nmigration files containing the necessary SQL statements to migrate the database to the newest version.",
+      "source_content_hash": "64e42c6010735c3eaf76eeeb84ffac36acf190bfaa72cee7b764300deaf32120",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后执行[自动迁移规划](https://entgo.io/docs/versioned/auto-plan)脚本，生成包含数据库升级所需SQL语句的迁移文件集。"
+      }
+    },
+    {
+      "segment_id": "a89f84e1",
+      "source_content": "``` shell\ngo run -mod=mod ent/migrate/main.go add_json_meta_column\n```",
+      "source_content_hash": "d8ee51ff2c7cd81edb581fce0d68ca6d54cac178f336c8d5e3d2192eb47d2e2a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a89f84e1"
+      }
+    },
+    {
+      "segment_id": "a5c5772a",
+      "source_content": "The resulted migration file describing the change:",
+      "source_content_hash": "b4d3c67ab901769c51adfbe09fe73690695ba7f74ebd5eb0a26f0c8bc39ef091",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最终生成的变更描述文件："
+      }
+    },
+    {
+      "segment_id": "d8159289",
+      "source_content": "``` sql\n-- modify \"users\" table\nALTER TABLE `users` ADD COLUMN `meta_json` json NULL;\n```",
+      "source_content_hash": "ec6933377b5be4ee8d4b439787ae6fcb6ac9725a7b58bda5fa47ec4bd1268b06",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d8159289"
+      }
+    },
+    {
+      "segment_id": "74dd7937",
+      "source_content": "Now, we will apply the created migration file using [Atlas](https://atlasgo.io):",
+      "source_content_hash": "c6ead7d59d33301d401450362887c0159ac4bee9d49e9ed9aec10e699d4ef18f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在，我们将使用[Atlas](https://atlasgo.io)应用创建的迁移文件："
+      }
+    },
+    {
+      "segment_id": "7d898a0e",
+      "source_content": "``` shell\natlas migrate apply \\\n  --dir \"file://ent/migrate/migrations\"\n  --url mysql://root:pass@localhost:3306/ent\n```",
+      "source_content_hash": "b848bbce720d047bb49df9e64cb3185377008ea087b597626a08aef5287cf821",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7d898a0e"
+      }
+    },
+    {
+      "segment_id": "a311e967",
+      "source_content": "As a result, we have the following schema in our database:",
+      "source_content_hash": "b4c0449987c7f4e179e0124be89b61bc4b56735e0ca8d11e9fff7c6a034048ff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最终，我们的数据库中将生成如下模式："
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "![tutorial image 3](https://entgo.io/images/assets/migrate-column-type/users_table_add_column.png)",
+      "source_content_hash": "ec39fda92fb5711bab372474b8a7ffbf07a974613f0b5e42bec1e64c17fc70ce",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![tutorial image 3](https://entgo.io/images/assets/migrate-column-type/users_table_add_column.png)"
+      }
+    },
+    {
+      "segment_id": "c19de48a",
+      "source_content": "### Start writing to both columns",
+      "source_content_hash": "ea7e405320212fe7373e26e26e6e7f383902d9f0b087520c73771199c012e318",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 开始双写数据列"
+      }
+    },
+    {
+      "segment_id": "6ca4479f",
+      "source_content": "After generating the JSON type, we will start writing to the new column:",
+      "source_content_hash": "3c003408caee59d957c5f2bb9096f5945c0fcfd46a9cd6b73f52b909c0899776",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成JSON类型后，我们将开始向新列写入数据："
+      }
+    },
+    {
+      "segment_id": "cae897fb",
+      "source_content": "``` diff\n-\t\terr := client.User.Create().\n-\t\t\tSetMeta(input.Meta).\n-\t\t\tExec(ctx)\n+\t\tvar meta types.Meta\n+\t\tif err := json.Unmarshal(input.Meta, &meta); err != nil {\n+\t\t\treturn nil, err\n+\t\t}\n+\t\terr := client.User.Create().\n+\t\t\tSetMetaJSON(&meta).\n+\t\t\tExec(ctx)\n```",
+      "source_content_hash": "866bf82387f6ea0249f6bc6446d14cf95f57d522dfcc9919913b05857c99ac3e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cae897fb"
+      }
+    },
+    {
+      "segment_id": "d21af28f",
+      "source_content": "To ensure that values written to the new column `meta_json` are replicated to the old column, we can utilize Ent’s\n[Schema Hooks](https://entgo.io/docs/hooks/#schema-hooks) feature. This adds blank import `ent/runtime` in your main to\n[register the hook](https://entgo.io/docs/hooks/#hooks-registration) and avoid circular import:",
+      "source_content_hash": "72f5d9fefd78d257eb9501904ec80662b0bed6d327041a52e9706a44688034bc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为确保写入新列`meta_json`的值能同步到旧列，可以利用Ent的[模式钩子](https://entgo.io/docs/hooks/#schema-hooks)功能。这需要在main函数中添加`ent/runtime`的空白导入以[注册钩子](https://entgo.io/docs/hooks/#hooks-registration)，避免循环引用："
+      }
+    },
+    {
+      "segment_id": "36ae9dc7",
+      "source_content": "``` go\n// Hooks of the User.\nfunc (User) Hooks() []ent.Hook {\n\treturn []ent.Hook{\n\t\thook.On(\n\t\t\tfunc(next ent.Mutator) ent.Mutator {\n\t\t\t\treturn hook.UserFunc(func(ctx context.Context, m *gen.UserMutation) (ent.Value, error) {\n\t\t\t\t\tmeta, ok := m.MetaJSON()\n\t\t\t\t\tif !ok {\n\t\t\t\t\t\treturn next.Mutate(ctx, m)\n\t\t\t\t\t}\n\t\t\t\t\tif b, err := json.Marshal(meta); err != nil {\n\t\t\t\t\t\treturn nil, err\n\t\t\t\t\t}\n\t\t\t\t\tm.SetMeta(b)\n\t\t\t\t\treturn next.Mutate(ctx, m)\n\t\t\t\t})\n\t\t\t},\n\t\t\tent.OpCreate,\n\t\t),\n\t}\n}\n```",
+      "source_content_hash": "4e4cd3d2a0994ee8842cf04a37c05cfadb4fdaca26ac6f4c42b47ebd0282e551",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_36ae9dc7"
+      }
+    },
+    {
+      "segment_id": "8664ed0b",
+      "source_content": "After ensuring writes to both fields we can safely deploy to production.",
+      "source_content_hash": "414e197bf63316814a4268ca4b9b24b469ec8468d9c607362bab2c39869729aa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "确认双写机制生效后，即可安全部署至生产环境。"
+      }
+    },
+    {
+      "segment_id": "af843cee",
+      "source_content": "### Backfill values from old column",
+      "source_content_hash": "910d3daca441a958e0409e24bd9c850d1775568eca02c0731cd8b008a305fa0a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 回填旧列数据"
+      }
+    },
+    {
+      "segment_id": "681ef526",
+      "source_content": "Now in our production database we have two columns: one storing the meta object as a blob and another storing it as a JSON.\nThe second column may have null values since the JSON column was only added recently, therefore we need to backfill it with the old column’s values.",
+      "source_content_hash": "d9552fc7392fe142aecdf967fae87e604522601867b231cfddec7fb9a21eac2e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当前生产数据库中存在两列：一列以blob格式存储元对象，另一列以JSON格式存储。由于JSON列是新增的，可能存在空值，因此需要用旧列数据进行回填。"
+      }
+    },
+    {
+      "segment_id": "17b50e81",
+      "source_content": "To do so, we manually create a SQL migration file that will fill values in the new JSON column from the old blob column.",
+      "source_content_hash": "ac9b60efa778135de8d1377326f805c727e2a33426c47022e47677f6d0cd247c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为此，我们手动创建SQL迁移文件，将旧blob列的数据填充至新JSON列。"
+      }
+    },
+    {
+      "segment_id": "ff35cad6",
+      "source_content": ":::note\nYou can also write Go code that generates this data migration file by using the [WriteDriver](https://entgo.io/docs/data-migrations#versioned-migrations).\n:::",
+      "source_content_hash": "a39b3686e6ceae0612d5f0a6e2e277b1f58c06b671ec5c782fdcf8f6cbd9d258",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n也可通过[WriteDriver](https://entgo.io/docs/data-migrations#versioned-migrations)编写Go代码生成该数据迁移文件。\n:::"
+      }
+    },
+    {
+      "segment_id": "619c3209",
+      "source_content": "Create a new empty migration file:",
+      "source_content_hash": "0edf94ab6d7745f0bd050f410759a9c0646579bc6d6064c39b3d0d092643bc11",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "创建新的空迁移文件："
+      }
+    },
+    {
+      "segment_id": "520cfa65",
+      "source_content": "``` shell\natlas migrate new --dir file://ent/migrate/migrations\n```",
+      "source_content_hash": "0771fb1b6791da1ca9928b42a5646c6a333e240ad8a28c0a7cecfba8c1830a2e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_520cfa65"
+      }
+    },
+    {
+      "segment_id": "dce16ab4",
+      "source_content": "For every row in the users table with a null JSON value (i.e: rows added before the creation of the new column), we try\nto parse the meta object into a valid JSON. If we succeed, we will fill the `meta_json` column with the resulting value, otherwise we will mark it empty.",
+      "source_content_hash": "91b5cb93d5be1a825e3fff7f6b81c5f03ccd6c05202979179a16906f0b11de67",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对于users表中JSON值为null的行（即新增列之前创建的行），我们尝试将meta对象解析为有效JSON。若解析成功，则用结果值填充`meta_json`列，否则将其标记为空。"
+      }
+    },
+    {
+      "segment_id": "008183b0",
+      "source_content": "Our next step is to edit the migration file:",
+      "source_content_hash": "c1fe0e63f1063184da990be5e707d4695fb0adb7b5dd74be82807c17af3f4a52",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来编辑迁移文件："
+      }
+    },
+    {
+      "segment_id": "7c894678",
+      "source_content": "``` sql\nUPDATE users\nSET meta_json = CASE\n        -- when meta is valid json stores it as is.\n        WHEN JSON_VALID(cast(meta as char)) = 1 THEN cast(cast(meta as char) as json)\n        -- if meta is not valid json, store it as an empty object.\n        ELSE JSON_SET('{}')\n    END\nWHERE meta_json is null;\n```",
+      "source_content_hash": "4be7cd33ab8ae1aae2edc1a04a23ac13c79a198c81ddf373cfa1795d1ce14f6b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7c894678"
+      }
+    },
+    {
+      "segment_id": "85ea22dd",
+      "source_content": "Rehash the migration directory after changing a migration file:",
+      "source_content_hash": "1374bf7d3661bc5713147b322ce21a2b842a840a03f6e9797c11dd2d4a3acf66",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "修改迁移文件后重新计算迁移目录哈希："
+      }
+    },
+    {
+      "segment_id": "31b98214",
+      "source_content": "``` shell\natlas migrate hash --dir \"file://ent/mirate/migrations\"\n```",
+      "source_content_hash": "f2603e422cb8c51903691faf2b809a13ddca478b39618e6c9c124578fa6db0f7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_31b98214"
+      }
+    },
+    {
+      "segment_id": "39c48ff7",
+      "source_content": "We can test the migration file by executing all the previous migration files on a local database, seed it with temporary data, and\napply the last migration to ensure our migration file works as expected.",
+      "source_content_hash": "9508b0d9090220f74cf891fd6f70543a43ced9f3e5a5ade68cb4dd18d6675a5e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过在本地数据库执行所有历史迁移文件、注入测试数据并应用最新迁移来验证迁移文件是否符合预期。"
+      }
+    },
+    {
+      "segment_id": "fe25bd72",
+      "source_content": "After testing we apply the migration file:",
+      "source_content_hash": "1a30ba80cf353d7f77f7fdd2bff37703c2c6e8afdd0cb25c213517ac84ec38e7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "测试完成后应用迁移文件："
+      }
+    },
+    {
+      "segment_id": "44ecd2e3",
+      "source_content": "``` shell\natlas migrate apply \\\n  --dir \"file://ent/migrate/migrations\"\n  --url mysql://root:pass@localhost:3306/ent \n```",
+      "source_content_hash": "5f35f3ec612478e4124449720183abb4a7be73fcc60ff9317624c4646c7d10d4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_44ecd2e3"
+      }
+    },
+    {
+      "segment_id": "9ebd9d9b",
+      "source_content": "Now, we will deploy to production once more.",
+      "source_content_hash": "1f22e3b5d7516d73b782bc9307511457cb5fbe26cbe3adf1150d49e1cbbef8d2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时可再次部署至生产环境。"
+      }
+    },
+    {
+      "segment_id": "6d457467",
+      "source_content": "### Redirect reads to the new column and delete old blob column",
+      "source_content_hash": "e1b2674934f54f2afcfc814a33e6cee68e58423c9966b26a1ed4417f19b60f62",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 切换读取至新列并删除旧列"
+      }
+    },
+    {
+      "segment_id": "6fad5db5",
+      "source_content": "Now that we have values in the `meta_json` column, we can change the reads from the old field to the new field.",
+      "source_content_hash": "57cf5f3673283c61039fbc56d1028a6d195b311a00cda7b2ddd9d834bdede91d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在`meta_json`列已有数据，可将读取操作从旧字段切换至新字段。"
+      }
+    },
+    {
+      "segment_id": "c5e0bb3d",
+      "source_content": "Instead of decoding the data from `user.meta` on each read, just use the `meta_json` field:",
+      "source_content_hash": "871ece764bf0d07c5e602902a733947a650a2c6c858b1a8a4264450fb4a520ee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "无需在每次读取时解码`user.meta`数据，直接使用`meta_json`字段即可："
+      }
+    },
+    {
+      "segment_id": "96831bda",
+      "source_content": "``` diff \t\n-       var meta types.Meta\n-       if err = json.Unmarshal(user.Meta, &meta); err != nil {\n-\t        return nil, err\n-       }\n-       if meta.CreateTime.Before(time.Unix(0, 0)) {\n-\t        return nil, errors.New(\"invalid create time\")\n-       }\n+       if user.MetaJSON.CreateTime.Before(time.Unix(0, 0)) {\n+\t        return nil, errors.New(\"invalid create time\")\n+       }\n```",
+      "source_content_hash": "39616ae6275b32a4bcd20df698dad514f5f3c71f1347ffdf9d4764682d0deb11",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_96831bda"
+      }
+    },
+    {
+      "segment_id": "eeeea5ce",
+      "source_content": "After redirecting the reads we will deploy the changes to production.",
+      "source_content_hash": "967b6417b431e99f80b046cbca69534df3df5fdfde4eac1c85fdc5902681c8a0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成读取切换后，将变更部署至生产环境。"
+      }
+    },
+    {
+      "segment_id": "97496aad",
+      "source_content": "### Delete the old column",
+      "source_content_hash": "c6c572ab658c469fe3ed1019c8ddd3b279b4d4351e5c5a27690a1123f499d718",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 删除旧列"
+      }
+    },
+    {
+      "segment_id": "af834e0d",
+      "source_content": "It is now possible to remove the field describing the old column from the Ent schema, since as we are no longer using it.",
+      "source_content_hash": "9ae1bac667b2c44afc2fa0ecfa71f825024ee7869df628fd875e06bb981e5250",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于旧列已不再使用，现在可以从Ent模式中移除其字段定义。"
+      }
+    },
+    {
+      "segment_id": "af7c5c4e",
+      "source_content": "``` diff\nfunc (User) Fields() []ent.Field {\n    return []ent.Field{\n-     field.Bytes(\"meta\"),\n      field.JSON(\"meta_json\", &types.Meta{}).Optional(),\n    }\n}\n\n``` ",
+      "source_content_hash": "4dc303cb5cc160c8baa88fe2048b5cfa85d99842d7a09b8a644227c312468e94",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_af7c5c4e"
+      }
+    },
+    {
+      "segment_id": "61e5dad6",
+      "source_content": "Generate the Ent schema again with the [Drop Column](https://entgo.io/docs/migrate/#drop-resources) feature enabled.",
+      "source_content_hash": "e01c7237991bf978cbcdc03997e2314f0acf81ba4045ed4d141e7a2949f40395",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "启用[删除列](https://entgo.io/docs/migrate/#drop-resources)功能后重新生成Ent模式。"
+      }
+    },
+    {
+      "segment_id": "60efc494",
+      "source_content": "``` shell\ngo run -mod=mod ent/migrate/main.go drop_user_meta_column\n```",
+      "source_content_hash": "2d42f8833848b995cafd1750586f3fe73f92e90f47a6c4e05cbbe7a3935d6db0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_60efc494"
+      }
+    },
+    {
+      "segment_id": "dbeb30c1",
+      "source_content": "Now that we have properly created our new field, redirected writes, backfilled it and dropped the old column -\nwe are ready for the final deployment. All that’s left is to merge our code into version control and deploy to production!",
+      "source_content_hash": "6805cba0742033cd890974f060bbdcc22efd5832574df6fa0fdb26602848f186",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成新字段创建、双写配置、数据回填及旧列删除后，即可进行最终部署。只需将代码合并至版本控制系统并发布至生产环境！"
+      }
+    },
+    {
+      "segment_id": "fbdb880f",
+      "source_content": "### Wrapping up",
+      "source_content_hash": "a3785475b5dd9a66ae4506648eaafecb51ead6eb80351473642adc6a4aba69b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "d3912b2e",
+      "source_content": "In this post, we discussed how to change a column type in the production database with zero downtime using Atlas’s version migrations integrated with Ent.",
+      "source_content_hash": "864bc1b78e136fadd770c5b9262cd3fefbbdee219900244655b1d9c0fbf628b2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文探讨了如何通过Atlas版本迁移与Ent的集成，在保证零停机的前提下变更生产数据库的列类型。"
+      }
+    },
+    {
+      "segment_id": "2dbbb313",
+      "source_content": "Have questions? Need help with getting started? Feel free to join\nour [Ent Discord Server](https://discord.gg/qZmPgTE6RX).",
+      "source_content_hash": "ba13090a96a0ab7aa769a5e3bc4fc18730a2c953e09c1f9a0328da02c2aa7eb3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有问题需要解答？需要入门帮助？欢迎加入我们的 [Ent Discord 服务器](https://discord.gg/qZmPgTE6RX)。"
+      }
+    },
+    {
+      "segment_id": "0b194c02",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n:::",
+      "source_content_hash": "41de1e3e3bfff37d1c248755b51dd8428c0ca6c2f8a358f8cc6b9736984c77d1",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多 Ent 资讯与更新：]\n\n- 订阅我们的 [新闻通讯](https://entgo.substack.com/)\n- 在 [Twitter](https://twitter.com/entgo_io) 上关注我们\n- 加入 [Gophers Slack](https://entgo.io/docs/slack) 的 #ent 频道\n- 加入 [Ent Discord 服务器](https://discord.gg/qZmPgTE6RX)\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2022-12-01-changing-column-types-with-zero-downtime.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.658434+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "9d9e78617ff19d3f204b624f42d5bcc073f258180dd8c0339c01c9cd6c7e24be"
+  }
+}

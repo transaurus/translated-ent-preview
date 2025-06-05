@@ -1,0 +1,342 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/versioned/07-programmatically.mdx",
+  "source_file_content_hash": "fbba9a855626d781b106467dc5efd9ec90069ae53338653054d43553a286aa6f",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: programmatically\ntitle: \"Appendix: programmatic planning\"\n---",
+      "source_content_hash": "db63d998ad2c14375cdc2d3183298bb69d7d78fde0b2a1f379f545c591f83fa3",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "In the previous sections, we saw how to use the Atlas CLI to generate migration files. However, we can also\ngenerate these files programmatically. In this section we will review how to write Go code that can be used for\nautomatically planning migration files.",
+      "source_content_hash": "a8eca1de23e1c890b6caacf6bef6455aae429d687bc3d47c37d7a9ddb17ca78d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在前面的章节中，我们了解了如何使用Atlas CLI生成迁移文件。但其实我们也可以通过编程方式生成这些文件。本节将介绍如何编写用于自动规划迁移文件的Go代码。"
+      }
+    },
+    {
+      "segment_id": "ba4f48ff",
+      "source_content": "## 1. Enable the versioned migration feature flag",
+      "source_content_hash": "81558874a57d26a7f6f67fe6c9009ea7916361aa1327a1b6ef0a18b1523d71a7",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 1. 启用版本化迁移功能标志"
+      }
+    },
+    {
+      "segment_id": "ac44a45c",
+      "source_content": ":::info[Supporting repository]\n\nThe change described in this section can be found in PR [#2](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/2/files)\nin the supporting repository.\n\n:::",
+      "source_content_hash": "02cc7bf6a27ee76afb5431af7adb58500cff42f62440b2ace11dac1b140e9f80",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[配套代码库]\n\n本节的修改内容可在配套代码库的PR [#2](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/2/files)中查看。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "2df4f75f",
+      "source_content": "The first step is to enable the versioned migration feature by passing in the `sql/versioned-migration` feature flag.\nDepending on how you execute the Ent code generator, you have to use one of the two options:",
+      "source_content_hash": "99fa1ce5724ea83f83d003a1c5bfca946e2d156e6bf43178b9f70893e8b24254",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第一步是通过传入`sql/versioned-migration`功能标志来启用版本化迁移。根据执行Ent代码生成器的方式不同，您需要选择以下两种方式之一："
+      }
+    },
+    {
+      "segment_id": "0dc46dba",
+      "source_content": "<Tabs\ndefaultValue=\"ent\"\nvalues={[\n{label: 'Using Ent CLI', value: 'ent'},\n{label: 'Using the entc package', value: 'entc'},\n]}>\n<TabItem value=\"ent\">\n\nIf you are using the default go generate configuration, simply add the `--feature sql/versioned-migration` to\nthe `ent/generate.go` file as follows:\n\n```go\npackage ent\n\n//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature sql/versioned-migration ./schema\n```\n\n</TabItem>\n<TabItem value=\"entc\">\n\nIf you are using the code generation package (e.g. if you are using an Ent extension like `entgql`),\nadd the feature flag as follows:\n\n```go\n//go:build ignore\n\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n)\n\nfunc main() {\n\terr := entc.Generate(\"./schema\", &gen.Config{\n\t\t//highlight-next-line\n\t\tFeatures: []gen.Feature{gen.FeatureVersionedMigration},\n\t})\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "f640c32071a3be7158054c862a03ca00b3bf8d6c75bb6efb35cd22c4c8ed229d",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0dc46dba"
+      }
+    },
+    {
+      "segment_id": "883231d4",
+      "source_content": "Next, re-run code-generation:",
+      "source_content_hash": "ffd328fdee8d55e0c7d60db8e61b77dcb85c317d718e842987cea6660a0320bf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "468b36ba",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_468b36ba"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "After running the code-generation, you should see the following\n[methods added](https://github.com/rotemtam/ent-versioned-migrations-demo/commit/e724fa32330d920fd405b9785fcfece2a46ea56c#diff-370235e5107bbdd35861063f3beff1507723ebdda6e29a39cdde1f1a944594d8)\nto `ent/migrate/migrate.go`:",
+      "source_content_hash": "c31d9c161ac47e6a67b41be1b76df87a173ce66139c5f4c9a16d4b23a6fde628",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行代码生成后，您会看到以下\n[新增的方法](https://github.com/rotemtam/ent-versioned-migrations-demo/commit/e724fa32330d920fd405b9785fcfece2a46ea56c#diff-370235e5107bbdd35861063f3beff1507723ebdda6e29a39cdde1f1a944594d8)\n出现在`ent/migrate/migrate.go`文件中："
+      }
+    },
+    {
+      "segment_id": "536b7b6b",
+      "source_content": "* `Diff`\n* `NamedDiff`",
+      "source_content_hash": "4f44b256cf7fb44402898789e7f3e0d18f24c0c9255c847dd2cdfb8175720835",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* `Diff`\n* `NamedDiff`"
+      }
+    },
+    {
+      "segment_id": "ec619944",
+      "source_content": "These methods are used to compare the state read from a database connection or a migration directory with the state defined\nby the Ent schema.",
+      "source_content_hash": "8342a701b1ae398448be667b6644dab5571868df734e93245747710ead48b858",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这些方法用于将从数据库连接或迁移目录读取的状态与Ent模式定义的状态进行比较。"
+      }
+    },
+    {
+      "segment_id": "3a8d2b95",
+      "source_content": "## 2. Automatic Migration planning script",
+      "source_content_hash": "c191db8fe86933b98c5b901f4ba9814e62de9427d8608b4594231b6d7901f61c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 2. 自动迁移规划脚本"
+      }
+    },
+    {
+      "segment_id": "61dc1473",
+      "source_content": ":::info[Supporting repository]\n\nThe change described in this section can be found in PR [#4](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/4/files)\nin the supporting repository.\n\n:::",
+      "source_content_hash": "3f374a925a5bcc3ead590cfeb674a7607ed5ab9f98016a5307e0af0bdf9d98f9",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[配套代码库]\n\n本节的修改内容可在配套代码库的PR [#4](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/4/files)中查看。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "f8edb6d2",
+      "source_content": "### Dev database",
+      "source_content_hash": "300ff94b16d1745b337266dcec86465281d9467afc0229eb939f91a2a9545e27",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 开发数据库"
+      }
+    },
+    {
+      "segment_id": "1862c5fe",
+      "source_content": "To be able to plan accurate and consistent migration files, Atlas introduces the\nconcept of a [Dev database](https://atlasgo.io/concepts/dev-database), a temporary\ndatabase which is used to simulate the state of the database after different changes.\nTherefore, to use Atlas to automatically plan migrations, we need to supply a connection\nstring to such a database to our migration planning script. Such a database is most commonly\nspun up using a local Docker container. Let's do this now by running the following command:",
+      "source_content_hash": "7637c12818e876fc7f3a4a8012c4c89169b52e24dfc95e67ed4b63ffb2b8a41a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了能规划准确且一致的迁移文件，Atlas引入了\n[开发数据库](https://atlasgo.io/concepts/dev-database)的概念，这是一个用于模拟数据库在不同变更后状态的临时数据库。因此，要使用Atlas自动规划迁移，我们需要在迁移规划脚本中提供连接到此数据库的连接字符串。通常我们会使用本地Docker容器来启动这样的数据库。现在运行以下命令来配置："
+      }
+    },
+    {
+      "segment_id": "de26f08a",
+      "source_content": "```shell\ndocker run --rm --name atlas-db-dev -d -p 3306:3306 -e MYSQL_DATABASE=dev -e MYSQL_ROOT_PASSWORD=pass mysql:8\n```",
+      "source_content_hash": "82bd0c76be584409af918609dec8c8c796fc061878d8d438f13faf5fc723eef1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de26f08a"
+      }
+    },
+    {
+      "segment_id": "7bc8bb24",
+      "source_content": "Using the Dev database we have just configured, we can write a script that will use Atlas to plan\nmigration files for us. Let's create a new file called `main.go` in the `ent/migrate` directory\nof our project:",
+      "source_content_hash": "5bdcd0818478a6fae71092d48fe892c05ff70186dbb41ceddd911b804b98d9dc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用刚配置好的开发数据库，我们可以编写一个利用Atlas为我们规划迁移文件的脚本。在项目的`ent/migrate`目录下新建一个名为`main.go`的文件："
+      }
+    },
+    {
+      "segment_id": "83537d8d",
+      "source_content": "```go title=ent/migrate/main.go\n//go:build ignore\n\npackage main\n\nimport (\n    \"context\"\n    \"log\"\n    \"os\"\n\n    // highlight-next-line\n    \"<project>/ent/migrate\"\n\n    atlas \"ariga.io/atlas/sql/migrate\"\n    \"entgo.io/ent/dialect\"\n    \"entgo.io/ent/dialect/sql/schema\"\n    _ \"github.com/go-sql-driver/mysql\"\n)\n\nconst (\n\tdir = \"ent/migrate/migrations\"\n)\n\nfunc main() {\n    ctx := context.Background()\n    // Create a local migration directory able to understand Atlas migration file format for replay.\n    if err := os.MkdirAll(dir, 0755); err != nil {\n\t\tlog.Fatalf(\"creating migration directory: %v\", err)\n\t}\n    dir, err := atlas.NewLocalDir(dir)\n    if err != nil {\n        log.Fatalf(\"failed creating atlas migration directory: %v\", err)\n    }\n    // Migrate diff options.\n    opts := []schema.MigrateOption{\n        schema.WithDir(dir),                         // provide migration directory\n        schema.WithMigrationMode(schema.ModeReplay), // provide migration mode\n        schema.WithDialect(dialect.MySQL),           // Ent dialect to use\n        schema.WithFormatter(atlas.DefaultFormatter),\n    }\n    if len(os.Args) != 2 {\n        log.Fatalln(\"migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'\")\n    }\n    // Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).\n    //highlight-next-line\n    err = migrate.NamedDiff(ctx, \"mysql://root:pass@localhost:3306/dev\", os.Args[1], opts...)\n    if err != nil {\n        log.Fatalf(\"failed generating migration file: %v\", err)\n    }\n}\n```",
+      "source_content_hash": "d36b478a8fc008c3bc14f7ec6372bc8070a8df113fd1c857de929582622b89bd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_83537d8d"
+      }
+    },
+    {
+      "segment_id": "51127396",
+      "source_content": ":::info\n\nNotice that you need to make some modifications to the script above in the highlighted lines.\nEdit the import path of the `migrate` package to match your project and to supply the connection\nstring to your Dev database.\n\n:::",
+      "source_content_hash": "c337b80283d47d34792dd996b7267eafdc353339f3c914cbd722a45d235e36ba",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n\n注意您需要修改上述脚本中标出的部分：调整`migrate`包的导入路径以匹配您的项目，并提供开发数据库的连接字符串。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "89cf7bac",
+      "source_content": "To run the script, first create a `migrations` directory in the `ent/migrate` directory of your\nproject:",
+      "source_content_hash": "91d887d6835023c94d3bbf7164c95d6b68b7ff2ac41f10aa983606b0a18eb5ba",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行脚本前，先在项目的`ent/migrate`目录下创建`migrations`目录："
+      }
+    },
+    {
+      "segment_id": "9bc650e1",
+      "source_content": "```text\nmkdir ent/migrate/migrations\n```",
+      "source_content_hash": "2e93de9d537dacf557ef4cf8aef8ff474317b2f506dc69c11a3b979fd39497ab",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9bc650e1"
+      }
+    },
+    {
+      "segment_id": "9ef42155",
+      "source_content": "Then, run the script to create the initial migration file for your project:",
+      "source_content_hash": "5ce2792a6a4c0cba67b5198acdc6e571cbf48e5b0e404ae5fc9c45a7e9513151",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后运行脚本来为项目创建初始迁移文件："
+      }
+    },
+    {
+      "segment_id": "8185786b",
+      "source_content": "```shell\ngo run -mod=mod ent/migrate/main.go initial\n```",
+      "source_content_hash": "7f480c847b6a0a56f4e1078019cdce231ad0bddeff1cfbc440d7e7c5bae48802",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8185786b"
+      }
+    },
+    {
+      "segment_id": "4e2e17c5",
+      "source_content": "Notice that `initial` here is just a label for the migration file. You can use any name you want.",
+      "source_content_hash": "2ab483b653a6db2b372c72100a8d9f86eded7e66083c4f95fefc4ee2e5a2b608",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意这里的`initial`只是迁移文件的标签，您可以使用任意名称。"
+      }
+    },
+    {
+      "segment_id": "b49a7009",
+      "source_content": "Observe that after running the script, two new files were created in the `ent/migrate/migrations`\ndirectory. The first file is named `atlas.sum`, which is a checksum file used by Atlas to enforce\na linear history of migrations:",
+      "source_content_hash": "0553059b620aac68ff325159b9c9040c27579a79d8471ad37d2457722fcae404",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行脚本后，您会看到`ent/migrate/migrations`目录下生成了两个新文件。第一个是名为`atlas.sum`的校验文件，Atlas用它来确保迁移历史的线性完整性："
+      }
+    },
+    {
+      "segment_id": "54dd003b",
+      "source_content": "```text title=ent/migrate/migrations/atlas.sum\nh1:Dt6N5dIebSto365ZEyIqiBKDqp4INvd7xijLIokqWqA=\n20221114165732_initialize.sql h1:/33+7ubMlxuTkW6Ry55HeGEZQ58JqrzaAl2x1TmUTdE=\n```",
+      "source_content_hash": "b6940f8cd568255d4e2704b34a00117696a975554feff25324b19c2a223e6e87",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_54dd003b"
+      }
+    },
+    {
+      "segment_id": "3799844b",
+      "source_content": "The second file is the actual migration file, which is named after the label we passed to the\nscript:",
+      "source_content_hash": "983562671eab3967f633251188443f9303c74e6f2b17a0a7de4a667d825e4faa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第二个文件是实际的迁移文件，其名称基于我们传给脚本的标签："
+      }
+    },
+    {
+      "segment_id": "46dadadd",
+      "source_content": "```sql title=ent/migrate/migrations/20221114165732_initial.sql\n-- create \"users\" table\nCREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `email` (`email`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;\n-- create \"blogs\" table\nCREATE TABLE `blogs` (`id` bigint NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `body` longtext NOT NULL, `created_at` timestamp NOT NULL, `user_blog_posts` bigint NULL, PRIMARY KEY (`id`), CONSTRAINT `blogs_users_blog_posts` FOREIGN KEY (`user_blog_posts`) REFERENCES `users` (`id`) ON DELETE SET NULL) CHARSET utf8mb4 COLLATE utf8mb4_bin;\n```",
+      "source_content_hash": "408e84022c7fb615978a2c2ba6055440969ad454cf1f1c39dc457d802a5c4010",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_46dadadd"
+      }
+    },
+    {
+      "segment_id": "778e087a",
+      "source_content": "## Other migration tools",
+      "source_content_hash": "c13261f06aa5d2ff1cf12c7413e4d9072fc041d9ea1d8a4b35a21e83babcf673",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 其他迁移工具"
+      }
+    },
+    {
+      "segment_id": "90c4b96b",
+      "source_content": "Atlas integrates very well with Ent, but it is not the only migration tool that can be used\nto manage database schemas in Ent projects. The following is a list of other migration tools\nthat are supported:",
+      "source_content_hash": "783d22f3ef5079627cefe9d5aecf427694f8c737fe267b63c49786ac8453e9d5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas 与 Ent 的集成非常出色，但它并非唯一可用于管理 Ent 项目数据库模式的迁移工具。以下是其他受支持的迁移工具列表："
+      }
+    },
+    {
+      "segment_id": "fc1505a1",
+      "source_content": "* [Goose](https://github.com/pressly/goose)\n* [Golang Migrate](https://github.com/golang-migrate/migrate)\n* [Flyway](https://flywaydb.org)\n* [Liquibase](https://www.liquibase.org)\n* [dbmate](https://github.com/amacneil/dbmate)",
+      "source_content_hash": "2273e302f3124d1e52942b0eda5de548de5ec832340a20697ed8211b6d1616ec",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* [Goose](https://github.com/pressly/goose)\n* [Golang Migrate](https://github.com/golang-migrate/migrate)\n* [Flyway](https://flywaydb.org)\n* [Liquibase](https://www.liquibase.org)\n* [dbmate](https://github.com/amacneil/dbmate)"
+      }
+    },
+    {
+      "segment_id": "d8c366cc",
+      "source_content": "To learn more about how to use these tools with Ent, see the [docs](https://entgo.io/docs/versioned-migrations#create-a-migration-files-generator) on this subject.",
+      "source_content_hash": "8da885ea72e3740b228c27f6793a3102a39c3e3234938ee7d770ffe5e828a956",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要了解如何将这些工具与 Ent 结合使用，请参阅相关[文档](https://entgo.io/docs/versioned-migrations#create-a-migration-files-generator)。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/versioned/07-programmatically.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.658070+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "fbba9a855626d781b106467dc5efd9ec90069ae53338653054d43553a286aa6f"
+  }
+}

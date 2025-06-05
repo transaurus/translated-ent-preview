@@ -1,0 +1,62 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/testing.md",
+  "source_file_content_hash": "aaf8562ae9c79c9ddfa4970d12286a7e6dea8c6d2dcb474ecfc9bf491a81e81b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: testing\ntitle: Testing\n---",
+      "source_content_hash": "1c77d173e8eb736857d803e73ed7efea2dbac3f97af0efca52dc15cc8fafffcd",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "If you're using `ent.Client` in your unit-tests, you can use the generated `enttest`\npackage for creating a client and auto-running the schema migration as follows:",
+      "source_content_hash": "24cd0965bfcbe9f03c8e448424473147ebd5aaeb2ee1e8b7d5866f324bba11bb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果在单元测试中使用 `ent.Client`，可以通过生成的 `enttest` 包创建客户端并自动执行模式迁移，操作如下："
+      }
+    },
+    {
+      "segment_id": "71d8dc9b",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"testing\"\n\n\t\"<project>/ent/enttest\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n)\n\nfunc TestXXX(t *testing.T) {\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&_fk=1\")\n\tdefer client.Close()\n\t// ...\n}\n```",
+      "source_content_hash": "8ed57a0aef6a4e04674b3ee08f7de5e6aec6b52287493e9a67d9a5ce8fa6db78",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_71d8dc9b"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "In order to pass functional options to `Open`, use `enttest.Option`:",
+      "source_content_hash": "eb0268787a0779fb013e5171a09cfbdcc96ee9b7d0cf2f1a01951d4668a7538f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如需向 `Open` 传递功能选项，请使用 `enttest.Option`："
+      }
+    },
+    {
+      "segment_id": "0c911872",
+      "source_content": "```go\nfunc TestXXX(t *testing.T) {\n\topts := []enttest.Option{\n\t\tenttest.WithOptions(ent.Log(t.Log)),\n\t\tenttest.WithMigrateOptions(migrate.WithGlobalUniqueID(true)),\n\t}\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&_fk=1\", opts...)\n\tdefer client.Close()\n\t// ...\n}\n```",
+      "source_content_hash": "74606b7afa6899f37d344e7890b1085fdd6892e6f24315655d5e30815a2fc39f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0c911872"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/testing.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.655103+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "aaf8562ae9c79c9ddfa4970d12286a7e6dea8c6d2dcb474ecfc9bf491a81e81b"
+  }
+}

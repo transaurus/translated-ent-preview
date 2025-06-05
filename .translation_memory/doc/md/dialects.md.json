@@ -1,0 +1,162 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/dialects.md",
+  "source_file_content_hash": "1a888910c5c2d911cb13aa67b99fdc3b887e06cc81650e07c2f946ff69beceff",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: dialects\ntitle: Supported Dialects\n---",
+      "source_content_hash": "d65a665714da0a9ad96060b343d4a591da67e718f2d75316053665fee82307f7",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "## MySQL",
+      "source_content_hash": "1ec9f6e37759f55ca931b799dc6fe78e506af77dc24b8eb5ce72c2e483b66e48",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## MySQL"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "MySQL supports all the features that are mentioned in the [Migration](migrate.md) section,\nand it's being tested constantly on the following 3 versions: `5.6.35`, `5.7.26` and `8`. ",
+      "source_content_hash": "8e88d575e5e85af09707e2938bbaa4d43612381bc5912446e478aa5518c0054c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "MySQL 支持 [迁移](migrate.md) 章节中提到的所有功能特性，并持续在以下三个版本进行测试：`5.6.35`、`5.7.26` 和 `8`。"
+      }
+    },
+    {
+      "segment_id": "8a5f6a7b",
+      "source_content": "## MariaDB",
+      "source_content_hash": "2105a7bf7f8e1e2d2bcff5285f3bdcbcfe0abae9384c845afba4990b7b735417",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## MariaDB"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "MariaDB supports all the features that are mentioned in the [Migration](migrate.md) section,\nand it's being tested constantly on the following 3 versions: `10.2`, `10.3` and latest version.",
+      "source_content_hash": "43a41c3d5dc633a903103d05f67d47b71b19fc5277115c56a512c858767186ab",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "MariaDB 支持 [迁移](migrate.md) 章节中提到的所有功能特性，并持续在以下三个版本进行测试：`10.2`、`10.3` 和最新版本。"
+      }
+    },
+    {
+      "segment_id": "cbe57f9d",
+      "source_content": "## PostgreSQL",
+      "source_content_hash": "ba087c2f360a4df6294d560481cf569a74dd78cfa74fd0f98180f27ccba698e9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## PostgreSQL"
+      }
+    },
+    {
+      "segment_id": "39b3772c",
+      "source_content": "PostgreSQL supports all the features that are mentioned in the [Migration](migrate.md) section,\nand it's being tested constantly on the following 5 versions: `11`, `12`, `13`, `14` and `15`.",
+      "source_content_hash": "68385b1d8331531d150539b85790f0958f70fec1b3b4f1c69ddcc3cce06ccb2c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "PostgreSQL 支持 [迁移](migrate.md) 章节中提到的所有功能特性，并持续在以下五个版本进行测试：`11`、`12`、`13`、`14` 和 `15`。"
+      }
+    },
+    {
+      "segment_id": "418617bd",
+      "source_content": "## CockroachDB **(<ins>preview</ins>)**",
+      "source_content_hash": "fe826a5d6e27543a8af0dcc97c8324490da28d21d0b48b7f6f729ed332cc970b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## CockroachDB **(<ins>预览版</ins>)**"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "CockroachDB support is in preview and requires the [Atlas migration engine](migrate.md#atlas-integration).  \nThe integration with CRDB is currently tested on versions `v21.2.11`.",
+      "source_content_hash": "6bd090d3328ed6d80b778ce86e1b579405186d9987329f6834c765960b28ecd3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "CockroachDB 支持目前处于预览阶段，需使用 [Atlas 迁移引擎](migrate.md#atlas-integration)。  \n当前集成测试基于 CRDB 版本 `v21.2.11`。"
+      }
+    },
+    {
+      "segment_id": "79b2d0b9",
+      "source_content": "## SQLite",
+      "source_content_hash": "601dc07c6f6b33c94baaf629113953d0d7694adc7bf0e629abf93264d5d28277",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## SQLite"
+      }
+    },
+    {
+      "segment_id": "d9172fa4",
+      "source_content": "Using [Atlas](https://github.com/ariga/atlas), the SQLite driver supports all the features that\nare mentioned in the [Migration](migrate.md) section. Note that some changes, like column modification,\nare performed on a temporary table using the sequence of operations described in [SQLite official documentation](https://www.sqlite.org/lang_altertable.html#otheralter).",
+      "source_content_hash": "d8ed5cb88217236d31323541647b2cd5feb7ad9e4429044d04fd60cd4eb6fb31",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过 [Atlas](https://github.com/ariga/atlas) 驱动，SQLite 支持 [迁移](migrate.md) 章节中提到的所有功能特性。需注意部分变更（如列修改）会通过临时表实现，具体操作流程遵循 [SQLite 官方文档](https://www.sqlite.org/lang_altertable.html#otheralter) 描述的步骤。"
+      }
+    },
+    {
+      "segment_id": "b25f21be",
+      "source_content": "## Gremlin",
+      "source_content_hash": "b56a32d90f7ee93edc814705c744381b5b097f5c2458929271dfd6c7ffd5ee6a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## Gremlin"
+      }
+    },
+    {
+      "segment_id": "7499a4e7",
+      "source_content": "Gremlin does not support migration nor indexes, and **<ins>it's considered experimental</ins>**.",
+      "source_content_hash": "1cc2d881e5ec2fd56e37751ce0c53841856c97cf92cacf48efa7e28a1bd41854",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Gremlin 不支持迁移及索引功能，**<ins>目前视为实验性功能</ins>**。"
+      }
+    },
+    {
+      "segment_id": "109ace10",
+      "source_content": "## TiDB **(<ins>preview</ins>)**",
+      "source_content_hash": "3e4ee4f078b446d97812908d5b29d89c54e507fa1002ab5361bb39de01840b96",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## TiDB **(<ins>预览版</ins>)**"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "TiDB support is in preview and requires the [Atlas migration engine](migrate.md#atlas-integration).  \nTiDB is MySQL compatible and thus any feature that works on MySQL _should_ work on TiDB as well.  \nFor a list of known compatibility issues, visit: https://docs.pingcap.com/tidb/stable/mysql-compatibility  \nThe integration with TiDB is currently tested on versions `5.4.0`, `6.0.0`.",
+      "source_content_hash": "751d9e374e61e28b799dd821e0d9a57e1d1a927eda45b3917a03e8e54bcd0b92",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "TiDB 支持目前处于预览阶段，需使用 [Atlas 迁移引擎](migrate.md#atlas-integration)。  \nTiDB 与 MySQL 兼容，因此 MySQL 支持的各项功能理论上也适用于 TiDB。  \n已知兼容性问题列表请访问：https://docs.pingcap.com/tidb/stable/mysql-compatibility  \n当前集成测试基于 TiDB 版本 `5.4.0`、`6.0.0`。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/dialects.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.680710+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "1a888910c5c2d911cb13aa67b99fdc3b887e06cc81650e07c2f946ff69beceff"
+  }
+}

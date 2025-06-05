@@ -1,0 +1,348 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/migration/trigger.mdx",
+  "source_file_content_hash": "92d515e8daa1aa811df3910114c25cc9956bea680cf15e53ed26cccd908de27b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Using Database Triggers in Ent Schema\nid: trigger\nslug: triggers\n---",
+      "source_content_hash": "d60600f4b60c31fbfa958435a0ffe79136e2a5b17a89479d0f7077e5c68e0293",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import InstallationInstructions from '../components/_installation_instructions.mdx';",
+      "source_content_hash": "afb49515c4f9b6aa67a78520d36b482a67d6d58297f2162ef1448cbea548208e",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Triggers are useful tools in relational databases that allow you to execute custom code when specific events occur on a\ntable. For instance, triggers can automatically populate the audit log table whenever a new mutation is applied to a different table.\nThis way we ensure that all changes (including those made by other applications) are meticulously recorded, enabling the enforcement\non the database-level and reducing the need for additional code in the applications.",
+      "source_content_hash": "bae3267a5962a07e25d636de8b10193bc062a54bc20152ac0f167e92440896f6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "触发器是关系型数据库中的实用工具，它允许在表发生特定事件时执行自定义代码。例如，当其他表发生数据变更时，触发器可以自动填充审计日志表。这种方式能确保所有变更（包括其他应用程序发起的变更）都被精确记录，实现数据库层面的强制审计，减少应用程序中需要编写的额外代码。"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "This guide explains how to attach triggers to your Ent types (objects) and configure the schema migration to manage\nboth the triggers and the Ent schema as a single migration unit using Atlas.",
+      "source_content_hash": "db6b995bef380a62772e658a282a18d5a806acdeb63e6a7201b80d6a5e2502b1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南将介绍如何为Ent类型（对象）附加触发器，并通过Atlas配置模式迁移，将触发器与Ent模式作为单一迁移单元进行管理。"
+      }
+    },
+    {
+      "segment_id": "a7378c68",
+      "source_content": ":::info[[Atlas Pro Feature](https://atlasgo.io/features#pro-plan)]\nAtlas support for [Triggers](https://atlasgo.io/atlas-schema/hcl#trigger) used in this guide is available exclusively\nto Pro users. To use this feature, run:\n```\natlas login\n```\n:::",
+      "source_content_hash": "f461ed17307866ed3623dfa48a5bb60600e14f72921cb304b99d8b0198d91acb",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[Atlas Pro功能](https://atlasgo.io/features#pro-plan)]\n本指南使用的[触发器](https://atlasgo.io/atlas-schema/hcl#trigger)支持是Atlas专业版专属功能。使用前请运行：\n```\natlas login\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "ed7dde9c",
+      "source_content": "## Install Atlas",
+      "source_content_hash": "bf92a270e324b46f2c1d6f24555018906dc2df68b19873079220409508dabfad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装Atlas"
+      }
+    },
+    {
+      "segment_id": "358a309f",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "f2f30ae8",
+      "source_content": "## Login to Atlas",
+      "source_content_hash": "e256bf54631891b6388a26350087fe6f85606d3b82220c15db06e45dc9ae443c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 登录Atlas"
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```shell\n$ atlas login a8m\n//highlight-next-line-info\nYou are now connected to \"a8m\" on Atlas Cloud.\n```",
+      "source_content_hash": "496821c033e70d4510db88b24c2448b81f6a4860a232e94aa6828c08a6979cd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "3b7478ea",
+      "source_content": "## Composite Schema",
+      "source_content_hash": "bba3d45312f3e0d6b9188ea0568fe93b6ecf4dd0b5f18da48a134b0a61d8e55c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 复合模式"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "An `ent/schema` package is mostly used for defining Ent types (objects), their fields, edges and logic. Table triggers\nor any other database native objects do not have representation in Ent models. A trigger function can be defined once,\nand used in multiple triggers in different tables.",
+      "source_content_hash": "38af3fe2ccef3477ed9080e752156240750e177d76cc399ec54ea8dedcb74a9c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema`包主要用于定义Ent类型（对象）、字段、关联关系及其逻辑。表触发器或其他数据库原生对象在Ent模型中并无对应表示。一个触发器函数可被定义一次，然后应用于不同表的多个触发器。"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "In order to extend our PostgreSQL schema to include both our Ent types and their triggers, we configure Atlas to\nread the state of the schema from a [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)\ndata source. Follow the steps below to configure this for your project:",
+      "source_content_hash": "31768eaa15c60fa9a8e714fd5e11cf7fff583be58c0fe92603ea4bf0c0591ab5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了扩展PostgreSQL模式以包含Ent类型及其触发器，我们配置Atlas通过[复合模式](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)数据源读取模式状态。按以下步骤为项目进行配置："
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "1\\. Let's define a simple schema with two types (tables): `users` and `user_audit_logs`:",
+      "source_content_hash": "a9cbede5e4bd76d791676103a57ecc8cce659f7d7cdf600d184f3e5e1d64e6bf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 首先定义包含两种类型（表）的简单模式：`users`和`user_audit_logs`："
+      }
+    },
+    {
+      "segment_id": "229d6705",
+      "source_content": "```go title=\"ent/schema/user.go\"\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// UserAuditLog holds the schema definition for the UserAuditLog entity.\ntype UserAuditLog struct {\n\tent.Schema\n}\n\n// Fields of the UserAuditLog.\nfunc (UserAuditLog) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"operation_type\"),\n\t\tfield.String(\"operation_time\"),\n\t\tfield.String(\"old_value\").\n\t\t\tOptional(),\n\t\tfield.String(\"new_value\").\n\t\t\tOptional(),\n\t}\n}\n```",
+      "source_content_hash": "b57ba7b7a0fa11bc51d73935d5db50a53a3fcc6cb64cff675ca33a5e51fe38ca",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "Now, suppose we want to log every change to the `users` table and save it in the `user_audit_logs` table.\nTo achieve this, we need to create a trigger function on `INSERT`, `UPDATE` and `DELETE` operations and attach it to\nthe `users` table.",
+      "source_content_hash": "595d1d69c8070b29f4c55d1d1d3dc196bcb8a4f824a881ebefce6fb76052395a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "假设我们需要记录`users`表的所有变更并保存到`user_audit_logs`表。为此，需要创建一个在`INSERT`、`UPDATE`和`DELETE`操作时触发的函数，并将其附加到`users`表。"
+      }
+    },
+    {
+      "segment_id": "a1fa5396",
+      "source_content": "2\\. Next step, we define a trigger function ( `audit_users_changes`) and attach it to the `users` table using the `CREATE TRIGGER` commands:",
+      "source_content_hash": "9e9f1300bd2abee59df79bd3d4812ac370a2f78ed4db7eed48329e83d0cf6b87",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 接下来定义触发器函数(`audit_users_changes`)，并通过`CREATE TRIGGER`命令将其附加到`users`表："
+      }
+    },
+    {
+      "segment_id": "8c3563d3",
+      "source_content": "```sql title=\"schema.sql\" {23,26,29}\n-- Function to audit changes in the users table.\nCREATE OR REPLACE FUNCTION audit_users_changes()\nRETURNS TRIGGER AS $$\nBEGIN\n    IF (TG_OP = 'INSERT') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, new_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(NEW));\n        RETURN NEW;\n    ELSIF (TG_OP = 'UPDATE') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, old_value, new_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(OLD), row_to_json(NEW));\n        RETURN NEW;\n    ELSIF (TG_OP = 'DELETE') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, old_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(OLD));\n        RETURN OLD;\n    END IF;\n    RETURN NULL;\nEND;\n$$ LANGUAGE plpgsql;\n\n-- Trigger for INSERT operations.\nCREATE TRIGGER users_insert_audit AFTER INSERT ON users FOR EACH ROW EXECUTE FUNCTION audit_users_changes();\n\n-- Trigger for UPDATE operations.\nCREATE TRIGGER users_update_audit AFTER UPDATE ON users FOR EACH ROW EXECUTE FUNCTION audit_users_changes();\n\n-- Trigger for DELETE operations.\nCREATE TRIGGER users_delete_audit AFTER DELETE ON users FOR EACH ROW EXECUTE FUNCTION audit_users_changes();\n```",
+      "source_content_hash": "bd481fcbef024cb20436d5c82ae3a3c8374bc3053e749639462c049c760daf10",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "1958bc43",
+      "source_content": "3\\. Lastly, we create a simple `atlas.hcl` config file with a `composite_schema` that includes both our Ent schema and\nthe custom triggers defined in `schema.sql`:",
+      "source_content_hash": "6a7ea37cbd0c7072067531fd66863bbc1d31c0d7d7db3689d4faf4e28c57e247",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 最后创建简单的`atlas.hcl`配置文件，其中包含`composite_schema`来同时管理Ent模式和`schema.sql`中定义的自定义触发器："
+      }
+    },
+    {
+      "segment_id": "b27056c4",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"app\" {\n  # Load the ent schema first with all tables.\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n  # Then, load the triggers schema.\n  schema \"public\" {\n    url = \"file://schema.sql\"\n  }\n}\n\nenv \"local\" {\n  src = data.composite_schema.app.url\n  dev = \"docker://postgres/15/dev?search_path=public\"\n}\n```",
+      "source_content_hash": "529d5d9cab1d771af94fe1bf09b7c19d5a07aa94f6787cbcc215299e73900dee",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "5dba1427",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用指南"
+      }
+    },
+    {
+      "segment_id": "534ac82e",
+      "source_content": "After setting up our composite schema, we can get its representation using the `atlas schema inspect` command, generate\nschema migrations for it, apply them to a database, and more. Below are a few commands to get you started with Atlas:",
+      "source_content_hash": "665f7c10dd9ccd55a0fe15b7cac8c2271c2ad26f6f52e51576798c2cc754ff7e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "配置复合模式后，可通过`atlas schema inspect`命令获取其表示形式，生成模式迁移文件，应用到数据库等。以下是Atlas的入门命令："
+      }
+    },
+    {
+      "segment_id": "af843cee",
+      "source_content": "#### Inspect the Schema",
+      "source_content_hash": "0b8da15efa6536bf3d7ba2b7c234ece1c6fd8c165a258f150b75f3c4a8a94775",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查模式"
+      }
+    },
+    {
+      "segment_id": "681ef526",
+      "source_content": "The `atlas schema inspect` command is commonly used to inspect databases. However, we can also use it to inspect our\n`composite_schema` and print the SQL representation of it:",
+      "source_content_hash": "f3dbe5302e7d37e03961c48a085104e5315169634c3bc3ce4a8eebe0448f4f5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas schema inspect`命令通常用于检查数据库，但也可用于检查`composite_schema`并打印其SQL表示："
+      }
+    },
+    {
+      "segment_id": "ad3cd2f7",
+      "source_content": "```shell\natlas schema inspect \\\n  --env local \\\n  --url env://src \\\n  --format '{{ sql . }}'\n```",
+      "source_content_hash": "1842ce4f48f94bbd6a5aa04c673ac0b32a2a5303e5c49b31790f7f34cba2e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "63565425",
+      "source_content": "The command above prints the following SQL. Note, the `audit_users_changes` function and the triggers are defined after\nthe `users` and `user_audit_logs` tables:",
+      "source_content_hash": "038535af53dcb348c2564765ec32bb722ef6924236bb3e6fa37764266ee82bdc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行上述命令将输出如下SQL。注意`audit_users_changes`函数和触发器定义在`users`和`user_audit_logs`表之后："
+      }
+    },
+    {
+      "segment_id": "5680b15c",
+      "source_content": "```sql\n-- Create \"user_audit_logs\" table\nCREATE TABLE \"user_audit_logs\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"operation_type\" character varying NOT NULL, \"operation_time\" character varying NOT NULL, \"old_value\" character varying NULL, \"new_value\" character varying NULL, PRIMARY KEY (\"id\"));\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, PRIMARY KEY (\"id\"));\n-- Create \"audit_users_changes\" function\nCREATE FUNCTION \"audit_users_changes\" () RETURNS trigger LANGUAGE plpgsql AS $$\nBEGIN\n    IF (TG_OP = 'INSERT') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, new_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(NEW));\n        RETURN NEW;\n    ELSIF (TG_OP = 'UPDATE') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, old_value, new_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(OLD), row_to_json(NEW));\n        RETURN NEW;\n    ELSIF (TG_OP = 'DELETE') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, old_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(OLD));\n        RETURN OLD;\n    END IF;\n    RETURN NULL;\nEND;\n$$;\n-- Create trigger \"users_delete_audit\"\nCREATE TRIGGER \"users_delete_audit\" AFTER DELETE ON \"users\" FOR EACH ROW EXECUTE FUNCTION \"audit_users_changes\"();\n-- Create trigger \"users_insert_audit\"\nCREATE TRIGGER \"users_insert_audit\" AFTER INSERT ON \"users\" FOR EACH ROW EXECUTE FUNCTION \"audit_users_changes\"();\n-- Create trigger \"users_update_audit\"\nCREATE TRIGGER \"users_update_audit\" AFTER UPDATE ON \"users\" FOR EACH ROW EXECUTE FUNCTION \"audit_users_changes\"();\n```",
+      "source_content_hash": "a5c8ee056333e0709cae261d20986b1843a0e4250ebdd999b12cee0d220780d0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "be4b1cbf",
+      "source_content": "#### Generate Migrations For the Schema",
+      "source_content_hash": "c5990cc35443eac491da766def9a4b660ae86e07358dc8ba13ee7cc4264ae8c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 生成模式迁移"
+      }
+    },
+    {
+      "segment_id": "b27c61de",
+      "source_content": "To generate a migration for the schema, run the following command:",
+      "source_content_hash": "d37793d5ce1c9d58e36c9034b73243a6673c73c3d2019a3fc933949148642be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令为模式生成迁移文件："
+      }
+    },
+    {
+      "segment_id": "de34d0f2",
+      "source_content": "```shell\natlas migrate diff \\\n  --env local\n```",
+      "source_content_hash": "6b7403f27f8ed223e30c839e71ca4751a7ab8d6c8cadab93c9b0579c577ecadd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "3208eb29",
+      "source_content": "Note that a new migration file is created with the following content:",
+      "source_content_hash": "9e85891e456985b55c4c4723d5a20a256836ff963d5bacf28310685aeb824a89",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意新生成的迁移文件包含以下内容："
+      }
+    },
+    {
+      "segment_id": "3c6be27a",
+      "source_content": "```sql title=\"migrations/20240712090543.sql\"\n-- Create \"user_audit_logs\" table\nCREATE TABLE \"user_audit_logs\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"operation_type\" character varying NOT NULL, \"operation_time\" character varying NOT NULL, \"old_value\" character varying NULL, \"new_value\" character varying NULL, PRIMARY KEY (\"id\"));\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, PRIMARY KEY (\"id\"));\n-- Create \"audit_users_changes\" function\nCREATE FUNCTION \"audit_users_changes\" () RETURNS trigger LANGUAGE plpgsql AS $$\nBEGIN\n    IF (TG_OP = 'INSERT') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, new_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(NEW));\n        RETURN NEW;\n    ELSIF (TG_OP = 'UPDATE') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, old_value, new_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(OLD), row_to_json(NEW));\n        RETURN NEW;\n    ELSIF (TG_OP = 'DELETE') THEN\n        INSERT INTO user_audit_logs(operation_type, operation_time, old_value)\n        VALUES (TG_OP, CURRENT_TIMESTAMP, row_to_json(OLD));\n        RETURN OLD;\n    END IF;\n    RETURN NULL;\nEND;\n$$;\n-- Create trigger \"users_delete_audit\"\nCREATE TRIGGER \"users_delete_audit\" AFTER DELETE ON \"users\" FOR EACH ROW EXECUTE FUNCTION \"audit_users_changes\"();\n-- Create trigger \"users_insert_audit\"\nCREATE TRIGGER \"users_insert_audit\" AFTER INSERT ON \"users\" FOR EACH ROW EXECUTE FUNCTION \"audit_users_changes\"();\n-- Create trigger \"users_update_audit\"\nCREATE TRIGGER \"users_update_audit\" AFTER UPDATE ON \"users\" FOR EACH ROW EXECUTE FUNCTION \"audit_users_changes\"();\n```",
+      "source_content_hash": "95a88e6350539693cb7d6327518606d06362c5f9273bfd9900663c2fdf959e14",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "5e300688",
+      "source_content": "#### Apply the Migrations",
+      "source_content_hash": "dd262c901209a83701a71368b18fd88b248797d69ab716e0faf1fbcc27203f95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "130a77cc",
+      "source_content": "To apply the migration generated above to a database, run the following command:",
+      "source_content_hash": "3b0f09a477a570f0dbe9432e3bfda1ef4da42bb2a1a2169041bbd1dde36f254d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "将生成的迁移应用到数据库，运行以下命令："
+      }
+    },
+    {
+      "segment_id": "0883e35a",
+      "source_content": "```\natlas migrate apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```",
+      "source_content_hash": "9ac63adaa93ec903e09e8bf048fee595f2113774afd394318a89f192a26e03e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "6be537d9",
+      "source_content": ":::info[Apply the Schema Directly on the Database]\n\nSometimes, there is a need to apply the schema directly to the database without generating a migration file. For example,\nwhen experimenting with schema changes, spinning up a database for testing, etc. In such cases, you can use the command\nbelow to apply the schema directly to the database:\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\nOr, using the [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk):\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// Automatically update the database with the desired schema.\n// Another option, is to use 'migrate apply' or 'schema apply' manually.\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::",
+      "source_content_hash": "952a10b8a5fa910f71bdf85eddb61c04951369a6d1fc33bb3bbbecc57bee9b2b",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[直接向数据库应用模式]\n\n有时需要直接将模式应用到数据库而不生成迁移文件，例如在试验模式变更或为测试启动数据库时。这种情况下，可使用以下命令直接将模式应用到数据库：\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\n或使用 [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk):\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// 自动用目标模式更新数据库\n// 另一种方式是手动使用 'migrate apply' 或 'schema apply'\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "52d45a2c",
+      "source_content": "The code for this guide can be found in [GitHub](https://github.com/ent/ent/tree/master/examples/triggers).",
+      "source_content_hash": "ef5dc4086f4685de435b9f8d00315ebfad12dac445b51a12cae5f0e5ecefa520",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南的代码可在 [GitHub](https://github.com/ent/ent/tree/master/examples/triggers) 查看。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/migration/trigger.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.664522+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "92d515e8daa1aa811df3910114c25cc9956bea680cf15e53ed26cccd908de27b"
+  }
+}

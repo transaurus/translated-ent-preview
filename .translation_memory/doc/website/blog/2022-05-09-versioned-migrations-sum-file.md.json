@@ -1,0 +1,438 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2022-05-09-versioned-migrations-sum-file.md",
+  "source_file_content_hash": "5ad5415bdf383f0a6b39a8bd347192a1e184ade6beb174ba46db622edc9dd064",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Versioned Migrations Management and Migration Directory Integrity\nauthor: Jannik Clausen (MasseElch)\nauthorURL: \"https://github.com/masseelch\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/12862103?v=4\"\nimage: \"https://entgo.io/images/assets/migrate/atlas-validate.png\"\n---",
+      "source_content_hash": "769af2cf822f78fab4a5658373aa3e869a7e14ccc057138af7347c0d74e82795",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Five weeks ago we released a long awaited feature for managing database changes in Ent: **Versioned Migrations**. In\nthe [announcement blog post](2022-03-14-announcing-versioned-migrations.md) we gave a brief introduction into both the\ndeclarative and change-based approach to keep database schemas in sync with the consuming applications, as well as their\ndrawbacks and why [Atlas'](https://atlasgo.io) (Ents underlying migration engine) attempt of bringing the best of both\nworlds into one workflow is worth a try. We call it **Versioned Migration Authoring** and if you haven't read it, now is\na good time!",
+      "source_content_hash": "db2024115eacb27c30a7309c93bcaa32dd1b3e8ecaa603e89ee68c3229a10048",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "五周前我们发布了Ent期待已久的功能：**版本化迁移**。在[发布博客](2022-03-14-announcing-versioned-migrations.md)中，我们简要介绍了声明式和基于变更的数据库模式同步方法及其缺陷，以及为什么[Atlas](https://atlasgo.io)（Ent底层的迁移引擎）尝试将两者的优势结合到一个工作流中是值得尝试的。我们称之为**版本化迁移编写**，如果你还没读过，现在正是时候！"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "With versioned migration authoring, the resulting migration files are still \"change-based\", but have been safely planned\nby the Atlas engine. This means that you can still use your favorite migration management tool,\nlike [Flyway](https://flywaydb.org/), [Liquibase](https://liquibase.org/), \n[golang-migrate/migrate](https://github.com/golang-migrate/migrate), or \n[pressly/goose](https://github.com/pressly/goose) when developing services with Ent.",
+      "source_content_hash": "b54e2908e5bc321b0e18d9bea8b3d33134eb9801d34401601e1fb41a4b1ea707",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过版本化迁移编写，生成的迁移文件仍然是\"基于变更的\"，但由Atlas引擎安全规划。这意味着你仍然可以使用喜欢的迁移管理工具，如[Flyway](https://flywaydb.org/)、[Liquibase](https://liquibase.org/)、[golang-migrate/migrate](https://github.com/golang-migrate/migrate)或[pressly/goose](https://github.com/pressly/goose)来开发基于Ent的服务。"
+      }
+    },
+    {
+      "segment_id": "2df4f75f",
+      "source_content": "In this blog post I want to show you another new feature of the Atlas project we call the **Migration Directory \nIntegrity File**, which is now supported in Ent, and how you can use it with any of the migration management tools you \nare already used to and like. ",
+      "source_content_hash": "c29422a7fa6cae64d443348a30f1caaae7f7b2830032f3e8ae6f975d0f7bf3cb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在这篇博客中，我想展示Atlas项目的另一个新功能**迁移目录完整性文件**（现已在Ent中支持），以及如何与你已经习惯并喜欢的任何迁移管理工具结合使用。"
+      }
+    },
+    {
+      "segment_id": "79b2d0b9",
+      "source_content": "### The Problem",
+      "source_content_hash": "0d607bdb14e634232a119a24c108cf018898429d423ba4c9424c912928b105ae",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 问题所在"
+      }
+    },
+    {
+      "segment_id": "d9172fa4",
+      "source_content": "When using versioned migrations, developers need to be careful of doing the following in order to not break the database:",
+      "source_content_hash": "6e699ac8b7d914d2b27652b64c53c92850fcaa97df08402ecdbea552386300f8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用版本化迁移时，开发者需要注意以下事项以避免破坏数据库："
+      }
+    },
+    {
+      "segment_id": "5da9e02b",
+      "source_content": "1. Retroactively changing migrations that have already run.\n2. Accidentally changing the order in which migrations are organized.\n3. Checking in semantically incorrect SQL scripts.\nTheoretically, code review should guard teams from merging migrations with these issues. In my experience, however, there are many kinds of errors that can slip the human eye, making this approach error-prone.\nTherefore, an automated way of preventing these errors is much safer.",
+      "source_content_hash": "3fd006057eb9a48fde0eb2238c27e9071a2e198a36f10b520ec98fc6d12107c3",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 对已执行的迁移进行追溯性修改\n2. 意外改变迁移文件的组织顺序\n3. 提交语义错误的SQL脚本\n理论上代码审查应该能防止团队合并存在这些问题的迁移。但根据我的经验，许多错误会逃过人眼审查，因此自动化预防机制更为可靠。"
+      }
+    },
+    {
+      "segment_id": "517051a7",
+      "source_content": "The first issue (changing history) is addressed by most management tools by saving a hash of the applied migration file to the managed\ndatabase and comparing it with the files. If they don't match, the migration can be aborted. However, this happens in a\nvery late stage in the development cycle (during deployment), and it could save both time and resources if this can be detected\nearlier.",
+      "source_content_hash": "0a1cdb246477a6613fe3a44ce154313e2bbd4feea75eb8e5e7fc580a713dfce9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第一个问题（修改历史）大多数管理工具通过将已应用迁移文件的哈希值保存到数据库中进行比对来解决。如果不匹配则中止迁移。但这发生在开发周期非常晚的阶段（部署期间），如果能在更早阶段检测到将节省时间和资源。"
+      }
+    },
+    {
+      "segment_id": "3cfe6286",
+      "source_content": "For the second (and third) issue, consider the following scenario:",
+      "source_content_hash": "6fc87e8e434470b69a6450650053b992e263c4dda3763b6aee3513cc9b82019e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对于第二个（和第三个）问题，考虑以下场景："
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "![atlas-versioned-migrations-no-conflict](https://entgo.io/images/assets/migrate/no-conflict-2.svg)",
+      "source_content_hash": "ff06d0b8cffff1b4ff083bbc7b36940603ce0109d3bc92e6efc318568c167bb8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![atlas-versioned-migrations-no-conflict](https://entgo.io/images/assets/migrate/no-conflict-2.svg)"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "This diagram shows two possible errors that go undetected. The first one being the order of the migration files. ",
+      "source_content_hash": "cf8deaf5845bc42b3ba195c3d791e60637c8ecc0d933c19c64fc0dd95a3bd24c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该图展示了两个未被检测到的错误。第一个是迁移文件的顺序问题。"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "Team A and Team B both branch a feature roughly at the same time. Team B generates a migration file with a version\ntimestamp **x** and continues to work on the feature. Team A generates a migration file at a later point in time and\ntherefore has the migration version timestamp **x+1**. Team A finishes the feature and merges it into master,\npossibly automatically deploying it in production with the migration version **x+1** applied. No problem so far.",
+      "source_content_hash": "a930dd06b64b9ec41125b00bcb59dfbcfedd55e2a2b73d41c62cf707d98823b5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "团队A和团队B几乎同时从主分支切出特性分支。团队B生成时间戳为**x**的迁移文件并继续开发。团队A在较晚时间点生成迁移文件，因此获得时间戳**x+1**。团队A完成特性并合并到主分支，可能已自动部署包含版本**x+1**迁移的生产环境。目前没有问题。"
+      }
+    },
+    {
+      "segment_id": "f7ef78f9",
+      "source_content": "Now, Team B merges its feature with the migration version **x**, which predates the already applied version **x+1**. If the code\nreview process does not detect this, the migration file lands in production, and it now depends on the specific migration\nmanagement tool to decide what happens.",
+      "source_content_hash": "be5ccdfdd3b7b7d5bcdae6f35d5b9b39d261499fd4c99029e95dc2ec5e14d70c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在团队B合并其包含时间戳**x**（早于已应用的**x+1**版本）的迁移文件。如果代码审查未发现这一点，迁移文件将进入生产环境，此时具体行为取决于所使用的迁移管理工具。"
+      }
+    },
+    {
+      "segment_id": "b9aaa519",
+      "source_content": "Most tools have their own solution to that problem, `pressly/goose` for example takes an approach they\ncall [hybrid versioning](https://github.com/pressly/goose/issues/63#issuecomment-428681694). Before I introduce you to\nAtlas' (Ent's) unique way of handling this problem, let's have a quick look at the third issue:",
+      "source_content_hash": "df9faf244b0ccb603d55e6bc5474465ff794471a724012875d2dfa7356582049",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "大多数工具有自己的解决方案，例如`pressly/goose`采用他们称为[混合版本控制](https://github.com/pressly/goose/issues/63#issuecomment-428681694)的方法。在介绍Atlas（Ent）的独特解决方案之前，我们先快速看下第三个问题："
+      }
+    },
+    {
+      "segment_id": "40158b4b",
+      "source_content": "If both Team A and Team B develop a feature where they need new tables or columns, and they give them the same name, (e.g.\n`users`) they could both generate a statement to create that table. While the team that merges first will have a\nsuccessful migration, the second team's migration will fail since the table or column already exists.",
+      "source_content_hash": "87316d3b46d89c46503ea55747d1a0e16f9bb3bb788b4b5c2438947c9efb7a4b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果团队A和团队B同时开发需要新增表或列的功能，且为它们指定了相同的名称（例如`users`），那么双方都可能生成创建该表的SQL语句。虽然先合并代码的团队能成功执行迁移，但后合并的团队会因表或列已存在而导致迁移失败。"
+      }
+    },
+    {
+      "segment_id": "c315c636",
+      "source_content": "### The Solution",
+      "source_content_hash": "2251879aee58948b886890d9736d592e28109c118e59593a5b81208a487dcc4d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 解决方案"
+      }
+    },
+    {
+      "segment_id": "531437ca",
+      "source_content": "Atlas has a unique way of handling the above problems. The goal is to raise awareness about the issues as soon as\npossible. In our opinion, the best place to do so is in version control and continuous integration (CI) parts of a\nproduct. Atlas' solution to this is the introduction of a new file we call the **Migration Directory Integrity File**.\nIt is simply another file named `atlas.sum` that is stored together with the migration files and contains some\nmetadata about the migration directory. Its format is inspired by the `go.sum` file of a Go module, and it would look\nsimilar to this: ",
+      "source_content_hash": "9e04c2c492a5a10deee39da82a4ca7e7afcfc4f6cb9038482426d9e069a56c74",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas采用独特方式处理上述问题，其核心目标是尽早发现问题。我们认为最佳实践是在版本控制和持续集成(CI)环节进行拦截。Atlas的解决方案是引入名为**迁移目录完整性文件**的新机制，该文件命名为`atlas.sum`，与迁移文件共同存储，包含迁移目录的元数据。其格式借鉴了Go模块的`go.sum`文件，示例如下："
+      }
+    },
+    {
+      "segment_id": "bc137a19",
+      "source_content": "```text\nh1:KRFsSi68ZOarsQAJZ1mfSiMSkIOZlMq4RzyF//Pwf8A=\n20220318104614_team_A.sql h1:EGknG5Y6GQYrc4W8e/r3S61Aqx2p+NmQyVz/2m8ZNwA=\n```",
+      "source_content_hash": "a5daef77c1f8eb45b647b2cf731101f578138c789849b749e571d3c4ea256b28",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "d0dd855b",
+      "source_content": "The `atlas.sum` file contains a sum of the whole directory as its first entry, and a checksum for each of the migration\nfiles (implemented by a reverse, one branch merkle hash tree). Let's see how we can use this file to detect the cases\nabove in version control and CI. Our goal is to raise awareness that both teams added migrations and that they most\nlikely have to be checked before proceeding the merge.",
+      "source_content_hash": "0916f4648d42d3f8a1442555e2acb632a74be8afb3971b09be0c5b1e9353cffc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas.sum`文件首行为整个目录的校验和，随后是每个迁移文件的哈希值（采用反向单分支Merkle哈希树实现）。我们将演示如何通过该文件在版本控制和CI中检测前文所述问题。其核心价值在于当多个团队同时添加迁移时，系统能主动提示需要人工检查合并冲突。"
+      }
+    },
+    {
+      "segment_id": "17f3ca09",
+      "source_content": ":::note\nTo follow along, run the following commands to quickly have an example to work with. They will:\n\n1. Create a Go module and download all needed dependencies\n2. Create a very basic User schema\n3. Enable the versioned migrations feature\n4. Run the codegen\n5. Start a MySQL docker container to use (remove with `docker stop atlas-sum`)\n\n```shell\nmkdir ent-sum-file\ncd ent-sum-file\ngo mod init ent-sum-file\ngo install entgo.io/ent/cmd/ent@master\ngo run entgo.io/ent/cmd/ent new User\nsed -i -E 's|^//go(.*)$|//go\\1 --feature sql/versioned-migration|' ent/generate.go\ngo generate ./...\ndocker run --rm --name atlas-sum --detach --env MYSQL_ROOT_PASSWORD=pass --env MYSQL_DATABASE=ent -p 3306:3306 mysql\n```\n:::",
+      "source_content_hash": "629b85cc5e10d6ce30114702ae20b5c2bde0bcb9313d12332d3a7f33f5a53be0",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n跟随以下命令快速搭建示例环境，这些命令将：\n\n1. 创建Go模块并下载依赖\n2. 创建基础User模型\n3. 启用版本化迁移功能\n4. 执行代码生成\n5. 启动MySQL容器（使用`docker stop atlas-sum`停止）\n\n```shell\nmkdir ent-sum-file\ncd ent-sum-file\ngo mod init ent-sum-file\ngo install entgo.io/ent/cmd/ent@master\ngo run entgo.io/ent/cmd/ent new User\nsed -i -E 's|^//go(.*)$|//go\\1 --feature sql/versioned-migration|' ent/generate.go\ngo generate ./...\ndocker run --rm --name atlas-sum --detach --env MYSQL_ROOT_PASSWORD=pass --env MYSQL_DATABASE=ent -p 3306:3306 mysql\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "a2c0166e",
+      "source_content": "The first step is to tell the migration engine to create and manage the `atlas.sum` by using the `schema.WithSumFile()`\noption. The below example uses an [instantiated Ent client](/docs/versioned-migrations#from-client) to generate new\nmigration files:",
+      "source_content_hash": "9cd23b352829dca86bbf22742e61203559fdeef28a2ec92870cc38993ebf726f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先需通过`schema.WithSumFile()`选项启用`atlas.sum`文件管理功能。以下示例使用[实例化Ent客户端](/docs/versioned-migrations#from-client)生成迁移文件："
+      }
+    },
+    {
+      "segment_id": "c4c0fc07",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"os\"\n\n\t\"ent-sum-file/ent\"\n\n\t\"ariga.io/atlas/sql/migrate\"\n\t\"entgo.io/ent/dialect/sql/schema\"\n\t_ \"github.com/go-sql-driver/mysql\"\n)\n\nfunc main() {\n\tclient, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/ent\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed connecting to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\tctx := context.Background()\n\t// Create a local migration directory.\n\tdir, err := migrate.NewLocalDir(\"migrations\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating atlas migration directory: %v\", err)\n\t}\n\t// Write migration diff.\n\t// highlight-start\n\terr = client.Schema.NamedDiff(ctx, os.Args[1], schema.WithDir(dir), schema.WithSumFile())\n\t// highlight-end\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "e24a9877c83f9d30f9a0fc2f844da3815e2ccf53367220310c4b824428010e52",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "9e90a9b3",
+      "source_content": "After creating a migrations directory and running the above commands you should see `golang-migrate/migrate` compatible\nmigration files and in addition, the `atlas.sum` file with the following contents:",
+      "source_content_hash": "586f35bdeb5010f1b3d2a0c4ccfbdaf7cc5c2d29bf6908d530f482ac7a2a947c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行迁移目录生成命令后，您将看到符合`golang-migrate/migrate`规范的迁移文件，以及包含如下内容的`atlas.sum`文件："
+      }
+    },
+    {
+      "segment_id": "e481745b",
+      "source_content": "```shell\nmkdir migrations\ngo run -mod=mod main.go initial\n```",
+      "source_content_hash": "758fa3428efd50a9b5593d60630427e24e979a289e00efd52223223ac5c649e9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "cf5bbc3b",
+      "source_content": "```sql title=\"20220504114411_initial.up.sql\"\n-- create \"users\" table\nCREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;\n\n```",
+      "source_content_hash": "152998748bb6924f1c31a73f8d00fb05935a1286ff1e4c897566c31d90bb720e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "e9921a93",
+      "source_content": "```sql title=\"20220504114411_initial.down.sql\"\n-- reverse: create \"users\" table\nDROP TABLE `users`;\n\n```",
+      "source_content_hash": "561e05c8e80622efa0df8ed79615e803f8844468d886eb46681e37530b2d8f39",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "7c894678",
+      "source_content": "```text title=\"atlas.sum\"\nh1:SxbWjP6gufiBpBjOVtFXgXy7q3pq1X11XYUxvT4ErxM=\n20220504114411_initial.down.sql h1:OllnelRaqecTrPbd2YpDbBEymCpY/l6ihbyd/tVDgeY=\n20220504114411_initial.up.sql h1:o/6yOczGSNYQLlvALEU9lK2/L6/ws65FrHJkEk/tjBk=\n```",
+      "source_content_hash": "e3b58e0467271f07c0cb7fb861c96e974894f437be60978c862d223e057a05a4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "827eb9a3",
+      "source_content": "As you can see the `atlas.sum` file contains one entry for each migration file generated. With the `atlas.sum`\ngeneration file enabled, both Team A and Team B will have such a file once they generate migrations for a schema change.\nNow the version control will raise a merge conflict once the second Team attempts to merge their feature. ",
+      "source_content_hash": "e747052e4b35a71c8120b70c5e81d4180315b3851b6e4bf823740ca5fbc5669e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可见`atlas.sum`为每个迁移文件都生成了对应条目。启用该功能后，当团队A和团队B各自生成迁移文件时，版本控制系统会在第二个团队尝试合并时主动引发冲突。"
+      }
+    },
+    {
+      "segment_id": "89cf7bac",
+      "source_content": "![atlas-versioned-migrations-no-conflict](https://entgo.io/images/assets/migrate/conflict-2.svg)",
+      "source_content_hash": "7242692e1b4c945f46500e66ea4cceb21e37fcc0b2d2f48f59a34bcc04296a43",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![atlas-versioned-migrations-no-conflict](https://entgo.io/images/assets/migrate/conflict-2.svg)"
+      }
+    },
+    {
+      "segment_id": "b826038b",
+      "source_content": ":::note\nIn the following steps we invoke the Atlas CLI by calling `go run -mod=mod ariga.io/atlas/cmd/atlas`, but you can also\ninstall the CLI globally (and then simply invoke it by calling `atlas`) to your system by following the installation \ninstructions [here](https://atlasgo.io/cli/getting-started/setting-up#install-the-cli).\n:::",
+      "source_content_hash": "d423378a8989f61de7230261d9dabb218c9d72ead22afc5129ce988e05f8af8c",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n后续步骤中我们通过`go run -mod=mod ariga.io/atlas/cmd/atlas`调用Atlas CLI，您也可以参照[安装指南](https://atlasgo.io/cli/getting-started/setting-up#install-the-cli)全局安装CLI工具（安装后直接使用`atlas`命令调用）。\n:::"
+      }
+    },
+    {
+      "segment_id": "e29bd639",
+      "source_content": "You can check at any time, if your `atlas.sum` file is in sync with the migration directory with the following command (\nwhich should not output any errors now):",
+      "source_content_hash": "4b43903ee0c564c6c9dfc384e8f0d6e31461ab1153ee887a7ba3cd41b33d7262",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您可通过以下命令随时校验`atlas.sum`文件与迁移目录的同步状态（当前应无错误输出）："
+      }
+    },
+    {
+      "segment_id": "65ba7468",
+      "source_content": "```shell\ngo run -mod=mod ariga.io/atlas/cmd/atlas migrate validate\n```",
+      "source_content_hash": "eb30163b83c1b27729c9dcf96c8f7395c8c1817f3514dbaa75965af25f007e12",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "0427bb2b",
+      "source_content": "However, if you happen to make a manual change to your migration files, like adding a new SQL statement, editing an\nexisting one or even creating a completely new file, the `atlas.sum` file is no longer in sync with the migration\ndirectory's contents. Attempting to generate new migration files for a schema change will now be blocked by the Atlas\nmigration engine. Try it out by creating a new empty migration file and run the `main.go` once again:",
+      "source_content_hash": "868e76366d009c69821a08ac214eb27519dfe1185445e86662e2b2b64c664b25",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然而，如果您手动修改了迁移文件（例如新增SQL语句、编辑现有语句或创建全新文件），`atlas.sum`文件将与迁移目录内容不同步。此时尝试为模式变更生成新迁移文件会被Atlas迁移引擎阻止。您可以通过创建空迁移文件并重新运行`main.go`来验证："
+      }
+    },
+    {
+      "segment_id": "edfcc73c",
+      "source_content": "```shell\ngo run -mod=mod ariga.io/atlas/cmd/atlas migrate new migrations/manual_version.sql --format golang-migrate\ngo run -mod=mod main.go initial\n# 2022/05/04 15:08:09 failed creating schema resources: validating migration directory: checksum mismatch\n# exit status 1\n\n```",
+      "source_content_hash": "a163d2e935c9c3591c196713b0b5ebb8b291bf0e4a56c52c1cd315259971d2b1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_edfcc73c"
+      }
+    },
+    {
+      "segment_id": "38f964f1",
+      "source_content": "The `atlas migrate validate` command will tell you the same:",
+      "source_content_hash": "2c92e39ef16cad1485da0ceb0e94b2af23697e11486adf638fb6469bccd96115",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行`atlas migrate validate`命令会显示相同错误："
+      }
+    },
+    {
+      "segment_id": "117486ca",
+      "source_content": "```shell\ngo run -mod=mod ariga.io/atlas/cmd/atlas migrate validate\n# Error: checksum mismatch\n# \n# You have a checksum error in your migration directory.\n# This happens if you manually create or edit a migration file.\n# Please check your migration files and run\n# \n# 'atlas migrate hash --force'\n# \n# to re-hash the contents and resolve the error.\n# \n# exit status 1\n```",
+      "source_content_hash": "e5db91d24a82f452023570be2318f297dea9a95e4bad3021a362da42f991d695",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_117486ca"
+      }
+    },
+    {
+      "segment_id": "d8c366cc",
+      "source_content": "In order to get the `atlas.sum` file back in sync with the migration directory, we can once again use the Atlas CLI:",
+      "source_content_hash": "44bf68ecb96452e333dcb612bb6073de4450c1bb5f1aa512e1437727ab895da1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要使`atlas.sum`文件重新与迁移目录同步，可再次使用Atlas CLI工具："
+      }
+    },
+    {
+      "segment_id": "daad2e28",
+      "source_content": "```shell\ngo run -mod=mod ariga.io/atlas/cmd/atlas migrate hash --force\n```",
+      "source_content_hash": "58ec97a28da4cc2823ba6d7759a99dc143ad545637a10c641d7ab7064a86768e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daad2e28"
+      }
+    },
+    {
+      "segment_id": "61e5dad6",
+      "source_content": "As a safety measure, the Atlas CLI does not operate on a migration directory that is not in sync with its `atlas.sum`\nfile. Therefore, you need to add the `--force` flag to the command. ",
+      "source_content_hash": "19eb77b35d92fbae7930b167c3e2af8dec97fb63865696888cad967d3881192c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "出于安全考虑，Atlas CLI不会操作未与`atlas.sum`文件同步的迁移目录，因此需要添加`--force`参数强制执行。"
+      }
+    },
+    {
+      "segment_id": "01902900",
+      "source_content": "For cases where a developer forgets to update the `atlas.sum` file after making a manual change, you can add\nan `atlas migrate validate` call to your CI. We are actively working on a GitHub action and CI solution, that does this \n(among and other things) for you _out-of-the-box_.",
+      "source_content_hash": "af7ee70c6e3beddbf98ecf9123d0dc61941be516d374b13b1ce35dfbaa4ff0ff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "针对开发者忘记在手动修改后更新`atlas.sum`文件的情况，建议在CI流程中添加`atlas migrate validate`检查。我们正在开发开箱即用的GitHub Action和CI解决方案，将自动处理此类问题及其他相关事项。"
+      }
+    },
+    {
+      "segment_id": "c0f80a50",
+      "source_content": "### Wrapping Up",
+      "source_content_hash": "6df1295c536bdf3cf58241755891051d109001c784cced5b33a00f70983bc553",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "d73903fc",
+      "source_content": "In this post, we gave a brief introduction to common sources of schema migration when working with change based SQL\nfiles and introduced a solution based on the Atlas project to make migrations more safe.",
+      "source_content_hash": "f9df59add8db1109f132f54eb550e7c96a8a38f2cdb9d2416ad8304696f7c6f4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文简要介绍了基于变更SQL文件的模式迁移常见问题，并提出了基于Atlas项目的安全迁移解决方案。"
+      }
+    },
+    {
+      "segment_id": "2dbbb313",
+      "source_content": "Have questions? Need help with getting started? Feel free to join\nour [Ent Discord Server](https://discord.gg/qZmPgTE6RX).",
+      "source_content_hash": "ba13090a96a0ab7aa769a5e3bc4fc18730a2c953e09c1f9a0328da02c2aa7eb3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如有疑问或需要入门帮助？欢迎加入我们的[Ent Discord社区](https://discord.gg/qZmPgTE6RX)。"
+      }
+    },
+    {
+      "segment_id": "0b194c02",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n:::",
+      "source_content_hash": "41de1e3e3bfff37d1c248755b51dd8428c0ca6c2f8a358f8cc6b9736984c77d1",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2022-05-09-versioned-migrations-sum-file.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.677004+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "5ad5415bdf383f0a6b39a8bd347192a1e184ade6beb174ba46db622edc9dd064"
+  }
+}

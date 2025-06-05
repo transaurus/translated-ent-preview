@@ -1,0 +1,862 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-03-18-generating-a-grpc-server-with-ent.md",
+  "source_file_content_hash": "e5384881cdfd51a5a2acbc45946326fcd2556c368178ea4d18760f15591ccb8a",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Generate a fully-working Go gRPC server in two minutes with Ent\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\n---",
+      "source_content_hash": "eb270d5fd53a9450d51de7309d2ba1fb24ca80707cfc72c6b8df4a13767e71ce",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "![ent + gRPC](https://entgo.io/images/assets/ent-grpc.jpg)",
+      "source_content_hash": "97e9ea39a53ae622328da39d895d3008767462699c3c0b78173bc442a8782b11",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![ent + gRPC](https://entgo.io/images/assets/ent-grpc.jpg)"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "## Introduction",
+      "source_content_hash": "d753efbab681fa4da82470d9a83b1c202de58f92fd498e77a269c1163bc4714b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 简介"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "Having entity schemas defined in a central, language-neutral format\nhas [many benefits](https://rotemtam.com/2019/06/28/the-statically-typed-org/) as the scale of software engineering organizations increase. To do this, many organizations use [Protocol Buffers](https://developers.google.com/protocol-buffers) as their [interface definition language](https://en.wikipedia.org/wiki/Interface_description_language) (IDL). In addition, gRPC,\na Protobuf-based RPC framework modeled after Google's internal [Stubby](https://grpc.io/blog/principles/#motivation) is becoming increasingly popular due to its efficiency and code-generation capabilities.",
+      "source_content_hash": "782b8f22344e3594a5461d98d7d53639f3c0b8680bcabdf65cb848e3b080f8ab",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在软件工程组织规模扩大时，以中心化、语言中立的方式定义实体模式具有[诸多优势](https://rotemtam.com/2019/06/28/the-statically-typed-org/)。为此，许多组织采用[Protocol Buffers](https://developers.google.com/protocol-buffers)作为其[接口定义语言](https://en.wikipedia.org/wiki/Interface_description_language)(IDL)。此外，基于Protobuf的RPC框架gRPC（模仿Google内部[Stubby](https://grpc.io/blog/principles/#motivation)设计）因其高效性和代码生成能力正日益流行。"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "Being an IDL, gRPC does not prescribe any specific guidelines on implementing the data access layer so implementations vary greatly. Ent is a natural candidate for building the data access layer in any Go application and so there is great potential in integrating the two technologies together.",
+      "source_content_hash": "dd81cca8f37f368c4dc7967e6904c18ef78f75f3936808575a331797dff616f4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "作为IDL，gRPC并未规定数据访问层的具体实现方案，因此实现方式差异较大。Ent作为构建Go应用数据访问层的天然选择，与gRPC技术结合具有巨大潜力。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "Today we announce an experimental version of `entproto`, a Go package, and a command-line tool to add Protobuf and gRPC support for ent users. With `entproto`, developers can set up a fully working CRUD gRPC server in a few minutes. In this post, we will show exactly how to do just that.",
+      "source_content_hash": "97c5768355451a45deb80556790df9dde3f243e2f90e957bbb6c3e892eb28f2c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "今天我们发布实验性版本`entproto`——一个为ent用户提供Protobuf和gRPC支持的Go包及命令行工具。通过`entproto`，开发者可在几分钟内搭建功能完整的CRUD gRPC服务端。本文将具体演示实现过程。"
+      }
+    },
+    {
+      "segment_id": "d350c018",
+      "source_content": "## Setting Up",
+      "source_content_hash": "74cd0f7d788ce9bde9d49e7b08f64aebb638471f6b4268589a2bc6bced8b95bf",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 环境配置"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "The final version of this tutorial is available on [GitHub](https://github.com/rotemtam/ent-grpc-example), you can clone it if you prefer following along that way.",
+      "source_content_hash": "7d5725aaf54e4988bac8d5fdec695f5ddff41214dac0ed3030b9b06246d3f41b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程最终版本已发布于[GitHub](https://github.com/rotemtam/ent-grpc-example)，您可通过克隆仓库跟随操作。"
+      }
+    },
+    {
+      "segment_id": "f5f6d2ce",
+      "source_content": "Let's start by initializing a new Go module for our project:",
+      "source_content_hash": "497158b230ffec52e19b240587d94028e752c63e04f892a5e6e5c6d3a56dc7e2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先为项目初始化新的Go模块："
+      }
+    },
+    {
+      "segment_id": "41a8ae85",
+      "source_content": "```console\nmkdir ent-grpc-example\ncd ent-grpc-example\ngo mod init ent-grpc-example\n```",
+      "source_content_hash": "e6c7d60e6d77444a3671bf2006f68e8f5e94d75b91bec9f1e43c64de86f0c896",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_41a8ae85"
+      }
+    },
+    {
+      "segment_id": "4b1d2d7d",
+      "source_content": "Next we use `go run` to invoke the ent code generator to initialize a schema:",
+      "source_content_hash": "ea8c484339b01e0bc537b015b22c603a180ae46dbae50b41ab86f2b7dd6bcf60",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着使用`go run`调用ent代码生成器初始化模式："
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent new User\n```",
+      "source_content_hash": "a2bdf6896e1c9f236ac8def5dab27404f92f4ddef0f8569e28ba09e86daa2fd6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cb57d798"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "Our directory should now look like:",
+      "source_content_hash": "d5f5b65d4b865d673192c61ea2f8bea3046416482f7189c977378fe2d34cb801",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当前目录结构应如下所示："
+      }
+    },
+    {
+      "segment_id": "be2d5397",
+      "source_content": "```console\n.\n├── ent\n│   ├── generate.go\n│   └── schema\n│       └── user.go\n├── go.mod\n└── go.sum\n```",
+      "source_content_hash": "791b7c3a7a631dc1389fe79fc942b784f48b6d1a14701bfaf39b9edbfb973c1e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be2d5397"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "Next, let's add the `entproto` package to our project:",
+      "source_content_hash": "e493f0a45a9024450df1c2ecafead2ca16f545c90d2a0d79929816de3ab1c53d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来添加`entproto`包至项目："
+      }
+    },
+    {
+      "segment_id": "229d6705",
+      "source_content": "```console\ngo get -u entgo.io/contrib/entproto\n```",
+      "source_content_hash": "a39e9df816e0518ab0468b2a3ac8a42e5f6f74b8af1102e19c4411b5076aca11",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229d6705"
+      }
+    },
+    {
+      "segment_id": "98d26038",
+      "source_content": "Next, we will define the schema for the `User` entity. Open `ent/schema/user.go` and edit:",
+      "source_content_hash": "75bec4ee93cffd482882a73112d699e6f4925e6ce4cc779a8c5b74abb2123e58",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在定义`User`实体模式。编辑`ent/schema/user.go`："
+      }
+    },
+    {
+      "segment_id": "f275f5fd",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tUnique(),\n\t\tfield.String(\"email_address\").\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "600de6c979e3ade23a27be0208c9758c0513564ae7202ffb13723445b556b84c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f275f5fd"
+      }
+    },
+    {
+      "segment_id": "e8e162a9",
+      "source_content": "In this step, we added two unique fields to our `User` entity: `name` and `email_address`. The `ent.Schema` is just the definition of the schema, to create usable production code from it we need to run Ent's code generation tool on it. Run:",
+      "source_content_hash": "e108271b1d7e317a07b1050fb8b9c08fbb6a41ce7648306e0ae88069a00818e2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本步骤中，我们为`User`实体添加了两个唯一字段：`name`和`email_address`。`ent.Schema`仅是模式定义，需通过Ent代码生成工具生成可用代码。运行："
+      }
+    },
+    {
+      "segment_id": "9f4336b3",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9f4336b3"
+      }
+    },
+    {
+      "segment_id": "fbc2db85",
+      "source_content": "Notice the a bunch of new files were created from our schema definition now:",
+      "source_content_hash": "916d3c7a10121c096c72c634876e88dab01a1836c46f2d8a16e5cb7d9b9f93ce",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意此时已根据模式定义生成大量新文件："
+      }
+    },
+    {
+      "segment_id": "b73a4a7a",
+      "source_content": "```console\n├── ent\n│   ├── client.go\n│   ├── config.go\n// .... many more\n│   ├── user\n│   ├── user.go\n│   ├── user_create.go\n│   ├── user_delete.go\n│   ├── user_query.go\n│   └── user_update.go\n├── go.mod\n└── go.sum\n```",
+      "source_content_hash": "50eebe0fc8946c0ae413f072dcb4e621df4ea1d12b505d065a17e96907b478ed",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b73a4a7a"
+      }
+    },
+    {
+      "segment_id": "6ca4479f",
+      "source_content": "At this point, we can open a connection to a database, run a migration to create the `users` table, and start reading and writing data to it. This is covered on the [Setup Tutorial](https://entgo.io/docs/tutorial-setup/), so let's cut to the chase and learn about generating Protobuf definitions and gRPC servers from our schema.",
+      "source_content_hash": "c13a08e2e754983598dfaf5a969195511b98fb708c71244f158ce27e767c014c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "至此，我们可以连接数据库、执行迁移创建`users`表并开始读写数据。这些操作在[设置教程](https://entgo.io/docs/tutorial-setup/)中已有涵盖，下面我们直接进入主题——学习如何从模式生成Protobuf定义和gRPC服务端。"
+      }
+    },
+    {
+      "segment_id": "71169a2d",
+      "source_content": "## Generating Go Protobufs with  `entproto`",
+      "source_content_hash": "1738c0756bd45747d0124cd8fc7ac13c8d06a1bbc77bf8b91150eb9483a30147",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用`entproto`生成Go Protobuf"
+      }
+    },
+    {
+      "segment_id": "c1eaf30b",
+      "source_content": "As ent and Protobuf schemas are not identical, we must supply some annotations on our schema to help `entproto` figure out exactly how to generate Protobuf definitions (called \"Messages\" in protobuf lingo).",
+      "source_content_hash": "d4ce44590ffba26d639da74012a68ee3ea085fab05f4c7f322944aa7a84df239",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于ent模式与Protobuf模式并非完全一致，我们需要在模式上添加注解来指导`entproto`生成准确的Protobuf定义（在protobuf术语中称为\"Messages\"）。"
+      }
+    },
+    {
+      "segment_id": "f0984c2a",
+      "source_content": "The first thing we need to do is to add an `entproto.Message()` annotation. This is our opt-in to Protobuf schema generation, we don't necessarily want to generate proto messages or gRPC service definitions from *all* of our schema entities, and this annotation gives us that control. To add it, append to `ent/schema/user.go`:",
+      "source_content_hash": "7e913e986afa38ddb425d0c4eb302d7805209d886df36f80e43a57810e5f410f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先需添加`entproto.Message()`注解。这是我们选择加入Protobuf模式生成的声明——并非所有模式实体都需要生成proto消息或gRPC服务定义，该注解提供了这种控制权。在`ent/schema/user.go`中添加："
+      }
+    },
+    {
+      "segment_id": "7ded566f",
+      "source_content": "```go\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentproto.Message(),\n\t}\n}\n```",
+      "source_content_hash": "aa17223ca90108443bb06b5bb877a925b487acd7e2d82b4032fda68ef739fa52",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7ded566f"
+      }
+    },
+    {
+      "segment_id": "44aaa880",
+      "source_content": "Next, we need to annotate each field and assign it a field number. Recall that when [defining a protobuf message type](https://developers.google.com/protocol-buffers/docs/proto3#simple), each field must be assigned a unique number.  To do that, we add an `entproto.Field` annotation on each field. Update the `Fields` in `ent/schema/user.go`:",
+      "source_content_hash": "4db3495d85df004313a479e84874b6d1c3688469c6b619303de68ba71bed3d05",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们需要为每个字段添加注解并分配字段编号。请记住，在[定义protobuf消息类型](https://developers.google.com/protocol-buffers/docs/proto3#simple)时，每个字段都必须分配一个唯一编号。为此，我们在每个字段上添加`entproto.Field`注解。更新`ent/schema/user.go`中的`Fields`部分："
+      }
+    },
+    {
+      "segment_id": "353ca453",
+      "source_content": "```go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tUnique().\n\t\t\tAnnotations(\n\t\t\t\tentproto.Field(2),\n\t\t\t),\n\t\tfield.String(\"email_address\").\n\t\t\tUnique().\n\t\t\tAnnotations(\n\t\t\t\tentproto.Field(3),\n\t\t\t),\n\t}\n}\n```",
+      "source_content_hash": "3a1417574f16a11abdbc3b7a8086d6abdefb68029e11e5dd397076948f78b078",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_353ca453"
+      }
+    },
+    {
+      "segment_id": "14bc6b75",
+      "source_content": "Notice that we did not start our field numbers from 1, this is because `ent` implicitly creates the `ID` field for the entity, and that field is automatically assigned the number 1.  We can now generate our protobuf message type definitions. To do that, we will add to `ent/generate.go` a `go:generate` directive that invokes the `entproto` command-line tool. It should now look like this:",
+      "source_content_hash": "7d2468435fc3c2c6d80a1e2e25f33edf779403674b2568e3f003f33856e81e12",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意我们没有从1开始编号字段，这是因为`ent`会隐式创建实体的`ID`字段，该字段会自动分配编号1。现在我们可以生成protobuf消息类型定义。为此，我们将在`ent/generate.go`中添加一个`go:generate`指令来调用`entproto`命令行工具。该文件现在应如下所示："
+      }
+    },
+    {
+      "segment_id": "9ed0f908",
+      "source_content": "```go\npackage ent\n\n//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate ./schema\n//go:generate go run -mod=mod entgo.io/contrib/entproto/cmd/entproto -path ./schema\n```",
+      "source_content_hash": "db6101eb79dd3625f8d25d3ba67e137242ba1eea3475d629ae5fe494c2746073",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9ed0f908"
+      }
+    },
+    {
+      "segment_id": "681ef526",
+      "source_content": "Let's re-generate our code:",
+      "source_content_hash": "50f7a1187a819e24ed2a21ae95515db96f2f4058b142cea19313376034b88380",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们重新生成代码："
+      }
+    },
+    {
+      "segment_id": "eb25bb8c",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eb25bb8c"
+      }
+    },
+    {
+      "segment_id": "3e8f45da",
+      "source_content": "Observe that a new directory was created which will contain all protobuf related generated code: `ent/proto`. It now contains:",
+      "source_content_hash": "ba7d50bf2c63e300ed73dc3a5df24824d44b5bbbcce7af19749d83d61b648591",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察到一个新目录`ent/proto`被创建，它将包含所有与protobuf相关的生成代码。目前包含："
+      }
+    },
+    {
+      "segment_id": "d58c5dc0",
+      "source_content": "```console\nent/proto\n└── entpb\n    ├── entpb.proto\n    └── generate.go\n```",
+      "source_content_hash": "2116856f67e4a15c71836e2d5edd21ef08c5ef2b5d49c1e32ef846e5d2822bad",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d58c5dc0"
+      }
+    },
+    {
+      "segment_id": "d2a3d4c7",
+      "source_content": "Two files were created. Let's look at their contents:",
+      "source_content_hash": "6b4cf70bf53cb9b84e7613ee3e222f31348068ca0ba7854457c8687565b15017",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成了两个文件。让我们查看它们的内容："
+      }
+    },
+    {
+      "segment_id": "75daf40d",
+      "source_content": "```protobuf\n// Code generated by entproto. DO NOT EDIT.\nsyntax = \"proto3\";\n\npackage entpb;\n\noption go_package = \"ent-grpc-example/ent/proto/entpb\";\n\nmessage User {\n  int32 id = 1;\n\n  string user_name = 2;\n\n  string email_address = 3;\n}\n```",
+      "source_content_hash": "01ae96de68b7fae67be75567286c87d6f374044d110eb2f7b8423dd680ab8367",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_75daf40d"
+      }
+    },
+    {
+      "segment_id": "39c48ff7",
+      "source_content": "Nice! A new `.proto` file containing a message type definition that maps to our `User` schema was created!",
+      "source_content_hash": "f316367ad5b1c69cec2c088a87af846ad506d71ff23f195e0ed90bcfd89821c1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "很好！创建了一个新的`.proto`文件，其中包含映射到我们`User`模式的消息类型定义！"
+      }
+    },
+    {
+      "segment_id": "b26685f5",
+      "source_content": "```go\npackage entpb\n//go:generate protoc -I=.. --go_out=.. --go-grpc_out=.. --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative --entgrpc_out=.. --entgrpc_opt=paths=source_relative,schema_path=../../schema entpb/entpb.proto\n```",
+      "source_content_hash": "246bd51954e8e5f2bd9bb10f276a6e821c6c54b4d4558d2bd45113d4d5c59307",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b26685f5"
+      }
+    },
+    {
+      "segment_id": "5cf1bce4",
+      "source_content": "A new `generate.go` file was created with an invocation to `protoc`, the protobuf code generator instructing it how to generate Go code from our `.proto` file. For this command to work, we must first install `protoc` as well as 3 protobuf plugins: `protoc-gen-go` (which generates Go Protobuf structs), `protoc-gen-go-grpc` (which generates Go gRPC service interfaces and clients), and `protoc-gen-entgrpc` (which generates an implementation of the service interface). If you do not have these installed, please follow these directions:",
+      "source_content_hash": "90e68deb55ec8ee1d0b6d4c1cf08c1d2ee1439a7e23f5e58b4dfc0ea56b308c9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "还创建了一个新的`generate.go`文件，其中包含对protobuf代码生成器`protoc`的调用指令，说明如何从我们的`.proto`文件生成Go代码。要使此命令正常工作，我们必须先安装`protoc`以及三个protobuf插件：`protoc-gen-go`（生成Go Protobuf结构体）、`protoc-gen-go-grpc`（生成Go gRPC服务接口和客户端）和`protoc-gen-entgrpc`（生成服务接口的实现）。如果尚未安装，请按照以下说明操作："
+      }
+    },
+    {
+      "segment_id": "92dd525e",
+      "source_content": "- [protoc installation](https://grpc.io/docs/protoc-installation/)\n- [protoc-gen-go + protoc-gen-go-grpc installation](https://grpc.io/docs/languages/go/quickstart/)\n- Run `go get -u entgo.io/contrib/entproto/cmd/protoc-gen-entgrpc` to install `protoc-gen-entgrpc`",
+      "source_content_hash": "ab115f411f967b75f17d8e0cc0231eea922dd246f8e93df1c21a8a6101722013",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- [protoc安装指南](https://grpc.io/docs/protoc-installation/)\n- [protoc-gen-go + protoc-gen-go-grpc安装指南](https://grpc.io/docs/languages/go/quickstart/)\n- 运行`go get -u entgo.io/contrib/entproto/cmd/protoc-gen-entgrpc`安装`protoc-gen-entgrpc`"
+      }
+    },
+    {
+      "segment_id": "b27c61de",
+      "source_content": "After installing these dependencies, we can re-run code-generation:",
+      "source_content_hash": "d18c3dc295bcb44d37a475fe74ddaed013dc6ad941a2c10483a53f297bc6dc84",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "安装这些依赖项后，我们可以重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "de34d0f2",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de34d0f2"
+      }
+    },
+    {
+      "segment_id": "015c0c6e",
+      "source_content": "Observe that a new file named `ent/proto/entpb/entpb.pb.go` was created which contains the generated Go structs for our entities.",
+      "source_content_hash": "c4983426241d494c51ba3a10380bf4268d02683413a3b0a958df2e0f72a713d0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察到生成了一个名为`ent/proto/entpb/entpb.pb.go`的新文件，其中包含为我们的实体生成的Go结构体。"
+      }
+    },
+    {
+      "segment_id": "6e5d54a8",
+      "source_content": "Let's write a test that uses it to make sure everything is wired correctly. Create a new file named `pb_test.go` and write:",
+      "source_content_hash": "24fde0d47e8aa8c969c3bc760bed111dfe42ac618e971ac4675f194dc52ef9d3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们编写一个测试来验证一切是否正常。创建一个名为`pb_test.go`的新文件并写入："
+      }
+    },
+    {
+      "segment_id": "bf3146e1",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"testing\"\n\n\t\"ent-grpc-example/ent/proto/entpb\"\n)\n\nfunc TestUserProto(t *testing.T) {\n\tuser := entpb.User{\n\t\tName:     \"rotemtam\",\n\t\tEmailAddress: \"rotemtam@example.com\",\n\t}\n\tif user.GetName() != \"rotemtam\" {\n\t\tt.Fatal(\"expected user name to be rotemtam\")\n\t}\n\tif user.GetEmailAddress() != \"rotemtam@example.com\" {\n\t\tt.Fatal(\"expected email address to be rotemtam@example.com\")\n\t}\n}\n```",
+      "source_content_hash": "61e08383edf5bc78649e74298f4bdfaeeacf3d6a16ba5c000c6e3199389a8a63",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bf3146e1"
+      }
+    },
+    {
+      "segment_id": "49be422b",
+      "source_content": "To run it:",
+      "source_content_hash": "2e99b2e5e5f2fcb17b0e25393351c6b1d712d5ec1d5435bf07904ec6b5adafaa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行测试："
+      }
+    },
+    {
+      "segment_id": "5ad8d2b2",
+      "source_content": "```console\ngo get -u./... # install deps of the generated package\ngo test ./...\n```",
+      "source_content_hash": "164d0f660d73babe2787e08fa71d9f0476835688fbe3bdf57405313ac04976ac",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5ad8d2b2"
+      }
+    },
+    {
+      "segment_id": "85b17c36",
+      "source_content": "Hooray! The test passes. We have successfully generated working Go Protobuf structs from our Ent schema. Next, let's see how to automatically generate a working CRUD gRPC *server* from our schema.",
+      "source_content_hash": "96d6fc972b39178d6d9d9047788c14536fd42c346f034993c3a573ca3f81f1b2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了！测试通过。我们已成功从Ent模式生成了可工作的Go Protobuf结构体。接下来，让我们看看如何从模式自动生成一个可工作的CRUD gRPC*服务器*。"
+      }
+    },
+    {
+      "segment_id": "f210f942",
+      "source_content": "## Generating a Fully Working gRPC Server from our Schema",
+      "source_content_hash": "9d5798f630c8600aed607bfd1d990ce69cc61cfd789da42d5a0452a8b351c0c2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 从模式生成全功能gRPC服务器"
+      }
+    },
+    {
+      "segment_id": "2dbbb313",
+      "source_content": "Having Protobuf structs generated from our `ent.Schema` can be useful, but what we're really interested in is getting an actual server that can create, read, update, and delete entities from an actual database. To do that, we need to update just one line of code! When we annotate a schema with `entproto.Service`, we tell the `entproto` code-gen that we are interested in generating a gRPC service definition, from the `protoc-gen-entgrpc` will read our definition and generate a service implementation. Edit `ent/schema/user.go` and modify the schema's `Annotations`:",
+      "source_content_hash": "c68d80a68069e2ba3de9bb27d8bb586e004feaa3e5a4094f67e91e6e9eb65be7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "从`ent.Schema`生成Protobuf结构体很有用，但我们真正感兴趣的是获得一个可以从实际数据库创建、读取、更新和删除实体的服务器。为此，我们只需要修改一行代码！当我们用`entproto.Service`注解模式时，我们告诉`entproto`代码生成器我们希望生成一个gRPC服务定义，`protoc-gen-entgrpc`将读取我们的定义并生成服务实现。编辑`ent/schema/user.go`并修改模式的`Annotations`："
+      }
+    },
+    {
+      "segment_id": "2f24891a",
+      "source_content": "```diff\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentproto.Message(),\n+\t\tentproto.Service(), // <-- add this\n\t}\n}\n```",
+      "source_content_hash": "5e57fce185f7c71b23c7ba7bef3bc367a92abb6b34589060cd5a31499c52b502",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2f24891a"
+      }
+    },
+    {
+      "segment_id": "6dc3e423",
+      "source_content": "Now re-run code-generation:",
+      "source_content_hash": "4ba7894f1cc660abc626ca34d41f778ba0c66935bf6fb7e16763aaa0c67c247c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "ab152d31",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ab152d31"
+      }
+    },
+    {
+      "segment_id": "32fb7230",
+      "source_content": "Observe some interesting changes in `ent/proto/entpb`:",
+      "source_content_hash": "0758de89fd6ae8851a0882400b9c5810db1ce4d23146d4ebdc4a4329cf2ee650",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察`ent/proto/entpb`中的一些有趣变化："
+      }
+    },
+    {
+      "segment_id": "868a2ef9",
+      "source_content": "```console\nent/proto/entpb\n├── entpb.pb.go\n├── entpb.proto\n├── entpb_grpc.pb.go\n├── entpb_user_service.go\n└── generate.go\n```",
+      "source_content_hash": "4dba5a25126083a157ca7a96a2d490b968741d28cb2f44aaa5f3ba85bea1628e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_868a2ef9"
+      }
+    },
+    {
+      "segment_id": "12bc7444",
+      "source_content": "First, `entproto` added a service definition to `entpb.proto`:",
+      "source_content_hash": "6ff8f40673a57ed7e026614be1cfd9ef0f0e455826a3d6e40116d5c5d3ee752b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先，`entproto`向`entpb.proto`添加了一个服务定义："
+      }
+    },
+    {
+      "segment_id": "e55bb1a1",
+      "source_content": "```protobuf\nservice UserService {\n  rpc Create ( CreateUserRequest ) returns ( User );\n\n  rpc Get ( GetUserRequest ) returns ( User );\n\n  rpc Update ( UpdateUserRequest ) returns ( User );\n\n  rpc Delete ( DeleteUserRequest ) returns ( google.protobuf.Empty );\n}\n```",
+      "source_content_hash": "413ef60253976ddbccfb50e1400b2fc2716fbd16c5324ad0eee4bb3474ba13b5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e55bb1a1"
+      }
+    },
+    {
+      "segment_id": "2f8456b2",
+      "source_content": "In addition, two new files were created. The first, `ent_grpc.pb.go`, contains the gRPC client stub and the interface definition. If you open the file, you will find in it (among many other things):",
+      "source_content_hash": "347d94a04c5ce29c0843ca5916b5a2131462a0beb599a008a52d976762d7269a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此外，还生成了两个新文件。第一个文件`ent_grpc.pb.go`包含gRPC客户端存根和接口定义。打开该文件，你会发现其中包含（除其他内容外）："
+      }
+    },
+    {
+      "segment_id": "37cbaa50",
+      "source_content": "```go\n// UserServiceClient is the client API for UserService service.\n//\n// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.\ntype UserServiceClient interface {\n\tCreate(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)\n\tGet(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)\n\tUpdate(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)\n\tDelete(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)\n}\n```",
+      "source_content_hash": "29e1e409492002c260efd7d87128096bc0d95e4cc3d682d1e1064046987395a0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_37cbaa50"
+      }
+    },
+    {
+      "segment_id": "4e994fc3",
+      "source_content": "The second file, `entpub_user_service.go` contains a generated implementation for this interface. For example, an implementation for the `Get` method:",
+      "source_content_hash": "78d4ae4330f3bdf38994c177de1a1c3042e60c3e4dcd71050a55ab1abe054c26",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第二个文件`entpub_user_service.go`包含该接口的生成实现。例如，`Get`方法的实现："
+      }
+    },
+    {
+      "segment_id": "45bc4861",
+      "source_content": "```go\n// Get implements UserServiceServer.Get\nfunc (svc *UserService) Get(ctx context.Context, req *GetUserRequest) (*User, error) {\n\tget, err := svc.client.User.Get(ctx, int(req.GetId()))\n\tswitch {\n\tcase err == nil:\n\t\treturn toProtoUser(get), nil\n\tcase ent.IsNotFound(err):\n\t\treturn nil, status.Errorf(codes.NotFound, \"not found: %s\", err)\n\tdefault:\n\t\treturn nil, status.Errorf(codes.Internal, \"internal error: %s\", err)\n\t}\n}\n```",
+      "source_content_hash": "d053907e33afa2174e795635795e85c73c167cf14b5fb5734c1e5f707b266e5a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_45bc4861"
+      }
+    },
+    {
+      "segment_id": "b2ffb658",
+      "source_content": "Not bad! Next, let's create a gRPC server that can serve requests to our service.",
+      "source_content_hash": "3304487430155ce7c6433b44410c61315fdfb4c6189943f434d4fe388d94118f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "不错！接下来，让我们创建一个可以处理服务请求的gRPC服务器。"
+      }
+    },
+    {
+      "segment_id": "becb5987",
+      "source_content": "### Creating the Server",
+      "source_content_hash": "1779ab92d308883d8f73a1b7396a84f566adf9433130cebe62b7dcf6013a5446",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 创建服务器"
+      }
+    },
+    {
+      "segment_id": "d83b50df",
+      "source_content": "Create a new file `cmd/server/main.go` and write:",
+      "source_content_hash": "e051481512d00a57af2ac5cd9004b1c10f4a8c701efd60f5ba77905046f0217e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "创建一个新文件`cmd/server/main.go`并写入："
+      }
+    },
+    {
+      "segment_id": "d7bc17bf",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"net\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n\t\"ent-grpc-example/ent\"\n\t\"ent-grpc-example/ent/proto/entpb\"\n\t\"google.golang.org/grpc\"\n)\n\nfunc main() {\n\t// Initialize an ent client.\n\tclient, err := ent.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer client.Close()\n\n\t// Run the migration tool (creating tables, etc).\n\tif err := client.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\n\t// Initialize the generated User service.\n\tsvc := entpb.NewUserService(client)\n\n\t// Create a new gRPC server (you can wire multiple services to a single server).\n\tserver := grpc.NewServer()\n\n\t// Register the User service with the server.\n\tentpb.RegisterUserServiceServer(server, svc)\n\n\t// Open port 5000 for listening to traffic.\n\tlis, err := net.Listen(\"tcp\", \":5000\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed listening: %s\", err)\n\t}\n\n\t// Listen for traffic indefinitely.\n\tif err := server.Serve(lis); err != nil {\n\t\tlog.Fatalf(\"server ended: %s\", err)\n\t}\n}\n```",
+      "source_content_hash": "712ff64d6f045759318233939670b33f87b012a0327fc10f8c610a4249fde4fe",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d7bc17bf"
+      }
+    },
+    {
+      "segment_id": "d67645cb",
+      "source_content": "Notice that we added an import of `github.com/mattn/go-sqlite3`, so we need to add it to our module:",
+      "source_content_hash": "63a953d6bbe98ae68ce788244d32c86303491a60f8aefab53525379a1032c8a3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意我们添加了对`github.com/mattn/go-sqlite3`的导入，因此需要将其添加到模块中："
+      }
+    },
+    {
+      "segment_id": "3e084726",
+      "source_content": "```console\ngo get -u github.com/mattn/go-sqlite3\n```",
+      "source_content_hash": "82029175dfe9bed8d4d58464cd2202290c288cfa2345abe3dcab576d30a55703",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3e084726"
+      }
+    },
+    {
+      "segment_id": "423bbb1a",
+      "source_content": "Next, let's run the server, while we write a client that will communicate with it:",
+      "source_content_hash": "00684a40882a9f41213a42784d2a9d4ac441950885cafbde584297d2be881bf2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，让我们运行服务器，同时编写一个与之通信的客户端："
+      }
+    },
+    {
+      "segment_id": "e789c201",
+      "source_content": "```console\ngo run -mod=mod ./cmd/server\n```",
+      "source_content_hash": "87242a921b6aebf97d5e841d95c267298b96e4a61672017ecf773b469f4cafa9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e789c201"
+      }
+    },
+    {
+      "segment_id": "c713fcdf",
+      "source_content": "### Creating the Client",
+      "source_content_hash": "d927937e23768a9688213cc3a3dfd2fedebaaedfe400ff4177c9992ea86f7257",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 创建客户端"
+      }
+    },
+    {
+      "segment_id": "ebea2db8",
+      "source_content": "Let's create a simple client that will make some calls to our server. Create a new file named `cmd/client/main.go` and write:",
+      "source_content_hash": "f0c8ec886debee0434253e9c3c671abf79ad38617fdd0122f61336b91b277ed3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们创建一个简单的客户端来向服务器发起调用。创建一个新文件`cmd/client/main.go`并写入："
+      }
+    },
+    {
+      "segment_id": "8e7e8fe4",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"log\"\n\t\"math/rand\"\n\t\"time\"\n\n\t\"ent-grpc-example/ent/proto/entpb\"\n\t\"google.golang.org/grpc\"\n\t\"google.golang.org/grpc/status\"\n)\n\nfunc main() {\n\trand.Seed(time.Now().UnixNano())\n\n\t// Open a connection to the server.\n\tconn, err := grpc.Dial(\":5000\", grpc.WithInsecure())\n\tif err != nil {\n\t\tlog.Fatalf(\"failed connecting to server: %s\", err)\n\t}\n\tdefer conn.Close()\n\n\t// Create a User service Client on the connection.\n\tclient := entpb.NewUserServiceClient(conn)\n\n\t// Ask the server to create a random User.\n\tctx := context.Background()\n\tuser := randomUser()\n\tcreated, err := client.Create(ctx, &entpb.CreateUserRequest{\n\t\tUser: user,\n\t})\n\tif err != nil {\n\t\tse, _ := status.FromError(err)\n\t\tlog.Fatalf(\"failed creating user: status=%s message=%s\", se.Code(), se.Message())\n\t}\n\tlog.Printf(\"user created with id: %d\", created.Id)\n\n\t// On a separate RPC invocation, retrieve the user we saved previously.\n\tget, err := client.Get(ctx, &entpb.GetUserRequest{\n\t\tId: created.Id,\n\t})\n\tif err != nil {\n\t\tse, _ := status.FromError(err)\n\t\tlog.Fatalf(\"failed retrieving user: status=%s message=%s\", se.Code(), se.Message())\n\t}\n\tlog.Printf(\"retrieved user with id=%d: %v\", get.Id, get)\n}\n\nfunc randomUser() *entpb.User {\n\treturn &entpb.User{\n\t\tName:         fmt.Sprintf(\"user_%d\", rand.Int()),\n\t\tEmailAddress: fmt.Sprintf(\"user_%d@example.com\", rand.Int()),\n\t}\n}\n```",
+      "source_content_hash": "ffaa458cb6640ef6d2b91d0ffdc650b8af0cee11456c401fb3e8876ce7e4fd40",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8e7e8fe4"
+      }
+    },
+    {
+      "segment_id": "a1cac8e0",
+      "source_content": "Our client creates a connection to port 5000, where our server is listening, then issues a `Create` request to create a new user, and then issues a second `Get` request to retrieve it from the database. Let's run our client code:",
+      "source_content_hash": "0bf55fb9a19f7e27f4ac2d90ed0bd80bf3be83521d5389bb198a5359d0855e6a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们的客户端创建了一个连接到服务器监听的5000端口的连接，然后发起一个`Create`请求来创建新用户，接着发起第二个`Get`请求从数据库中检索它。让我们运行客户端代码："
+      }
+    },
+    {
+      "segment_id": "c1c6219e",
+      "source_content": "```console\ngo run ./cmd/client\n```",
+      "source_content_hash": "d5cb164c53f532682d1c15835eaccb372b55c76859d2ea8a8b37dbfeb2fc3fa9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c1c6219e"
+      }
+    },
+    {
+      "segment_id": "1230856c",
+      "source_content": "Observe the output:",
+      "source_content_hash": "1733d10e08b33987e395d70d0debf1d4025eb3ce6ae62b378e74cfac38dee6b5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察输出："
+      }
+    },
+    {
+      "segment_id": "2c381b24",
+      "source_content": "```console\n2021/03/18 10:42:58 user created with id: 1\n2021/03/18 10:42:58 retrieved user with id=1: id:1 name:\"user_730811260095307266\" email_address:\"user_7338662242574055998@example.com\"\n```",
+      "source_content_hash": "1c643892b8aaac5894f11cd1522f5d3754e0f67478e39988aac96ce9e2ecfd53",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2c381b24"
+      }
+    },
+    {
+      "segment_id": "69d6e4be",
+      "source_content": "Amazing! With a few annotations on our schema, we used the super-powers of code generation to create a working gRPC server in no time!",
+      "source_content_hash": "5aabbaf841ee559a33826f3838e1e36ab91df03755507ffc86794c7403983db4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "太棒了！通过在模式上添加几个注解，我们利用代码生成的超能力，快速创建了一个可工作的gRPC服务器！"
+      }
+    },
+    {
+      "segment_id": "65863fe2",
+      "source_content": "## Caveats and Limitations",
+      "source_content_hash": "a8af272707e9f3c963e71b26bb86a656df7bae6318f806e7f63d4b2d3f8880bf",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 注意事项与限制"
+      }
+    },
+    {
+      "segment_id": "db871df4",
+      "source_content": "`entproto` is still experimental stage and lacks some basic functionality. For example, many applications will probably want a `List` or `Find` method on their service, but these are not yet supported. In addition, some other issues we plan to tackle in the near future:",
+      "source_content_hash": "ead1d2511cbeb8aa3aea77b9e7575c0b9924a99df821c2fa219e01fe9bc65eb6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entproto`仍处于实验阶段，缺乏一些基本功能。例如，许多应用程序可能希望在服务上有一个`List`或`Find`方法，但这些目前还不支持。此外，我们计划在不久的将来解决的其他问题包括："
+      }
+    },
+    {
+      "segment_id": "aacc74a9",
+      "source_content": "- Currently only \"unique\" edges are supported (O2O, O2M).\n- The generated \"mutating\" methods (Create/Update) currently set all fields, disregarding zero/null values and field nullability.\n- All fields are copied from the gRPC request to the ent client, support for configuring some fields to be unsettable via the service by adding a field/edge annotation is also planned.",
+      "source_content_hash": "08930bb97ec0d0a29fa736554c3a07e04ec57126015f0e1cdea7ae4c085eb3ff",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 目前仅支持“唯一”边（O2O、O2M）。\n- 生成的“变异”方法（Create/Update）目前会设置所有字段，忽略零值/null值以及字段的可空性。\n- 所有字段都从gRPC请求复制到ent客户端，还计划通过添加字段/边注解来支持配置某些字段不可通过服务设置。"
+      }
+    },
+    {
+      "segment_id": "13236400",
+      "source_content": "## Next Steps",
+      "source_content_hash": "94792dd5969e771cc2c3d1210355ca64b0d1b19f0b908b4aec6b19ca3dbde26a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 后续步骤"
+      }
+    },
+    {
+      "segment_id": "4dd62f5c",
+      "source_content": "We believe that `ent` + gRPC can be a great way to build server applications in Go. For example, to set granular access control to the entities managed by our application, developers can already use [Privacy Policies](https://entgo.io/docs/privacy/) that work out-of-the-box with the gRPC integration. To run any arbitrary Go code on the different lifecycle events of entities, developers can utilize custom [Hooks](https://entgo.io/docs/hooks/).",
+      "source_content_hash": "79c2ba4619cc3ad0cc725abbb8f16610945b56f44e20b98f63283a47cbd9355e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们相信`ent` + gRPC可以成为在Go中构建服务器应用程序的绝佳方式。例如，为了对我们的应用程序管理的实体设置细粒度的访问控制，开发者已经可以使用开箱即用的[隐私策略](https://entgo.io/docs/privacy/)与gRPC集成。要在实体的不同生命周期事件上运行任意Go代码，开发者可以利用自定义[钩子](https://entgo.io/docs/hooks/)。"
+      }
+    },
+    {
+      "segment_id": "74bfaf8c",
+      "source_content": "Do you want to build gRPC servers with `ent`? If you want some help setting up or want the integration to support your use case, please reach out to us via our [Discussions Page on GitHub](https://github.com/ent/ent/discussions) or in the #ent channel on the [Gophers Slack](https://app.slack.com/client/T029RQSE6/C01FMSQDT53) or our [Discord server](https://discord.gg/qZmPgTE6RX).",
+      "source_content_hash": "f37ec13608fbbcfdac518505a93443f9fc51459a2ba72ceeb279af5d15322475",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "你想用`ent`构建gRPC服务器吗？如果你需要帮助设置或希望集成支持你的用例，请通过我们的[GitHub讨论页面](https://github.com/ent/ent/discussions)、[Gophers Slack](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)上的#ent频道或我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)联系我们。"
+      }
+    },
+    {
+      "segment_id": "f43b08c8",
+      "source_content": ":::note[For more Ent news and updates:]\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n",
+      "source_content_hash": "29f1b4681027aa4603f9c2f8fcf04cb648e4ca6044e4da678b560842067e94ba",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多 Ent 资讯与更新：]\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 在[Twitter](https://twitter.com/entgo_io)上关注我们\n- 加入[Gophers Slack](https://app.slack.com/client/T029RQSE6/C01FMSQDT53)的 #ent 频道\n- 加入[Ent Discord 服务器](https://discord.gg/qZmPgTE6RX)"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-03-18-generating-a-grpc-server-with-ent.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.657007+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "e5384881cdfd51a5a2acbc45946326fcd2556c368178ea4d18760f15591ccb8a"
+  }
+}

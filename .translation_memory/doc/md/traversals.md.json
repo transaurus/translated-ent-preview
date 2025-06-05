@@ -1,0 +1,242 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/traversals.md",
+  "source_file_content_hash": "9198775f9d8a831c4ef681b7d9b878f79bbc15435c1db6bd2b95e0c6236b28a8",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: traversals\ntitle: Graph Traversal\n---",
+      "source_content_hash": "1de62642b02f7eea5b814909cabeae17b8a6b66feaa1b402506d1745a9845017",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "For the purpose of the example, we'll generate the following graph:",
+      "source_content_hash": "2846edac0bba65ea2f3ff453a5f33af5fbace88350fe30a5fceea4a170981d68",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "出于示例目的，我们将生成以下关系图："
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "![er-traversal-graph](https://entgo.io/images/assets/er_traversal_graph.png)",
+      "source_content_hash": "c69fce11b6394facb469c87745d869e3c1eecf3322357118f4f5584a70580245",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![er-traversal-graph](https://entgo.io/images/assets/er_traversal_graph.png)"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "The first step is to generate the 3 schemas: `Pet`, `User`, `Group`.",
+      "source_content_hash": "81f8d7a85d56933d6098ac891d8e8f574536edb04ef85966559317a0da0f91bc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "第一步是生成三个模式：`Pet`、`User` 和 `Group`。"
+      }
+    },
+    {
+      "segment_id": "b9c7a144",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent new Pet User Group\n```",
+      "source_content_hash": "be888f1f99a5d4d1c60756a02953b3c27037179ac0abbccb82900a0fde03862d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b9c7a144"
+      }
+    },
+    {
+      "segment_id": "42ad8e83",
+      "source_content": "Add the necessary fields and edges for the schemas:",
+      "source_content_hash": "c8c00bd59da0b0d187ad6e7d290df0898af0689d971f8622d358cc3f02c3b502",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为这些模式添加必要的字段和边："
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "`ent/schema/pet.go`",
+      "source_content_hash": "dc3fc17407280a36a00be501ddda25fbf3a47fcc201a869275a981bace3599d9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema/pet.go`"
+      }
+    },
+    {
+      "segment_id": "cbbebf8e",
+      "source_content": "```go\n// Pet holds the schema definition for the Pet entity.\ntype Pet struct {\n\tent.Schema\n}\n\n// Fields of the Pet.\nfunc (Pet) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// Edges of the Pet.\nfunc (Pet) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"friends\", Pet.Type),\n\t\tedge.From(\"owner\", User.Type).\n\t\t\tRef(\"pets\").\n\t\t\tUnique(),\n\t}\n}\n``` ",
+      "source_content_hash": "d8c2cbb0101ae0e8fd06f6ee1a40f60ca5580474aded5628b7a5785d7789cf7a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cbbebf8e"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "`ent/schema/user.go`",
+      "source_content_hash": "620d57f41326fef148efdb292d1f8df04c343e21bfd412f5ff221d59026509c6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema/user.go`"
+      }
+    },
+    {
+      "segment_id": "b75ddc12",
+      "source_content": "```go\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"age\"),\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"pets\", Pet.Type),\n\t\tedge.To(\"friends\", User.Type),\n\t\tedge.From(\"groups\", Group.Type).\n\t\t\tRef(\"users\"),\n\t\tedge.From(\"manage\", Group.Type).\n\t\t\tRef(\"admin\"),\n\t}\n}\n``` ",
+      "source_content_hash": "1e8c64ccbec549ce5207f0050e2ff97a77c18c6e8661d2f22e9f77ea848d1dd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b75ddc12"
+      }
+    },
+    {
+      "segment_id": "883231d4",
+      "source_content": "`ent/schema/group.go`",
+      "source_content_hash": "d085dbe497731afbde790b1171c943bf572807a5b76f9ea0982eb6ae15b0dcb2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema/group.go`"
+      }
+    },
+    {
+      "segment_id": "468b36ba",
+      "source_content": "```go\n// Group holds the schema definition for the Group entity.\ntype Group struct {\n\tent.Schema\n}\n\n// Fields of the Group.\nfunc (Group) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// Edges of the Group.\nfunc (Group) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"users\", User.Type),\n\t\tedge.To(\"admin\", User.Type).\n\t\t\tUnique(),\n\t}\n}\n``` ",
+      "source_content_hash": "f757f2c813880458d45522e815c01d269720f28cae7aa42823861842f3216e5d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_468b36ba"
+      }
+    },
+    {
+      "segment_id": "2822251a",
+      "source_content": "Let's write the code for populating the vertices and the edges to the graph:",
+      "source_content_hash": "424232e4d9658faac186fa55ad5fb687fc5bdf66ba6612f41354ab63860336a7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来编写填充顶点和边的代码："
+      }
+    },
+    {
+      "segment_id": "efbe5e3f",
+      "source_content": "```go\nfunc Gen(ctx context.Context, client *ent.Client) error {\n\thub, err := client.Group.\n\t\tCreate().\n\t\tSetName(\"Github\").\n\t\tSave(ctx)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed creating the group: %w\", err)\n\t}\n\t// Create the admin of the group.\n\t// Unlike `Save`, `SaveX` panics if an error occurs.\n\tdan := client.User.\n\t\tCreate().\n\t\tSetAge(29).\n\t\tSetName(\"Dan\").\n\t\tAddManage(hub).\n\t\tSaveX(ctx)\n\n\t// Create \"Ariel\" and its pets.\n\ta8m := client.User.\n\t\tCreate().\n\t\tSetAge(30).\n\t\tSetName(\"Ariel\").\n\t\tAddGroups(hub).\n\t\tAddFriends(dan).\n\t\tSaveX(ctx)\n\tpedro := client.Pet.\n\t\tCreate().\n\t\tSetName(\"Pedro\").\n\t\tSetOwner(a8m).\n\t\tSaveX(ctx)\n\txabi := client.Pet.\n\t\tCreate().\n\t\tSetName(\"Xabi\").\n\t\tSetOwner(a8m).\n\t\tSaveX(ctx)\n\n\t// Create \"Alex\" and its pets.\n\talex := client.User.\n\t\tCreate().\n\t\tSetAge(37).\n\t\tSetName(\"Alex\").\n\t\tSaveX(ctx)\n\tcoco := client.Pet.\n\t\tCreate().\n\t\tSetName(\"Coco\").\n\t\tSetOwner(alex).\n\t\tAddFriends(pedro).\n\t\tSaveX(ctx)\n\n\tfmt.Println(\"Pets created:\", pedro, xabi, coco)\n\t// Output:\n\t// Pets created: Pet(id=1, name=Pedro) Pet(id=2, name=Xabi) Pet(id=3, name=Coco)\n\treturn nil\n}\n```",
+      "source_content_hash": "1bd670599fe36d770796493ed91f0c30800e7298a4daeb1f109dac184d970e23",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_efbe5e3f"
+      }
+    },
+    {
+      "segment_id": "44285072",
+      "source_content": "Let's go over a few traversals, and show the code for them:",
+      "source_content_hash": "0805751c54146d170c3fc7ffd3e8795b297a4026b4b045e83c311fb303cd0f8e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们通过几个遍历示例来演示具体实现："
+      }
+    },
+    {
+      "segment_id": "a8f09c71",
+      "source_content": "![er-traversal-graph-gopher](https://entgo.io/images/assets/er_traversal_graph_gopher.png)",
+      "source_content_hash": "aa72b2a08f98af9f5713876229c2e3f550933396b5ad28333139eed8963e4190",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![er-traversal-graph-gopher](https://entgo.io/images/assets/er_traversal_graph_gopher.png)"
+      }
+    },
+    {
+      "segment_id": "d2a3d4c7",
+      "source_content": "The traversal above starts from a `Group` entity, continues to its `admin` (edge),\ncontinues to its `friends` (edge), gets their `pets` (edge), gets each pet's `friends` (edge),\nand requests their owners. ",
+      "source_content_hash": "c6feac70cde0e227d4dde84c28d831fa57f0e4d5b386aff04e5c8522948ac6ce",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述遍历从 `Group` 实体开始，通过其 `admin`（边）继续遍历，接着通过 `friends`（边）遍历，获取它们的 `pets`（边），再获取每只宠物的 `friends`（边），最终请求这些宠物的主人。"
+      }
+    },
+    {
+      "segment_id": "71779666",
+      "source_content": "```go\nfunc Traverse(ctx context.Context, client *ent.Client) error {\n\towner, err := client.Group.\t\t\t// GroupClient.\n\t\tQuery().                     \t// Query builder.\n\t\tWhere(group.Name(\"Github\")). \t// Filter only Github group (only 1).\n\t\tQueryAdmin().                \t// Getting Dan.\n\t\tQueryFriends().              \t// Getting Dan's friends: [Ariel].\n\t\tQueryPets().                 \t// Their pets: [Pedro, Xabi].\n\t\tQueryFriends().              \t// Pedro's friends: [Coco], Xabi's friends: [].\n\t\tQueryOwner().                \t// Coco's owner: Alex.\n\t\tOnly(ctx)                    \t// Expect only one entity to return in the query.\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed querying the owner: %w\", err)\n\t}\n\tfmt.Println(owner)\n\t// Output:\n\t// User(id=3, age=37, name=Alex)\n\treturn nil\n}\n```",
+      "source_content_hash": "bb8b2392179c8a01eba670d56fd22868c3647f418f1e3abb6b7ce8c131c636a0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_71779666"
+      }
+    },
+    {
+      "segment_id": "4e2e17c5",
+      "source_content": "What about the following traversal?",
+      "source_content_hash": "d4362b5a804936298940504bf99cb06c10ce867166efe7ce72f667a152ddb041",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "那么以下遍历又该如何实现？"
+      }
+    },
+    {
+      "segment_id": "b49a7009",
+      "source_content": "![er-traversal-graph-gopher-query](https://entgo.io/images/assets/er_traversal_graph_gopher_query.png)",
+      "source_content_hash": "69d83422f961416d25af7e5b002cdd37bd5f2bc88bcbfe6f5daad47c6081a0a3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![er-traversal-graph-gopher-query](https://entgo.io/images/assets/er_traversal_graph_gopher_query.png)"
+      }
+    },
+    {
+      "segment_id": "9ebd9d9b",
+      "source_content": "We want to get all pets (entities) that have an `owner` (`edge`) that is a `friend`\n(edge) of some group `admin` (edge).",
+      "source_content_hash": "79dc1767c13df1d7e6ae90193d75e094cfd69d4124f2433be7bea3921f4e7f7d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们需要获取所有满足以下条件的宠物（实体）：其 `owner`（边）是某个群组 `admin`（边）的 `friend`（边）。"
+      }
+    },
+    {
+      "segment_id": "21f43a9a",
+      "source_content": "```go\nfunc Traverse(ctx context.Context, client *ent.Client) error {\n\tpets, err := client.Pet.\n\t\tQuery().\n\t\tWhere(\n\t\t\tpet.HasOwnerWith(\n\t\t\t\tuser.HasFriendsWith(\n\t\t\t\t\tuser.HasManage(),\n\t\t\t\t),\n\t\t\t),\n\t\t).\n\t\tAll(ctx)\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed querying the pets: %w\", err)\n\t}\n\tfmt.Println(pets)\n\t// Output:\n\t// [Pet(id=1, name=Pedro) Pet(id=2, name=Xabi)]\n\treturn nil\n}\n```",
+      "source_content_hash": "f1a53a7261679a8b0af083ad14cc2d594a2b6f2c8a082298ea1b1ffa7b2b7152",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_21f43a9a"
+      }
+    },
+    {
+      "segment_id": "09f901c3",
+      "source_content": "The full example exists in [GitHub](https://github.com/ent/ent/tree/master/examples/traversal).",
+      "source_content_hash": "9518136aaf09c776623d0aaf92528cc9aa9cb0196880503af53e38d337a99b8b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例可在 [GitHub](https://github.com/ent/ent/tree/master/examples/traversal) 查看。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/traversals.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.679247+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "9198775f9d8a831c4ef681b7d9b878f79bbc15435c1db6bd2b95e0c6236b28a8"
+  }
+}

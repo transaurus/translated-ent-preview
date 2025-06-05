@@ -1,0 +1,192 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/eager-load.mdx",
+  "source_file_content_hash": "1ed994b56ac60b4ed50e30f35ab2b298896ee8615986561b3621593fadf6cf82",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: eager-load\ntitle: Eager Loading\n---",
+      "source_content_hash": "c50e1773d406284833d911fb46245d6d9ff5bd28aee896cfe626fb1997a52435",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "d912d376",
+      "source_content": "## Overview",
+      "source_content_hash": "7337f3d0aa29e9a82b8f1650b743a98eef90794631fa763a319686e69c546821",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 概述"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "`ent` supports querying entities with their associations (through their edges). The associated entities\nare populated to the `Edges` field in the returned object.",
+      "source_content_hash": "74fd61d5ab92659ceb06ee9110d79ef099294e210ac1c1228b0b02984f49a595",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent` 支持通过边(edges)查询实体及其关联对象。关联实体将被填充到返回对象的 `Edges` 字段中。"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "Let's give an example of what the API looks like for the following schema:",
+      "source_content_hash": "d722b2b934217b3aae4edf5f9cebf1799bfd53fc881a562cc84a9d82c45166ff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下面这个图结构为例展示API使用方式："
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "![er-group-users](https://entgo.io/images/assets/er_user_pets_groups.png)",
+      "source_content_hash": "f7cb8ca65d0d46a5faf19cf826182f2042747334cea110e4cd1308409de2eb8b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![er-group-users](https://entgo.io/images/assets/er_user_pets_groups.png)"
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "**Query all users with their pets:**",
+      "source_content_hash": "35b83bd5f57369ff90be9c8c63c5f017278fa00f688e51a468a1e1baad3c9a9a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**查询所有用户及其宠物：**"
+      }
+    },
+    {
+      "segment_id": "cbbebf8e",
+      "source_content": "```go\nusers, err := client.User.\n\tQuery().\n\tWithPets().\n\tAll(ctx)\nif err != nil {\n\treturn err\n}\n// The returned users look as follows:\n//\n//\t[\n//\t\tUser {\n//\t\t\tID:   1,\n//\t\t\tName: \"a8m\",\n//\t\t\tEdges: {\n//\t\t\t\tPets: [Pet(...), ...]\n//\t\t\t\t...\n//\t\t\t}\n//\t\t},\n//\t\t...\n//\t]\n//\nfor _, u := range users {\n\tfor _, p := range u.Edges.Pets {\n\t\tfmt.Printf(\"User(%v) -> Pet(%v)\\n\", u.ID, p.ID)\n\t\t// Output:\n\t\t// User(...) -> Pet(...)\n\t}\n} \n```",
+      "source_content_hash": "18b2e2bba8f5528be67112466d860ee113bb6114caf0158e56713d8fa53d6e84",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cbbebf8e"
+      }
+    },
+    {
+      "segment_id": "f7ef78f9",
+      "source_content": "Eager loading allows to query more than one association (including nested), and also\nfilter, sort or limit their result. For example:",
+      "source_content_hash": "6691cb386c1c9a9e7ee62be13f9b76f84ee94f6bd7ab0db2a71826efbf89a195",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "预加载机制允许同时查询多个关联（包括嵌套关联），并支持对结果进行过滤、排序或分页。例如："
+      }
+    },
+    {
+      "segment_id": "f275f5fd",
+      "source_content": "```go\nadmins, err := client.User.\n\tQuery().\n\tWhere(user.Admin(true)).\n\t// Populate the `pets` that associated with the `admins`.\n\tWithPets().\n\t// Populate the first 5 `groups` that associated with the `admins`.\n\tWithGroups(func(q *ent.GroupQuery) {\n\t\tq.Limit(5) \t\t\t\t// Limit to 5.\n\t\tq.WithUsers()           // Populate the `users` of each `groups`.\n\t}).\n\tAll(ctx)\nif err != nil {\n\treturn err\n}\n\n// The returned users look as follows:\n//\n//\t[\n//\t\tUser {\n//\t\t\tID:   1,\n//\t\t\tName: \"admin1\",\n//\t\t\tEdges: {\n//\t\t\t\tPets:   [Pet(...), ...]\n//\t\t\t\tGroups: [\n//\t\t\t\t\tGroup {\n//\t\t\t\t\t\tID:   7,\n//\t\t\t\t\t\tName: \"GitHub\",\n//\t\t\t\t\t\tEdges: {\n//\t\t\t\t\t\t\tUsers: [User(...), ...]\n//\t\t\t\t\t\t\t...\n//\t\t\t\t\t\t}\n//\t\t\t\t\t}\n//\t\t\t\t]\n//\t\t\t}\n//\t\t},\n//\t\t...\n//\t]\n//\nfor _, admin := range admins {\n\tfor _, p := range admin.Edges.Pets {\n\t\tfmt.Printf(\"Admin(%v) -> Pet(%v)\\n\", u.ID, p.ID)\n\t\t// Output:\n\t\t// Admin(...) -> Pet(...)\n\t}\n\tfor _, g := range admin.Edges.Groups {\n\t\tfor _, u := range g.Edges.Users {\n\t\t\tfmt.Printf(\"Admin(%v) -> Group(%v) -> User(%v)\\n\", u.ID, g.ID, u.ID)\n\t\t\t// Output:\n\t\t\t// Admin(...) -> Group(...) -> User(...)\n\t\t}\n\t}\n} \n```",
+      "source_content_hash": "3b91c91a673cab89fff28ec308f39c8b8eda2d3786a7eadcc280db613a436525",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f275f5fd"
+      }
+    },
+    {
+      "segment_id": "56bc971f",
+      "source_content": "## API",
+      "source_content_hash": "40caf66c4de56e46b72485c47adff4916c4bc7e563ecd9f7278e9dcaf92d1cad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## API接口"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "Each query-builder has a list of methods in the form of `With<E>(...func(<N>Query))` for each of its edges.\n`<E>` stands for the edge name (like, `WithGroups`) and `<N>` for the edge type (like, `GroupQuery`).",
+      "source_content_hash": "d8ba2dfc3c49ef79a69e6d4284b712477ed82043079c00379ff41a08ef5baedd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "每个查询构建器都为其边(edges)提供了一系列 `With<E>(...func(<N>Query))` 格式的方法，\n其中 `<E>` 表示边名称（如 `WithGroups`），`<N>` 表示边类型（如 `GroupQuery`）。"
+      }
+    },
+    {
+      "segment_id": "e9313fef",
+      "source_content": "Note that only SQL dialects support this feature.",
+      "source_content_hash": "9b0677209818b90f2f976359ecbcd783da80ff7b19f9b2bad9d3986ce5c87bdc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请注意该特性仅支持SQL方言。"
+      }
+    },
+    {
+      "segment_id": "48155948",
+      "source_content": "## Named Edges",
+      "source_content_hash": "8fb64b9dcc53055a9a477b017a05655fecafe8a0fa7fa7526ef032000a4f23d6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 命名边查询"
+      }
+    },
+    {
+      "segment_id": "1958bc43",
+      "source_content": "In some cases there is a need for preloading edges with custom names. For example, a GraphQL query that has two aliases\nreferencing the same edge with different arguments. For this situation, Ent provides another API named `WithNamed<E>`\nthat can be enabled using the [`namedges`](features.md#named-edges) feature-flag and seamlessly integrated with\n[EntGQL Fields Collection](tutorial-todo-gql-field-collection.md).",
+      "source_content_hash": "3043a5725b11740426212438e25d2b0ac65ce613d303a92056838f543f722923",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "某些场景下需要以自定义名称预加载边。例如GraphQL查询中两个别名引用同一条边但参数不同。为此Ent提供了 `WithNamed<E>` API，\n需通过 [`namedges`](features.md#named-edges) 特性标志启用，可与[EntGQL字段集合](tutorial-todo-gql-field-collection.md)无缝集成。"
+      }
+    },
+    {
+      "segment_id": "d4059883",
+      "source_content": "<Tabs\ndefaultValue=\"ent\"\nvalues={[\n{label: 'Ent', value: 'ent'},\n{label: 'GraphQL', value: 'graphql'},\n]}>\n<TabItem value=\"ent\">\n\nSee the GraphQL tab to learn more about the motivation behind this API.\n\n```go\nposts, err := client.Post.Query().\n    WithNamedComments(\"published\", func(q *ent.CommentQuery) {\n        q.Where(comment.StatusEQ(comment.StatusPublished))\n    })\n    WithNamedComments(\"draft\", func(q *ent.CommentQuery) {\n        q.Where(comment.StatusEQ(comment.StatusDraft))\n    }).\n    Paginate(...)\n\n// Get the preloaded edges by their name:\nfor _, p := range posts {\n    published, err := p.Edges.NamedComments(\"published\")\n    if err != nil {\n        return err\n    }\n    draft, err := p.Edges.NamedComments(\"draft\")\n    if err != nil {\n        return err\n    }\n}\n```\n\n</TabItem>\n<TabItem value=\"graphql\">\n\nAn example of a GraphQL query that has two aliases referencing the same edge with different arguments.\n\n```graphql\nquery {\n  posts {\n    id\n    title\n    published: comments(where: { status: PUBLISHED }) {\n      edges {\n        node {\n          text\n        }\n      }\n    }\n    draft: comments(where: { status: DRAFT }) {\n      edges {\n        node {\n          text\n        }\n      }\n    }\n  }\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "f6da80007cc13d6a2363afe442d6041a8eb5673b5442277ef28012e9ef00ec0b",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d4059883"
+      }
+    },
+    {
+      "segment_id": "e63d69ef",
+      "source_content": "## Implementation",
+      "source_content_hash": "50c313341b980c0f861db01385155da7ac362302c5a3c801b6aec6838064699d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 实现原理"
+      }
+    },
+    {
+      "segment_id": "0427bb2b",
+      "source_content": "Since an Ent query can eager-load more than one edge, it is not possible to load all associations in a single\n`JOIN` operation. Therefore, Ent executes additional query to load each association. This expected to be optimized\nin future versions.",
+      "source_content_hash": "831bb6a870a5155151a11cea2becd44836583738c94b053532b3f8a92bd7bdb5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于Ent查询可能同时预加载多条边，无法通过单次 `JOIN` 操作加载所有关联。因此Ent会为每个关联执行额外查询。该机制将在未来版本中进行优化。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/eager-load.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.673518+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "1ed994b56ac60b4ed50e30f35ab2b298896ee8615986561b3621593fadf6cf82"
+  }
+}

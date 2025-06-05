@@ -1,0 +1,792 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-07-29-generate-a-fully-working-go-crud-http-api-with-ent.md",
+  "source_file_content_hash": "a7e15d9ff7d97962a47b86053aa1a7fbc593663a411454710becb72c3ece36ab",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Generate a fully-working Go CRUD HTTP API with Ent\nauthor: MasseElch\nauthorURL: \"https://github.com/masseelch\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/12862103?v=4\"\n---",
+      "source_content_hash": "9dadb69bed78a77a355d7176f2c9540f153d2c7ddc7f5e1d1d1320ff5655675a",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "When we say that one of the core principles of Ent is \"Schema as Code\", we mean by that more than \"Ent's DSL for\ndefining entities and their edges is done using regular Go code\". Ent's unique approach, compared to many other ORMs, is\nto express all of the logic related to an entity, as code, directly in the schema definition.",
+      "source_content_hash": "be385f38a8f0c1c29157fbafa9d3bba581d362a051c6abab96d77a8b78329879",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当我们说Ent的核心原则之一是\"Schema as Code\"时，其含义远不止\"Ent用于定义实体及其关系的DSL是通过常规Go代码实现的\"。与其他许多ORM相比，Ent的独特之处在于将所有与实体相关的逻辑都以代码形式直接表达在模式定义中。"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "With Ent, developers can write all authorization logic (called \"[Privacy](https://entgo.io/docs/privacy)\" within Ent),\nand all of the mutation side-effects (called \"[Hooks](https://entgo.io/docs/hooks)\" within Ent) directly on the schema.\nHaving everything in the same place can be very convenient, but its true power is revealed when paired with code\ngeneration.",
+      "source_content_hash": "806281893d848e318a1da9b98f69f6c00511d469715fd6c046242287db59f5ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过Ent，开发者可以直接在模式上编写所有授权逻辑（在Ent中称为\"[隐私策略](https://entgo.io/docs/privacy)\"）和所有变更副作用（在Ent中称为\"[钩子](https://entgo.io/docs/hooks)\"）。将所有内容集中在一处不仅非常方便，当与代码生成功能结合使用时，其真正威力才得以显现。"
+      }
+    },
+    {
+      "segment_id": "42ad8e83",
+      "source_content": "If schemas are defined this way, it becomes possible to generate code for fully-working production-grade servers\nautomatically. If we move the responsibility for authorization decisions and custom side effects from the RPC layer to\nthe data layer, the implementation of the basic CRUD (Create, Read, Update and Delete) endpoints becomes generic to the\nextent that it can be machine-generated. This is exactly the idea behind the popular GraphQL and gRPC Ent extensions.",
+      "source_content_hash": "1eea57a346f508e34502b3822aa42d4b50cf1f40402a94a00180deb23b275b4d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果以这种方式定义模式，就有可能自动生成功能完整的生产级服务器代码。当我们将授权决策和自定义副作用的责任从RPC层转移到数据层时，基础CRUD（创建、读取、更新和删除）端点的实现就变得通用化，以至于可以被机器生成。这正是流行的GraphQL和gRPC Ent扩展背后的理念。"
+      }
+    },
+    {
+      "segment_id": "2df4f75f",
+      "source_content": "Today, we would like to present a new Ent extension named `elk` that can automatically generate fully-working, RESTful\nAPI endpoints from your Ent schemas. `elk` strives to automate all of the tedious work of setting up the basic CRUD\nendpoints for every entity you add to your graph, including logging, validation of the request body, eager loading\nrelations and serializing, all while leaving reflection out of sight and maintaining type-safety.",
+      "source_content_hash": "c960fe893521b65b6634f297a4d12673931dad7c9571b84996a2a547dd6a3737",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "今天，我们很高兴推出名为`elk`的新Ent扩展，它能从Ent模式自动生成功能完备的RESTful API端点。`elk`致力于自动化处理为图中每个实体建立基础CRUD端点的所有繁琐工作，包括日志记录、请求体验证、关系预加载和序列化，同时避免使用反射并保持类型安全。"
+      }
+    },
+    {
+      "segment_id": "a76548f8",
+      "source_content": "Let’s get started!",
+      "source_content_hash": "7e097c3e82c5cf1e4a68daa8a23b2c23b56316d1c4086686f17c7e90c23a151e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们开始吧！"
+      }
+    },
+    {
+      "segment_id": "f2f30ae8",
+      "source_content": "### Getting Started",
+      "source_content_hash": "4467215509db0bd0e0f61cf6ee2efa3316c8285b2a46d4449ff85f9ef85923d9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 快速开始"
+      }
+    },
+    {
+      "segment_id": "dfe931a2",
+      "source_content": "The final version of the code below can be found on [GitHub](https://github.com/masseelch/elk-example).",
+      "source_content_hash": "a40be47f4736d11b5708f2847b5e282993c241ed96e8b02b04226faa60db6151",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下代码的最终版本可在[GitHub](https://github.com/masseelch/elk-example)上找到。"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "Start by creating a new Go project:",
+      "source_content_hash": "368fac335e2491d86093a1244d4a6d2ccea586d4a0e5ce04c08204cb497bd501",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先创建一个新的Go项目："
+      }
+    },
+    {
+      "segment_id": "ef6eebef",
+      "source_content": "```shell\nmkdir elk-example\ncd elk-example\ngo mod init elk-example\n```",
+      "source_content_hash": "38f7033f287b50130e977bd8ce696a97c970567be7b1c9594d99810f778a8119",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ef6eebef"
+      }
+    },
+    {
+      "segment_id": "3cfe6286",
+      "source_content": "Invoke the ent code generator and create two schemas: User, Pet:",
+      "source_content_hash": "f74c1da5b545add2ccfc2d76f1317371dc89e584f70766c37d0b5c077aa5c152",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "调用ent代码生成器并创建两个模式：User和Pet："
+      }
+    },
+    {
+      "segment_id": "d9330cd7",
+      "source_content": "```shell\ngo run -mod=mod entgo.io/ent/cmd/ent new Pet User\n```",
+      "source_content_hash": "0539726df38a4ef4c01248826dc38ba6f5ac38b761a67f6eae4345d52409c5f7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9330cd7"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "Your project should now look like this:",
+      "source_content_hash": "ee8de89e8c8b8a07f8a9c56fdd473829d080221e07ce82d72300a67981e8d037",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时项目结构应如下所示："
+      }
+    },
+    {
+      "segment_id": "229d6705",
+      "source_content": "```\n.\n├── ent\n│   ├── generate.go\n│   └── schema\n│       ├── pet.go\n│       └── user.go\n├── go.mod\n└── go.sum\n```",
+      "source_content_hash": "4d0a22352472757d870fb13a2560aeae9f75b4498fc825c654c8de6508f918a8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229d6705"
+      }
+    },
+    {
+      "segment_id": "40158b4b",
+      "source_content": "Next, add the `elk` package to our project:",
+      "source_content_hash": "b147cc13d86cc03596b937412614e3a8c54326aa6f2a60b7d3b60767cf613e55",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来将`elk`包添加到项目中："
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```shell\ngo get -u github.com/masseelch/elk\n```",
+      "source_content_hash": "3af4f465044c99b5a38791c641a64736275e9e3bc30b89c9e72194a349126135",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "531437ca",
+      "source_content": "`elk` uses the\nEnt [extension API](https://github.com/ent/ent/blob/a19a89a141cf1a5e1b38c93d7898f218a1f86c94/entc/entc.go#L197) to\nintegrate with Ent’s code-generation. This requires that we use the `entc` (ent codegen) package as\ndescribed [here](https://entgo.io/docs/code-gen#use-entc-as-a-package). Follow the next three steps to enable it and to\nconfigure Ent to work with the `elk` extension:",
+      "source_content_hash": "242bdca7883157fc0b800dfe7696303a1410980fa24ae6b3f4e3ababe9772501",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`elk`使用Ent的[扩展API](https://github.com/ent/ent/blob/a19a89a141cf1a5e1b38c93d7898f218a1f86c94/entc/entc.go#L197)与Ent的代码生成集成。这要求我们按照[此处](https://entgo.io/docs/code-gen#use-entc-as-a-package)所述使用`entc`（ent代码生成）包。按照以下三个步骤启用它并配置Ent以与`elk`扩展协同工作："
+      }
+    },
+    {
+      "segment_id": "147e8550",
+      "source_content": "1\\. Create a new Go file named `ent/entc.go` and paste the following content:",
+      "source_content_hash": "46b9ecd02339c83feb000869a47f3629dfdf14f4e2aba80245edac427bffbc2a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 新建名为`ent/entc.go`的Go文件并粘贴以下内容："
+      }
+    },
+    {
+      "segment_id": "af983f82",
+      "source_content": "```go\n// +build ignore\n\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n\t\"github.com/masseelch/elk\"\n)\n\nfunc main() {\n\tex, err := elk.NewExtension(\n\t\telk.GenerateSpec(\"openapi.json\"),\n\t\telk.GenerateHandlers(),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"creating elk extension: %v\", err)\n\t}\n\terr = entc.Generate(\"./schema\", &gen.Config{}, entc.Extensions(ex))\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n\n```",
+      "source_content_hash": "4e10158a108bdfb61a30ad72c80fcac32c68d28fc4193b784fef58caed060c24",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_af983f82"
+      }
+    },
+    {
+      "segment_id": "d79a4831",
+      "source_content": "2\\. Edit the `ent/generate.go` file to execute the `ent/entc.go` file:",
+      "source_content_hash": "a43a5f1353e561d1f7ec6cef372b2d96df99509481252a924d1bb20f80940f43",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 编辑`ent/generate.go`文件以执行`ent/entc.go`文件："
+      }
+    },
+    {
+      "segment_id": "64071bcc",
+      "source_content": "```go\npackage ent\n\n//go:generate go run -mod=mod entc.go\n\n```",
+      "source_content_hash": "f53ac1b9266b0a40b92c030eebed3ef1cfc94faf3755f5be0c1c4542aa13d2d0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_64071bcc"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "3/. `elk` uses some external packages in its generated code. Currently, you have to get those packages manually once\nwhen setting up `elk`:",
+      "source_content_hash": "fc67e7963d47479832160be23a829963118eddde9e19b5e54b7f789fb248f957",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. `elk`在其生成的代码中使用了一些外部包。当前您需要在设置`elk`时手动获取这些包："
+      }
+    },
+    {
+      "segment_id": "83537d8d",
+      "source_content": "```shell\ngo get github.com/mailru/easyjson github.com/masseelch/render github.com/go-chi/chi/v5 go.uber.org/zap\n```",
+      "source_content_hash": "027614d28c42f7867c30ef62ee6f02c8a47d7f4f03390edb7bd284bfacb99a70",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_83537d8d"
+      }
+    },
+    {
+      "segment_id": "1958bc43",
+      "source_content": "With these steps complete, all is set up for using our `elk`-powered ent! To learn more about Ent, how to connect to\ndifferent types of databases, run migrations or work with entities head over to\nthe [Setup Tutorial](https://entgo.io/docs/tutorial-setup/).",
+      "source_content_hash": "887eab2b0d4cb69445ed5ccdf9db4f78d9ac5ad21220f3d769ca5414c0bfa2b3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成这些步骤后，使用`elk`增强的ent就全部设置好了！要了解更多关于Ent的信息，如如何连接不同类型的数据库、运行迁移或操作实体，请参阅[设置教程](https://entgo.io/docs/tutorial-setup/)。"
+      }
+    },
+    {
+      "segment_id": "b9b8694c",
+      "source_content": "### Generating HTTP CRUD Handlers with `elk`",
+      "source_content_hash": "7f7529cbb7edd7517c3a95873b80e3219343be3d22dee98e188fa5e6a652ad95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 使用`elk`生成HTTP CRUD处理器"
+      }
+    },
+    {
+      "segment_id": "b6152880",
+      "source_content": "To generate the fully-working HTTP handlers we need first create an Ent schema definition. Open and\nedit `ent/schema/pet.go`:",
+      "source_content_hash": "8fb20ab4b601737e0f12bb35256239a359e93c23e660c3f0040fff3829eb0ade",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要生成功能完备的HTTP处理器，首先需要创建Ent模式定义。打开并编辑`ent/schema/pet.go`："
+      }
+    },
+    {
+      "segment_id": "1ae0b80d",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// Pet holds the schema definition for the Pet entity.\ntype Pet struct {\n\tent.Schema\n}\n\n// Fields of the Pet.\nfunc (Pet) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.Int(\"age\"),\n\t}\n}\n\n```",
+      "source_content_hash": "a440889b83e9ffad71550b15715c58e32fd5efea89aad149f4ba8e414f92a0ca",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1ae0b80d"
+      }
+    },
+    {
+      "segment_id": "ad3e22c6",
+      "source_content": "We added two fields to our `Pet` entity: `name` and `age`. The `ent.Schema` just defines the fields of our entity. To\ngenerate runnable code from our schema, run:",
+      "source_content_hash": "cfa239f06edbaf78af4462ce972a27b477b6cde9f404076443295ac7d38fe8da",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们为`Pet`实体添加了两个字段：`name`和`age`。`ent.Schema`仅定义了实体的字段结构。要基于该模式生成可执行代码，请运行："
+      }
+    },
+    {
+      "segment_id": "5d30fd9b",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5d30fd9b"
+      }
+    },
+    {
+      "segment_id": "44285072",
+      "source_content": "Observe that in addition to the files Ent would normally generate, another directory named `ent/http` was created. These\nfiles were generated by the `elk` extension and contain the code for the generated HTTP handlers. For example, here\nis some of the generated code for a read-operation on the Pet entity:",
+      "source_content_hash": "4146a273a4200fcdca5747a1d23c7c68ecc84185bb5da924dd9e9d256a2d1805",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意，除了Ent常规生成的文件外，还会创建一个名为`ent/http`的新目录。这些文件由`elk`扩展生成，包含HTTP处理程序的实现代码。例如，以下是针对Pet实体读取操作的部分生成代码："
+      }
+    },
+    {
+      "segment_id": "25a51782",
+      "source_content": "```go\nconst (\n\tPetCreate Routes = 1 << iota\n\tPetRead\n\tPetUpdate\n\tPetDelete\n\tPetList\n\tPetRoutes = 1<<iota - 1\n)\n\n// PetHandler handles http crud operations on ent.Pet.\ntype PetHandler struct {\n\thandler\n\n\tclient *ent.Client\n\tlog    *zap.Logger\n}\n\nfunc NewPetHandler(c *ent.Client, l *zap.Logger) *PetHandler {\n\treturn &PetHandler{\n\t\tclient: c,\n\t\tlog:    l.With(zap.String(\"handler\", \"PetHandler\")),\n\t}\n}\n\n// Read fetches the ent.Pet identified by a given url-parameter from the\n// database and renders it to the client.\nfunc (h *PetHandler) Read(w http.ResponseWriter, r *http.Request) {\n\tl := h.log.With(zap.String(\"method\", \"Read\"))\n\t// ID is URL parameter.\n\tid, err := strconv.Atoi(chi.URLParam(r, \"id\"))\n\tif err != nil {\n\t\tl.Error(\"error getting id from url parameter\", zap.String(\"id\", chi.URLParam(r, \"id\")), zap.Error(err))\n\t\trender.BadRequest(w, r, \"id must be an integer greater zero\")\n\t\treturn\n\t}\n\t// Create the query to fetch the Pet\n\tq := h.client.Pet.Query().Where(pet.ID(id))\n\te, err := q.Only(r.Context())\n\tif err != nil {\n\t\tswitch {\n\t\tcase ent.IsNotFound(err):\n\t\t\tmsg := stripEntError(err)\n\t\t\tl.Info(msg, zap.Error(err), zap.Int(\"id\", id))\n\t\t\trender.NotFound(w, r, msg)\n\t\tcase ent.IsNotSingular(err):\n\t\t\tmsg := stripEntError(err)\n\t\t\tl.Error(msg, zap.Error(err), zap.Int(\"id\", id))\n\t\t\trender.BadRequest(w, r, msg)\n\t\tdefault:\n\t\t\tl.Error(\"could not read pet\", zap.Error(err), zap.Int(\"id\", id))\n\t\t\trender.InternalServerError(w, r, nil)\n\t\t}\n\t\treturn\n\t}\n\tl.Info(\"pet rendered\", zap.Int(\"id\", id))\n\teasyjson.MarshalToHTTPResponseWriter(NewPet2657988899View(e), w)\n}\n\n```",
+      "source_content_hash": "43b4a1c043510840c856e556697305568c9852ffaee6389d315995d393ba0d05",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_25a51782"
+      }
+    },
+    {
+      "segment_id": "e4945edb",
+      "source_content": "Next, let’s see how to create an actual RESTful HTTP server that can manage your Pet entities. Create a file\nnamed `main.go` and add the following content:",
+      "source_content_hash": "76802940952d2f74c9e8f628a09d03e5d635fcfe2380993e4dcce99feca04a1a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们将创建一个实际的RESTful HTTP服务器来管理Pet实体。新建`main.go`文件并添加以下内容："
+      }
+    },
+    {
+      "segment_id": "cc3842c3",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"log\"\n\t\"net/http\"\n\n\t\"elk-example/ent\"\n\telk \"elk-example/ent/http\"\n\n\t\"github.com/go-chi/chi/v5\"\n\t_ \"github.com/mattn/go-sqlite3\"\n\t\"go.uber.org/zap\"\n)\n\nfunc main() {\n\t// Create the ent client.\n\tc, err := ent.Open(\"sqlite3\", \"./ent.db?_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer c.Close()\n\t// Run the auto migration tool.\n\tif err := c.Schema.Create(context.Background()); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\t// Router and Logger.\n\tr, l := chi.NewRouter(), zap.NewExample()\n\t// Create the pet handler.\n\tr.Route(\"/pets\", func(r chi.Router) {\n\t\telk.NewPetHandler(c, l).Mount(r, elk.PetRoutes)\n\t})\n\t// Start listen to incoming requests.\n\tfmt.Println(\"Server running\")\n\tdefer fmt.Println(\"Server stopped\")\n\tif err := http.ListenAndServe(\":8080\", r); err != nil {\n\t\tlog.Fatal(err)\n\t}\n}\n\n```",
+      "source_content_hash": "a34815ae7768cbaab7328f4c787b4d2e52c508281b03f6261ea880b8b056c7ae",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cc3842c3"
+      }
+    },
+    {
+      "segment_id": "30aa9816",
+      "source_content": "Next, start the server:",
+      "source_content_hash": "9d035eb277e3894dc6cd532c2c9337af969225efa736c2c4f23a747bbae5ca8f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "启动服务器："
+      }
+    },
+    {
+      "segment_id": "d76894b4",
+      "source_content": "```shell\ngo run -mod=mod main.go\n```",
+      "source_content_hash": "816e8cac537dd65528a41528b0fcaea242d30f8cfaeb04d2a01696aee44a17a5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d76894b4"
+      }
+    },
+    {
+      "segment_id": "590d1cd9",
+      "source_content": "Congratulations! We now have a running server serving the Pets API. We could ask the server for a list of all pets in\nthe database, but there are none yet. Let’s create one first:",
+      "source_content_hash": "bb8db91eac2261c87fd5612b6797c7201d4e1ff54b6dda2f2eacbb7194a463e0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "恭喜！现在您已拥有一个运行中的Pets API服务。虽然可以查询数据库中的所有宠物列表，但目前尚无数据。让我们先创建一只宠物："
+      }
+    },
+    {
+      "segment_id": "d1748707",
+      "source_content": "```shell\ncurl -X 'POST' -H 'Content-Type: application/json' -d '{\"name\":\"Kuro\",\"age\":3}' 'localhost:8080/pets'\n```",
+      "source_content_hash": "f678cee9e4bcafd355f2597eeb1f6cf8f7be1c224ecffa2cb6cb9652e8a6b5a7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d1748707"
+      }
+    },
+    {
+      "segment_id": "e962484d",
+      "source_content": "You should get this response:",
+      "source_content_hash": "e8ffb000f626f3b491ee0245e60ba62ef54ab64a261cc0db50b82a5a225aa331",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您将收到如下响应："
+      }
+    },
+    {
+      "segment_id": "9dd29bcd",
+      "source_content": "```json\n{\n  \"age\": 3,\n  \"id\": 1,\n  \"name\": \"Kuro\"\n}\n```",
+      "source_content_hash": "fc912ea66294a4de24ad277839157a4d25de2f538965e14fb5dcc6fc67dcdcef",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9dd29bcd"
+      }
+    },
+    {
+      "segment_id": "850ec775",
+      "source_content": "If you head over to the terminal where the server is running you can also see `elk`s built in logging:",
+      "source_content_hash": "2135ed872b82c47512397920a2ad7c602909ddd69da99b953af98e61a3e610eb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在服务器运行终端中，您还能看到`elk`内置的日志输出："
+      }
+    },
+    {
+      "segment_id": "7e9a9732",
+      "source_content": "```json\n{\n  \"level\": \"info\",\n  \"msg\": \"pet rendered\",\n  \"handler\": \"PetHandler\",\n  \"method\": \"Create\",\n  \"id\": 1\n}\n```",
+      "source_content_hash": "4358093c43244b50a7ffd5769fd63f2b7df13d2c9a69b11d65d6c7f5d0ec4539",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7e9a9732"
+      }
+    },
+    {
+      "segment_id": "a01e2096",
+      "source_content": "`elk` uses [zap](https://github.com/uber-go/zap) for logging. To learn more about it, have a look at its documentation.",
+      "source_content_hash": "e2c04a5ed99b67b8b8bbbb53233ac6ea7fe4f661fd778eb0b2ff1ed5c715e0b6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`elk`使用[zap](https://github.com/uber-go/zap)进行日志记录，更多信息请参阅其文档。"
+      }
+    },
+    {
+      "segment_id": "fd59095d",
+      "source_content": "### Relations",
+      "source_content_hash": "4eca8de9007de01ebdfdb335497cc594dfa3ddb39229fdf90cbe61448e02c000",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 关联关系"
+      }
+    },
+    {
+      "segment_id": "c2a9a004",
+      "source_content": "To illustrate more of `elk`s features, let’s extend our graph. Edit `ent/schema/user.go` and `ent/schema/pet.go`:",
+      "source_content_hash": "5d0d861c60a0c70b6b73b0ee6b13004b1c43d0139522cb26a038f3af6b4df3fc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为展示更多`elk`功能，让我们扩展数据图。编辑`ent/schema/user.go`和`ent/schema/pet.go`："
+      }
+    },
+    {
+      "segment_id": "7d27bd2e",
+      "source_content": "```go title=\"ent/schema/pet.go\"\n// Edges of the Pet.\nfunc (Pet) Edges() []ent.Edge {\n    return []ent.Edge{\n        edge.From(\"owner\", User.Type).\n            Ref(\"pets\").\n            Unique(),\n    }\n}\n\n```",
+      "source_content_hash": "1c1373f399427c4a2d9ab934d75d2b828d408d86a70ddc762666d3f1cc934fe1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7d27bd2e"
+      }
+    },
+    {
+      "segment_id": "6b628553",
+      "source_content": "```go title=\"ent/schema/user.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/edge\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.Int(\"age\"),\n\t}\n}\n\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"pets\", Pet.Type),\n\t}\n}\n\n```",
+      "source_content_hash": "51fdefbaf740fedb621958dc80c41e58a91ce5a2744f79030f69551ceab72991",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6b628553"
+      }
+    },
+    {
+      "segment_id": "eb398072",
+      "source_content": "We have now created a One-To-Many relation between the Pet and User schemas: A pet belongs to a user, and a user can\nhave multiple pets.",
+      "source_content_hash": "b041647617a17b18dfaa8a580fd082ddf608cad81beab4a415564a46362be9b0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们在Pet和User模式间建立了\"一对多\"关系：宠物属于用户，用户可拥有多只宠物。"
+      }
+    },
+    {
+      "segment_id": "d58af824",
+      "source_content": "Rerun the code generator:",
+      "source_content_hash": "88ef86b2fcc33965d273e84af416cf84ff5e0c1b69e89a5708b70350aa8f56e6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重新运行代码生成器："
+      }
+    },
+    {
+      "segment_id": "c887f5e6",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c887f5e6"
+      }
+    },
+    {
+      "segment_id": "9d56f8f8",
+      "source_content": "Do not forget to register the `UserHandler` on our router. Just add the following lines to `main.go`:",
+      "source_content_hash": "b21b23912e13d85819e10354726c6b619a6febdffd95adafd745dfcf10c3a20e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "别忘了在路由器上注册`UserHandler`。在`main.go`中添加以下代码："
+      }
+    },
+    {
+      "segment_id": "950ee0de",
+      "source_content": "```diff\n[...]\n    r.Route(\"/pets\", func(r chi.Router) {\n        elk.NewPetHandler(c, l, v).Mount(r, elk.PetRoutes)\n    })\n+    // Create the user handler.\n+    r.Route(\"/users\", func(r chi.Router) {\n+        elk.NewUserHandler(c, l, v).Mount(r, elk.UserRoutes)\n+    })\n    // Start listen to incoming requests.\n    fmt.Println(\"Server running\")\n[...]\n```",
+      "source_content_hash": "3e32ebddda53e8a8b50d156c5a5044dfd5291283af02316bad62a54a06fc2c40",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_950ee0de"
+      }
+    },
+    {
+      "segment_id": "249869cc",
+      "source_content": "After restarting the server we can create a `User` that owns the previously created Pet named Kuro:",
+      "source_content_hash": "291cd17f9c290426355e7c565036feadaaa684cb3c594a27a07e5937866c17aa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重启服务器后，我们可以创建一个拥有先前所建宠物Kuro的`User`："
+      }
+    },
+    {
+      "segment_id": "dddd618c",
+      "source_content": "```shell\ncurl -X 'POST' -H 'Content-Type: application/json' -d '{\"name\":\"Elk\",\"age\":30,\"owner\":1}' 'localhost:8080/users'\n```",
+      "source_content_hash": "11e15b24750ea39cfb2fb70d5d5b905b77b5f9ea47293ed0a1a1899620f540f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dddd618c"
+      }
+    },
+    {
+      "segment_id": "4da1b99c",
+      "source_content": "The server returns the following response:",
+      "source_content_hash": "c62ec00e2b495bb938f3e57d8a543c8f56568a5da13bc8d4db68c9e93003d318",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "服务器返回如下响应："
+      }
+    },
+    {
+      "segment_id": "fb74007a",
+      "source_content": "```json\n{\n  \"age\": 30,\n  \"edges\": {},\n  \"id\": 1,\n  \"name\": \"Elk\"\n}\n```",
+      "source_content_hash": "bdb19b4bb50a06e73b1e2f7e619f270ed18e61570616f83b137aa10d50fae914",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fb74007a"
+      }
+    },
+    {
+      "segment_id": "7acce358",
+      "source_content": "From the output we can see that the user has been created, but the edges are empty. `elk` does not include edges in its\noutput by default. You can configure `elk` to render edges using a feature called \"serialization groups\". Annotate your\nschemas with the `elk.SchemaAnnotation`\nand `elk.Annotation` structs. Edit `ent/schema/user.go` and add those:",
+      "source_content_hash": "f1b11f1bbc8a894fa333b7ba4f91bb0eff1c460b21024c044ad84055dd4eb559",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "从输出可见用户已创建，但关联边为空。默认情况下`elk`不会在输出中包含边关系。您可以通过\"序列化分组\"功能配置边渲染。使用`elk.SchemaAnnotation`和`elk.Annotation`结构体注解模式，编辑`ent/schema/user.go`添加如下内容："
+      }
+    },
+    {
+      "segment_id": "371e39a0",
+      "source_content": "```go\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n    return []ent.Edge{\n        edge.To(\"pets\", Pet.Type).\n            Annotations(elk.Groups(\"user\")),\n    }\n}\n\n// Annotations of the User.\nfunc (User) Annotations() []schema.Annotation {\n    return []schema.Annotation{elk.ReadGroups(\"user\")}\n}\n\n```",
+      "source_content_hash": "9f3e8c6413f7d3d2207b2faa3f5fd6828a084225bdccadf5c69c8eaa5b7dc9ba",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_371e39a0"
+      }
+    },
+    {
+      "segment_id": "e3448845",
+      "source_content": "The `elk.Annotation`s added to the fields and edges tell elk to eager-load them and add them to the payload if the \"\nuser\" group is requested. The `elk.SchemaAnnotation` is used to make the read-operation of the `UserHandler` request \"\nuser\". Note, that any fields that do not have a serialization group attached are included by default. Edges, however,\nare excluded, unless configured otherwise.",
+      "source_content_hash": "fcb7f6da8a0e9954a9ac57dc6d6807ac33dec797e45278e206060fec954b6f07",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "字段和边上的`elk.Annotation`会指示elk进行预加载，并在请求\"user\"分组时将其加入响应负载。`elk.SchemaAnnotation`用于让`UserHandler`的读取操作请求\"user\"分组。注意：未附加序列化分组的字段默认会被包含，而边关系除非特别配置，否则默认排除。"
+      }
+    },
+    {
+      "segment_id": "250c20ca",
+      "source_content": "Next, let’s regenerate the code once again, and restart the server. You should now see the pets of a user rendered if\nyou read a resource:",
+      "source_content_hash": "8028f7f93410b063866aaa6634a6a38de2c57d69627f947354923be5ee7b6c11",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "再次重新生成代码并重启服务器。现在读取资源时，您应该能看到用户的宠物信息被渲染："
+      }
+    },
+    {
+      "segment_id": "5de6a9e7",
+      "source_content": "```shell\ncurl 'localhost:8080/users/1'\n```",
+      "source_content_hash": "a9f23adcbf00e61e69c0a784f193e1135846b8f44d08d0e3f0b425a322c616d3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5de6a9e7"
+      }
+    },
+    {
+      "segment_id": "4de0f839",
+      "source_content": "```json\n{\n  \"age\": 30,\n  \"edges\": {\n    \"pets\": [\n      {\n        \"id\": 1,\n        \"name\": \"Kuro\",\n        \"age\": 3,\n        \"edges\": {}\n      }\n    ]\n  },\n  \"id\": 1,\n  \"name\": \"Elk\"\n}\n```",
+      "source_content_hash": "1675788a6dc9dcb73f67b8fdab42119d79e468bea1e8ef6657e890f5fc4fe3e2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4de0f839"
+      }
+    },
+    {
+      "segment_id": "6bb40e64",
+      "source_content": "### Request validation",
+      "source_content_hash": "1b89a3f979b3b0eb420927583868362de23c83273c69ca4fb544482c0f0cf758",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 请求验证"
+      }
+    },
+    {
+      "segment_id": "40e5a2ef",
+      "source_content": "Our current schemas allow to set a negative age for pets or users and we can create pets without an owner (as we did\nwith Kuro). Ent has built-in support for basic [validation](https://entgo.io/docs/schema-fields#validators). In some\ncases you may want to validate requests made against your API before passing their payload to Ent. `elk`\nuses [this](https://github.com/go-playground/validator) package to define validation rules and validate data. We can\ncreate separate validation rules for Create and Update operations using `elk.Annotation`. In our example, let’s assume\nthat we want our Pet schema to only allow ages greater than zero and to disallow creating a pet without an owner.\nEdit `ent/schema/pet.go`:",
+      "source_content_hash": "9cf37b43c732765b4d0245e860f0275fb82de7258fc9b2510d3374ae6c2e03ad",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当前我们的模式允许为宠物或用户设置负年龄值，并且可以创建无主的宠物（如之前创建的Kuro）。Ent内置了对基础[验证](https://entgo.io/docs/schema-fields#validators)的支持。某些情况下，您可能希望在将API请求的有效载荷传递给Ent之前先进行验证。`elk`使用[此包](https://github.com/go-playground/validator)来定义验证规则并验证数据。我们可以通过`elk.Annotation`为创建和更新操作分别创建验证规则。在本例中，假设我们希望宠物模式仅允许年龄大于零，并禁止创建无主的宠物。编辑`ent/schema/pet.go`："
+      }
+    },
+    {
+      "segment_id": "7b35d7c6",
+      "source_content": "```go\n// Fields of the Pet.\nfunc (Pet) Fields() []ent.Field {\n    return []ent.Field{\n        field.String(\"name\"),\n        field.Int(\"age\").\n            Positive().\n            Annotations(\n                elk.CreateValidation(\"required,gt=0\"),\n                elk.UpdateValidation(\"gt=0\"),\n            ),\n    }\n}\n\n// Edges of the Pet.\nfunc (Pet) Edges() []ent.Edge {\n    return []ent.Edge{\n        edge.From(\"owner\", User.Type).\n            Ref(\"pets\").\n            Unique().\n            Required().\n            Annotations(elk.Validation(\"required\")),\n    }\n}\n```",
+      "source_content_hash": "31f68c0e364295a066be4ba96ecbdf6718a1483b405fa6cde104a752bc457af4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7b35d7c6"
+      }
+    },
+    {
+      "segment_id": "52907304",
+      "source_content": "Next, regenerate the code and restart the server. To test our new validation rules, let’s try to create a pet with\ninvalid age and without an owner:",
+      "source_content_hash": "59a18ce3b47d6e2e59a6525f9857064e55d35615ab8a0951ccae112093fbadb9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来重新生成代码并重启服务器。为了测试新的验证规则，让我们尝试创建一个年龄无效且无主的宠物："
+      }
+    },
+    {
+      "segment_id": "684c7294",
+      "source_content": "```shell\ncurl -X 'POST' -H 'Content-Type: application/json' -d '{\"name\":\"Bob\",\"age\":-2}' 'localhost:8080/pets'\n```",
+      "source_content_hash": "1f351763e03a93c4cc7c381f8432773b49b516708e4732cb8df54c1f4ce90d3c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_684c7294"
+      }
+    },
+    {
+      "segment_id": "a1988152",
+      "source_content": "`elk` returns a detailed response that includes information about which validations failed:",
+      "source_content_hash": "002ed4f0eefe18bcb0666b056804a1dcfb7c4a25174aece9109920b8522bc2e5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`elk`会返回一个详细的响应，其中包含验证失败的信息："
+      }
+    },
+    {
+      "segment_id": "619d970f",
+      "source_content": "```json\n{\n  \"code\": 400,\n  \"status\": \"Bad Request\",\n  \"errors\": {\n    \"Age\": \"This value failed validation on 'gt:0'.\",\n    \"Owner\": \"This value is required.\"\n  }\n}\n```",
+      "source_content_hash": "9c70cdfb775bf0aa0f1401910039adc7d29aea6e230e2fd97de511675ef141f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_619d970f"
+      }
+    },
+    {
+      "segment_id": "d6ee8a64",
+      "source_content": "Note the uppercase field names. The validator package uses the structs field name to generate its validation errors, but\nyou can simply override this, as stated in\nthe [example](https://github.com/go-playground/validator/blob/9a5bce32538f319bf69aebb3aca90d394bc6d0cb/_examples/struct-level/main.go#L37)\n.",
+      "source_content_hash": "9002bf0a85e2db1594dc87dc76271dbb3a486c9bd52ba143ef228b84de390b2f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意字段名是大写的。验证器包使用结构体的字段名生成验证错误信息，但您可以轻松覆盖这一点，如[示例](https://github.com/go-playground/validator/blob/9a5bce32538f319bf69aebb3aca90d394bc6d0cb/_examples/struct-level/main.go#L37)所示。"
+      }
+    },
+    {
+      "segment_id": "2a5b873d",
+      "source_content": "If you do not define any validation rules, `elk` will not include the validation-code in its generated output. `elk`s`\nrequest validation is especially useful if you'd wanted to do cross-field-validation.",
+      "source_content_hash": "a00527ad9c2741b58c8fd99851a3e8efe0894f2fd72ae55c696d04b72a5ee684",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果您没有定义任何验证规则，`elk`将不会在其生成的代码中包含验证逻辑。`elk`的请求验证在需要进行跨字段验证时尤其有用。"
+      }
+    },
+    {
+      "segment_id": "edfde901",
+      "source_content": "### Upcoming Features",
+      "source_content_hash": "61e58a7fe96470a1d7ed0b400b9b18f691102bb11108234fb040a684426e94d0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 即将推出的功能"
+      }
+    },
+    {
+      "segment_id": "e67afabd",
+      "source_content": "We hope you agree that `elk` has some useful features already, but there are still many exciting things to come. The\nnext version of `elk` will include::",
+      "source_content_hash": "aa17203700f2e63cde3aaae0d3ea71619d8f884ae37181ec6f76c9724179d83a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们希望您认同`elk`已经具备了一些实用的功能，但还有许多令人兴奋的功能即将到来。`elk`的下一个版本将包括："
+      }
+    },
+    {
+      "segment_id": "275d90c2",
+      "source_content": "- Fully working flutter frontend to administrate your nodes\n- Integration of Ent’s validation in the current request validator\n- More transport formats (currently only JSON)",
+      "source_content_hash": "0ad165e3113a3303c3025a2c6d3ef5cfc6279db8331330ecf7e5bca998163937",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 功能完善的Flutter前端，用于管理您的节点\n- 将Ent的验证集成到当前的请求验证器中\n- 更多的传输格式（目前仅支持JSON）"
+      }
+    },
+    {
+      "segment_id": "fffa1891",
+      "source_content": "### Conclusion",
+      "source_content_hash": "e405d447b86099a6a4fe827d18ae4510cbb9c8932c9e40b54204211fe19518d2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 结论"
+      }
+    },
+    {
+      "segment_id": "d6d64592",
+      "source_content": "This post has shown just a small part of what `elk` can do. To see some more examples of what you can do with it, head\nover to the project’s README on GitHub. I hope that with `elk`-powered Ent, you and your fellow developers can automate\nsome repetitive tasks that go into building RESTful APIs and focus on more meaningful work.",
+      "source_content_hash": "005c1b8686d7ca80cae301da1a1db32c6b0992316338bbf9b6a298db7ffd7763",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文仅展示了`elk`功能的一小部分。要查看更多示例，请访问GitHub上的项目README。我们希望借助`elk`驱动的Ent，您和您的开发团队能够自动化构建RESTful API过程中的一些重复性任务，从而专注于更有意义的工作。"
+      }
+    },
+    {
+      "segment_id": "7b046f1b",
+      "source_content": "`elk` is in an early stage of development, we welcome any suggestion or feedback and if you are willing to help we'd be\nvery glad. The [GitHub Issues](https://github.com/masseelch/elk/issues) is a wonderful place for you to reach out for\nhelp, feedback, suggestions and contribution.",
+      "source_content_hash": "eda4262652161edd963a7d2a93793fcc132fa0ab6842532c6e2b83592fae72cb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`elk`目前处于早期开发阶段，我们欢迎任何建议或反馈，如果您愿意提供帮助，我们将非常高兴。[GitHub Issues](https://github.com/masseelch/elk/issues)是您寻求帮助、反馈、建议和贡献的理想场所。"
+      }
+    },
+    {
+      "segment_id": "32149b2b",
+      "source_content": "#### About the Author",
+      "source_content_hash": "0d72c02b72bd9f3fa6def96fd56ff56f4131c69fef939fcc1b73883dfd15ab00",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 关于作者"
+      }
+    },
+    {
+      "segment_id": "67484b26",
+      "source_content": "_MasseElch is a software engineer from the windy, flat, north of Germany. When not hiking with his dog Kuro (who has his \nown Instagram channel :scream:) or playing hide-and-seek with his son, he drinks coffee and enjoys coding._",
+      "source_content_hash": "f267200e625a04eb5862f4ae4a2965876fe05868cda3cf81e0084f7de036fd06",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "_MasseElch是来自德国北部多风平原地区的软件工程师。当不带着他的狗Kuro（它有自己的Instagram频道:scream:）徒步旅行或不与儿子玩捉迷藏时，他会喝咖啡并享受编程的乐趣。_"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-07-29-generate-a-fully-working-go-crud-http-api-with-ent.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.680366+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "a7e15d9ff7d97962a47b86053aa1a7fbc593663a411454710becb72c3ece36ab"
+  }
+}

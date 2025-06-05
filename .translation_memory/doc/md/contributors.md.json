@@ -1,0 +1,102 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/contributors.md",
+  "source_file_content_hash": "c14f97c7e1807770b637eca51e2965a5bd7e30f42ed45784db72238c0533384b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: contributors\ntitle: Contributors\n---",
+      "source_content_hash": "36f647950539fdf4b5a4e3633cedb2d3a8c847db0100290a9ea73378c69d22f3",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):",
+      "source_content_hash": "a542e9314584cfdd6872a2d7f408ea77c5a6bada7342d4102c3f6d2d84caff64",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "感谢这些优秀的贡献者（[表情符号说明](https://allcontributors.org/docs/en/emoji-key)）："
+      }
+    },
+    {
+      "segment_id": "e1dae588",
+      "source_content": "<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->",
+      "source_content_hash": "f249b5860cfcd49ec7569e08c0b671b66afb4db3441301d9af44e1b378b82eea",
+      "node_type": "comment",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e1dae588"
+      }
+    },
+    {
+      "segment_id": "a2752550",
+      "source_content": "<!-- prettier-ignore-start -->",
+      "source_content_hash": "b2c0592d216e3ac74a3fd5bedbf7c493db0342c6addebcef89e449634a5be972",
+      "node_type": "comment",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a2752550"
+      }
+    },
+    {
+      "segment_id": "fc91ee08",
+      "source_content": "<!-- markdownlint-disable -->",
+      "source_content_hash": "52ae2061170540f261e1c6818fde55ab17e44d44c83dc7324d24dcbf8c7a5e42",
+      "node_type": "comment",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fc91ee08"
+      }
+    },
+    {
+      "segment_id": "31e045cc",
+      "source_content": "<!-- markdownlint-restore -->",
+      "source_content_hash": "705b52e46630a6cf4d172a4ab38d055e441dba7100270bba12754aaff220e545",
+      "node_type": "comment",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_31e045cc"
+      }
+    },
+    {
+      "segment_id": "3b795b05",
+      "source_content": "<!-- prettier-ignore-end -->",
+      "source_content_hash": "b911ae0158d29fe8a1f5356727ea2914e6d15422349417460ae7477ab34d31ac",
+      "node_type": "comment",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3b795b05"
+      }
+    },
+    {
+      "segment_id": "2f112f5b",
+      "source_content": "<!-- ALL-CONTRIBUTORS-LIST:END -->",
+      "source_content_hash": "3c0e1e76abbaf226c249020fc9f6962f62398bc0731a33da383fd20102fd08a8",
+      "node_type": "comment",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2f112f5b"
+      }
+    },
+    {
+      "segment_id": "a9c2a503",
+      "source_content": "This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!",
+      "source_content_hash": "43cfe0e505a21df0c8c32609809db0b534c6056f8a843bd7a61651dc4331b32a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本项目遵循 [all-contributors](https://github.com/all-contributors/all-contributors) 规范。欢迎任何形式的贡献！"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/contributors.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.656809+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "c14f97c7e1807770b637eca51e2965a5bd7e30f42ed45784db72238c0533384b"
+  }
+}

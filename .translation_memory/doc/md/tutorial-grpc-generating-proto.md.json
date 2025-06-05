@@ -1,0 +1,272 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-grpc-generating-proto.md",
+  "source_file_content_hash": "7e77f7c5465ce2dc97cafa1f210d9e7b14ce79a3bc8288d6c8c815f489ef8ce9",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: grpc-generating-proto\ntitle: Generating Protobufs with entproto\nsidebar_label: Generating Protobufs\n---",
+      "source_content_hash": "5e5420a7952995614662a08783df9f64982da6b9e3de556fd8581cb64805ae66",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "As Ent and Protobuf schemas are not identical, we must supply some annotations on our schema to help `entproto` figure out exactly how to generate Protobuf definitions (called \"Messages\" in protobuf terminology).",
+      "source_content_hash": "4f081c8de4cf488eb7e9b0e610dd5fc4f5c2e49e941028f7aa4a40e0d88aa02d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "由于Ent与Protobuf模式并非完全一致，我们需要在模式上添加注解来帮助`entproto`准确生成Protobuf定义（在protobuf术语中称为\"Messages\"）。"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "The first thing we need to do is to add an `entproto.Message()` annotation. This is our opt-in to Protobuf schema generation, we don't necessarily want to generate proto messages or gRPC service definitions from *all* of our schema entities, and this annotation gives us that control. To add it, append to `ent/schema/user.go`:",
+      "source_content_hash": "7e913e986afa38ddb425d0c4eb302d7805209d886df36f80e43a57810e5f410f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先需要添加`entproto.Message()`注解。这是我们对Protobuf模式生成的显式声明——并非所有模式实体都需要生成proto消息或gRPC服务定义，该注解提供了控制权。将其添加到`ent/schema/user.go`中："
+      }
+    },
+    {
+      "segment_id": "71b63116",
+      "source_content": "```go title=\"ent/schema/user.go\"\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentproto.Message(),\n\t}\n}\n```",
+      "source_content_hash": "d38b10e5480c6175724e02a70972d1d499f3193b0751f184cf62db6952b48b98",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_71b63116"
+      }
+    },
+    {
+      "segment_id": "39b3772c",
+      "source_content": "Next, we need to annotate each field and assign it a field number. Recall that when [defining a protobuf message type](https://developers.google.com/protocol-buffers/docs/proto3#simple), each field must be assigned a unique number.  To do that, we add an `entproto.Field` annotation on each field. Update the `Fields` in `ent/schema/user.go`:",
+      "source_content_hash": "4db3495d85df004313a479e84874b6d1c3688469c6b619303de68ba71bed3d05",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着需要为每个字段添加注解并分配字段编号。请注意在[定义protobuf消息类型](https://developers.google.com/protocol-buffers/docs/proto3#simple)时，每个字段都必须分配唯一编号。为此我们在每个字段上添加`entproto.Field`注解。更新`ent/schema/user.go`中的`Fields`："
+      }
+    },
+    {
+      "segment_id": "166426c2",
+      "source_content": "```go title=\"ent/schema/user.go\"\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tUnique().\n\t\t\tAnnotations(\n\t\t\t\tentproto.Field(2),\n\t\t\t),\n\t\tfield.String(\"email_address\").\n\t\t\tUnique().\n\t\t\tAnnotations(\n\t\t\t\tentproto.Field(3),\n\t\t\t),\n\t}\n}\n```",
+      "source_content_hash": "9fa9b2f3ce2df6bf846070889863e90e3543c649af36a2427243540b9e1b2aa1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_166426c2"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "Notice that we did not start our field numbers from 1, this is because `ent` implicitly creates the `ID` field for the entity, and that field is automatically assigned the number 1.  We can now generate our protobuf message type definitions. To do that, we will add to `ent/generate.go` a `go:generate` directive that invokes the `entproto` command-line tool. It should now look like this:",
+      "source_content_hash": "7d2468435fc3c2c6d80a1e2e25f33edf779403674b2568e3f003f33856e81e12",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意我们没有从1开始编号，因为`ent`隐式创建了实体的`ID`字段，该字段会自动分配编号1。现在可以生成protobuf消息类型定义。在`ent/generate.go`中添加`go:generate`指令来调用`entproto`命令行工具，修改后内容如下："
+      }
+    },
+    {
+      "segment_id": "a11df754",
+      "source_content": "```go title=\"ent/generate.go\"\npackage ent\n\n//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate ./schema\n//go:generate go run -mod=mod entgo.io/contrib/entproto/cmd/entproto -path ./schema\n```",
+      "source_content_hash": "610e688f9882becfbe26ba07b7ed79185062c3108da0bf289af0801e6cfbb80d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a11df754"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "Let's re-generate our code:",
+      "source_content_hash": "50f7a1187a819e24ed2a21ae95515db96f2f4058b142cea19313376034b88380",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重新生成代码："
+      }
+    },
+    {
+      "segment_id": "229d6705",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229d6705"
+      }
+    },
+    {
+      "segment_id": "98d26038",
+      "source_content": "Observe that a new directory was created which will contain all protobuf related generated code: `ent/proto`. It now contains:",
+      "source_content_hash": "ba7d50bf2c63e300ed73dc3a5df24824d44b5bbbcce7af19749d83d61b648591",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到新建的`ent/proto`目录将包含所有protobuf相关生成代码，目前包含："
+      }
+    },
+    {
+      "segment_id": "f275f5fd",
+      "source_content": "```console\nent/proto\n└── entpb\n    ├── entpb.proto\n    └── generate.go\n```",
+      "source_content_hash": "2116856f67e4a15c71836e2d5edd21ef08c5ef2b5d49c1e32ef846e5d2822bad",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f275f5fd"
+      }
+    },
+    {
+      "segment_id": "6ea4c715",
+      "source_content": "Two files were created. Let's look at their contents:",
+      "source_content_hash": "6b4cf70bf53cb9b84e7613ee3e222f31348068ca0ba7854457c8687565b15017",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成了两个文件，查看其内容："
+      }
+    },
+    {
+      "segment_id": "5a41b4fb",
+      "source_content": "```protobuf title=\"ent/proto/entpb/entpb.proto\"\n// Code generated by entproto. DO NOT EDIT.\nsyntax = \"proto3\";\n\npackage entpb;\n\noption go_package = \"ent-grpc-example/ent/proto/entpb\";\n\nmessage User {\n  int32 id = 1;\n\n  string user_name = 2;\n\n  string email_address = 3;\n}\n```",
+      "source_content_hash": "681fafa1995496b789ff111cd4111426ff128e9a196e901452edfe45bf9be675",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5a41b4fb"
+      }
+    },
+    {
+      "segment_id": "463ed165",
+      "source_content": "Nice! A new `.proto` file containing a message type definition that maps to our `User` schema was created!",
+      "source_content_hash": "f316367ad5b1c69cec2c088a87af846ad506d71ff23f195e0ed90bcfd89821c1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "很好！新建的`.proto`文件包含映射到`User`模式的消息类型定义！"
+      }
+    },
+    {
+      "segment_id": "092b29bb",
+      "source_content": "```go title=\"ent/proto/entpb/generate.go\"\npackage entpb\n//go:generate protoc -I=.. --go_out=.. --go-grpc_out=.. --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative --entgrpc_out=.. --entgrpc_opt=paths=source_relative,schema_path=../../schema entpb/entpb.proto\n```",
+      "source_content_hash": "1fa02b5a90ca0e797e570093c7a77e58a5e2f01c2a4dacfaf3ed35f5581889c2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_092b29bb"
+      }
+    },
+    {
+      "segment_id": "2547a6bb",
+      "source_content": "A new `generate.go` file was created with an invocation to `protoc`, the protobuf code generator instructing it how to generate Go code from our `.proto` file. For this command to work, we must first install `protoc` as well as 3 protobuf plugins: `protoc-gen-go` (which generates Go Protobuf structs), `protoc-gen-go-grpc` (which generates Go gRPC service interfaces and clients), and `protoc-gen-entgrpc` (which generates an implementation of the service interface). If you do not have these installed, please follow these directions:",
+      "source_content_hash": "90e68deb55ec8ee1d0b6d4c1cf08c1d2ee1439a7e23f5e58b4dfc0ea56b308c9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "新建的`generate.go`文件包含对protobuf代码生成器`protoc`的调用指令，说明如何从`.proto`文件生成Go代码。要使该命令生效，需先安装`protoc`及三个protobuf插件：`protoc-gen-go`（生成Go Protobuf结构体）、`protoc-gen-go-grpc`（生成Go gRPC服务接口和客户端）和`protoc-gen-entgrpc`（生成服务接口实现）。若未安装请按以下指引操作："
+      }
+    },
+    {
+      "segment_id": "4d429946",
+      "source_content": "- [protoc installation](https://grpc.io/docs/protoc-installation/)\n- [protoc-gen-go + protoc-gen-go-grpc installation](https://grpc.io/docs/languages/go/quickstart/)\n- To install `protoc-gen-entgrpc`, run:\n\n  ```\n  go install entgo.io/contrib/entproto/cmd/protoc-gen-entgrpc@master\n  ```",
+      "source_content_hash": "b1b42f284f83dfb1a28dafaa72bc4df78351ac99f6e699c4c04d1be5722d704d",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- [protoc安装指南](https://grpc.io/docs/protoc-installation/)\n- [protoc-gen-go + protoc-gen-go-grpc安装指南](https://grpc.io/docs/languages/go/quickstart/)\n- 安装`protoc-gen-entgrpc`：\n\n  ```\n  go install entgo.io/contrib/entproto/cmd/protoc-gen-entgrpc@master\n  ```"
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "After installing these dependencies, we can re-run code-generation:",
+      "source_content_hash": "d18c3dc295bcb44d37a475fe74ddaed013dc6ad941a2c10483a53f297bc6dc84",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "安装依赖后重新运行代码生成："
+      }
+    },
+    {
+      "segment_id": "dc73c0d2",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dc73c0d2"
+      }
+    },
+    {
+      "segment_id": "a2c0166e",
+      "source_content": "Observe that a new file named `ent/proto/entpb/entpb.pb.go` was created which contains the generated Go structs for our entities.",
+      "source_content_hash": "c4983426241d494c51ba3a10380bf4268d02683413a3b0a958df2e0f72a713d0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到新生成的`ent/proto/entpb/entpb.pb.go`文件包含实体对应的Go结构体。"
+      }
+    },
+    {
+      "segment_id": "c1eaf30b",
+      "source_content": "Let's write a test that uses it to make sure everything is wired correctly. Create a new file named `pb_test.go` and write:",
+      "source_content_hash": "24fde0d47e8aa8c969c3bc760bed111dfe42ac618e971ac4675f194dc52ef9d3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "编写测试用例验证功能是否正常。新建`pb_test.go`文件并写入："
+      }
+    },
+    {
+      "segment_id": "c4c0fc07",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"testing\"\n\n\t\"ent-grpc-example/ent/proto/entpb\"\n)\n\nfunc TestUserProto(t *testing.T) {\n\tuser := entpb.User{\n\t\tName:     \"rotemtam\",\n\t\tEmailAddress: \"rotemtam@example.com\",\n\t}\n\tif user.GetName() != \"rotemtam\" {\n\t\tt.Fatal(\"expected user name to be rotemtam\")\n\t}\n\tif user.GetEmailAddress() != \"rotemtam@example.com\" {\n\t\tt.Fatal(\"expected email address to be rotemtam@example.com\")\n\t}\n}\n```",
+      "source_content_hash": "61e08383edf5bc78649e74298f4bdfaeeacf3d6a16ba5c000c6e3199389a8a63",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c4c0fc07"
+      }
+    },
+    {
+      "segment_id": "53aa2b95",
+      "source_content": "To run it:",
+      "source_content_hash": "2e99b2e5e5f2fcb17b0e25393351c6b1d712d5ec1d5435bf07904ec6b5adafaa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行测试："
+      }
+    },
+    {
+      "segment_id": "18fb666f",
+      "source_content": "```console\ngo get -u ./... # install deps of the generated package\ngo test ./...\n```",
+      "source_content_hash": "8450f30cb59e55b08bc45858825fe5338bd957d574b69dfe91632243665c257e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_18fb666f"
+      }
+    },
+    {
+      "segment_id": "14bc6b75",
+      "source_content": "Hooray! The test passes. We have successfully generated working Go Protobuf structs from our Ent schema. Next, let's see how to automatically generate a working CRUD gRPC *server* from our schema.",
+      "source_content_hash": "96d6fc972b39178d6d9d9047788c14536fd42c346f034993c3a573ca3f81f1b2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "测试通过！我们已成功从Ent模式生成可用的Go Protobuf结构体。接下来看看如何自动生成可用的CRUD gRPC*服务端*。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-grpc-generating-proto.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.689144+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "7e77f7c5465ce2dc97cafa1f210d9e7b14ce79a3bc8288d6c8c815f489ef8ce9"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "i18n/en/docusaurus-theme-classic/navbar.json",
+  "source_file_content_hash": "7c1ad67c226dbbacf9128126c559d136d445c2fd85d30f88762400b3cdd16af3",
+  "segments": [
+    {
+      "segment_id": "item.label.Docs",
+      "source_content": "Docs",
+      "source_content_hash": "7af023c43013b9a53fbff7dd4b5821588bba3319308878229740489152c43f6d",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "文档"
+      },
+      "metadata": {
+        "json_description": "Navbar item with label Docs"
+      }
+    },
+    {
+      "segment_id": "item.label.Tutorials",
+      "source_content": "Tutorials",
+      "source_content_hash": "8d9f66992dd4373c8f30f09a93b87aa0d9d341b8ec91e0bcbd4a4c744e41b3f9",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "教程"
+      },
+      "metadata": {
+        "json_description": "Navbar item with label Tutorials"
+      }
+    },
+    {
+      "segment_id": "item.label.GoDoc",
+      "source_content": "GoDoc",
+      "source_content_hash": "dd569118d01bb6fc955b9a7c4f4df713d1b685eeecf9e5374cd2ae0e9530ed67",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Go文档"
+      },
+      "metadata": {
+        "json_description": "Navbar item with label GoDoc"
+      }
+    },
+    {
+      "segment_id": "item.label.Blog",
+      "source_content": "Blog",
+      "source_content_hash": "8c6bc099534a0251b576f6b88bd2db124ae9497c64bd9242e92a6aec23e6a73a",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "博客"
+      },
+      "metadata": {
+        "json_description": "Navbar item with label Blog"
+      }
+    }
+  ],
+  "original_json_structure": {
+    "item.label.Docs": {
+      "message": "Docs",
+      "description": "Navbar item with label Docs"
+    },
+    "item.label.Tutorials": {
+      "message": "Tutorials",
+      "description": "Navbar item with label Tutorials"
+    },
+    "item.label.GoDoc": {
+      "message": "GoDoc",
+      "description": "Navbar item with label GoDoc"
+    },
+    "item.label.Blog": {
+      "message": "Blog",
+      "description": "Navbar item with label Blog"
+    }
+  },
+  "target_i18n_subpath": "docusaurus-theme-classic/navbar.json",
+  "last_updated_timestamp": "2025-06-05T15:16:18.654036+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "7c1ad67c226dbbacf9128126c559d136d445c2fd85d30f88762400b3cdd16af3"
+  }
+}

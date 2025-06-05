@@ -1,0 +1,412 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/migration/rls.mdx",
+  "source_file_content_hash": "61d3e9c7a24a5b5db5403c807552d7df36f59c5bf849effdc73f8696ba6ec78b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Using Row-Level Security in Ent Schema\nid: rls\nslug: row-level-security\n---",
+      "source_content_hash": "0d661ed7ac177af63deccf795524168b2f67ec7636f06abf533754636de85690",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import InstallationInstructions from '../components/_installation_instructions.mdx';",
+      "source_content_hash": "afb49515c4f9b6aa67a78520d36b482a67d6d58297f2162ef1448cbea548208e",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_10c4cb47"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Row-level security (RLS) in PostgreSQL enables tables to implement policies that limit access or modification of rows\naccording to the user's role, enhancing the basic SQL-standard privileges provided by `GRANT`.",
+      "source_content_hash": "a9f5739c74ed3f1d3b92cbc9f8f300d024601183bbd8c3f85f9a95b0295c0267",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "PostgreSQL中的行级安全(RLS)功能允许表实施策略，根据用户角色限制对行的访问或修改，从而增强`GRANT`提供的标准SQL权限机制。"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "Once activated, every standard access to the table has to adhere to these policies. If no policies are defined on the table,\nit defaults to a deny-all rule, meaning no rows can be seen or mutated. These policies can be tailored to specific commands,\nroles, or both, allowing for detailed management of who can access or change data.",
+      "source_content_hash": "08d3c362b83a42b72acb1f9dc4e328daa4fe6c0b7a41a583fbb008a31081bf37",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "一旦启用，所有对表的常规访问都必须遵守这些策略。如果表上未定义任何策略，则默认采用拒绝所有规则，意味着无法查看或修改任何行。这些策略可以针对特定命令、角色或两者进行定制，实现细粒度的数据访问控制。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "This guide explains how to attach Row-Level Security (RLS) Policies to your Ent types (objects) and configure the schema\nmigration to manage both the RLS and the Ent schema as a single migration unit using Atlas.",
+      "source_content_hash": "e140da1209f146ea0ec5245416b925641eadfb760e4611da9e802b4476fb1b6f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南将介绍如何为Ent类型(对象)附加行级安全(RLS)策略，并通过Atlas配置模式迁移，将RLS与Ent模式作为单一迁移单元进行管理。"
+      }
+    },
+    {
+      "segment_id": "f55b9485",
+      "source_content": ":::info[[Atlas Pro Feature](https://atlasgo.io/features#pro-plan)]\n\nAtlas support for [Row-Level Security Policies](https://atlasgo.io/atlas-schema/hcl#row-level-security-policy) used in\nthis guide is available exclusively to Pro users. To use this feature, run:\n\n```\natlas login\n```\n\n:::",
+      "source_content_hash": "3c4db186a9755addac43a1ca425e792c909436ca3cf8f3073b0ccba3e20ba425",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[Atlas Pro功能](https://atlasgo.io/features#pro-plan)]\n\n本指南使用的[行级安全策略](https://atlasgo.io/atlas-schema/hcl#row-level-security-policy)支持是Atlas Pro版专属功能。使用前请运行：\n\n```\natlas login\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "d06306f7",
+      "source_content": "## Install Atlas",
+      "source_content_hash": "bf92a270e324b46f2c1d6f24555018906dc2df68b19873079220409508dabfad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装Atlas"
+      }
+    },
+    {
+      "segment_id": "99d14dfd",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_99d14dfd"
+      }
+    },
+    {
+      "segment_id": "a1b3d8cb",
+      "source_content": "## Login to Atlas",
+      "source_content_hash": "e256bf54631891b6388a26350087fe6f85606d3b82220c15db06e45dc9ae443c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 登录Atlas"
+      }
+    },
+    {
+      "segment_id": "076d64d1",
+      "source_content": "```shell\n$ atlas login a8m\n//highlight-next-line-info\nYou are now connected to \"a8m\" on Atlas Cloud.\n```",
+      "source_content_hash": "496821c033e70d4510db88b24c2448b81f6a4860a232e94aa6828c08a6979cd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_076d64d1"
+      }
+    },
+    {
+      "segment_id": "8d04259b",
+      "source_content": "## Composite Schema",
+      "source_content_hash": "bba3d45312f3e0d6b9188ea0568fe93b6ecf4dd0b5f18da48a134b0a61d8e55c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 复合模式"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "An `ent/schema` package is mostly used for defining Ent types (objects), their fields, edges and logic. Table policies\nor any other database native objects do not have representation in Ent models.",
+      "source_content_hash": "26816b53da82aa4aed10c63e1c279bc01299c100016da80c62a9f97a138fc375",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema`包主要用于定义Ent类型(对象)、字段、边和逻辑。表策略或其他数据库原生对象在Ent模型中并无直接表示。"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "In order to extend our PostgreSQL schema to include both our Ent types and their policies, we configure Atlas to\nread the state of the schema from a [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)\ndata source. Follow the steps below to configure this for your project:",
+      "source_content_hash": "b92ff6089b074e9b5e9aa0abad6d3d50e7275db0120b802abdccbd828c010265",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了扩展PostgreSQL模式以包含Ent类型及其策略，我们配置Atlas从[复合模式](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)数据源读取模式状态。按以下步骤配置项目："
+      }
+    },
+    {
+      "segment_id": "c504c207",
+      "source_content": "1\\. Let's define a simple schema with two types (tables): `users` and `tenants`:",
+      "source_content_hash": "ee6ac2dfd3388d7bb1f7d6af2d2ec7781b499d6853a6ceb75a8cd89542fea098",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 首先定义包含两种类型(表)的简单模式：`users`和`tenants`："
+      }
+    },
+    {
+      "segment_id": "ac961110",
+      "source_content": "```go title=\"ent/schema/tenant.go\"\n// Tenant holds the schema definition for the Tenant entity.\ntype Tenant struct {\n\tent.Schema\n}\n\n// Fields of the Tenant.\nfunc (Tenant) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t}\n}\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.Int(\"tenant_id\"),\n\t}\n}\n```",
+      "source_content_hash": "d650d64a09a5533867b0753697197a164d713cb0aa6e557fc5f8d1dd3512e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ac961110"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "2\\. Now, suppose we want to limit access to the `users` table based on the `tenant_id` field. We can achieve this by defining\na Row-Level Security (RLS) policy on the `users` table. Below is the SQL code that defines the RLS policy:",
+      "source_content_hash": "3bc677d7d76bb2a70893d19e06f928ea25c1a436d016a06358858ddbff6b1636",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 假设我们需要基于`tenant_id`字段限制对`users`表的访问。可以通过在`users`表上定义行级安全(RLS)策略实现，以下是定义该策略的SQL代码："
+      }
+    },
+    {
+      "segment_id": "092b29bb",
+      "source_content": "```sql title=\"schema.sql\"\n--- Enable row-level security on the users table.\nALTER TABLE \"users\" ENABLE ROW LEVEL SECURITY;\n\n-- Create a policy that restricts access to rows in the users table based on the current tenant.\nCREATE POLICY tenant_isolation ON \"users\"\n    USING (\"tenant_id\" = current_setting('app.current_tenant')::integer);\n```",
+      "source_content_hash": "41f16624c3a7f512ee462ef861bf84ba81167fdc27aafd9162be3ec18386dd7e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_092b29bb"
+      }
+    },
+    {
+      "segment_id": "51867d16",
+      "source_content": "3\\. Lastly, we create a simple `atlas.hcl` config file with a `composite_schema` that includes both our Ent schema and\nthe custom security policies defined in `schema.sql`:",
+      "source_content_hash": "ebbb8fbf86be0b3afeeece2bfa2a235ca1837edc8973e1ee8f6a268627f8a72c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 最后创建简单的`atlas.hcl`配置文件，其中包含`composite_schema`，同时涵盖Ent模式和`schema.sql`中定义的安全策略："
+      }
+    },
+    {
+      "segment_id": "19913a56",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"app\" {\n  # Load the ent schema first with all tables.\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n  # Then, load the RLS schema.\n  schema \"public\" {\n    url = \"file://schema.sql\"\n  }\n}\n\nenv \"local\" {\n  src = data.composite_schema.app.url\n  dev = \"docker://postgres/15/dev?search_path=public\"\n}\n```",
+      "source_content_hash": "f84d721fdaf23cf92c1afbaa397c6eaad3de17acf1cf8fcd0a1f4a0815fa323b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_19913a56"
+      }
+    },
+    {
+      "segment_id": "ab39e8a7",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用指南"
+      }
+    },
+    {
+      "segment_id": "d21af28f",
+      "source_content": "After setting up our composite schema, we can get its representation using the `atlas schema inspect` command, generate\nschema migrations for it, apply them to a database, and more. Below are a few commands to get you started with Atlas:",
+      "source_content_hash": "665f7c10dd9ccd55a0fe15b7cac8c2271c2ad26f6f52e51576798c2cc754ff7e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "配置复合模式后，可通过`atlas schema inspect`命令获取其表示形式，生成模式迁移文件，应用到数据库等。以下是Atlas的入门命令："
+      }
+    },
+    {
+      "segment_id": "37fca32e",
+      "source_content": "#### Inspect the Schema",
+      "source_content_hash": "0b8da15efa6536bf3d7ba2b7c234ece1c6fd8c165a258f150b75f3c4a8a94775",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查模式"
+      }
+    },
+    {
+      "segment_id": "a8610918",
+      "source_content": "The `atlas schema inspect` command is commonly used to inspect databases. However, we can also use it to inspect our\n`composite_schema` and print the SQL representation of it:",
+      "source_content_hash": "f3dbe5302e7d37e03961c48a085104e5315169634c3bc3ce4a8eebe0448f4f5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas schema inspect`命令通常用于检查数据库，但也可用于检查`composite_schema`并打印其SQL表示："
+      }
+    },
+    {
+      "segment_id": "6f605d92",
+      "source_content": "```shell\natlas schema inspect \\\n  --env local \\\n  --url env://src \\\n  --format '{{ sql . }}'\n```",
+      "source_content_hash": "1842ce4f48f94bbd6a5aa04c673ac0b32a2a5303e5c49b31790f7f34cba2e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6f605d92"
+      }
+    },
+    {
+      "segment_id": "53aa2b95",
+      "source_content": "The command above prints the following SQL. Note, the `tenant_isolation` policy is defined in the schema after the `users`\ntable:",
+      "source_content_hash": "9378b1b2be998f876ed1746f3454e9b2ac02f76ef03922d83ebab14166be6626",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行后将输出以下SQL。注意`tenant_isolation`策略在模式中定义于`users`表之后："
+      }
+    },
+    {
+      "segment_id": "136818ce",
+      "source_content": "```sql\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, \"tenant_id\" bigint NOT NULL, PRIMARY KEY (\"id\"));\n-- Enable row-level security for \"users\" table\nALTER TABLE \"users\" ENABLE ROW LEVEL SECURITY;\n-- Create policy \"tenant_isolation\"\nCREATE POLICY \"tenant_isolation\" ON \"users\" AS PERMISSIVE FOR ALL TO PUBLIC USING (tenant_id = (current_setting('app.current_tenant'::text))::integer);\n-- Create \"tenants\" table\nCREATE TABLE \"tenants\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "ddfd2ff475d89a1e334e429ca819c9cb1f27c2e871830098d10423914e60f30d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_136818ce"
+      }
+    },
+    {
+      "segment_id": "af843cee",
+      "source_content": "#### Generate Migrations For the Schema",
+      "source_content_hash": "c5990cc35443eac491da766def9a4b660ae86e07358dc8ba13ee7cc4264ae8c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 生成模式迁移"
+      }
+    },
+    {
+      "segment_id": "681ef526",
+      "source_content": "To generate a migration for the schema, run the following command:",
+      "source_content_hash": "d37793d5ce1c9d58e36c9034b73243a6673c73c3d2019a3fc933949148642be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令生成模式迁移："
+      }
+    },
+    {
+      "segment_id": "eb25bb8c",
+      "source_content": "```shell\natlas migrate diff \\\n  --env local\n```",
+      "source_content_hash": "6b7403f27f8ed223e30c839e71ca4751a7ab8d6c8cadab93c9b0579c577ecadd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eb25bb8c"
+      }
+    },
+    {
+      "segment_id": "42d9ca67",
+      "source_content": "Note that a new migration file is created with the following content:",
+      "source_content_hash": "9e85891e456985b55c4c4723d5a20a256836ff963d5bacf28310685aeb824a89",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意新创建的迁移文件包含以下内容："
+      }
+    },
+    {
+      "segment_id": "68d4860d",
+      "source_content": "```sql title=\"migrations/20240712090543.sql\"\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, \"tenant_id\" bigint NOT NULL, PRIMARY KEY (\"id\"));\n-- Enable row-level security for \"users\" table\nALTER TABLE \"users\" ENABLE ROW LEVEL SECURITY;\n-- Create policy \"tenant_isolation\"\nCREATE POLICY \"tenant_isolation\" ON \"users\" AS PERMISSIVE FOR ALL TO PUBLIC USING (tenant_id = (current_setting('app.current_tenant'::text))::integer);\n-- Create \"tenants\" table\nCREATE TABLE \"tenants\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "4b96b07c7e8c898b6c0b7e97a1644cc5e14ef46cf1c5170ca967954c7cdce523",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_68d4860d"
+      }
+    },
+    {
+      "segment_id": "3f77c6a0",
+      "source_content": "#### Apply the Migrations",
+      "source_content_hash": "dd262c901209a83701a71368b18fd88b248797d69ab716e0faf1fbcc27203f95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "39f476dc",
+      "source_content": "To apply the migration generated above to a database, run the following command:",
+      "source_content_hash": "3b0f09a477a570f0dbe9432e3bfda1ef4da42bb2a1a2169041bbd1dde36f254d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令将生成的迁移应用到数据库："
+      }
+    },
+    {
+      "segment_id": "8ecb92db",
+      "source_content": "```\natlas migrate apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```",
+      "source_content_hash": "9ac63adaa93ec903e09e8bf048fee595f2113774afd394318a89f192a26e03e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8ecb92db"
+      }
+    },
+    {
+      "segment_id": "b826038b",
+      "source_content": ":::info[Apply the Schema Directly on the Database]\n\nSometimes, there is a need to apply the schema directly to the database without generating a migration file. For example,\nwhen experimenting with schema changes, spinning up a database for testing, etc. In such cases, you can use the command\nbelow to apply the schema directly to the database:\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\nOr, using the [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk):\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// Automatically update the database with the desired schema.\n// Another option, is to use 'migrate apply' or 'schema apply' manually.\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::",
+      "source_content_hash": "952a10b8a5fa910f71bdf85eddb61c04951369a6d1fc33bb3bbbecc57bee9b2b",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[直接应用模式到数据库]\n\n有时需要直接将模式应用到数据库而不生成迁移文件，例如在测试模式变更或启动测试数据库时。此时可使用以下命令直接将模式应用到数据库：\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\n或使用 [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk)：\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// 自动用目标模式更新数据库\n// 另一种方式是手动执行 'migrate apply' 或 'schema apply'\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "e457c208",
+      "source_content": "## Code Example",
+      "source_content_hash": "87f9980979aca6ce78fe2eaf1076f406ded92ada00f6080fcf10ca21f4c83dd8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 代码示例"
+      }
+    },
+    {
+      "segment_id": "eeeea5ce",
+      "source_content": "After setting up our Ent schema and the RLS policies, we can open an Ent client and pass the different mutations and\nqueries the relevant tenant ID we work on. This ensures that the database upholds our RLS policy:",
+      "source_content_hash": "3b1895bf9e8e0349267aaf2c0626f8a02c98efe60d07e0825b27b04500ff5311",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "配置完Ent模式及行级安全策略后，我们可以打开Ent客户端，在变更和查询时传入当前操作的租户ID，确保数据库强制执行RLS策略："
+      }
+    },
+    {
+      "segment_id": "a414aca8",
+      "source_content": "```go\nctx1, ctx2 := sql.WithIntVar(ctx, \"app.current_tenant\", a8m.ID), sql.WithIntVar(ctx, \"app.current_tenant\", r3m.ID)\nusers1 := client.User.Query().AllX(ctx1)\n// Users1 can only see users from tenant a8m.\nusers2 := client.User.Query().AllX(ctx2)\n// Users2 can only see users from tenant r3m.\n```",
+      "source_content_hash": "c6b8f9c4450a8c4541ed8bfa0d7c3f269e2f79aee15cc96fb300fd0ec37d10dc",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a414aca8"
+      }
+    },
+    {
+      "segment_id": "59087b4e",
+      "source_content": ":::info[Real World Example]\nIn real applications, users can utilize [hooks](/docs/hooks) and [interceptors](/docs/interceptors) to set the `app.current_tenant`\nvariable based on the user's context.\n:::",
+      "source_content_hash": "05dc1ea7ea775d9dc874dcb5ae67ff4beac822f60886514ccee8bef678ded296",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[实际应用示例]\n在实际应用中，开发者可通过[钩子](/docs/hooks)和[拦截器](/docs/interceptors)根据用户上下文设置`app.current_tenant`变量。\n:::"
+      }
+    },
+    {
+      "segment_id": "49be422b",
+      "source_content": "The code for this guide can be found in [GitHub](https://github.com/ent/ent/tree/master/examples/rls).",
+      "source_content_hash": "be79b50af0c7b0b8881a42a09cd8919838fff993365b643c67abc96f0e4685ee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南完整代码参见 [GitHub仓库](https://github.com/ent/ent/tree/master/examples/rls)。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/migration/rls.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.666589+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "61d3e9c7a24a5b5db5403c807552d7df36f59c5bf849effdc73f8696ba6ec78b"
+  }
+}

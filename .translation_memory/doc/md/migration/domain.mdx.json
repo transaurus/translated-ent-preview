@@ -1,0 +1,372 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/migration/domain.mdx",
+  "source_file_content_hash": "dd41a5431ed0e98e34bdf2abbdbe4d4cf23515ad88131e30a1665a109f7f3671",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Using Domain Types in Ent Schema\nid: domain\nslug: domain-types\n---",
+      "source_content_hash": "e7aae6e559ff6603d89fbea82760edd8ff0de0d6d236ba1fac4c0cbbd6f50ffc",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';\nimport InstallationInstructions from '../components/_installation_instructions.mdx';",
+      "source_content_hash": "ffc742d78eb313c2e57a6a0244a32ba45938e009a6b63b1af7b9e28de9f1658b",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_10c4cb47"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "PostgreSQL domain types are user-defined data types that extend existing ones, allowing you to add constraints that\nrestrict the values they can hold. Setting a field type as a domain type enables you to enforce data integrity and\nvalidation rules at the database level.",
+      "source_content_hash": "31d3318262bc0885c6d348384e755a101b653f2f4f1354af9a98d9a1b39ed5a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "PostgreSQL 域类型是用户自定义的数据类型，它们扩展了现有类型，允许您添加约束以限制其可持有的值。将字段类型设置为域类型，可以在数据库层面强制执行数据完整性和验证规则。"
+      }
+    },
+    {
+      "segment_id": "cf898102",
+      "source_content": "This guide explains how to define a schema field type as a domain type in your Ent schema and configure the schema migration\nto manage both the domains and the Ent schema as a single migration unit using Atlas.",
+      "source_content_hash": "93e3a48bc82472ad5778dacfc1345cb84037f9b2e0f69df0b3bb6298d92b8b85",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南将说明如何在 Ent 模式中将字段类型定义为域类型，并配置模式迁移以使用 Atlas 将域和 Ent 模式作为单个迁移单元进行管理。"
+      }
+    },
+    {
+      "segment_id": "440191a5",
+      "source_content": ":::info[[Atlas Pro Feature](https://atlasgo.io/features#pro-plan)]\nAtlas support for [Domain Types](https://atlasgo.io/atlas-schema/hcl#domain) is available exclusively to Pro users.\nTo use this feature, run:\n```\natlas login\n```\n:::",
+      "source_content_hash": "35aa44c4afbb6e9f5661d7c261f2045495f1a410ce65e04e1289c155699c4595",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[Atlas Pro 功能](https://atlasgo.io/features#pro-plan)]\nAtlas 对[域类型](https://atlasgo.io/atlas-schema/hcl#domain)的支持仅限 Pro 用户使用。要使用此功能，请运行：\n```\natlas login\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "79b2d0b9",
+      "source_content": "## Install Atlas",
+      "source_content_hash": "bf92a270e324b46f2c1d6f24555018906dc2df68b19873079220409508dabfad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装 Atlas"
+      }
+    },
+    {
+      "segment_id": "2a3434e4",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2a3434e4"
+      }
+    },
+    {
+      "segment_id": "d06306f7",
+      "source_content": "## Login to Atlas",
+      "source_content_hash": "e256bf54631891b6388a26350087fe6f85606d3b82220c15db06e45dc9ae443c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 登录 Atlas"
+      }
+    },
+    {
+      "segment_id": "b017063d",
+      "source_content": "```shell\n$ atlas login a8m\n//highlight-next-line-info\nYou are now connected to \"a8m\" on Atlas Cloud.\n```",
+      "source_content_hash": "496821c033e70d4510db88b24c2448b81f6a4860a232e94aa6828c08a6979cd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b017063d"
+      }
+    },
+    {
+      "segment_id": "80d9e13c",
+      "source_content": "## Composite Schema",
+      "source_content_hash": "bba3d45312f3e0d6b9188ea0568fe93b6ecf4dd0b5f18da48a134b0a61d8e55c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 复合模式"
+      }
+    },
+    {
+      "segment_id": "33331f27",
+      "source_content": "An `ent/schema` package is mostly used for defining Ent types (objects), their fields, edges and logic. Domain types,\nor any other database objects do not have representation in Ent models - A domain type can be defined once,\nand may be used multiple times in different fields and models.",
+      "source_content_hash": "be79e5425bce4cb97087afdeea395a500f22207c923429870d30df8629fd7da7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema` 包主要用于定义 Ent 类型（对象）、其字段、边和逻辑。域类型或其他数据库对象在 Ent 模型中并无表示——域类型可以定义一次，并可在不同字段和模型中多次使用。"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "In order to extend our PostgreSQL schema to include both custom domain types and our Ent types, we configure Atlas to\nread the state of the schema from a [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)\ndata source. Follow the steps below to configure this for your project:",
+      "source_content_hash": "e6e7f41e9919b5e01e2ce1cfaa2d0fab24d3e979ce3943a1a30388b6733f9f95",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了扩展我们的 PostgreSQL 模式以包含自定义域类型和 Ent 类型，我们配置 Atlas 从[复合模式](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)数据源读取模式状态。按照以下步骤为您的项目进行配置："
+      }
+    },
+    {
+      "segment_id": "a9d49f92",
+      "source_content": "1\\. Create a `schema.sql` that defines the necessary domain type. In the same way, you can configure the domain type in\n   [Atlas Schema HCL language](https://atlasgo.io/atlas-schema/hcl-types#domain):",
+      "source_content_hash": "997fb5c1789f8132d2101820fe7c8f4cdfaf86a049b10b83f9f9450ba45ebb47",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 创建一个 `schema.sql` 文件，定义必要的域类型。同样，您可以在 [Atlas Schema HCL 语言](https://atlasgo.io/atlas-schema/hcl-types#domain)中配置域类型："
+      }
+    },
+    {
+      "segment_id": "8e90ad3a",
+      "source_content": "<Tabs>\n<TabItem value={\"sql\"} label={\"Using SQL\"}>\n\n```sql title=\"schema.sql\"\nCREATE DOMAIN us_postal_code AS TEXT\nCHECK(\n   VALUE ~ '^\\d{5}$'\n   OR VALUE ~ '^\\d{5}-\\d{4}$'\n);\n```\n\n</TabItem>\n<TabItem value={\"hcl\"} label={\"Using HCL\"}>\n\n```hcl title=\"schema.hcl\"\nschema \"public\" {}\n\ndomain \"us_postal_code\" {\n  schema = schema.public\n  type   = text\n  null   = true\n  check \"us_postal_code_check\" {\n    expr = \"((VALUE ~ '^\\\\d{5}$'::text) OR (VALUE ~ '^\\\\d{5}-\\\\d{4}$'::text))\"\n  }\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "9b85e3059940b7381c313bd83c4b6a69f09ff3470cc5d257de6e70b4d86b4be4",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8e90ad3a"
+      }
+    },
+    {
+      "segment_id": "463ed165",
+      "source_content": "2\\. In your Ent schema, define a field that uses the domain type only in PostgreSQL dialect:",
+      "source_content_hash": "80f40f4bdf594c0e83b7f8eb1017f598043c6f23341faa5bc5b94b6649db9a71",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在您的 Ent 模式中，定义一个仅在 PostgreSQL 方言中使用域类型的字段："
+      }
+    },
+    {
+      "segment_id": "092b29bb",
+      "source_content": "```go title=\"ent/schema/user.go\" {5-7}\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"postal_code\").\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.Postgres: \"us_postal_code\",\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "56e61b061c1330f438010883c192edae4c9155cbb58c74620f68ecd04a806292",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_092b29bb"
+      }
+    },
+    {
+      "segment_id": "8a58dc39",
+      "source_content": ":::note\nIn case a schema with custom driver-specific types is used with other databases, Ent falls back to the default type\nused by the driver (e.g., \"varchar\").\n:::",
+      "source_content_hash": "1f35d94e85f7f34d8dc39c5cb7c8bb03bb7b68cd7761c548cbda3a2c7750be5e",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n如果带有自定义驱动特定类型的模式与其他数据库一起使用，Ent 将回退到驱动程序使用的默认类型（例如 \"varchar\"）。\n:::"
+      }
+    },
+    {
+      "segment_id": "1862c5fe",
+      "source_content": "3\\. Create a simple `atlas.hcl` config file with a `composite_schema` that includes both your custom types defined in\n   `schema.sql` and your Ent schema:",
+      "source_content_hash": "fa09ed65c8b0c5f284e415fe324d544acdc711a7bad5e9edff49f3ff520fc968",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 创建一个简单的 `atlas.hcl` 配置文件，其中包含一个 `composite_schema`，该模式同时包含您在 `schema.sql` 中定义的自定义类型和您的 Ent 模式："
+      }
+    },
+    {
+      "segment_id": "cae897fb",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"app\" {\n  # Load first custom types first.\n  schema \"public\" {\n    url = \"file://schema.sql\"\n  }\n  # Second, load the Ent schema.\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n}\n\nenv \"local\" {\n  src = data.composite_schema.app.url\n  dev = \"docker://postgres/15/dev?search_path=public\"\n}\n```",
+      "source_content_hash": "feba72d4fbbff1d3db918705869e392925919d2cc90d5fc0edf887d69bad5264",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cae897fb"
+      }
+    },
+    {
+      "segment_id": "c7fa1e8d",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用"
+      }
+    },
+    {
+      "segment_id": "a6c928a1",
+      "source_content": "After setting up our schema, we can get its representation using the `atlas schema inspect` command, generate migrations for\nit, apply them to a database, and more. Below are a few commands to get you started with Atlas:",
+      "source_content_hash": "8c8bbe17ec6423bef0ab341e1c2f089a8cf22219ec7f88e3a634c63e4d9c651e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "设置好模式后，我们可以使用 `atlas schema inspect` 命令获取其表示，为其生成迁移，将其应用到数据库等。以下是一些帮助您开始使用 Atlas 的命令："
+      }
+    },
+    {
+      "segment_id": "47516512",
+      "source_content": "#### Inspect the Schema",
+      "source_content_hash": "0b8da15efa6536bf3d7ba2b7c234ece1c6fd8c165a258f150b75f3c4a8a94775",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查模式"
+      }
+    },
+    {
+      "segment_id": "6fc234cf",
+      "source_content": "The `atlas schema inspect` command is commonly used to inspect databases. However, we can also use it to inspect our\n`composite_schema` and print the SQL representation of it:",
+      "source_content_hash": "f3dbe5302e7d37e03961c48a085104e5315169634c3bc3ce4a8eebe0448f4f5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas schema inspect` 命令通常用于检查数据库。不过，我们也可以用它来检查我们的 `composite_schema` 并打印其 SQL 表示："
+      }
+    },
+    {
+      "segment_id": "5be4f25e",
+      "source_content": "```shell\natlas schema inspect \\\n  --env local \\\n  --url env://src \\\n  --format '{{ sql . }}'\n```",
+      "source_content_hash": "1842ce4f48f94bbd6a5aa04c673ac0b32a2a5303e5c49b31790f7f34cba2e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5be4f25e"
+      }
+    },
+    {
+      "segment_id": "14bc6b75",
+      "source_content": "The command above prints the following SQL. Note, the `us_postal_code` domain type is defined in the schema before\nits usage in the `postal_code` field:",
+      "source_content_hash": "937416a3f7d523916246b6bda8d23fde45bc483e98a90c2d228305cf24f6c819",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述命令会打印以下 SQL。请注意，`us_postal_code` 域类型在 `postal_code` 字段使用之前已在模式中定义："
+      }
+    },
+    {
+      "segment_id": "6e57b94c",
+      "source_content": "```sql\n-- Create domain type \"us_postal_code\"\nCREATE DOMAIN \"us_postal_code\" AS text CONSTRAINT \"us_postal_code_check\" CHECK ((VALUE ~ '^\\d{5}$'::text) OR (VALUE ~ '^\\d{5}-\\d{4}$'::text));\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"postal_code\" \"us_postal_code\" NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "4b02a94767643d7dec0d8020c978ccbd57b64288b4d514909687905db349a13c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6e57b94c"
+      }
+    },
+    {
+      "segment_id": "dd4905a4",
+      "source_content": "#### Generate Migrations For the Schema",
+      "source_content_hash": "c5990cc35443eac491da766def9a4b660ae86e07358dc8ba13ee7cc4264ae8c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 为模式生成迁移"
+      }
+    },
+    {
+      "segment_id": "17b50e81",
+      "source_content": "To generate a migration for the schema, run the following command:",
+      "source_content_hash": "d37793d5ce1c9d58e36c9034b73243a6673c73c3d2019a3fc933949148642be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要为模式生成迁移，请运行以下命令："
+      }
+    },
+    {
+      "segment_id": "3ad9440a",
+      "source_content": "```shell\natlas migrate diff \\\n  --env local\n```",
+      "source_content_hash": "6b7403f27f8ed223e30c839e71ca4751a7ab8d6c8cadab93c9b0579c577ecadd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ad9440a"
+      }
+    },
+    {
+      "segment_id": "63565425",
+      "source_content": "Note that a new migration file is created with the following content:",
+      "source_content_hash": "9e85891e456985b55c4c4723d5a20a256836ff963d5bacf28310685aeb824a89",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意，将创建一个新的迁移文件，其内容如下："
+      }
+    },
+    {
+      "segment_id": "e9921a93",
+      "source_content": "```sql title=\"migrations/20240712090543.sql\"\n-- Create domain type \"us_postal_code\"\nCREATE DOMAIN \"us_postal_code\" AS text CONSTRAINT \"us_postal_code_check\" CHECK ((VALUE ~ '^\\d{5}$'::text) OR (VALUE ~ '^\\d{5}-\\d{4}$'::text));\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"postal_code\" \"us_postal_code\" NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "0a901786d3984a8effa00f0a52b389f529b225e2bbe5e7e0312535b44ae638d4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e9921a93"
+      }
+    },
+    {
+      "segment_id": "a5905b07",
+      "source_content": "#### Apply the Migrations",
+      "source_content_hash": "dd262c901209a83701a71368b18fd88b248797d69ab716e0faf1fbcc27203f95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "fd7ed056",
+      "source_content": "To apply the migration generated above to a database, run the following command:",
+      "source_content_hash": "3b0f09a477a570f0dbe9432e3bfda1ef4da42bb2a1a2169041bbd1dde36f254d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要将上述生成的迁移应用到数据库，请运行以下命令："
+      }
+    },
+    {
+      "segment_id": "dddc2d3c",
+      "source_content": "```\natlas migrate apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```",
+      "source_content_hash": "9ac63adaa93ec903e09e8bf048fee595f2113774afd394318a89f192a26e03e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dddc2d3c"
+      }
+    },
+    {
+      "segment_id": "1699f2b9",
+      "source_content": ":::info[Apply the Schema Directly on the Database]\n\nSometimes, there is a need to apply the schema directly to the database without generating a migration file. For example,\nwhen experimenting with schema changes, spinning up a database for testing, etc. In such cases, you can use the command\nbelow to apply the schema directly to the database:\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\nOr, using the [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk):\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// Automatically update the database with the desired schema.\n// Another option, is to use 'migrate apply' or 'schema apply' manually.\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::",
+      "source_content_hash": "952a10b8a5fa910f71bdf85eddb61c04951369a6d1fc33bb3bbbecc57bee9b2b",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[直接向数据库应用模式]\n\n有时需要直接将模式应用到数据库而不生成迁移文件，例如在测试模式变更或启动测试数据库时。此时可使用以下命令直接将模式应用到数据库：\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\n或使用 [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk)：\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"客户端初始化失败: %w\", err)\n}\n// 自动用目标模式更新数据库\n// 另一种方式是手动使用 'migrate apply' 或 'schema apply'\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"模式变更应用失败: %w\", err)\n}\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "7e563909",
+      "source_content": "The code for this guide can be found in [GitHub](https://github.com/ent/ent/tree/master/examples/domaintypes).",
+      "source_content_hash": "d4dd1779ae3333c702d0964e3e7dbc951faa034c0d9b0540b6b95c29ecdf52ae",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南完整代码可在 [GitHub](https://github.com/ent/ent/tree/master/examples/domaintypes) 获取。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/migration/domain.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.661140+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "dd41a5431ed0e98e34bdf2abbdbe4d4cf23515ad88131e30a1665a109f7f3671"
+  }
+}

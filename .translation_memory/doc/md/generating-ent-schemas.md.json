@@ -1,0 +1,302 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/generating-ent-schemas.md",
+  "source_file_content_hash": "6e78f4f632e250fbfe857ac1dae65ff9bd91494701e1d07455286d3568d8d4f3",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: generating-ent-schemas \ntitle: Generating Schemas\n---",
+      "source_content_hash": "86d3564563318127342a9ed158835ab997255dce7d61acf8e938ab49197ccfae",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "## Introduction",
+      "source_content_hash": "d753efbab681fa4da82470d9a83b1c202de58f92fd498e77a269c1163bc4714b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 简介"
+      }
+    },
+    {
+      "segment_id": "3fbbcc07",
+      "source_content": "To facilitate the creation of tooling that generates `ent.Schema`s programmatically, `ent` supports the manipulation of\nthe `schema/` directory using the `entgo.io/contrib/schemast` package.",
+      "source_content_hash": "348c0a82c350c03719db87e46fc983d23dcf09b86c803c25dc896e490dd22b30",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为便于开发能编程式生成 `ent.Schema` 的工具链，`ent` 支持通过 `entgo.io/contrib/schemast` 包操作 `schema/` 目录。"
+      }
+    },
+    {
+      "segment_id": "8a5f6a7b",
+      "source_content": "## API",
+      "source_content_hash": "40caf66c4de56e46b72485c47adff4916c4bc7e563ecd9f7278e9dcaf92d1cad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## API接口"
+      }
+    },
+    {
+      "segment_id": "ba4f48ff",
+      "source_content": "### Loading",
+      "source_content_hash": "f3bd8ac7372c26109eae0d8240468ca204e9d69add34b93b4344a3dcf7417135",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 加载"
+      }
+    },
+    {
+      "segment_id": "cf898102",
+      "source_content": "In order to manipulate an existing schema directory we must first load it into a `schemast.Context` object:",
+      "source_content_hash": "81d6f231ee2c589d526683331d02932debe6fc1ee2c23d0ec7a03de0501a4252",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要操作现有模式目录，需先将其加载到 `schemast.Context` 对象中："
+      }
+    },
+    {
+      "segment_id": "93be3c14",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"fmt\"\n\t\"log\"\n\n\t\"entgo.io/contrib/schemast\"\n)\n\nfunc main() {\n\tctx, err := schemast.Load(\"./ent/schema\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed: %v\", err)\n\t}\n\tif ctx.HasType(\"user\") {\n\t\tfmt.Println(\"schema directory contains a schema named User!\")\n\t}\n}\n```",
+      "source_content_hash": "ec1f1149f2ba7d63f32351d7a459e77256d53aa9d8466260c3ad9d30da5e894f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_93be3c14"
+      }
+    },
+    {
+      "segment_id": "80d9e13c",
+      "source_content": "### Printing",
+      "source_content_hash": "e66110851e92f9f1b4f024b21b5c89f6251d3788c0267865bbe386a00c4503ff",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 输出"
+      }
+    },
+    {
+      "segment_id": "33331f27",
+      "source_content": "To print back out our context to a target directory, use `schemast.Print`:",
+      "source_content_hash": "27e5b1048a12e807ff03b5138c1cf8b935cd5a1445a6d4fc58e3cc2e40b1dd28",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用 `schemast.Print` 将上下文打印到目标目录："
+      }
+    },
+    {
+      "segment_id": "026f2f3e",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/contrib/schemast\"\n)\n\nfunc main() {\n\tctx, err := schemast.Load(\"./ent/schema\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed: %v\", err)\n\t}\n\t// A no-op since we did not manipulate the Context at all.\n\tif err := schemast.Print(\"./ent/schema\"); err != nil {\n\t\tlog.Fatalf(\"failed: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "a1453698146368966ccf0b1cc40180ed03daefee1f04c0eba1c0083927cf7889",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_026f2f3e"
+      }
+    },
+    {
+      "segment_id": "9e95fc4a",
+      "source_content": "### Mutators",
+      "source_content_hash": "eb54996f31861269e0dac0d0063ffb1bfbee89ed89c2eb97a6e3e7b207c00c68",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 变更器"
+      }
+    },
+    {
+      "segment_id": "5dae11e3",
+      "source_content": "To mutate the `ent/schema` directory, we can use `schemast.Mutate`, which takes a list of\n`schemast.Mutator`s to apply to the context:",
+      "source_content_hash": "d246e182e7f4ea6ab87b62456fbf128489579aff72e50f6592e65b29e1b41f03",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要修改 `ent/schema` 目录，可使用 `schemast.Mutate` 方法，该方法接收一组应用于上下文的 `schemast.Mutator`："
+      }
+    },
+    {
+      "segment_id": "67b24fc5",
+      "source_content": "```go\npackage schemast\n\n// Mutator changes a Context.\ntype Mutator interface {\n\tMutate(ctx *Context) error\n}\n```",
+      "source_content_hash": "95fe9a35e7b91d8d213dd095a8cb8a311210308fc5ae55501e5c152d660b8f70",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_67b24fc5"
+      }
+    },
+    {
+      "segment_id": "afa378f7",
+      "source_content": "Currently, only a single type of `schemast.Mutator` is implemented, `UpsertSchema`:",
+      "source_content_hash": "227dee1e9435ceb1ab8eddb17cf78acef8e5945e312e13123eaa0087f9e0f37d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当前仅实现了一种 `schemast.Mutator` 类型，即 `UpsertSchema`："
+      }
+    },
+    {
+      "segment_id": "a89f84e1",
+      "source_content": "```go\npackage schemast\n\n// UpsertSchema implements Mutator. UpsertSchema will add to the Context the type named\n// Name if not present and rewrite the type's Fields, Edges, Indexes and Annotations methods.\ntype UpsertSchema struct {\n\tName        string\n\tFields      []ent.Field\n\tEdges       []ent.Edge\n\tIndexes     []ent.Index\n\tAnnotations []schema.Annotation\n}\n```",
+      "source_content_hash": "1f87e713d68848a3afa7f4b8d231272025fed27af478be83a6970064d963f642",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a89f84e1"
+      }
+    },
+    {
+      "segment_id": "51867d16",
+      "source_content": "To use it:",
+      "source_content_hash": "adc7805755c0bab564b92c248fb26af25f6fc9f3f853ea1e07c320df84b260ff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用方法："
+      }
+    },
+    {
+      "segment_id": "59f28e14",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/contrib/schemast\"\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\nfunc main() {\n\tctx, err := schemast.Load(\"./ent/schema\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed: %v\", err)\n\t}\n\tmutations := []schemast.Mutator{\n\t\t&schemast.UpsertSchema{\n\t\t\tName: \"User\",\n\t\t\tFields: []ent.Field{\n\t\t\t\tfield.String(\"name\"),\n\t\t\t},\n\t\t},\n\t\t&schemast.UpsertSchema{\n\t\t\tName: \"Team\",\n\t\t\tFields: []ent.Field{\n\t\t\t\tfield.String(\"name\"),\n\t\t\t},\n\t\t},\n\t}\n\terr = schemast.Mutate(ctx, mutations...)\n\tif err := ctx.Print(\"./ent/schema\"); err != nil {\n\t\tlog.Fatalf(\"failed: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "bca859dc4ceea35d182948a26cf0626c1f7beadcec1b70aaf433ef72bb6ac5a6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_59f28e14"
+      }
+    },
+    {
+      "segment_id": "f45239ba",
+      "source_content": "After running this program, observe two new files exist in the schema directory: `user.go` and `team.go`:",
+      "source_content_hash": "f22c218a86d75f8585d776437bfc3f1f8830f7c6a6495f04e4c62ee55b3b8bb8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行程序后，可观察到模式目录中新增两个文件：`user.go` 和 `team.go`："
+      }
+    },
+    {
+      "segment_id": "136818ce",
+      "source_content": "```go\n// user.go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema\"\n\t\"entgo.io/ent/schema/field\"\n)\n\ntype User struct {\n\tent.Schema\n}\n\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{field.String(\"name\")}\n}\nfunc (User) Edges() []ent.Edge {\n\treturn nil\n}\nfunc (User) Annotations() []schema.Annotation {\n\treturn nil\n}\n```",
+      "source_content_hash": "39d334996cf73847be9baf9ddc53caf05b8bcded3fc359d2987fe1b8cc8f818d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_136818ce"
+      }
+    },
+    {
+      "segment_id": "e9921a93",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema\"\n\t\"entgo.io/ent/schema/field\"\n)\n\ntype Team struct {\n\tent.Schema\n}\n\nfunc (Team) Fields() []ent.Field {\n\treturn []ent.Field{field.String(\"name\")}\n}\nfunc (Team) Edges() []ent.Edge {\n\treturn nil\n}\nfunc (Team) Annotations() []schema.Annotation {\n\treturn nil\n}\n```",
+      "source_content_hash": "99e7778f683b5d39a3d928f34ca534ed619d4b7c9a8e98aca7565e509ef62187",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e9921a93"
+      }
+    },
+    {
+      "segment_id": "8d279c43",
+      "source_content": "### Working with Edges",
+      "source_content_hash": "1b68f034d8487c2606bd5f2b03863ec678cea8b24e17e0fb4ae80883a19ab3e6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 处理边关系"
+      }
+    },
+    {
+      "segment_id": "e5821418",
+      "source_content": "Edges are defined in `ent` this way:",
+      "source_content_hash": "efe9ca22ed0d3fc430a06414b1c4a19f21945685964c068bc390ce1a8d669540",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent` 中边的定义方式如下："
+      }
+    },
+    {
+      "segment_id": "1cd1d315",
+      "source_content": "```go\nedge.To(\"edge_name\", OtherSchema.Type)\n```",
+      "source_content_hash": "6bbbaa5414e5e7dd35a4b3e86c60b97fade7ac08a42c834df891e1394760688f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1cd1d315"
+      }
+    },
+    {
+      "segment_id": "9ebd9d9b",
+      "source_content": "This syntax relies on the fact that the `OtherSchema` struct already exists when we define the edge so we can refer to\nits `Type` method. When we are generating schemas programmatically, obviously we need somehow to describe the edge to\nthe code-generator before the type definitions exist. To do this you can do something like:",
+      "source_content_hash": "4c306793d071c695f844e6a6d09e1885488f3b1907997601eb5efd37b4432d18",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此语法依赖于定义边时 `OtherSchema` 结构体已存在，因此可引用其 `Type` 方法。当以编程方式生成模式时，显然需要在类型定义存在前向代码生成器描述边关系。可通过如下方式实现："
+      }
+    },
+    {
+      "segment_id": "edfcc73c",
+      "source_content": "```go\ntype placeholder struct {\n    ent.Schema\n}\n\nfunc withType(e ent.Edge, typeName string) ent.Edge {\n    e.Descriptor().Type = typeName\n    return e\n}\n\nfunc newEdgeTo(edgeName, otherType string) ent.Edge {\n    // we pass a placeholder type to the edge constructor:\n    e := edge.To(edgeName, placeholder.Type)\n    // then we override the other type's name directly on the edge descriptor: \n    return withType(e, otherType)\n}\n```",
+      "source_content_hash": "dc06904916c66b7c911a8414213d3e3a5a029614447d506bcc8438d81c36a5d2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_edfcc73c"
+      }
+    },
+    {
+      "segment_id": "97496aad",
+      "source_content": "## Examples",
+      "source_content_hash": "0d19ab46319785768005536313f02bd3b9b779aaed82eeac5bf7a7f796ad3ef1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 示例"
+      }
+    },
+    {
+      "segment_id": "af834e0d",
+      "source_content": "The `protoc-gen-ent` ([doc](https://github.com/ent/contrib/tree/master/entproto/cmd/protoc-gen-ent)) is a protoc plugin\nthat programmatically generates `ent.Schema`s from .proto files, it uses the `schemast` to manipulate the\ntarget `schema` directory. To see\nhow, [read the source code](https://github.com/ent/contrib/blob/master/entproto/cmd/protoc-gen-ent/main.go#L34).",
+      "source_content_hash": "4e7540590103d70af1684a1c9609f4afbb2fc470dbec8719d78f2953a6e85a04",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`protoc-gen-ent` ([文档](https://github.com/ent/contrib/tree/master/entproto/cmd/protoc-gen-ent)) 是一个 protoc 插件，它从 .proto 文件编程式生成 `ent.Schema`，使用 `schemast` 操作目标 `schema` 目录。具体实现可[查阅源码](https://github.com/ent/contrib/blob/master/entproto/cmd/protoc-gen-ent/main.go#L34)。"
+      }
+    },
+    {
+      "segment_id": "dc825187",
+      "source_content": "## Caveats",
+      "source_content_hash": "689cebe2875bcec60d7e6c8dad2aa091dddf7a8bb3c242a652db9a0b62b18235",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 注意事项"
+      }
+    },
+    {
+      "segment_id": "833ce577",
+      "source_content": "`schemast` is still experimental, APIs are subject to change in the future. In addition, a small portion of\nthe `ent.Field` definition API is unsupported at this point in time, to see a full list of unsupported features see\nthe [source code](https://github.com/ent/contrib/blob/aed7a43a3e54550c1dd9a1a066ce1236b4bae56c/schemast/field.go#L158).",
+      "source_content_hash": "ce0d9751b9ff84dca8d89eb7cffe2e060ad4402ed148993154c6971b7d670892",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`schemast` 仍处于实验阶段，API 未来可能变更。此外，当前暂不支持部分 `ent.Field` 定义 API 功能，完整特性支持情况请参见[源码](https://github.com/ent/contrib/blob/aed7a43a3e54550c1dd9a1a066ce1236b4bae56c/schemast/field.go#L158)。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/generating-ent-schemas.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.681207+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "6e78f4f632e250fbfe857ac1dae65ff9bd91494701e1d07455286d3568d8d4f3"
+  }
+}

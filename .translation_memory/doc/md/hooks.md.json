@@ -1,0 +1,412 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/hooks.md",
+  "source_file_content_hash": "59fb3d4d6d7b5f498afe0bbe40c6377b0cef3ab498a45f8f557c040f05c08746",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: hooks\ntitle: Hooks\n---",
+      "source_content_hash": "e5cc6d0299c3998f33b05351681bbd9badb743ab987efffb8a5c5895928765f9",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "The `Hooks` option allows adding custom logic before and after operations that mutate the graph.",
+      "source_content_hash": "a5cf2189b5dd339b3cf693b493f6e08991545f430fca51a64703dcfdbc5ebbc3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Hooks`选项允许在执行图数据变更操作前后添加自定义逻辑。"
+      }
+    },
+    {
+      "segment_id": "cc3c868d",
+      "source_content": "## Mutation",
+      "source_content_hash": "b328cef3a8465d1e2f7bdef044f9203cf5c0b7018746917c69e755a6c2dc7d8d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 数据变更"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "A mutation operation is an operation that mutates the database. For example, adding\na new node to the graph, remove an edge between 2 nodes or delete multiple nodes. ",
+      "source_content_hash": "db033b8160432c6229d6282ba12e331210809ac0e64f009c09fb437f01efb42d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "变更操作是指会修改数据库状态的操作。例如向图中添加新节点、删除两个节点间的边，或批量删除节点等。"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "There are 5 types of mutations:",
+      "source_content_hash": "1b14652e12c5a05fb0a6d995756f1ac12e0bdc8355005b570d96de3353ab4754",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "共有5种变更类型："
+      }
+    },
+    {
+      "segment_id": "9e760345",
+      "source_content": "- `Create` - Create node in the graph.\n- `UpdateOne` - Update a node in the graph. For example, increment its field.\n- `Update` - Update multiple nodes in the graph that match a predicate.\n- `DeleteOne` - Delete a node from the graph.\n- `Delete` - Delete all nodes that match a predicate.",
+      "source_content_hash": "8895a8896ab7692bf4a5654d9c9bf5c4e475efdd2269b5ad596291ecfb8d40c2",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- `Create` - 在图中创建节点\n- `UpdateOne` - 更新图中某个节点（例如递增其字段值）\n- `Update` - 批量更新符合谓词条件的节点\n- `DeleteOne` - 从图中删除单个节点\n- `Delete` - 删除所有符合谓词条件的节点"
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "Each generated node type has its own type of mutation. For example, all [`User` builders](crud.mdx#create-an-entity), share\nthe same generated `UserMutation` object. However, all builder types implement the generic <a target=\"_blank\" href=\"https://pkg.go.dev/entgo.io/ent?tab=doc#Mutation\">`ent.Mutation`</a> interface.",
+      "source_content_hash": "ee32f6e1611189ad7453fff46a7684de2d8531fd929ef4ec220664ea7f8d0406",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "每种生成的节点类型都有对应的变更类型。例如所有[`User`构建器](crud.mdx#create-an-entity)共享同一个生成的`UserMutation`对象，但所有构建器类型都实现了通用的<a target=\"_blank\" href=\"https://pkg.go.dev/entgo.io/ent?tab=doc#Mutation\">`ent.Mutation`</a>接口。"
+      }
+    },
+    {
+      "segment_id": "9beb6e94",
+      "source_content": ":::info[Support For Database Triggers]\nUnlike database triggers, hooks are executed at the application level, not the database level. If you need to execute\nspecific logic on the database level, use database triggers as explained in the [schema migration guide](/docs/migration/triggers).\n:::",
+      "source_content_hash": "ba47c5ba5fb190edfcf45000a3739684d720101b35d8ca487b1e79bd0adf846c",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[数据库触发器支持]\n与数据库触发器不同，钩子是在应用层而非数据库层执行。如需在数据库层执行特定逻辑，请参考[模式迁移指南](/docs/migration/triggers)使用数据库触发器。\n:::"
+      }
+    },
+    {
+      "segment_id": "3c36424c",
+      "source_content": "## Hooks",
+      "source_content_hash": "6dfbfab8ca8effc4c6b9adda8de2f9b3b00a79bf5682d6db526831a3cde64be3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 钩子"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "Hooks are functions that get an <a target=\"_blank\" href=\"https://pkg.go.dev/entgo.io/ent?tab=doc#Mutator\">`ent.Mutator`</a> and return a mutator back.\nThey function as middleware between mutators. It's similar to the popular HTTP middleware pattern.",
+      "source_content_hash": "e20335845c371b6da7a066cb5d073bfe7d48928e471a413fbc0de34b9c9f2954",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "钩子是接收<a target=\"_blank\" href=\"https://pkg.go.dev/entgo.io/ent?tab=doc#Mutator\">`ent.Mutator`</a>并返回变更器的函数，作为变更器之间的中间件运行，类似于常见的HTTP中间件模式。"
+      }
+    },
+    {
+      "segment_id": "a2110253",
+      "source_content": "```go\ntype (\n\t// Mutator is the interface that wraps the Mutate method.\n\tMutator interface {\n\t\t// Mutate apply the given mutation on the graph.\n\t\tMutate(context.Context, Mutation) (Value, error)\n\t}\n\n\t// Hook defines the \"mutation middleware\". A function that gets a Mutator\n\t// and returns a Mutator. For example:\n\t//\n\t//\thook := func(next ent.Mutator) ent.Mutator {\n\t//\t\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n\t//\t\t\tfmt.Printf(\"Type: %s, Operation: %s, ConcreteType: %T\\n\", m.Type(), m.Op(), m)\n\t//\t\t\treturn next.Mutate(ctx, m)\n\t//\t\t})\n\t//\t}\n\t//\n\tHook func(Mutator) Mutator\n)\n```",
+      "source_content_hash": "aa036d5ed3f8ceff917a3020b3807a68149971e53779f53ec683eee03d5d3a8b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a2110253"
+      }
+    },
+    {
+      "segment_id": "d3649a1e",
+      "source_content": "There are 2 types of mutation hooks - **schema hooks** and **runtime hooks**.\n**Schema hooks** are mainly used for defining custom mutation logic in the schema,\nand **runtime hooks** are used for adding things like logging, metrics, tracing, etc.\nLet's go over the 2 versions:",
+      "source_content_hash": "1ef1b5117d69a06f88970e73a766681d6ed0b51e99319df20b25030da2e9be74",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "存在两种变更钩子——**模式钩子**和**运行时钩子**。**模式钩子**主要用于在模式中定义自定义变更逻辑，**运行时钩子**则用于添加日志、指标、追踪等功能。下面分别说明："
+      }
+    },
+    {
+      "segment_id": "ab5fc5b5",
+      "source_content": "## Runtime hooks",
+      "source_content_hash": "7e17a65795b9c488ccd71e5c3c343cbbf6c062a50bd5e2d08e025456b7a5b251",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 运行时钩子"
+      }
+    },
+    {
+      "segment_id": "6ea4c715",
+      "source_content": "Let's start with a short example that logs all mutation operations of all types:",
+      "source_content_hash": "7ee38de35519ba02f4112724c29fd120dbef7006b69b1e17c1bd8a4a5e4bc91b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先看一个记录所有类型变更操作的简单示例："
+      }
+    },
+    {
+      "segment_id": "5a41b4fb",
+      "source_content": "```go\nfunc main() {\n\tclient, err := ent.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tdefer client.Close()\n\tctx := context.Background()\n\t// Run the auto migration tool.\n\tif err := client.Schema.Create(ctx); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n    // Add a global hook that runs on all types and all operations.\n\tclient.Use(func(next ent.Mutator) ent.Mutator {\n\t\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n\t\t\tstart := time.Now()\n\t\t\tdefer func() {\n\t\t\t\tlog.Printf(\"Op=%s\\tType=%s\\tTime=%s\\tConcreteType=%T\\n\", m.Op(), m.Type(), time.Since(start), m)\n\t\t\t}()\n\t\t\treturn next.Mutate(ctx, m)\n\t\t})\n\t})\n    client.User.Create().SetName(\"a8m\").SaveX(ctx)\n    // Output:\n    // 2020/03/21 10:59:10 Op=Create\tType=User\tTime=46.23µs\tConcreteType=*ent.UserMutation\n}\n```",
+      "source_content_hash": "dc69fa6d8bf0dcb25bdada6a47070c6f179073264cf3fce3421f0bb1664bc5e0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5a41b4fb"
+      }
+    },
+    {
+      "segment_id": "86348f98",
+      "source_content": "Global hooks are useful for adding traces, metrics, logs and more. But sometimes, users want more granularity:  ",
+      "source_content_hash": "501b7a28c6e66cae5a081c6ccf81cace62cb92dcdbf7a187f5ba7930cb033f97",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "全局钩子适用于添加追踪、指标、日志等功能。但有时需要更细粒度的控制："
+      }
+    },
+    {
+      "segment_id": "daa16011",
+      "source_content": "```go\nfunc main() {\n    // <client was defined in the previous block>\n\n    // Add a hook only on user mutations.\n\tclient.User.Use(func(next ent.Mutator) ent.Mutator {\n        // Use the \"<project>/ent/hook\" to get the concrete type of the mutation.\n\t\treturn hook.UserFunc(func(ctx context.Context, m *ent.UserMutation) (ent.Value, error) {\n\t\t\treturn next.Mutate(ctx, m)\n\t\t})\n\t})\n    \n    // Add a hook only on update operations.\n    client.Use(hook.On(Logger(), ent.OpUpdate|ent.OpUpdateOne))\n    \n    // Reject delete operations.\n    client.Use(hook.Reject(ent.OpDelete|ent.OpDeleteOne))\n}\n```",
+      "source_content_hash": "086479c5d5b3b2b37bfab73f685597f92eeb5047c95dfbe5ed8f4bd62222b271",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daa16011"
+      }
+    },
+    {
+      "segment_id": "3c19e221",
+      "source_content": "Assume you want to share a hook that mutate a field between multiple types (e.g. `Group` and `User`).\nThere are ~2 ways to do this:",
+      "source_content_hash": "09caf8780f0d9b5c38174583695febfc3e2b97f9ccd7a32e4ae727fe815a2360",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "假设需要在多个类型（如`Group`和`User`）间共享字段变更钩子，主要有两种实现方式："
+      }
+    },
+    {
+      "segment_id": "342e4d80",
+      "source_content": "```go\n// Option 1: use type assertion.\nclient.Use(func(next ent.Mutator) ent.Mutator {\n    type NameSetter interface {\n        SetName(value string)\n    }\n    return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n        // A schema with a \"name\" field must implement the NameSetter interface. \n        if ns, ok := m.(NameSetter); ok {\n            ns.SetName(\"Ariel Mashraki\")\n        }\n        return next.Mutate(ctx, m)\n    })\n})\n\n// Option 2: use the generic ent.Mutation interface.\nclient.Use(func(next ent.Mutator) ent.Mutator {\n\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n        if err := m.SetField(\"name\", \"Ariel Mashraki\"); err != nil {\n            // An error is returned, if the field is not defined in\n\t\t\t// the schema, or if the type mismatch the field type.\n        }\n        return next.Mutate(ctx, m)\n    })\n})\n```",
+      "source_content_hash": "673e26cc5078a4a9bd3ba383539b5adef980ad81868c047dd5a887e1bc9a4ce9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_342e4d80"
+      }
+    },
+    {
+      "segment_id": "0d5321b7",
+      "source_content": "## Schema hooks",
+      "source_content_hash": "23ad5951117bc18d26b76624a865662a2eb84472ec563ee9abed813f1cbf97b5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 模式钩子"
+      }
+    },
+    {
+      "segment_id": "cfeb9eb1",
+      "source_content": "Schema hooks are defined in the type schema and applied only on mutations that match the\nschema type. The motivation for defining hooks in the schema is to gather all logic\nregarding the node type in one place, which is the schema. ",
+      "source_content_hash": "aef3d750dd14630ee396276d6595f9795d7dd54922a183692c295bf2e5a8d90d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "模式钩子定义在类型模式中，仅作用于匹配该模式的变更操作。将钩子定义在模式中的动机是将节点类型的所有逻辑集中存放在模式这一处。"
+      }
+    },
+    {
+      "segment_id": "ad3cd2f7",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n    gen \"<project>/ent\"\n    \"<project>/ent/hook\"\n\n\t\"entgo.io/ent\"\n)\n\n// Card holds the schema definition for the CreditCard entity.\ntype Card struct {\n\tent.Schema\n}\n\n// Hooks of the Card.\nfunc (Card) Hooks() []ent.Hook {\n\treturn []ent.Hook{\n\t\t// First hook.\n\t\thook.On(\n\t\t\tfunc(next ent.Mutator) ent.Mutator {\n\t\t\t\treturn hook.CardFunc(func(ctx context.Context, m *gen.CardMutation) (ent.Value, error) {\n\t\t\t\t\tif num, ok := m.Number(); ok && len(num) < 10 {\n\t\t\t\t\t\treturn nil, fmt.Errorf(\"card number is too short\")\n\t\t\t\t\t}\n\t\t\t\t\treturn next.Mutate(ctx, m)\n\t\t\t\t})\n\t\t\t},\n\t\t\t// Limit the hook only for these operations.\n\t\t\tent.OpCreate|ent.OpUpdate|ent.OpUpdateOne,\n\t\t),\n\t\t// Second hook.\n\t\tfunc(next ent.Mutator) ent.Mutator {\n\t\t\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n\t\t\t\tif s, ok := m.(interface{ SetName(string) }); ok {\n\t\t\t\t\ts.SetName(\"Boring\")\n\t\t\t\t}\n\t\t\t\tv, err := next.Mutate(ctx, m)\n\t\t\t\t// Post mutation action.\n\t\t\t\tfmt.Println(\"new value:\", v)\n\t\t\t\treturn v, err\n\t\t\t})\n\t\t},\n\t}\n}\n```",
+      "source_content_hash": "16b440bdbeab780e8b86a91ed0833ae4f0af6947820d24a5bee5a53ca0dd2ac9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ad3cd2f7"
+      }
+    },
+    {
+      "segment_id": "8159e12a",
+      "source_content": "## Hooks Registration",
+      "source_content_hash": "0e23a03102a89ac693ccceed63b9fefe22c2e3db1de01d290856198624e226ee",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 钩子注册"
+      }
+    },
+    {
+      "segment_id": "6e5d54a8",
+      "source_content": "When using [**schema hooks**](#schema-hooks), there's a chance of a cyclic import between the schema package,\nand the generated ent package. To avoid this scenario, ent generates an `ent/runtime` package which is responsible\nfor registering the schema-hooks at runtime.",
+      "source_content_hash": "f01beb2f156e2a458d53397cc1b5dac14832f4df9f580429a3708a44162185bf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用[**模式钩子**](#schema-hooks)时，可能出现模式包与生成ent包之间的循环导入。为避免这种情况，ent会生成`ent/runtime`包来负责在运行时注册模式钩子。"
+      }
+    },
+    {
+      "segment_id": "a53e2fe8",
+      "source_content": ":::important\nUsers **MUST** import the `ent/runtime` in order to register the schema hooks.\nThe package can be imported in the `main` package (close to where the database driver is imported),\nor in the package that creates the `ent.Client`.\n\n```go\nimport _ \"<project>/ent/runtime\"\n```\n:::",
+      "source_content_hash": "0c0c1319d90192b66d1a98a4341e0164ff869d63c085e711496e2ab21c12827b",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::important\n用户**必须**导入`ent/runtime`才能注册模式钩子。该包可导入在`main`包（靠近数据库驱动导入位置），或创建`ent.Client`的包中：\n\n```go\nimport _ \"<project>/ent/runtime\"\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "49007f24",
+      "source_content": "#### Import Cycle Error",
+      "source_content_hash": "4e8463c88e98cfaecdf39447ad61999e81e3f5c2466393ff7a37cc51c5b87997",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 循环导入错误"
+      }
+    },
+    {
+      "segment_id": "be0f7233",
+      "source_content": "At the first attempt to set up schema hooks in your project, you may encounter an error like the following:",
+      "source_content_hash": "987af376aee7f9df9a5603888afae8c21341bfc7e32647450d64181aeff22781",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首次在项目中设置模式钩子时，可能会遇到如下错误："
+      }
+    },
+    {
+      "segment_id": "3ae81768",
+      "source_content": "```text\nentc/load: parse schema dir: import cycle not allowed: [ent/schema ent/hook ent/ ent/schema]\nTo resolve this issue, move the custom types used by the generated code to a separate package: \"Type1\", \"Type2\"\n```",
+      "source_content_hash": "f215589ad4d74bb8c4e6b3041aec751b52626e7d0d3c3c043ed465c184c1ddf2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ae81768"
+      }
+    },
+    {
+      "segment_id": "f6479c91",
+      "source_content": "The error may occur because the generated code relies on custom types defined in the `ent/schema` package, but this\npackage also imports the `ent/hook` package. This indirect import of the `ent` package creates a loop, causing the error\nto occur. To resolve this issue, follow these instructions:",
+      "source_content_hash": "d6751f1ba0d1a7ccd7e884e0b40e7cd145b3c8f9684d9e6fadbd783d930d7e8d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该错误可能由于生成的代码依赖`ent/schema`包中定义的自定义类型，但该包又导入了`ent/hook`包。这种对`ent`包的间接导入形成了循环依赖，从而导致错误发生。请按以下步骤解决："
+      }
+    },
+    {
+      "segment_id": "1537994d",
+      "source_content": "- First, comment out any usage of hooks, privacy policy, or interceptors from the `ent/schema`.\n- Move the custom types defined in the `ent/schema` to a new package, for example, `ent/schema/schematype`.\n- Run `go generate ./...` to update the generated `ent` package to point to the new package. For example, `schema.T` becomes `schematype.T`.\n- Uncomment the hooks, privacy policy, or interceptors, and run `go generate ./...` again. The code generation should now pass without error.",
+      "source_content_hash": "31a675c21a3a2b2fdb18fa2aa41e02f25bb9df4c68d0fd6e4727c4c966acd783",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 首先，注释掉`ent/schema`中所有钩子、隐私策略或拦截器的使用代码\n- 将`ent/schema`中定义的自定义类型移至新包，例如`ent/schema/schematype`\n- 运行`go generate ./...`更新生成的`ent`包指向新包（例如`schema.T`变为`schematype.T`）\n- 取消注释钩子、隐私策略或拦截器代码，再次运行`go generate ./...`，此时代码生成应能正常通过"
+      }
+    },
+    {
+      "segment_id": "c0f80a50",
+      "source_content": "## Evaluation order",
+      "source_content_hash": "298fe873f5606440d6850e757b22b7dba3ad3bcbd3524409b54f3b20096722af",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 执行顺序"
+      }
+    },
+    {
+      "segment_id": "d73903fc",
+      "source_content": "Hooks are called in the order they were registered to the client. Thus, `client.Use(f, g, h)` \nexecutes `f(g(h(...)))` on mutations.",
+      "source_content_hash": "4b6b419985859fc812d679358b1e0542d8336ef8d8c7873fc8f349fb43735e75",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "钩子按照注册到客户端的顺序依次调用。因此`client.Use(f, g, h)`会在变更操作时执行`f(g(h(...)))`的链式调用。"
+      }
+    },
+    {
+      "segment_id": "2dbbb313",
+      "source_content": "Also note, that **runtime hooks** are called before **schema hooks**. That is, if `g`,\nand `h` were defined in the schema, and `f` was registered using `client.Use(...)`,\nthey will be executed as follows: `f(g(h(...)))`. ",
+      "source_content_hash": "75ed5893e55f40a51776752974138868779f78cbdc8583048aa5ad7c8314c610",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "需注意**运行时钩子**会先于**模式钩子**执行。例如当`g`和`h`在模式中定义，而`f`通过`client.Use(...)`注册时，实际执行顺序为：`f(g(h(...)))`。"
+      }
+    },
+    {
+      "segment_id": "2f833a4d",
+      "source_content": "## Hook helpers",
+      "source_content_hash": "e5c4cb02127b134a1e616cd64095e7bccb4c48d6a6a35b503cb39499e9b09be9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 钩子辅助工具"
+      }
+    },
+    {
+      "segment_id": "dfb6fc67",
+      "source_content": "The generated hooks package provides several helpers that can help you control when a hook will\nbe executed.",
+      "source_content_hash": "59d067cf5dcc4869e7184456aa78e4e4516a9dde1bc96373fc54c1af2679c6c3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的hooks包提供了若干辅助函数，可用于控制钩子的执行时机。"
+      }
+    },
+    {
+      "segment_id": "cdbe4894",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"<project>/ent/hook\"\n\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/mixin\"\n)\n\n\ntype SomeMixin struct {\n\tmixin.Schema\n}\n\nfunc (SomeMixin) Hooks() []ent.Hook {\n    return []ent.Hook{\n        // Execute \"HookA\" only for the UpdateOne and DeleteOne operations.\n        hook.On(HookA(), ent.OpUpdateOne|ent.OpDeleteOne),\n\n        // Don't execute \"HookB\" on Create operation.\n        hook.Unless(HookB(), ent.OpCreate),\n\n        // Execute \"HookC\" only if the ent.Mutation is changing the \"status\" field,\n        // and clearing the \"dirty\" field.\n        hook.If(HookC(), hook.And(hook.HasFields(\"status\"), hook.HasClearedFields(\"dirty\"))),\n\n        // Disallow changing the \"password\" field on Update (many) operation.\n        hook.If(\n            hook.FixedError(errors.New(\"password cannot be edited on update many\")),\n            hook.And(\n                hook.HasOp(ent.OpUpdate),\n                hook.Or(\n                \thook.HasFields(\"password\"),\n                \thook.HasClearedFields(\"password\"),\n                ),\n            ),\n        ),\n    }\n}\n```",
+      "source_content_hash": "11485a64bf235b27fdd4e00358021659ad20f8efa6b2a3e7429658dedc95f9d1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cdbe4894"
+      }
+    },
+    {
+      "segment_id": "f996c0b9",
+      "source_content": "## Transaction Hooks",
+      "source_content_hash": "b1e3e6cd7e41bc979a2e32504147939ecb841855b5d3deefe6c98e18101b6116",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 事务钩子"
+      }
+    },
+    {
+      "segment_id": "4e994fc3",
+      "source_content": "Hooks can also be registered on active transactions, and will be executed on `Tx.Commit` or `Tx.Rollback`.\nFor more information, read about it in the [transactions page](transactions.md#hooks). ",
+      "source_content_hash": "88ae95cca9b9c70c5baa386704108373f5285ee9d8fc8cbccced79b2e75e4785",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "钩子也可注册在活动事务上，将在`Tx.Commit`或`Tx.Rollback`时执行。更多信息请参阅[事务文档](transactions.md#hooks)。"
+      }
+    },
+    {
+      "segment_id": "18b30a5c",
+      "source_content": "## Codegen Hooks",
+      "source_content_hash": "8570c802d4a6bcf87e410449e8c72e36b58100a0c15ab4359ab6b3f31030274c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 代码生成钩子"
+      }
+    },
+    {
+      "segment_id": "7ed923ee",
+      "source_content": "The `entc` package provides an option to add a list of hooks (middlewares) to the code-generation phase.\nFor more information, read about it in the [codegen page](code-gen.md#code-generation-hooks). ",
+      "source_content_hash": "ec92dbdd69f32a95d25e84ed849c17ec499bc0bac6e41443fb7e18f2af9057a6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entc`包支持为代码生成阶段添加钩子（中间件）列表。详细信息请参考[代码生成文档](code-gen.md#code-generation-hooks)。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/hooks.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.670665+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "59fb3d4d6d7b5f498afe0bbe40c6377b0cef3ab498a45f8f557c040f05c08746"
+  }
+}

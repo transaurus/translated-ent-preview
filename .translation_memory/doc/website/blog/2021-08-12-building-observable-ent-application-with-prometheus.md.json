@@ -1,0 +1,462 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-08-12-building-observable-ent-application-with-prometheus.md",
+  "source_file_content_hash": "696cfebe74343e623df1e6034099c4669d8c41d6ed8e98ebe213e384dd5fa0ef",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Building Observable Ent Applications with Prometheus\nauthor: Yoni Davidson\nauthorURL: \"https://github.com/yonidavidson\"\nauthorImageURL: \"https://avatars0.githubusercontent.com/u/5472778\"\nauthorTwitter: yonidavidson\n---",
+      "source_content_hash": "537041b261bc019ac0efcdf083fdcad16c90db8ddc6aac019c23196dcae8f692",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Observability is a quality of a system that refers to how well its internal state can be measured externally.\nAs a computer program evolves into a full-blown production system this quality becomes increasingly important.\nOne of the ways to make a software system more observable is to export metrics, that is, to report in some externally \nvisible way a quantitative description of the running system's state. For instance, to expose an HTTP endpoint where we \ncan see how many errors occurred since the process has started. In this post, we will explore how to build more\nobservable Ent applications using Prometheus.",
+      "source_content_hash": "8585132559d700f92b9a88b5b2f3682eb17ff8bd2cae8febafe28e12530eb769",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可观测性是指系统内部状态能够被外部监测的程度。当计算机程序演变为成熟的生产系统时，这一特性变得尤为重要。提升软件系统可观测性的方法之一是导出指标，即通过某种外部可见的方式报告运行系统状态的量化描述。例如，暴露一个HTTP端点来展示进程启动以来发生的错误次数。本文将探讨如何利用Prometheus构建更具可观测性的Ent应用。"
+      }
+    },
+    {
+      "segment_id": "cbe57f9d",
+      "source_content": "### What is Ent?",
+      "source_content_hash": "6d521bd6d95cc0cdfd43bc328b5a83ba15a5f028a49f4a1ec56d52a4675beec1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 什么是Ent？"
+      }
+    },
+    {
+      "segment_id": "39b3772c",
+      "source_content": "[Ent](https://entgo.io/docs/getting-started/), is a simple, yet powerful entity framework for Go, that makes it easy\nto build and maintain applications with large data models.",
+      "source_content_hash": "21355db81742320bfd5b573444ef840d606fc03f7a4be4dee24f36698d352f5e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[Ent](https://entgo.io/docs/getting-started/)是一个简洁而强大的Go语言实体框架，可轻松构建和维护具有大型数据模型的应用。"
+      }
+    },
+    {
+      "segment_id": "418617bd",
+      "source_content": "### What is Prometheus?",
+      "source_content_hash": "9d76da9bd45070ae920be76d981af7e5d4203eb0df36252e0a56895ff01b37b5",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 什么是Prometheus？"
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "[Prometheus](https://prometheus.io/) is an open source monitoring system developed by engineering at SoundCloud in 2012.\nIt includes an embedded time series database and many integrations to third-party systems.\nThe Prometheus client exposes the process's metrics via an HTTP endpoint (usually `/metrics`), this endpoint is\ndiscovered by the Prometheus scraper which polls the endpoint every interval (typically 30s) and writes it\ninto a time-series database.",
+      "source_content_hash": "36aad527e22983274ed72f77d29219d8752297cda054164ad22e2b271d733519",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[Prometheus](https://prometheus.io/)是由SoundCloud工程师于2012年开发的开源监控系统，包含嵌入式时间序列数据库和多种第三方系统集成。Prometheus客户端通过HTTP端点（通常为`/metrics`）暴露进程指标，该端点由Prometheus采集器发现并按固定间隔（通常30秒）轮询，将数据写入时间序列数据库。"
+      }
+    },
+    {
+      "segment_id": "4b1d2d7d",
+      "source_content": "Prometheus is just an example of a class of metric collection backends. Many others, such as AWS CloudWatch, InfluxDB\nand others exist and are in wide use in the industry. Towards the end of this post, we will discuss a possible path to\na unified, standards-based integration with any such backend.",
+      "source_content_hash": "3c3d4c5ab28c275e6dbc8eb76fff8bc2d7edf407834eb270d6353520a23e5cdf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Prometheus只是指标收集后端的一个示例。业界广泛使用的同类系统还包括AWS CloudWatch、InfluxDB等。文章最后我们将讨论与这类后端统一标准集成的可能路径。"
+      }
+    },
+    {
+      "segment_id": "0037ff70",
+      "source_content": "### Working with Prometheus",
+      "source_content_hash": "422ef37d731ceafceb5d377e488ba75a0a1c5f785a74a31bf69056461e16991b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 使用Prometheus"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "To expose an application's metrics using Prometheus, we need to create a\nPrometheus [Collector](https://prometheus.io/docs/introduction/glossary/#collector), a collector collects\na set of metrics from your server.",
+      "source_content_hash": "77dd8937f1ae1d4f7de9eeb9007e34126b78648d68a84595d7d1bb8a8615818b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要通过Prometheus暴露应用指标，需要创建Prometheus[采集器](https://prometheus.io/docs/introduction/glossary/#collector)，该组件负责从服务器收集一组指标。"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "In our example, we will be using [two types of metrics](https://prometheus.io/docs/concepts/metric_types/)\nthat can be stored in a collector: Counters and Histograms. Counters are monotonically increasing cumulative metrics\nthat represent how many times something has happened, commonly used to count the number of requests a server has\nprocessed or errors that have occurred. Histograms sample observations into buckets of configurable sizes and are\ncommonly used to represent latency distributions (i.e how many requests returned in under 5ms, 10ms, 100ms, 1s, etc.)\nIn addition, Prometheus allows metrics to be broken down into labels.  This is useful for example for counting requests\nbut breaking down the counter by endpoint name.",
+      "source_content_hash": "c7208c0d52981bf040cc335f7238e6a151ed8a06b971893b4a9634c071ce1bb2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本示例将使用Prometheus支持的[两种指标类型](https://prometheus.io/docs/concepts/metric_types/)：计数器和直方图。计数器是单调递增的累积指标，用于记录事件发生次数（如服务器处理的请求数或错误发生次数）。直方图将观测值采样到可配置大小的桶中，通常用于表示延迟分布（例如5ms、10ms、100ms、1s内返回的请求数）。此外，Prometheus允许通过标签细分指标，例如按端点名称分类统计请求数。"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "Let’s see how to create such a collector using the [official Go client](https://github.com/prometheus/client_golang).\nTo do so, we will use a package in the client called [promauto](https://pkg.go.dev/github.com/prometheus/client_golang@v1.11.0/prometheus/promauto) that simplifies the processes of creating collectors.\nA simple example of a collector that counts (for example, total request or number or request error):",
+      "source_content_hash": "fc7e57ee4b7db7e303f76995baa8ff4dcfb731b1379429a2b3f2a6aa42ded55b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们通过[官方Go客户端](https://github.com/prometheus/client_golang)创建采集器，使用其中的[promauto](https://pkg.go.dev/github.com/prometheus/client_golang@v1.11.0/prometheus/promauto)包简化采集器创建过程。以下是统计请求总数或错误数的采集器简单示例："
+      }
+    },
+    {
+      "segment_id": "4795a13d",
+      "source_content": "```go\npackage example\n\nimport (\n\t\"github.com/prometheus/client_golang/prometheus\"\n\t\"github.com/prometheus/client_golang/prometheus/promauto\"\n)\n\nvar (\n\t// List of dynamic labels\n\tlabelNames = []string{\"endpoint\", \"error_code\"}\n\n\t// Create a counter collector\n\texampleCollector = promauto.NewCounterVec(\n\t\tprometheus.CounterOpts{\n\t\t\tName: \"endpoint_errors\",\n\t\t\tHelp: \"Number of errors in endpoints\",\n\t\t},\n\t\tlabelNames,\n\t)\n)\n\n// When using you set the values of the dynamic labels and then increment the counter\nfunc incrementError() {\n\texampleCollector.WithLabelValues(\"/create-user\", \"400\").Inc()\n}\n```",
+      "source_content_hash": "4718eb38679ed90da2498edfc230f4682b225a47c779aef6fc6a850b9a4c9935",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4795a13d"
+      }
+    },
+    {
+      "segment_id": "58ed925f",
+      "source_content": "### Ent Hooks",
+      "source_content_hash": "7325fe13a55b160306b1bd8542223a3ca6976bcd5c1e35f8138e7b730a6ccb43",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Ent钩子"
+      }
+    },
+    {
+      "segment_id": "463ed165",
+      "source_content": "[Hooks](https://entgo.io/docs/hooks) are a feature of Ent that allows adding custom logic before and after operations that change the data entities.",
+      "source_content_hash": "ff9a663b736c4fa391538188fd474cfb2382a498510e5d6e5e37c6c9fed31eee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[钩子](https://entgo.io/docs/hooks)是Ent的特性，允许在数据实体变更操作前后添加自定义逻辑。"
+      }
+    },
+    {
+      "segment_id": "a5c5772a",
+      "source_content": "A mutation is an operation that changes something in the database.\nThere are 5 types of mutations:",
+      "source_content_hash": "5a47ddb60143f3d0f768e6e697c4cb67a4fb8cc59c5f78f2ef0f0fb10c10561c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "变更操作是指会修改数据库内容的操作，共有五种类型："
+      }
+    },
+    {
+      "segment_id": "5dbc17cf",
+      "source_content": "1. Create.\n2. UpdateOne.\n3. Update.\n4. DeleteOne.\n5. Delete.",
+      "source_content_hash": "ca637ab81029fa720239eb8385f48bc71279b102ebcfcc05ae6f6cd4b1d6d0b5",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 创建(Create)\n2. 单条更新(UpdateOne)\n3. 批量更新(Update)\n4. 单条删除(DeleteOne)\n5. 批量删除(Delete)"
+      }
+    },
+    {
+      "segment_id": "5803caac",
+      "source_content": "Hooks are functions that get an [ent.Mutator](https://pkg.go.dev/entgo.io/ent#Mutator) and return a mutator back.\nThey function similar to the popular [HTTP middleware pattern](https://github.com/go-chi/chi#middleware-handlers).",
+      "source_content_hash": "ea2dd6f6414a83c3cb8a4ba7438ece1efaa892ca4dd68cdaf629a5024338e6b4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "钩子函数接收[ent.Mutator](https://pkg.go.dev/entgo.io/ent#Mutator)并返回新的mutator，其工作原理类似于常见的[HTTP中间件模式](https://github.com/go-chi/chi#middleware-handlers)。"
+      }
+    },
+    {
+      "segment_id": "daa16011",
+      "source_content": "```go\npackage example\n\nimport (\n\t\"context\"\n\n\t\"entgo.io/ent\"\n)\n\nfunc exampleHook() ent.Hook {\n\t//use this to init your hook\n\treturn func(next ent.Mutator) ent.Mutator {\n\t\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n\t\t\t// Do something before mutation.\n\t\t\tv, err := next.Mutate(ctx, m)\n\t\t\tif err != nil {\n\t\t\t\t// Do something if error after mutation.\n\t\t\t}\n\t\t\t// Do something after mutation.\n\t\t\treturn v, err\n\t\t})\n\t}\n}\n```",
+      "source_content_hash": "243d98f17a66be2a5a4a05e717cbf179db1535c06a40408ef1dd895354ab573a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daa16011"
+      }
+    },
+    {
+      "segment_id": "1958bc43",
+      "source_content": "In Ent, there are two types of mutation hooks - schema hooks and runtime hooks. Schema hooks are mainly used for defining\ncustom mutation logic on a specific entity type, for example, syncing entity creation to another system. Runtime hooks, on the other hand, are used\nto define more global logic for adding things like logging, metrics, tracing, etc.",
+      "source_content_hash": "50e764a5534b7dbdc015ac4a058c7d1a306cfecb6468a44ea4df6df4345574c0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在Ent中，存在两种类型的变更钩子——模式钩子（schema hooks）和运行时钩子（runtime hooks）。模式钩子主要用于在特定实体类型上定义自定义变更逻辑，例如将实体创建同步到其他系统。而运行时钩子则用于定义更全局的逻辑，例如添加日志记录、指标收集、追踪等功能。"
+      }
+    },
+    {
+      "segment_id": "a6c928a1",
+      "source_content": "For our use case, we should definitely use runtime hooks, because to be valuable we want to export metrics on all\noperations on all entity types:",
+      "source_content_hash": "c2e36252037cb5b4e876aa0c67b1ddfadf9640f16d88bdeab1c5581524844399",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对于我们的使用场景，显然应该采用运行时钩子，因为为了确保价值，我们需要对所有实体类型的所有操作都导出指标："
+      }
+    },
+    {
+      "segment_id": "e2c67c87",
+      "source_content": "```go\npackage example\n\nimport (\n\t\"entprom/ent\"\n\t\"entprom/ent/hook\"\n)\n\nfunc main() {\n\tclient, _ := ent.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\n\t// Add a hook only on user mutations.\n\tclient.User.Use(exampleHook())\n\n\t// Add a hook only on update operations.\n\tclient.Use(hook.On(exampleHook(), ent.OpUpdate|ent.OpUpdateOne))\n}\n```",
+      "source_content_hash": "3cbc3753ee421a82a7d1e0590f5f8e1322520f2d6046b0f0d5f7aa26c946e0e9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e2c67c87"
+      }
+    },
+    {
+      "segment_id": "af843cee",
+      "source_content": "### Exporting Prometheus Metrics for an Ent Application",
+      "source_content_hash": "99873a151adc232ad2ef663a28e7ec69389e80b7c6412584cff8e834e220d411",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 为Ent应用导出Prometheus指标"
+      }
+    },
+    {
+      "segment_id": "681ef526",
+      "source_content": "With all of the introductions complete, let’s cut to the chase and show how to use Prometheus and Ent hooks together to\ncreate an observable application. Our goal with this example is to export these metrics using a hook:",
+      "source_content_hash": "557599dc5e7bedba0562ba36c3adbfb2db1c5a3de8d8b651cc8eee9f82bcfb34",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成所有背景介绍后，让我们直切主题，展示如何结合使用Prometheus和Ent钩子来构建可观测性应用。本示例的目标是通过钩子导出以下指标："
+      }
+    },
+    {
+      "segment_id": "c42e4165",
+      "source_content": "| Metric Name                    | Description                              |\n|--------------------------------|------------------------------------------|\n| ent_operation_total            | Number of ent mutation operations        |\n| ent_operation_error            | Number of failed ent mutation operations |\n| ent_operation_duration_seconds | Time in seconds per operation            |",
+      "source_content_hash": "d42b415e1072e24e58aa0d08fb12c920e87b13ffbf96f4a4921a5eb7ac7c323e",
+      "node_type": "table",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c42e4165"
+      }
+    },
+    {
+      "segment_id": "63565425",
+      "source_content": "Each of these metrics will be broken down by labels into two dimensions:",
+      "source_content_hash": "d69256debc28a4b354364fcce0be03d7f81448d0da279c6940afa9489bf01aa5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "每个指标将通过标签细分为两个维度："
+      }
+    },
+    {
+      "segment_id": "9fbd2efb",
+      "source_content": "* `mutation_type`: Entity type that is being mutated (User, BlogPost, Account etc.).\n* `mutation_op`: The operation that is being performed (Create, Delete etc.).",
+      "source_content_hash": "5851640803ed2d78a4c9065e31ab648dc6eb1eada01ecf9c4525715fe0a2a663",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* `mutation_type`：被变更的实体类型（User、BlogPost、Account等）\n* `mutation_op`：执行的操作类型（Create、Delete等）"
+      }
+    },
+    {
+      "segment_id": "dce16ab4",
+      "source_content": "Let’s start by defining our collectors:",
+      "source_content_hash": "0fde93785b05b2cfb592875ef95695c28529218569547f2811b4d85cda8900de",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先定义我们的收集器："
+      }
+    },
+    {
+      "segment_id": "0029045f",
+      "source_content": "```go\n//Ent dynamic dimensions\nconst (\n\tmutationType = \"mutation_type\"\n\tmutationOp   = \"mutation_op\"\n)\n\nvar entLabels = []string{mutationType, mutationOp}\n\n// Create a collector for total operations counter\nfunc initOpsProcessedTotal() *prometheus.CounterVec {\n\treturn promauto.NewCounterVec(\n\t\tprometheus.CounterOpts{\n\t\t\tName: \"ent_operation_total\",\n\t\t\tHelp: \"Number of ent mutation operations\",\n\t\t},\n\t\tentLabels,\n\t)\n}\n\n// Create a collector for error counter\nfunc initOpsProcessedError() *prometheus.CounterVec {\n\treturn promauto.NewCounterVec(\n\t\tprometheus.CounterOpts{\n\t\t\tName: \"ent_operation_error\",\n\t\t\tHelp: \"Number of failed ent mutation operations\",\n\t\t},\n\t\tentLabels,\n\t)\n}\n\n// Create a collector for duration histogram collector\nfunc initOpsDuration() *prometheus.HistogramVec {\n\treturn promauto.NewHistogramVec(\n\t\tprometheus.HistogramOpts{\n\t\t\tName: \"ent_operation_duration_seconds\",\n\t\t\tHelp: \"Time in seconds per operation\",\n\t\t},\n\t\tentLabels,\n\t)\n}\n```",
+      "source_content_hash": "edbb125927f6b9b533bacbf800d54c06d305a322a61a3cc95dd74d0148ef98cf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0029045f"
+      }
+    },
+    {
+      "segment_id": "b4204c03",
+      "source_content": "Next, let’s define our new hook:",
+      "source_content_hash": "b654464df0185e849051ba4941f0dac2240fefd815054d1b4322b32c71924af2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着定义新的钩子："
+      }
+    },
+    {
+      "segment_id": "d9ca18af",
+      "source_content": "```go\n// Hook init collectors, count total at beginning error on mutation error and duration also after.\nfunc Hook() ent.Hook {\n\topsProcessedTotal := initOpsProcessedTotal()\n\topsProcessedError := initOpsProcessedError()\n\topsDuration := initOpsDuration()\n\treturn func(next ent.Mutator) ent.Mutator {\n\t\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n\t\t\t// Before mutation, start measuring time.\n\t\t\tstart := time.Now()\n\t\t\t// Extract dynamic labels from mutation.\n\t\t\tlabels := prometheus.Labels{mutationType: m.Type(), mutationOp: m.Op().String()}\n\t\t\t// Increment total ops counter.\n\t\t\topsProcessedTotal.With(labels).Inc()\n\t\t\t// Execute mutation.\n\t\t\tv, err := next.Mutate(ctx, m)\n\t\t\tif err != nil {\n\t\t\t\t// In case of error increment error counter.\n\t\t\t\topsProcessedError.With(labels).Inc()\n\t\t\t}\n\t\t\t// Stop time measure.\n\t\t\tduration := time.Since(start)\n\t\t\t// Record duration in seconds.\n\t\t\topsDuration.With(labels).Observe(duration.Seconds())\n\t\t\treturn v, err\n\t\t})\n\t}\n}\n```",
+      "source_content_hash": "d9dec4d1b61c477c515df3915982c1df44020820c2b49fb47ae997cae527df7c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9ca18af"
+      }
+    },
+    {
+      "segment_id": "263073b1",
+      "source_content": "### Connecting the Prometheus Collector to our Service",
+      "source_content_hash": "7a94dabc8e456c76df2bf04880fcb9f8347638a9c736f5a63c6cbc252a2f59c9",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 将Prometheus收集器接入服务"
+      }
+    },
+    {
+      "segment_id": "d119b75c",
+      "source_content": "After defining our hook, let’s see next how to connect it to our application and how to use Prometheus to serve\nan endpoint that exposes the metrics in our collectors:",
+      "source_content_hash": "f870fac32dfcc0ea729378f4af05e1650ade228dc712ef3211853d51d84a9f7d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "定义完钩子后，接下来展示如何将其接入应用，并使用Prometheus提供暴露收集器指标的端点："
+      }
+    },
+    {
+      "segment_id": "9d31dc8f",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"net/http\"\n\n\t\"entprom\"\n\t\"entprom/ent\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n\t\"github.com/prometheus/client_golang/prometheus/promhttp\"\n)\n\nfunc createClient() *ent.Client {\n\tc, err := ent.Open(\"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed opening connection to sqlite: %v\", err)\n\t}\n\tctx := context.Background()\n\t// Run the auto migration tool.\n\tif err := c.Schema.Create(ctx); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\treturn c\n}\n\nfunc handler(client *ent.Client) func(w http.ResponseWriter, r *http.Request) {\n\treturn func(w http.ResponseWriter, r *http.Request) {\n\t\tctx := context.Background()\n\t\t// Run operations.\n\t\t_, err := client.User.Create().SetName(\"a8m\").Save(ctx)\n\t\tif err != nil {\n\t\t\thttp.Error(w, err.Error(), http.StatusBadRequest)\n\t\t\treturn\n\t\t}\n\t}\n}\n\nfunc main() {\n\t// Create Ent client and migrate\n\tclient := createClient()\n\t// Use the hook\n\tclient.Use(entprom.Hook())\n\t// Simple handler to run actions on our DB.\n\thttp.HandleFunc(\"/\", handler(client))\n\t// This endpoint sends metrics to the prometheus to collect\n\thttp.Handle(\"/metrics\", promhttp.Handler())\n\tlog.Println(\"server starting on port 8080\")\n\t// Run the server\n\tlog.Fatal(http.ListenAndServe(\":8080\", nil))\n}\n```",
+      "source_content_hash": "2a14d886d80af18bb1461ae7e4af9e9fc84cc297ce4fc77982f33e9f5fc9c6d6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9d31dc8f"
+      }
+    },
+    {
+      "segment_id": "c95293b9",
+      "source_content": "After a few times of accessing `/` on our server (using `curl` or a browser), go to `/metrics`. There you will see the output from the Prometheus client:",
+      "source_content_hash": "18607c5d872f07dfc066e039f1751eaff37246f19cd68ff4a2061b40445db40a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过curl或浏览器多次访问服务器`/`路径后，访问`/metrics`端点即可看到Prometheus客户端的输出："
+      }
+    },
+    {
+      "segment_id": "63d9cf48",
+      "source_content": "```\n# HELP ent_operation_duration_seconds Time in seconds per operation\n# TYPE ent_operation_duration_seconds histogram\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"0.005\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"0.01\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"0.025\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"0.05\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"0.1\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"0.25\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"0.5\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"1\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"2.5\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"5\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"10\"} 2\nent_operation_duration_seconds_bucket{mutation_op=\"OpCreate\",mutation_type=\"User\",le=\"+Inf\"} 2\nent_operation_duration_seconds_sum{mutation_op=\"OpCreate\",mutation_type=\"User\"} 0.000265669\nent_operation_duration_seconds_count{mutation_op=\"OpCreate\",mutation_type=\"User\"} 2\n# HELP ent_operation_error Number of failed ent mutation operations\n# TYPE ent_operation_error counter\nent_operation_error{mutation_op=\"OpCreate\",mutation_type=\"User\"} 1\n# HELP ent_operation_total Number of ent mutation operations\n# TYPE ent_operation_total counter\nent_operation_total{mutation_op=\"OpCreate\",mutation_type=\"User\"} 2\n```",
+      "source_content_hash": "7719a595ec79acba194f8665906ed5204f8b270ea69f43bb2f7e3d921d4e77d2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_63d9cf48"
+      }
+    },
+    {
+      "segment_id": "ebe673d6",
+      "source_content": "In the top part, we can see the histogram calculated, it calculates the number of operations in each “bucket”.\nAfter that, we can see the number of total operations and the number of errors.\nEach metric is followed by its description that can be seen when querying with Prometheus dashboard.",
+      "source_content_hash": "7af4922cd1832cfa81e58a38877aa24e4907576fe003b7810a2533d425c026e6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "顶部显示的是直方图计算结果，统计了每个\"桶\"中的操作数量。随后可以看到总操作数和错误数。每个指标都附有描述信息，这些描述会在通过Prometheus仪表板查询时显示。"
+      }
+    },
+    {
+      "segment_id": "71e7acda",
+      "source_content": "The Prometheus client is only one component of the Prometheus architecture.\nTo run a complete system including a scraper that will poll your endpoint, a Prometheus that will store your\nmetrics and can answer queries, and a simple UI to interact with it, I recommend reading the official\ndocumentation or use the docker-compose.yaml in this example [repo](https://github.com/yonidavidson/ent-prometheus-example).",
+      "source_content_hash": "5a067209fe8511711cc7e78fbf88fcf863c3d9a564193e2797726f3da6528448",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Prometheus客户端只是整个架构中的一个组件。要运行包含抓取器（定期轮询端点）、存储指标并能响应查询的Prometheus服务，以及交互式UI的完整系统，建议阅读官方文档或使用示例仓库中的docker-compose.yaml文件。"
+      }
+    },
+    {
+      "segment_id": "7f6f3173",
+      "source_content": "### Future Work on Observability in Ent",
+      "source_content_hash": "7aecc114b81931f249c751161b53fc89c12fd1200248fc00137d2ac065dad8d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Ent可观测性未来工作"
+      }
+    },
+    {
+      "segment_id": "e9a0d59a",
+      "source_content": "As we’ve mentioned above, there is an abundance of metric collections backends available today,\nPrometheus being just one of many successful projects. While these solutions differ in many dimensions\n(self-hosted vs SaaS, different storage engines with different query languages, and more) - from the metric\nreporting client perspective, they are virtually identical.",
+      "source_content_hash": "9d35ea28dfa25f383eb1ebe215bed6c3feb9f58b86fcd2eca07278f8d0ebb0fb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如前所述，当前存在大量指标收集后端方案，Prometheus只是众多成功项目中的一个。虽然这些解决方案在多个维度存在差异（自托管与SaaS、不同存储引擎及查询语言等），但从指标上报客户端角度看，它们本质上是相通的。"
+      }
+    },
+    {
+      "segment_id": "a30b7214",
+      "source_content": "In cases like these, good software engineering principles suggest that the concrete backend should be abstracted away\nfrom the client using an interface. This interface can then be implemented by backends so client applications can easily\nswitch between the different implementations. Such changes are happening in recent years in our industry. Consider,\nfor example, the [Open Container Initiative](https://opencontainers.org/) or the\n[Service Mesh Interface](https://smi-spec.io/): both are initiatives that strive to define a standard interface\nfor a problem space. This interface is supposed to create an ecosystem of implementations of\nthe standard.  In the observability space, the exact same convergence is occurring with [OpenCensus](https://opencensus.io/) and \n[OpenTracing](https://opentracing.io/) currently merging into [OpenTelemetry](https://opentelemetry.io/).",
+      "source_content_hash": "fb606a8514e2a8ec8ac9fca203fb182c4a5dac2666f59518fcc409d549037f00",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此类情况下，优秀的软件工程实践建议通过接口抽象具体后端实现。该接口可由不同后端实现，使得客户端应用能轻松切换实现方案。近年来行业正发生此类变革，例如开放容器计划（OCI）和服务网格接口（SMI）都致力于为标准问题域定义接口规范。在可观测性领域，OpenCensus和OpenTracing正在合并为OpenTelemetry也体现了同样的趋势。"
+      }
+    },
+    {
+      "segment_id": "dbd18971",
+      "source_content": "As nice as it would be to publish an Ent + Prometheus extension similar to the one presented in this post, we are firm\nbelievers that observability should be solved with a standards-based approach.\nWe invite everyone to [join the discussion](https://github.com/ent/ent/discussions/1819) on what is the right way to do this for Ent.",
+      "source_content_hash": "52a3473f863b7a87994f8ea28cdd5ce2812b8450ad1779f21ff5fb362bd2b29d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "虽然发布类似本文的Ent+Prometheus扩展件很有吸引力，但我们坚信应该采用基于标准的方法解决可观测性问题。诚邀所有人参与讨论如何为Ent实现这一目标的最佳实践。"
+      }
+    },
+    {
+      "segment_id": "7b9db856",
+      "source_content": "### Wrap-Up",
+      "source_content_hash": "f07df5837d987f7d615ddd0953a2fbc3f85f1cc0a2055877677fdde2d2def327",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "5b98f6e2",
+      "source_content": "We started this post by presenting Prometheus, a popular open-source monitoring solution. Next, we reviewed “Hooks”, a feature\nof Ent that allows adding custom logic before and after operations that change the data entities. We then showed how\nto integrate the two to create observable applications using Ent.  Finally, we discussed the future of observability in Ent\nand invited everyone to join the discussion [to shape it](https://github.com/ent/ent/discussions/1819).",
+      "source_content_hash": "6a9def6fcc240236e452582a53774d7ecc19bfbe7791b4fb8c1cd5f3565c4499",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们在本文开篇介绍了Prometheus——一个流行的开源监控解决方案。接着探讨了Ent框架中的\"Hooks\"功能，该功能允许在数据实体变更操作前后添加自定义逻辑。随后我们演示了如何将两者集成，利用Ent构建可观测性应用。最后讨论了Ent在可观测性领域的未来发展方向，并邀请所有人参与[讨论共同塑造其未来](https://github.com/ent/ent/discussions/1819)。"
+      }
+    },
+    {
+      "segment_id": "b6abd1ad",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "d0537932cd96ebc172f07d40432ff073381adb709b3fdc6d263a79438858fef3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有任何疑问或需要入门帮助？欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack/)。"
+      }
+    },
+    {
+      "segment_id": "3378b0ae",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter账号](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-08-12-building-observable-ent-application-with-prometheus.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.659681+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "696cfebe74343e623df1e6034099c4669d8c41d6ed8e98ebe213e384dd5fa0ef"
+  }
+}

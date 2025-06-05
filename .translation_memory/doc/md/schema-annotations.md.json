@@ -1,0 +1,162 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/schema-annotations.md",
+  "source_file_content_hash": "352cef0bb5e143d5e5c5a7e5d29fcf008bc5d8d09c633f2a5ae105d43f8c4f23",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: schema-annotations\ntitle: Annotations\n---",
+      "source_content_hash": "072278d14dff5dcbb7dabc68a81f11d555742838eb2253b2908a3047d3e14c72",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "Schema annotations allow attaching metadata to schema objects like fields and edges and inject them to external templates.\nAn annotation must be a Go type that is serializable to JSON raw value (e.g. struct, map or slice)\nand implement the [Annotation](https://pkg.go.dev/entgo.io/ent/schema?tab=doc#Annotation) interface.",
+      "source_content_hash": "a02115d5a2de33f7bb9725da052a225f14409946d2530ff8c6d0c691e2e3e6f5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Schema注解允许将元数据附加到字段和边等Schema对象上，并将其注入到外部模板中。注解必须是可序列化为JSON原始值的Go类型（如结构体、映射或切片），并实现[Annotation](https://pkg.go.dev/entgo.io/ent/schema?tab=doc#Annotation)接口。"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "The builtin annotations allow configuring the different storage drivers (like SQL) and control the code generation output. ",
+      "source_content_hash": "28501a658fb8553233473b9ea8b04f2fb0a6f3bf77f18ad47d99d78fb6926f04",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "内置注解可用于配置不同存储驱动（如SQL）并控制代码生成输出。"
+      }
+    },
+    {
+      "segment_id": "9fcbdce9",
+      "source_content": "## Custom Table Name",
+      "source_content_hash": "5ed077ac5722d6209a323af2e2e95f2a668eb0ba5ba2487270fa2b1947f4cc73",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自定义表名"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "A custom table name can be provided for types using the `entsql` annotation as follows:",
+      "source_content_hash": "2f8d7c605a1792316361c4fd86cc35fad858e67f85c532eb9f800740be02bc75",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以通过`entsql`注解为类型指定自定义表名，示例如下："
+      }
+    },
+    {
+      "segment_id": "41ad46a6",
+      "source_content": "```go title=\"ent/schema/user.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/dialect/entsql\"\n\t\"entgo.io/ent/schema\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Annotations of the User.\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentsql.Annotation{Table: \"Users\"},\n\t}\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"age\"),\n\t\tfield.String(\"name\"),\n\t}\n}\n```",
+      "source_content_hash": "02f4a14cdb540b7727dd63b29f1060930edf3ef69c5b3b541abe7d0657756cf6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_41ad46a6"
+      }
+    },
+    {
+      "segment_id": "f44c1398",
+      "source_content": "## Custom Table Schema",
+      "source_content_hash": "fccf5b55092ae0cb88ff23cb3bd9343637dd9251774921213e1171b873eb48be",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自定义表Schema"
+      }
+    },
+    {
+      "segment_id": "29528c8d",
+      "source_content": "Using the [Atlas](https://atlasgo.io) migration engine, an Ent schema can be defined and managed across multiple\ndatabase schemas. Check out the [multi-schema doc](multischema-migrations.mdx) for more information.",
+      "source_content_hash": "8c1f889aa5b159d78b42808eb1394d6451e06ba9f8537232d51328a730fefd06",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用[Atlas](https://atlasgo.io)迁移引擎时，Ent Schema可以跨多个数据库Schema进行定义和管理。更多信息请参阅[多Schema迁移文档](multischema-migrations.mdx)。"
+      }
+    },
+    {
+      "segment_id": "cb5b269c",
+      "source_content": "## Foreign Keys Configuration",
+      "source_content_hash": "1a22553b0168dbbf4bf68fbd9c5d3ba40cce92b0b888e9d88c576a39ccfa3897",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 外键配置"
+      }
+    },
+    {
+      "segment_id": "b36c6338",
+      "source_content": "Ent allows to customize the foreign key creation and provide a [referential action](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html#foreign-key-referential-actions)\nfor the `ON DELETE` clause:",
+      "source_content_hash": "c277d4d0998ef4ac723a3022251f5fbaf761b36b31747925018ba85c52c4329a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent允许自定义外键创建行为，并为`ON DELETE`子句指定[引用操作](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html#foreign-key-referential-actions)："
+      }
+    },
+    {
+      "segment_id": "c3955998",
+      "source_content": "```go title=\"ent/schema/user.go\" {27}\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/dialect/entsql\"\n\t\"entgo.io/ent/schema/edge\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tDefault(\"Unknown\"),\n\t}\n}\n\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"posts\", Post.Type).\n\t\t\tAnnotations(entsql.OnDelete(entsql.Cascade)),\n\t}\n}\n```",
+      "source_content_hash": "2bc9bea3897cafa82abe6bc2a17fbbd47bcfe988a985cac9585b0decfcf65941",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c3955998"
+      }
+    },
+    {
+      "segment_id": "74dd7937",
+      "source_content": "The example above configures the foreign key to cascade the deletion of rows in the parent table to the matching\nrows in the child table.",
+      "source_content_hash": "0a57233bf9dc7dcd65e0d5ce9f1d3c9fdbe21d4cfd32a72f2936db8ad088d53f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上例配置了级联删除外键，当父表记录被删除时，会自动删除子表中的匹配记录。"
+      }
+    },
+    {
+      "segment_id": "bd30d33e",
+      "source_content": "## Database Comments",
+      "source_content_hash": "a646ce8e7bd92ed6d471de73120eb819bdfbcc4e25c5c2172260fcd3e1b12786",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 数据库注释"
+      }
+    },
+    {
+      "segment_id": "6b77b644",
+      "source_content": "By default, table and column comments are not stored in the database. However, this functionality can be enabled by\nusing the `WithComments(true)` annotation. For example:",
+      "source_content_hash": "d9518e4e9f4bd7e51422ce0f7d422716c9ade2e0ec72f59533726f402d5135cd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，表和列注释不会存储到数据库中。但可以通过`WithComments(true)`注解启用此功能，例如："
+      }
+    },
+    {
+      "segment_id": "ec99e704",
+      "source_content": "```go title=\"ent/schema/user.go\" {18-21,34-37}\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/dialect/entsql\"\n\t\"entgo.io/ent/schema\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Annotations of the User.\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\t// Adding this annotation to the schema enables\n\t\t// comments for the table and all its fields.\n\t\tentsql.WithComments(true),\n\t\tschema.Comment(\"Comment that appears in both the schema and the generated code\"),\n\t}\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tComment(\"The user's name\"),\n\t\tfield.Int(\"age\").\n            Comment(\"The user's age\"),\n        field.String(\"skipped\").\n            Comment(\"This comment won't be stored in the database\").\n            // Explicitly disable comments for this field.\n            Annotations(\n                entsql.WithComments(false),\n            ),\n\t}\n}\n```",
+      "source_content_hash": "57109506cd502f99f920e6c02a727e1d3872aa936f89a085f18d986ea069f367",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ec99e704"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/schema-annotations.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.671784+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "352cef0bb5e143d5e5c5a7e5d29fcf008bc5d8d09c633f2a5ae105d43f8c4f23"
+  }
+}

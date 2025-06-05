@@ -1,0 +1,257 @@
+---
+title: Continuous Integration for Ent Projects
+author: Rotem Tamir
+authorURL: "https://github.com/rotemtam"
+authorImageURL: "https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80"
+authorTwitter: _rtam
+image: "https://entgo.io/images/assets/ent-ci-post.png"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+为确保软件质量，团队通常会实施_持续集成_工作流（即CI）。通过CI流程，团队会对代码库的每次变更自动运行一系列验证检查。在CI过程中，团队可能执行多种验证类型：
+
+* 编译或构建最新版本，确保代码未被破坏
+* 代码规范检查以强制执行公认的代码风格标准
+* 单元测试验证各组件是否符合预期，确保代码变更不会导致其他模块出现回归问题
+* 安全扫描防止已知漏洞被引入代码库
+* 以及其他更多检查！
+
+通过与Ent社区的交流，我们了解到许多使用Ent的团队已采用CI流程，并希望在工作流中加入Ent特有的验证机制。
+
+为支持社区这一需求，我们在文档中新增了[指南](/docs/ci)，记录CI中常见的验证最佳实践，并推出由我们维护的[ent/contrib/ci](https://github.com/ent/contrib/tree/master/ci) GitHub Action来实现这些实践。
+
+本文将分享我们关于如何在Ent项目中实施CI的初步建议，并在文末介绍我们正在研发的项目，期待获得社区反馈。
+
+## 验证所有生成文件已提交
+
+Ent高度依赖代码生成。根据经验，生成的代码应始终提交至版本控制系统，主要原因有二：
+
+* 提交生成的代码可使其与主代码共同接受审查，在代码评审或仓库浏览时提供完整的功能视图
+* 能及时发现团队成员开发环境差异，有效减少"在我机器上能运行"类问题，确保所有人运行相同代码
+
+若使用GitHub进行版本控制，可通过`ent/contrib/ci` GitHub Action轻松验证所有生成文件是否提交。其他情况下，我们提供简易bash脚本供集成至现有CI流程。
+
+<Tabs
+    defaultValue="gh"
+    values={[
+        {label: 'GitHub Action', value: 'gh'},
+        {label: 'Bash', value: 'bash'},
+    ]}>
+<TabItem value="gh">
+
+Simply add a file named `.github/workflows/ent-ci.yaml` in your repository:
+
+```yaml
+name: EntCI
+on:
+  push:
+  # Run whenever code is changed in the master.
+    branches:
+      - master
+  # Run on PRs where something changed under the `ent/` directory.
+  pull_request:
+    paths:
+      - 'ent/*'
+jobs:
+  ent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.1
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+      - uses: ent/contrib/ci@master
+```
+
+</TabItem>
+<TabItem value="bash">
+
+```bash
+go generate ./...
+status=$(git status --porcelain)
+if [ -n "$status" ]; then
+    echo "you need to run 'go generate ./...' and commit the changes"
+    echo "$status"
+    exit 1
+fi
+```
+
+</TabItem>
+</Tabs>
+
+## 迁移文件规范检查
+
+Ent模式的变更通常会导致数据库修改。若使用[版本化迁移](/docs/versioned-migrations)管理数据库模式变更，可在CI流程中运行[迁移文件检查](https://atlasgo.io/versioned/lint)，主要作用包括：
+
+* 在[开发数据库容器](https://atlasgo.io/concepts/dev-database)上重放迁移目录，确保所有SQL语句有效且顺序正确
+* 强制保障[迁移目录完整性](/docs/versioned-migrations#atlas-migration-directory-integrity-file)，防止历史记录被意外修改，确保并行开发的迁移最终合并为线性历史
+* 检测破坏性变更，在迁移影响生产环境前预警潜在数据丢失风险
+* 识别可能因数据依赖导致部署失败的变更，提示需要人工复核
+
+GitHub用户可使用[官方Atlas Action](https://github.com/ariga/atlas-action)在CI中执行迁移规范检查。
+
+在仓库中添加`.github/workflows/atlas-ci.yaml`文件，内容如下：
+
+<Tabs
+defaultValue="mysql"
+values={[
+    {label: 'MySQL', value: 'mysql'},
+    {label: 'MariaDB', value: 'maria'},
+    {label: 'PostgreSQL', value: 'postgres'},
+]}>
+<TabItem value="mysql">
+
+```yaml
+name: Atlas CI
+on:
+  # Run whenever code is changed in the master branch,
+  # change this to your root branch.
+  push:
+    branches:
+      - master
+  # Run on PRs where something changed under the `ent/migrate/migrations/` directory.
+  pull_request:
+    paths:
+      - 'ent/migrate/migrations/*'
+jobs:
+  lint:
+    services:
+      # Spin up a mysql:8.0.29 container to be used as the dev-database for analysis.
+      mysql:
+        image: mysql:8.0.29
+        env:
+          MYSQL_ROOT_PASSWORD: pass
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -ppass"
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.1
+        with:
+          fetch-depth: 0 # Mandatory unless "latest" is set below.
+      - uses: ariga/atlas-action@v0
+        with:
+          dir: ent/migrate/migrations
+          dir-format: golang-migrate # Or: atlas, goose, dbmate
+          dev-url: mysql://root:pass@localhost:3306/test
+```
+
+</TabItem>
+<TabItem value="maria">
+
+```yaml
+name: Atlas CI
+on:
+  # Run whenever code is changed in the master branch,
+  # change this to your root branch.
+  push:
+    branches:
+      - master
+  # Run on PRs where something changed under the `ent/migrate/migrations/` directory.
+  pull_request:
+    paths:
+      - 'ent/migrate/migrations/*'
+jobs:
+  lint:
+    services:
+      # Spin up a maria:10.7 container to be used as the dev-database for analysis.
+      maria:
+        image: mariadb:10.7
+        env:
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -ppass"
+          --health-interval 10s
+          --health-start-period 10s
+          --health-timeout 5s
+          --health-retries 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.1
+        with:
+          fetch-depth: 0 # Mandatory unless "latest" is set below.
+      - uses: ariga/atlas-action@v0
+        with:
+          dir: ent/migrate/migrations
+          dir-format: golang-migrate # Or: atlas, goose, dbmate
+          dev-url: maria://root:pass@localhost:3306/test
+```
+
+</TabItem>
+<TabItem value="postgres">
+
+```yaml
+name: Atlas CI
+on:
+  # Run whenever code is changed in the master branch,
+  # change this to your root branch.
+  push:
+    branches:
+      - master
+  # Run on PRs where something changed under the `ent/migrate/migrations/` directory.
+  pull_request:
+    paths:
+      - 'ent/migrate/migrations/*'
+jobs:
+  lint:
+    services:
+      # Spin up a postgres:10 container to be used as the dev-database for analysis.
+      postgres:
+        image: postgres:10
+        env:
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.1
+        with:
+          fetch-depth: 0 # Mandatory unless "latest" is set below.
+      - uses: ariga/atlas-action@v0
+        with:
+          dir: ent/migrate/migrations
+          dir-format: golang-migrate # Or: atlas, goose, dbmate
+          dev-url: postgres://postgres:pass@localhost:5432/test?sslmode=disable
+```
+
+</TabItem>
+</Tabs>
+
+注意运行`atlas migrate lint`需要干净的[开发数据库](https://atlasgo.io/concepts/dev-database)，上述示例代码中的`services`模块即用于提供该环境。
+
+## Ent CI的下一步规划
+
+为了丰富这个初步尝试，我想分享一些我们在[Ariga](https://ariga.io)正在实验的功能，希望能获得社区的反馈意见。
+
+* **在线迁移代码检查** - 许多Ent项目使用Ent内置的自动模式迁移机制（通过应用启动时调用`ent.Schema.Create`实现）。假设项目源代码由版本控制系统（如Git）管理，我们可以对比主线分支（`master`/`main`等）与当前特性分支的模式差异，利用[Atlas的模式差异分析能力](https://atlasgo.io/declarative/diff)计算即将执行的SQL语句，再通过[Atlas的代码检查功能](https://atlasgo.io/versioned/lint)预警变更可能引发的风险。
+* **变更可视化** - 为帮助代码审查者理解拉取请求中的模式变更影响，我们生成可视化差异图（采用类似[entviz](/blog/2021/08/26/visualizing-your-data-graph-using-entviz/)的ER图形式）来呈现模式改动。
+* **模式代码检查** - 基于官方[go/analysis](https://pkg.go.dev/golang.org/x/tools/go/analysis)包开发静态分析工具，对Ent模式的Go代码进行检测，强制实施命名规范或索引策略等约束条件。
+
+### 总结
+
+本文介绍了持续集成（CI）的概念，探讨了其在Ent项目中的实践方法，并展示了我们内部正在实验的CI检测方案。如果您希望这些检测成为Ent的正式功能，或对Ent的CI工具有其他建议，欢迎通过[Ent Discord服务器](https://discord.gg/qZmPgTE6RX)联系我们。
+
+:::note[获取更多Ent资讯：]
+
+- 订阅[新闻通讯](https://entgo.substack.com/)
+- 关注[Twitter](https://twitter.com/entgo_io)
+- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道
+- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)
+:::

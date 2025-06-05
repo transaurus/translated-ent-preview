@@ -1,0 +1,371 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "i18n/en/docusaurus-theme-classic/footer.json",
+  "source_file_content_hash": "859b2fdf4d6b40f069e88cd679939ff9235fc937f80445116dbe24845c5bfb7f",
+  "segments": [
+    {
+      "segment_id": "link.title.Docs",
+      "source_content": "Docs",
+      "source_content_hash": "7af023c43013b9a53fbff7dd4b5821588bba3319308878229740489152c43f6d",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "文档"
+      },
+      "metadata": {
+        "json_description": "The title of the footer links column with title=Docs in the footer"
+      }
+    },
+    {
+      "segment_id": "link.title.Community",
+      "source_content": "Community",
+      "source_content_hash": "bb501d7877eb7ddbd40baf7990e8058212e8140a2e6ceaaf2d54a6412b770bfd",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "社区"
+      },
+      "metadata": {
+        "json_description": "The title of the footer links column with title=Community in the footer"
+      }
+    },
+    {
+      "segment_id": "link.title.Legal",
+      "source_content": "Legal",
+      "source_content_hash": "4787eaf7c938045fd5285fe6a2cd72558caf7bd5faeb93fd1ad490a502e0e37b",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "法律"
+      },
+      "metadata": {
+        "json_description": "The title of the footer links column with title=Legal in the footer"
+      }
+    },
+    {
+      "segment_id": "link.title.Social",
+      "source_content": "Social",
+      "source_content_hash": "f1b7505afa5c9e2bd6d68ae814b3582cf38632d56a67913e75e7d8cb10b5a8a3",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "社交"
+      },
+      "metadata": {
+        "json_description": "The title of the footer links column with title=Social in the footer"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Getting Started",
+      "source_content": "Getting Started",
+      "source_content_hash": "d00eca1bae6742803906ab42a831e8b5396d15b6573ea13c139ec31631208ec1",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "入门指南"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Getting Started linking to /docs/getting-started"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Schema Guide",
+      "source_content": "Schema Guide",
+      "source_content_hash": "d484261f53ad8f035722f9e35932976634af3ad3610dbf9190065e591a8414ad",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "模式指南"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Schema Guide linking to /docs/schema-def"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Code Generation",
+      "source_content": "Code Generation",
+      "source_content_hash": "6dd237e349c99620af1ffd81b68fa6e2dc4b067259633dbbb78c05b5249d6085",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "代码生成"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Code Generation linking to /docs/code-gen"
+      }
+    },
+    {
+      "segment_id": "link.item.label.GraphQL Integration",
+      "source_content": "GraphQL Integration",
+      "source_content_hash": "6ba04c58b709cd1119ebfef75718750a7aac4390ef268fd16c71d607c719b592",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "GraphQL集成"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=GraphQL Integration linking to /docs/graphql"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Schema Migration",
+      "source_content": "Schema Migration",
+      "source_content_hash": "3ba30922687b647d173cdc518665931f39adfc25f04322eab0b7b76eb79c7cf9",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "模式迁移"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Schema Migration linking to /docs/migrate"
+      }
+    },
+    {
+      "segment_id": "link.item.label.GitHub",
+      "source_content": "GitHub",
+      "source_content_hash": "f911e414cf6bdfc595532ab166b5ba0f63d73c021452fcdacbda363dda6ad8fb",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "GitHub"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=GitHub linking to https://github.com/ent/ent"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Slack",
+      "source_content": "Slack",
+      "source_content_hash": "b27fb38ba323745c91fe7fd9021605430d43bdb7d3be765266e29364d103e26f",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Slack"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Slack linking to /docs/community#slack"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Discord",
+      "source_content": "Discord",
+      "source_content_hash": "053bc65874ad6098e58c41c57b378a2f36b0220e5e0b46722245e6c2f796818c",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Discord"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Discord linking to https://discord.gg/qZmPgTE6RX"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Newsletter",
+      "source_content": "Newsletter",
+      "source_content_hash": "f84ca2e7716bec9404f8a2806a17f3eda404f5cf33a4228f226b25a602c2e2e4",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "订阅简报"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Newsletter linking to https://entgo.substack.com/"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Discussions",
+      "source_content": "Discussions",
+      "source_content_hash": "60157cfcfe3f31c32f2c6394ad10f941a4b32c0be68151d35054c9230295fbc6",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "讨论区"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Discussions linking to https://github.com/ent/ent/discussions"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Twitter",
+      "source_content": "Twitter",
+      "source_content_hash": "bcd18ead5fa830127187d499e97e7a4dc8f641ec34d8c7e9f9f24deae2e39fdc",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Twitter"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Twitter linking to https://twitter.com/entgo_io"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Privacy",
+      "source_content": "Privacy",
+      "source_content_hash": "54a57c3147c49f33de5898b87084ad2b14c4ab308f762454bf92aca907478ad5",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "隐私政策"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Privacy linking to https://opensource.facebook.com/legal/privacy/"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Terms",
+      "source_content": "Terms",
+      "source_content_hash": "ede5489964834a514b61c7a4a8370be2452dd4a7d807180f14991ccc11ad2430",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "服务条款"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Terms linking to https://opensource.facebook.com/legal/terms/"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Data Policy",
+      "source_content": "Data Policy",
+      "source_content_hash": "c2b4da4b06d26643d2b9a4004bf1106c6f4f4a58a83fc0be8923bb337baf7eed",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "数据政策"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Data Policy linking to https://opensource.facebook.com/legal/data-policy/"
+      }
+    },
+    {
+      "segment_id": "link.item.label.Cookie Policy",
+      "source_content": "Cookie Policy",
+      "source_content_hash": "ee290b3ddbc8e7e90bd0028e8315a02570ee24d83cc8b0c14f860146bb24fd80",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Cookie政策"
+      },
+      "metadata": {
+        "json_description": "The label of footer link with label=Cookie Policy linking to https://opensource.facebook.com/legal/cookie-policy/"
+      }
+    },
+    {
+      "segment_id": "copyright",
+      "source_content": "\n      Copyright © 2025 Facebook, Inc.\n      The Go gopher was designed by <a href=\"http://reneefrench.blogspot.com/\">Renee French</a>.\n      <br/>\n      The design is licensed under the Creative Commons 3.0 Attributions license. Read this \n      <a href=\"https://go.dev/blog/gopher\">article</a> for more details.\n      <br/>\n      Design by Moriah Rich, illustration by Ariel Mashraki.\n      ",
+      "source_content_hash": "4f3866c4feba63a570619a3f618fd0c86a539f5010343de63964eafe0339cf65",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Copyright © 2025 Facebook, Inc.\n      Go语言地鼠形象由<a href=\"http://reneefrench.blogspot.com/\">Renee French</a>设计。\n      <br/>\n      该设计基于知识共享3.0署名许可协议。详情请阅读\n      <a href=\"https://go.dev/blog/gopher\">这篇文章</a>。\n      <br/>\n      设计：Moriah Rich，插画：Ariel Mashraki。"
+      },
+      "metadata": {
+        "json_description": "The footer copyright"
+      }
+    },
+    {
+      "segment_id": "logo.alt",
+      "source_content": "Facebook Open Source Logo",
+      "source_content_hash": "509d76309039cb892fce352cc20b7fceb0c8f6ee539a38d49244c1e925116410",
+      "node_type": "json_message",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Facebook开源项目标识"
+      },
+      "metadata": {
+        "json_description": "The alt text of footer logo"
+      }
+    }
+  ],
+  "original_json_structure": {
+    "link.title.Docs": {
+      "message": "Docs",
+      "description": "The title of the footer links column with title=Docs in the footer"
+    },
+    "link.title.Community": {
+      "message": "Community",
+      "description": "The title of the footer links column with title=Community in the footer"
+    },
+    "link.title.Legal": {
+      "message": "Legal",
+      "description": "The title of the footer links column with title=Legal in the footer"
+    },
+    "link.title.Social": {
+      "message": "Social",
+      "description": "The title of the footer links column with title=Social in the footer"
+    },
+    "link.item.label.Getting Started": {
+      "message": "Getting Started",
+      "description": "The label of footer link with label=Getting Started linking to /docs/getting-started"
+    },
+    "link.item.label.Schema Guide": {
+      "message": "Schema Guide",
+      "description": "The label of footer link with label=Schema Guide linking to /docs/schema-def"
+    },
+    "link.item.label.Code Generation": {
+      "message": "Code Generation",
+      "description": "The label of footer link with label=Code Generation linking to /docs/code-gen"
+    },
+    "link.item.label.GraphQL Integration": {
+      "message": "GraphQL Integration",
+      "description": "The label of footer link with label=GraphQL Integration linking to /docs/graphql"
+    },
+    "link.item.label.Schema Migration": {
+      "message": "Schema Migration",
+      "description": "The label of footer link with label=Schema Migration linking to /docs/migrate"
+    },
+    "link.item.label.GitHub": {
+      "message": "GitHub",
+      "description": "The label of footer link with label=GitHub linking to https://github.com/ent/ent"
+    },
+    "link.item.label.Slack": {
+      "message": "Slack",
+      "description": "The label of footer link with label=Slack linking to /docs/community#slack"
+    },
+    "link.item.label.Discord": {
+      "message": "Discord",
+      "description": "The label of footer link with label=Discord linking to https://discord.gg/qZmPgTE6RX"
+    },
+    "link.item.label.Newsletter": {
+      "message": "Newsletter",
+      "description": "The label of footer link with label=Newsletter linking to https://entgo.substack.com/"
+    },
+    "link.item.label.Discussions": {
+      "message": "Discussions",
+      "description": "The label of footer link with label=Discussions linking to https://github.com/ent/ent/discussions"
+    },
+    "link.item.label.Twitter": {
+      "message": "Twitter",
+      "description": "The label of footer link with label=Twitter linking to https://twitter.com/entgo_io"
+    },
+    "link.item.label.Privacy": {
+      "message": "Privacy",
+      "description": "The label of footer link with label=Privacy linking to https://opensource.facebook.com/legal/privacy/"
+    },
+    "link.item.label.Terms": {
+      "message": "Terms",
+      "description": "The label of footer link with label=Terms linking to https://opensource.facebook.com/legal/terms/"
+    },
+    "link.item.label.Data Policy": {
+      "message": "Data Policy",
+      "description": "The label of footer link with label=Data Policy linking to https://opensource.facebook.com/legal/data-policy/"
+    },
+    "link.item.label.Cookie Policy": {
+      "message": "Cookie Policy",
+      "description": "The label of footer link with label=Cookie Policy linking to https://opensource.facebook.com/legal/cookie-policy/"
+    },
+    "copyright": {
+      "message": "\n      Copyright © 2025 Facebook, Inc.\n      The Go gopher was designed by <a href=\"http://reneefrench.blogspot.com/\">Renee French</a>.\n      <br/>\n      The design is licensed under the Creative Commons 3.0 Attributions license. Read this \n      <a href=\"https://go.dev/blog/gopher\">article</a> for more details.\n      <br/>\n      Design by Moriah Rich, illustration by Ariel Mashraki.\n      ",
+      "description": "The footer copyright"
+    },
+    "logo.alt": {
+      "message": "Facebook Open Source Logo",
+      "description": "The alt text of footer logo"
+    }
+  },
+  "target_i18n_subpath": "docusaurus-theme-classic/footer.json",
+  "last_updated_timestamp": "2025-06-05T15:16:18.681929+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "859b2fdf4d6b40f069e88cd679939ff9235fc937f80445116dbe24845c5bfb7f"
+  }
+}

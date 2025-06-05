@@ -1,0 +1,362 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/migration/composite.mdx",
+  "source_file_content_hash": "d1402ec366406d8b68230daa25c6f18d0d58871f0d5a06d8cb7406802f43c924",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Using Composite Types in Ent Schema\nid: composite\nslug: composite-types\n---",
+      "source_content_hash": "de6bf272aa9d5d64e161d08f7476b007c752d20fd2da156cddd048b11ef65d16",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';\nimport InstallationInstructions from '../components/_installation_instructions.mdx';",
+      "source_content_hash": "ffc742d78eb313c2e57a6a0244a32ba45938e009a6b63b1af7b9e28de9f1658b",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_10c4cb47"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "In PostgreSQL, a composite type is structured like a row or record, consisting of field names and their corresponding\ndata types. Setting an Ent field as a composite type enables you to store complex and structured data in a single column.",
+      "source_content_hash": "b944a5dab8d5ac18550aa275ad34c528ace62c0aba701cb85c2aa7198ecbbc47",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在PostgreSQL中，复合类型类似于数据行或记录，由字段名及其对应数据类型组成。将Ent字段设置为复合类型后，您可以在单列中存储复杂的结构化数据。"
+      }
+    },
+    {
+      "segment_id": "ad8fd492",
+      "source_content": "This guide explains how to define a schema field type as a composite type in your Ent schema and configure the schema migration\nto manage both the composite types and the Ent schema as a single migration unit using Atlas.",
+      "source_content_hash": "20cca14e60b84d9be979333aee5b1aabfff6c8ae99ef6e237f16ff4d76ce5846",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南将说明如何在Ent模式中定义复合类型的模式字段，并通过Atlas配置模式迁移，将复合类型与Ent模式作为单一迁移单元进行管理。"
+      }
+    },
+    {
+      "segment_id": "a7378c68",
+      "source_content": ":::info[[Atlas Pro Feature](https://atlasgo.io/features#pro-plan)]\nAtlas support for [Composite Types](https://atlasgo.io/atlas-schema/hcl#composite-type) is available exclusively to Pro users.\nTo use this feature, run:\n```\natlas login\n```\n:::",
+      "source_content_hash": "91448219cb904be01c8ebe5581003bc5d6aa12002865738a8c9bcebec4809a92",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[Atlas Pro功能](https://atlasgo.io/features#pro-plan)]\nAtlas对[复合类型](https://atlasgo.io/atlas-schema/hcl#composite-type)的支持仅限专业版用户。使用该功能前请执行：\n```\natlas login\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "ed7dde9c",
+      "source_content": "## Install Atlas",
+      "source_content_hash": "bf92a270e324b46f2c1d6f24555018906dc2df68b19873079220409508dabfad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装Atlas"
+      }
+    },
+    {
+      "segment_id": "358a309f",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_358a309f"
+      }
+    },
+    {
+      "segment_id": "f2f30ae8",
+      "source_content": "## Login to Atlas",
+      "source_content_hash": "e256bf54631891b6388a26350087fe6f85606d3b82220c15db06e45dc9ae443c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 登录Atlas"
+      }
+    },
+    {
+      "segment_id": "cb57d798",
+      "source_content": "```shell\n$ atlas login a8m\n//highlight-next-line-info\nYou are now connected to \"a8m\" on Atlas Cloud.\n```",
+      "source_content_hash": "496821c033e70d4510db88b24c2448b81f6a4860a232e94aa6828c08a6979cd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cb57d798"
+      }
+    },
+    {
+      "segment_id": "3b7478ea",
+      "source_content": "## Composite Schema",
+      "source_content_hash": "bba3d45312f3e0d6b9188ea0568fe93b6ecf4dd0b5f18da48a134b0a61d8e55c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 复合模式"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "An `ent/schema` package is mostly used for defining Ent types (objects), their fields, edges and logic. Composite types,\nor any other database objects do not have representation in Ent models - A composite type can be defined once,\nand may be used multiple times in different fields and models.",
+      "source_content_hash": "3778d07ff96866859a7e6cac8820a271e034668f530267c8c72a81832a88d490",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent/schema`包主要用于定义Ent类型（对象）、其字段、边和逻辑。复合类型或其他数据库对象在Ent模型中并无直接体现——复合类型只需定义一次，即可在不同字段和模型中多次使用。"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "In order to extend our PostgreSQL schema to include both custom composite types and our Ent types, we configure Atlas to\nread the state of the schema from a [Composite Schema](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)\ndata source. Follow the steps below to configure this for your project:",
+      "source_content_hash": "4ec155b6c24b3a1889313cb0b149a6bc62aa120107a33229f222494fe3f8e300",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为扩展PostgreSQL模式以包含自定义复合类型和Ent类型，我们配置Atlas从[复合模式](https://atlasgo.io/atlas-schema/projects#data-source-composite_schema)数据源读取模式状态。按以下步骤为项目进行配置："
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "1\\. Create a `schema.sql` that defines the necessary composite type. In the same way, you can configure the composite type in\n   [Atlas Schema HCL language](https://atlasgo.io/atlas-schema/hcl-types#composite-type):",
+      "source_content_hash": "14c4ea94b0f4fe834409e29e5290d20036ff6dc8b93e97a2e44e253fef60b5cb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 创建定义复合类型的`schema.sql`文件。您也可使用[Atlas模式HCL语言](https://atlasgo.io/atlas-schema/hcl-types#composite-type)配置复合类型："
+      }
+    },
+    {
+      "segment_id": "ece60464",
+      "source_content": "<Tabs>\n<TabItem value={\"sql\"} label={\"Using SQL\"}>\n\n```sql title=\"schema.sql\"\nCREATE TYPE address AS (\n   street text,\n   city   text\n);\n```\n\n</TabItem>\n<TabItem value={\"hcl\"} label={\"Using HCL\"}>\n\n```hcl title=\"schema.hcl\"\nschema \"public\" {}\n\ncomposite \"address\" {\n  schema = schema.public\n  field \"street\" {\n    type = text\n  }\n  field \"city\" {\n    type = text\n  }\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "37b7fea10b7491e578c793f978f89680325a37bee7cacc0b8f9ac936a10f50e3",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ece60464"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "2\\. In your Ent schema, define a field that uses the composite type only in PostgreSQL dialect:",
+      "source_content_hash": "b7013be5c6d93a2206be75f56b23666c55bdaf7c961208fc700a77e6b5a46652",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在Ent模式中定义仅限PostgreSQL方言使用的复合类型字段："
+      }
+    },
+    {
+      "segment_id": "41b1e179",
+      "source_content": "<Tabs>\n<TabItem value={\"schema\"} label={\"Schema\"}>\n\n```go title=\"ent/schema/user.go\" {6-8}\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"address\").\n\t\t\tGoType(&Address{}).\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.Postgres: \"address\",\n\t\t\t}),\n\t}\n}\n```\n\n:::note\nIn case a schema with custom driver-specific types is used with other databases, Ent falls back to the default type\nused by the driver (e.g., \"varchar\").\n:::\n</TabItem>\n<TabItem value={\"address\"} label={\"Address Type\"}>\n\n```go title=\"ent/schematype/address.go\"\ntype Address struct {\n\tStreet, City string\n}\n\nvar _ field.ValueScanner = (*Address)(nil)\n\n// Scan implements the database/sql.Scanner interface.\nfunc (a *Address) Scan(v interface{}) (err error) {\n\tswitch v := v.(type) {\n\tcase nil:\n\tcase string:\n\t\t_, err = fmt.Sscanf(v, \"(%q,%q)\", &a.Street, &a.City)\n\tcase []byte:\n\t\t_, err = fmt.Sscanf(string(v), \"(%q,%q)\", &a.Street, &a.City)\n\t}\n\treturn\n}\n\n// Value implements the driver.Valuer interface.\nfunc (a *Address) Value() (driver.Value, error) {\n\treturn fmt.Sprintf(\"(%q,%q)\", a.Street, a.City), nil\n}\n```\n</TabItem>\n</Tabs>",
+      "source_content_hash": "7bdde5be4dff6d887e94cd7aba37480caec20098c2b5adc02dc524c17a3b35f3",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_41b1e179"
+      }
+    },
+    {
+      "segment_id": "9c9e2b64",
+      "source_content": "3\\. Create a simple `atlas.hcl` config file with a `composite_schema` that includes both your custom types defined in\n   `schema.sql` and your Ent schema:",
+      "source_content_hash": "fa09ed65c8b0c5f284e415fe324d544acdc711a7bad5e9edff49f3ff520fc968",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 创建简单的`atlas.hcl`配置文件，通过`composite_schema`同时包含`schema.sql`中定义的自定义类型和Ent模式："
+      }
+    },
+    {
+      "segment_id": "601bdf38",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"app\" {\n  # Load first custom types first.\n  schema \"public\" {\n    url = \"file://schema.sql\"\n  }\n  # Second, load the Ent schema.\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n}\n\nenv \"local\" {\n  src = data.composite_schema.app.url\n  dev = \"docker://postgres/15/dev?search_path=public\"\n}\n```",
+      "source_content_hash": "feba72d4fbbff1d3db918705869e392925919d2cc90d5fc0edf887d69bad5264",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_601bdf38"
+      }
+    },
+    {
+      "segment_id": "b77e7669",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用"
+      }
+    },
+    {
+      "segment_id": "619c3209",
+      "source_content": "After setting up our schema, we can get its representation using the `atlas schema inspect` command, generate migrations for\nit, apply them to a database, and more. Below are a few commands to get you started with Atlas:",
+      "source_content_hash": "8c8bbe17ec6423bef0ab341e1c2f089a8cf22219ec7f88e3a634c63e4d9c651e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成模式设置后，可通过`atlas schema inspect`命令获取其表示形式，生成迁移文件，应用到数据库等。以下是Atlas的入门命令示例："
+      }
+    },
+    {
+      "segment_id": "c6b2ca77",
+      "source_content": "#### Inspect the Schema",
+      "source_content_hash": "0b8da15efa6536bf3d7ba2b7c234ece1c6fd8c165a258f150b75f3c4a8a94775",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查模式"
+      }
+    },
+    {
+      "segment_id": "dce16ab4",
+      "source_content": "The `atlas schema inspect` command is commonly used to inspect databases. However, we can also use it to inspect our\n`composite_schema` and print the SQL representation of it:",
+      "source_content_hash": "f3dbe5302e7d37e03961c48a085104e5315169634c3bc3ce4a8eebe0448f4f5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas schema inspect`命令通常用于检查数据库，但也可用于检查`composite_schema`并打印其SQL表示："
+      }
+    },
+    {
+      "segment_id": "75daf40d",
+      "source_content": "```shell\natlas schema inspect \\\n  --env local \\\n  --url env://src \\\n  --format '{{ sql . }}'\n```",
+      "source_content_hash": "1842ce4f48f94bbd6a5aa04c673ac0b32a2a5303e5c49b31790f7f34cba2e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_75daf40d"
+      }
+    },
+    {
+      "segment_id": "827eb9a3",
+      "source_content": "The command above prints the following SQL. Note, the `address` composite type is defined in the schema before\nits usage in the `address` field:",
+      "source_content_hash": "0a010da733a3fb9238be39fdd74bac28e7ca52b62d54a6c8ce6739a360154321",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该命令将输出如下SQL。注意`address`复合类型在模式中的定义先于其在`address`字段中的使用："
+      }
+    },
+    {
+      "segment_id": "a1af15b5",
+      "source_content": "```sql\n-- Create composite type \"address\"\nCREATE TYPE \"address\" AS (\"street\" text, \"city\" text);\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"address\" \"address\" NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "34ce0dbd2e2f941614f5d944ccb5be793211770e136cf8f483315fae195f44d0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a1af15b5"
+      }
+    },
+    {
+      "segment_id": "2b5df263",
+      "source_content": "#### Generate Migrations For the Schema",
+      "source_content_hash": "c5990cc35443eac491da766def9a4b660ae86e07358dc8ba13ee7cc4264ae8c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 生成模式迁移"
+      }
+    },
+    {
+      "segment_id": "e29bd639",
+      "source_content": "To generate a migration for the schema, run the following command:",
+      "source_content_hash": "d37793d5ce1c9d58e36c9034b73243a6673c73c3d2019a3fc933949148642be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令为模式生成迁移："
+      }
+    },
+    {
+      "segment_id": "44ecd2e3",
+      "source_content": "```shell\natlas migrate diff \\\n  --env local\n```",
+      "source_content_hash": "6b7403f27f8ed223e30c839e71ca4751a7ab8d6c8cadab93c9b0579c577ecadd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_44ecd2e3"
+      }
+    },
+    {
+      "segment_id": "0427bb2b",
+      "source_content": "Note that a new migration file is created with the following content:",
+      "source_content_hash": "9e85891e456985b55c4c4723d5a20a256836ff963d5bacf28310685aeb824a89",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意新生成的迁移文件包含以下内容："
+      }
+    },
+    {
+      "segment_id": "0152e600",
+      "source_content": "```sql title=\"migrations/20240712090543.sql\"\n-- Create composite type \"address\"\nCREATE TYPE \"address\" AS (\"street\" text, \"city\" text);\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"address\" \"address\" NOT NULL, PRIMARY KEY (\"id\"));\n```",
+      "source_content_hash": "5ababbcacd2ef9de9edb00988b1c310206972132b4a2d9081d94dc9ada742aea",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0152e600"
+      }
+    },
+    {
+      "segment_id": "17fd5988",
+      "source_content": "#### Apply the Migrations",
+      "source_content_hash": "dd262c901209a83701a71368b18fd88b248797d69ab716e0faf1fbcc27203f95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "3208eb29",
+      "source_content": "To apply the migration generated above to a database, run the following command:",
+      "source_content_hash": "3b0f09a477a570f0dbe9432e3bfda1ef4da42bb2a1a2169041bbd1dde36f254d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令将生成的迁移应用到数据库："
+      }
+    },
+    {
+      "segment_id": "3c6be27a",
+      "source_content": "```\natlas migrate apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```",
+      "source_content_hash": "9ac63adaa93ec903e09e8bf048fee595f2113774afd394318a89f192a26e03e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3c6be27a"
+      }
+    },
+    {
+      "segment_id": "e6432e52",
+      "source_content": ":::info[Apply the Schema Directly on the Database]\n\nSometimes, there is a need to apply the schema directly to the database without generating a migration file. For example,\nwhen experimenting with schema changes, spinning up a database for testing, etc. In such cases, you can use the command\nbelow to apply the schema directly to the database:\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\nOr, using the [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk):\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// Automatically update the database with the desired schema.\n// Another option, is to use 'migrate apply' or 'schema apply' manually.\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::",
+      "source_content_hash": "952a10b8a5fa910f71bdf85eddb61c04951369a6d1fc33bb3bbbecc57bee9b2b",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[直接向数据库应用模式]\n\n有时需要直接将模式应用到数据库而无需生成迁移文件，例如在测试模式变更或启动测试数据库等场景中。此时可以使用以下命令直接将模式应用到数据库：\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\n或使用 [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk)：\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// 自动用目标模式更新数据库\n// 另一种方式是手动使用 'migrate apply' 或 'schema apply'\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "8f4e752e",
+      "source_content": "The code for this guide can be found in [GitHub](https://github.com/ent/ent/tree/master/examples/compositetypes).",
+      "source_content_hash": "59fb7599bafa4455e4d081656b59002fa559c5bd941db7906ae26cfd219bfd15",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本指南的代码可在 [GitHub](https://github.com/ent/ent/tree/master/examples/compositetypes) 获取。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/migration/composite.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.665524+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "d1402ec366406d8b68230daa25c6f18d0d58871f0d5a06d8cb7406802f43c924"
+  }
+}

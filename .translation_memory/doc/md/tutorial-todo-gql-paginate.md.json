@@ -1,0 +1,380 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-gql-paginate.md",
+  "source_file_content_hash": "c400a48b0fe269d901f77b341382f8d40237ff89e4ecdf762caf39e23ba9e85e",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-gql-paginate\ntitle: Relay Cursor Connections (Pagination)\nsidebar_label: Relay Cursor Connections\n---",
+      "source_content_hash": "9ba57e37fec3fe036f0f94f7720cf94f6567d016963e89409d8e010d70f499ca",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "In this section, we continue the [GraphQL example](tutorial-todo-gql.mdx) by explaining how to implement the\n[Relay Cursor Connections Spec](https://relay.dev/graphql/connections.htm). If you're not familiar with the\nCursor Connections interface, read the following paragraphs that were taken from [relay.dev](https://relay.dev/graphql/connections.htm#sel-DABDDDAADFA0E3kM):",
+      "source_content_hash": "5a25ea786d9b75458c43cc14995b1a963b8b3adf1dd78ee209da637771f78859",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节我们将延续[GraphQL示例](tutorial-todo-gql.mdx)，讲解如何实现[Relay游标连接规范](https://relay.dev/graphql/connections.htm)。若您不熟悉游标连接接口，请阅读摘自[relay.dev](https://relay.dev/graphql/connections.htm#sel-DABDDDAADFA0E3kM)的说明："
+      }
+    },
+    {
+      "segment_id": "c8518a04",
+      "source_content": "> In the query, the connection model provides a standard mechanism for slicing and paginating the result set.\n> \n> In the response, the connection model provides a standard way of providing cursors, and a way of telling the client\n> when more results are available.\n> \n> An example of all four of those is the following query:\n> ```graphql\n> {\n>   user {\n>     id\n>     name\n>     friends(first: 10, after: \"opaqueCursor\") {\n>       edges {\n>         cursor\n>         node {\n>           id\n>           name\n>         }\n>       }\n>       pageInfo {\n>         hasNextPage\n>       }\n>     }\n>   }\n> }\n> ```",
+      "source_content_hash": "cccae7360121c64fc595cafd73baef1adfb31fd0ed307f99312871388356e2a0",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 在查询中，连接模型为结果集的分片与分页提供了标准化机制。\n> \n> 在响应中，连接模型通过标准化方式提供游标标识，并告知客户端是否还有更多结果。\n> \n> 以下查询示例展示了这四个特性：\n> ```graphql\n> {\n>   user {\n>     id\n>     name\n>     friends(first: 10, after: \"opaqueCursor\") {\n>       edges {\n>         cursor\n>         node {\n>           id\n>           name\n>         }\n>       }\n>       pageInfo {\n>         hasNextPage\n>       }\n>     }\n>   }\n> }\n> ```"
+      }
+    },
+    {
+      "segment_id": "80d9e13c",
+      "source_content": "#### Clone the code (optional)",
+      "source_content_hash": "b068b18a91c2d1cb5709786f96baae783976def17ac4580a202a72c3f85fa808",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 克隆代码（可选）"
+      }
+    },
+    {
+      "segment_id": "33331f27",
+      "source_content": "The code for this tutorial is available under [github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example),\nand tagged (using Git) in each step. If you want to skip the basic setup and start with the initial version of the GraphQL\nserver, you can clone the repository as follows:",
+      "source_content_hash": "130dc9705ca054f7d2b7ce3568a91cd71f8fc55480dc49b78770948ef2ea18e9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程代码托管于[github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example)，每个步骤都有对应的Git标签。若想跳过基础配置直接使用GraphQL服务器的初始版本，可通过以下命令克隆仓库："
+      }
+    },
+    {
+      "segment_id": "45022e4f",
+      "source_content": "```console\ngit clone git@github.com:a8m/ent-graphql-example.git\ncd ent-graphql-example \ngo run ./cmd/todo/\n```",
+      "source_content_hash": "2fa40aa0226f164db69ac24b995a3ed9a55deb1c19c3ff3ea6301a27aaf46a06",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_45022e4f"
+      }
+    },
+    {
+      "segment_id": "11c76fcc",
+      "source_content": "## Add Annotations To Schema",
+      "source_content_hash": "e2d3c80ef24ec02b5b14af2e8eb49d643ab4fe62b8a1f07d0e3de7970f8a824e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 为Schema添加注解"
+      }
+    },
+    {
+      "segment_id": "98d26038",
+      "source_content": "Ordering can be defined on any comparable field of Ent by annotating it with `entgql.Annotation`.\nNote that the given `OrderField` name must be uppercase and match its enum value in the GraphQL schema.",
+      "source_content_hash": "edc7393789f91d8de4ff44e119d0ef6e128ee4865706b2c19a4f19a80297f195",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过在任意可比较的Ent字段上添加`entgql.Annotation`注解即可定义排序规则。注意指定的`OrderField`名称必须大写，且需与GraphQL schema中的枚举值匹配。"
+      }
+    },
+    {
+      "segment_id": "eb80afe1",
+      "source_content": "```go title=\"ent/schema/todo.go\"\nfunc (Todo) Fields() []ent.Field {\n    return []ent.Field{\n\t\tfield.Text(\"text\").\n\t\t\tNotEmpty().\n\t\t\tAnnotations(\n\t\t\t\tentgql.OrderField(\"TEXT\"),\n\t\t\t),\n\t\tfield.Time(\"created_at\").\n\t\t\tDefault(time.Now).\n\t\t\tImmutable().\n\t\t\tAnnotations(\n\t\t\t\tentgql.OrderField(\"CREATED_AT\"),\n\t\t\t),\n\t\tfield.Enum(\"status\").\n\t\t\tNamedValues(\n\t\t\t\t\"InProgress\", \"IN_PROGRESS\",\n\t\t\t\t\"Completed\", \"COMPLETED\",\n\t\t\t).\n\t\t\tDefault(\"IN_PROGRESS\").\n\t\t\tAnnotations(\n\t\t\t\tentgql.OrderField(\"STATUS\"),\n\t\t\t),\n\t\tfield.Int(\"priority\").\n\t\t\tDefault(0).\n\t\t\tAnnotations(\n\t\t\t\tentgql.OrderField(\"PRIORITY\"),\n\t\t\t),\n    }\n}\n```",
+      "source_content_hash": "3d0e9d09c0640e6b424bdf05e5422521e91b1f92359a6444262fa1cfef5ec4be",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eb80afe1"
+      }
+    },
+    {
+      "segment_id": "2e771fd0",
+      "source_content": "## Order By Multiple Fields",
+      "source_content_hash": "5692fdf588374a340b048d7815dab7e17502029c6c87891adc36760dd3b6e237",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 多字段排序"
+      }
+    },
+    {
+      "segment_id": "0750bfa1",
+      "source_content": "By default, the `orderBy` argument only accepts a single `<T>Order` value. To enable sorting by multiple fields, simply\nadd the `entgql.MultiOrder()` annotation to desired schema.",
+      "source_content_hash": "e28dc82cc29690812db6a17bc06b1200fc3e813bee8a029d4744ba31eb057749",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，`orderBy`参数仅接受单个`<T>Order`值。要启用多字段排序，只需在目标schema中添加`entgql.MultiOrder()`注解。"
+      }
+    },
+    {
+      "segment_id": "5782e280",
+      "source_content": "```go title=\"ent/schema/todo.go\"\nfunc (Todo) Annotations() []schema.Annotation {\n    return []schema.Annotation{\n        //highlight-next-line\n        entgql.MultiOrder(),\n    }\n}\n```",
+      "source_content_hash": "e999a6bec7016999d81053c9e58609f863d7cdbc4ffba8d3f370fab3debf9ca9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5782e280"
+      }
+    },
+    {
+      "segment_id": "6ca4479f",
+      "source_content": "By adding this annotation to the `Todo` schema, the `orderBy` argument will be changed from `TodoOrder` to `[TodoOrder!]`.",
+      "source_content_hash": "77b4b00a49dc00e6e8f7f849880677555e97f34528b249b6c74f166f878a4bb9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当该注解被添加到`Todo` schema后，`orderBy`参数类型将从`TodoOrder`变更为`[TodoOrder!]`。"
+      }
+    },
+    {
+      "segment_id": "71169a2d",
+      "source_content": "## Order By Edge Count",
+      "source_content_hash": "bb62d5b7632aaea2a364c97e42f69863a285974766bd19314c117f2d081b11cb",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 按关联边数量排序"
+      }
+    },
+    {
+      "segment_id": "c1eaf30b",
+      "source_content": "Non-unique edges can be annotated with the `OrderField` annotation to enable sorting nodes based on the count of specific\nedge types.",
+      "source_content_hash": "519de1fb5249243b2afa1adec80d43901d59380c74e67acbec251e596bff5977",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "非唯一关联边可通过`OrderField`注解实现基于特定边类型计数的节点排序。"
+      }
+    },
+    {
+      "segment_id": "c9873cf8",
+      "source_content": "```go title=\"ent/schema/todo/go\"\nfunc (Todo) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"children\", Todo.Type).\n\t\t\tAnnotations(\n\t\t\t\tentgql.RelayConnection(),\n\t\t\t\t// highlight-next-line\n\t\t\t\tentgql.OrderField(\"CHILDREN_COUNT\"),\n\t\t\t).\n\t\t\tFrom(\"parent\").\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "7a1be8f7ab84b96ba32d68fa0cc4b69adbbb5ce3bef108c0b85d7f321e66e380",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c9873cf8"
+      }
+    },
+    {
+      "segment_id": "232144f0",
+      "source_content": ":::info\nThe naming convention for this ordering term is: `UPPER(<edge-name>)_COUNT`. For example, `CHILDREN_COUNT`\nor `POSTS_COUNT`.\n:::",
+      "source_content_hash": "c2372fa2f9dc4b451f873d77973e52fa2e3dad556da69f955325c6edcc70f977",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n此排序项的命名规则为：`UPPER(<边名称>)_COUNT`。例如`CHILDREN_COUNT`或`POSTS_COUNT`。\n:::"
+      }
+    },
+    {
+      "segment_id": "2bb63d77",
+      "source_content": "## Order By Edge Field",
+      "source_content_hash": "9c65b3befac30d34bb38e041fb08eef32327db0bf09c554f4e19b44af2e78c53",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 按关联边字段排序"
+      }
+    },
+    {
+      "segment_id": "53aa2b95",
+      "source_content": "Unique edges can be annotated with the `OrderField` annotation to allow sorting nodes by their associated edge fields.\nFor example, _sorting posts by their author's name_, or _ordering todos based on their parent's priority_. Note that\nin order to sort by an edge field, the field must be annotated with `OrderField` within the referenced type.",
+      "source_content_hash": "1bb0a5a1181866f2587e7a701b33cd1e05d0da67d0461b1bd950f4616fb80194",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "唯一关联边可通过`OrderField`注解实现基于关联边字段的节点排序（例如：按作者姓名排序文章，或根据父级优先级排序待办事项）。注意：要按边字段排序，该字段必须在被引用类型中标注为`OrderField`。"
+      }
+    },
+    {
+      "segment_id": "5c7d994c",
+      "source_content": "The naming convention for this ordering term is: `UPPER(<edge-name>)_<edge-field>`. For example, `PARENT_PRIORITY`.",
+      "source_content_hash": "6ae4dffb9ad0940e1eda96fe825229517df4a5809df42224529d87732ccf6fab",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此排序项的命名规则为：`UPPER(<边名称>)_<边字段>`。例如`PARENT_PRIORITY`。"
+      }
+    },
+    {
+      "segment_id": "f2f9d525",
+      "source_content": "```go title=\"ent/schema/todo.go\"\n// Fields returns todo fields.\nfunc (Todo) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\t// ...\n\t\tfield.Int(\"priority\").\n\t\t\tDefault(0).\n\t\t\tAnnotations(\n\t\t\t\t// highlight-next-line\n\t\t\t\tentgql.OrderField(\"PRIORITY\"),\n\t\t\t),\n    }\n}\n\n// Edges returns todo edges.\nfunc (Todo) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"children\", Todo.Type).\n\t\t\tFrom(\"parent\").\n\t\t\tAnnotations(\n\t\t\t\t// highlight-next-line\n\t\t\t\tentgql.OrderField(\"PARENT_PRIORITY\"),\n\t\t\t).\n\t\t\tUnique(),\n    }\n}\n```",
+      "source_content_hash": "09ea25fd97314d5ef404387d09f12b79408cab46e9de6aac2b30b95e67ffa430",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f2f9d525"
+      }
+    },
+    {
+      "segment_id": "16d2b66e",
+      "source_content": ":::info\nThe naming convention for this ordering term is: `UPPER(<edge-name>)_<edge-field>`. For example, `PARENT_PRIORITY` or\n`AUTHOR_NAME`.\n:::",
+      "source_content_hash": "0a5e7cf8754fd9ea0d4afa27eb81bd2adc31dcca3f29220feff71d5ecbb4868f",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n此排序项的命名规则为：`UPPER(<边名称>)_<边字段>`。例如`PARENT_PRIORITY`或`AUTHOR_NAME`。\n:::"
+      }
+    },
+    {
+      "segment_id": "58f98d22",
+      "source_content": "## Add Pagination Support For Query",
+      "source_content_hash": "a8a0245b463c016a6351a88dedad168debd45a88908edc2490cded0eb494a05c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 为查询添加分页支持"
+      }
+    },
+    {
+      "segment_id": "d636abf8",
+      "source_content": "1\\. The next step for enabling pagination is to tell Ent that the `Todo` type is a Relay Connection.",
+      "source_content_hash": "7716708ec6180d0cd018816cee57bb44a69bebe421f0ccc010f6bf80c06c3b50",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 启用分页的下一步是声明`Todo`类型为Relay Connection。"
+      }
+    },
+    {
+      "segment_id": "a1af15b5",
+      "source_content": "```go title=\"ent/schema/todo.go\"\nfunc (Todo) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n        //highlight-next-line\n\t\tentgql.RelayConnection(),\n\t\tentgql.QueryField(),\n\t\tentgql.Mutations(entgql.MutationCreate()),\n\t}\n}\n```",
+      "source_content_hash": "f29ba717c3fdfd501a5f2b010c213527afc5eb8601ffaeb3720e100cd060f69f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a1af15b5"
+      }
+    },
+    {
+      "segment_id": "e5821418",
+      "source_content": "2\\. Then, run `go generate .` and you'll notice that `ent.resolvers.go` was changed. Head over to the `Todos` resolver\nand update it to pass pagination arguments to `.Paginate()`:",
+      "source_content_hash": "59d813afa204f5e276b2e9a4798af434e295bf10efc0e0a1c7b94d4363768813",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 运行`go generate .`后，您会注意到`ent.resolvers.go`文件已变更。转到`Todos`解析器，修改其实现以将分页参数传递给`.Paginate()`："
+      }
+    },
+    {
+      "segment_id": "f02969e0",
+      "source_content": "```go title=\"ent.resolvers.go\" {2-5}\nfunc (r *queryResolver) Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder) (*ent.TodoConnection, error) {\n\treturn r.client.Todo.Query().\n\t\tPaginate(ctx, after, first, before, last,\n\t\t\tent.WithTodoOrder(orderBy),\n\t\t)\n}\n```",
+      "source_content_hash": "8f7cb3dfa6b74c71c3d2b0445f1251cd6fb7931efbc04dc9b0eba97d5b96f716",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f02969e0"
+      }
+    },
+    {
+      "segment_id": "751dd460",
+      "source_content": ":::info[Relay Connection Configuration]\n\nThe `entgql.RelayConnection()` function indicates that the node or edge should support pagination.\nHence,the returned result is a Relay connection rather than a list of nodes (`[T!]!` => `<T>Connection!`).\n\nSetting this annotation on schema `T` (reside in ent/schema), enables pagination for this node and therefore, Ent will\ngenerate all Relay types for this schema, such as: `<T>Edge`, `<T>Connection`, and `PageInfo`. For example:\n\n```go\nfunc (Todo) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentgql.RelayConnection(),\n\t\tentgql.QueryField(),\n\t}\n}\n```\n\nSetting this annotation on an edge indicates that the GraphQL field for this edge should support nested pagination\nand the returned type is a Relay connection. For example:\n\n```go\nfunc (Todo) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\t\tedge.To(\"parent\", Todo.Type).\n\t\t\t\tUnique().\n\t\t\t\tFrom(\"children\").\n\t\t\t\tAnnotations(entgql.RelayConnection()),\n\t}\n}\n```\n\nThe generated GraphQL schema will be:\n\n```diff\n-children: [Todo!]!\n+children(first: Int, last: Int, after: Cursor, before: Cursor): TodoConnection!\n```\n\n:::",
+      "source_content_hash": "67419a3d2f5895ee3ce403e53caecb14aee4add4f264371204a3c9a20867cd7e",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[Relay连接配置]\n\n`entgql.RelayConnection()` 函数表示该节点或边应支持分页功能，\n因此返回结果将是Relay连接类型而非节点列表（`[T!]!` => `<T>Connection!`）。\n\n在schema `T`（位于ent/schema中）设置此注解，即可为该节点启用分页功能，Ent将自动生成该schema的所有Relay类型，\n包括：`<T>Edge`、`<T>Connection`和`PageInfo`。例如：\n\n```go\nfunc (Todo) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentgql.RelayConnection(),\n\t\tentgql.QueryField(),\n\t}\n}\n```\n\n在边上设置此注解表示该GraphQL字段应支持嵌套分页，返回类型为Relay连接。例如：\n\n```go\nfunc (Todo) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\t\tedge.To(\"parent\", Todo.Type).\n\t\t\t\tUnique().\n\t\t\t\tFrom(\"children\").\n\t\t\t\tAnnotations(entgql.RelayConnection()),\n\t}\n}\n```\n\n生成的GraphQL schema将变为：\n\n```diff\n-children: [Todo!]!\n+children(first: Int, last: Int, after: Cursor, before: Cursor): TodoConnection!\n```\n\n:::"
+      }
+    },
+    {
+      "segment_id": "263073b1",
+      "source_content": "## Pagination Usage",
+      "source_content_hash": "cded133bb48e827d46a0e0a1eea31635e2e5f161d80942d1b99c434a0a65bb7f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 分页功能使用"
+      }
+    },
+    {
+      "segment_id": "d119b75c",
+      "source_content": "Now, we're ready to test our new GraphQL resolvers. Let's start with creating a few todo items by running this\nquery multiple times (changing variables is optional):",
+      "source_content_hash": "4f80687508488de5815d68b614e389b37a5790176a52d0ac2ec95f3f1d48ff27",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在可以测试新的GraphQL解析器了。首先通过多次运行以下查询创建若干待办事项（修改变量可选）："
+      }
+    },
+    {
+      "segment_id": "9d31dc8f",
+      "source_content": "```graphql\nmutation CreateTodo($input: CreateTodoInput!) {\n    createTodo(input: $input) {\n        id\n        text\n        createdAt\n        priority\n        parent {\n            id\n        }\n    }\n}\n\n# Query Variables: { \"input\": { \"text\": \"Create GraphQL Example\", \"status\": \"IN_PROGRESS\", \"priority\": 1 } }\n# Output: { \"data\": { \"createTodo\": { \"id\": \"2\", \"text\": \"Create GraphQL Example\", \"createdAt\": \"2021-03-10T15:02:18+02:00\", \"priority\": 1, \"parent\": null } } }\n```",
+      "source_content_hash": "c20b0e068658a45c5a7cf79bdd056d0fe53ba23aa95c57f479fb96ac5a2293b1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9d31dc8f"
+      }
+    },
+    {
+      "segment_id": "15d5abf0",
+      "source_content": "Then, we can query our todo list using the pagination API:",
+      "source_content_hash": "94ad638a4561f33c3dc8e379dc21954966d239b085089699780ad2bf726bc5ea",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后使用分页API查询待办列表："
+      }
+    },
+    {
+      "segment_id": "5ce70a8c",
+      "source_content": "```graphql\nquery {\n    todos(first: 3, orderBy: {direction: DESC, field: TEXT}) {\n        edges {\n            node {\n                id\n                text\n            }\n            cursor\n        }\n    }\n}\n\n# Output: { \"data\": { \"todos\": { \"edges\": [ { \"node\": { \"id\": \"16\", \"text\": \"Create GraphQL Example\" }, \"cursor\": \"gqFpEKF2tkNyZWF0ZSBHcmFwaFFMIEV4YW1wbGU\" }, { \"node\": { \"id\": \"15\", \"text\": \"Create GraphQL Example\" }, \"cursor\": \"gqFpD6F2tkNyZWF0ZSBHcmFwaFFMIEV4YW1wbGU\" }, { \"node\": { \"id\": \"14\", \"text\": \"Create GraphQL Example\" }, \"cursor\": \"gqFpDqF2tkNyZWF0ZSBHcmFwaFFMIEV4YW1wbGU\" } ] } } }\n```",
+      "source_content_hash": "889cd75e39233f7f5ffda63f13d90577ae885e1e420b6b1d3a1a2b71e85da078",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5ce70a8c"
+      }
+    },
+    {
+      "segment_id": "52d45a2c",
+      "source_content": "We can also use the cursor we got in the query above to get all items that come after it.",
+      "source_content_hash": "ff990e39a6711ba9bc1bfcb6ff227480a5b4d8b7fc651fedd70ef707864d08c5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "还可以使用上条查询获取的游标来获取其后所有项目："
+      }
+    },
+    {
+      "segment_id": "d1748707",
+      "source_content": "```graphql\nquery {\n    todos(first: 3, after:\"gqFpEKF2tkNyZWF0ZSBHcmFwaFFMIEV4YW1wbGU\", orderBy: {direction: DESC, field: TEXT}) {\n        edges {\n            node {\n                id\n                text\n            }\n            cursor\n        }\n    }\n}\n\n# Output: { \"data\": { \"todos\": { \"edges\": [ { \"node\": { \"id\": \"15\", \"text\": \"Create GraphQL Example\" }, \"cursor\": \"gqFpD6F2tkNyZWF0ZSBHcmFwaFFMIEV4YW1wbGU\" }, { \"node\": { \"id\": \"14\", \"text\": \"Create GraphQL Example\" }, \"cursor\": \"gqFpDqF2tkNyZWF0ZSBHcmFwaFFMIEV4YW1wbGU\" }, { \"node\": { \"id\": \"13\", \"text\": \"Create GraphQL Example\" }, \"cursor\": \"gqFpDaF2tkNyZWF0ZSBHcmFwaFFMIEV4YW1wbGU\" } ] } } }\n```",
+      "source_content_hash": "bda2cec6f8dd6a12ec053eb40da67637cebbd8322de43cd8baebde7204c320fb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d1748707"
+      }
+    },
+    {
+      "segment_id": "3d0a3a4b",
+      "source_content": "---",
+      "source_content_hash": "cb3f91d54eee30e53e35b2b99905f70f169ed549fd78909d3dac2defc9ed8d3b",
+      "node_type": "thematicBreak",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "c95293b9",
+      "source_content": "Great! With a few simple changes, our application now supports pagination. Please continue to the next section where we\nexplain how to implement GraphQL field collections and learn how Ent solves the *\"N+1 problem\"* in GraphQL resolvers.",
+      "source_content_hash": "efe29ba7da26d4228e70658393f83b999ee1c4a8ef3aa0836c23b42b61a91019",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "很好！通过简单修改，我们的应用已支持分页功能。请继续阅读下一节，我们将讲解如何实现GraphQL字段集合，\n并了解Ent如何解决GraphQL解析器中的*\"N+1问题\"*。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-gql-paginate.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.678558+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "c400a48b0fe269d901f77b341382f8d40237ff89e4ecdf762caf39e23ba9e85e"
+  }
+}

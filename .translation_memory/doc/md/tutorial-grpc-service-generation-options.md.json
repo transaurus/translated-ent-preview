@@ -1,0 +1,102 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-grpc-service-generation-options.md",
+  "source_file_content_hash": "b2395642982a36a22c2c4cd8ac6e057bb4c55ce3bc16a36afb746b1205189075",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: grpc-service-generation-options\ntitle: Configuring Service Method Generation\nsidebar_label: Service Generation Options\n---",
+      "source_content_hash": "60691d3d354e853d1eb97c510bbeffb0b6347ae57c67d5ad2fe5a514cd04b8d0",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "By default, entproto will generate a number of service methods for an `ent.Schema` annotated with `ent.Service()`. Method generation can be customized by including the argument `entproto.Methods()` in the `entproto.Service()` annotation. `entproto.Methods()` accepts bit flags to determine what service methods should be generated. The flags include:",
+      "source_content_hash": "c27d98bad3af80eb0043d4d91adf483068d4a5e6434dcd7dc8a934136e5df3c4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，entproto会为带有`ent.Service()`注解的`ent.Schema`生成若干服务方法。通过在`entproto.Service()`注解中包含`entproto.Methods()`参数，可以自定义方法生成。`entproto.Methods()`接受位标志参数来决定应生成哪些服务方法。可用标志包括："
+      }
+    },
+    {
+      "segment_id": "efa96cff",
+      "source_content": "```go\n// Generates a Create gRPC service method for the entproto.Service.\nentproto.MethodCreate\n\n// Generates a Get gRPC service method for the entproto.Service.\nentproto.MethodGet\n\n// Generates an Update gRPC service method for the entproto.Service.\nentproto.MethodUpdate\n\n// Generates a Delete gRPC service method for the entproto.Service.\nentproto.MethodDelete\n\n// Generates a List gRPC service method for the entproto.Service.\nentproto.MethodList\n\n// Generates a Batch Create gRPC service method for the entproto.Service.\nentproto.MethodBatchCreate\n\n// Generates all service methods for the entproto.Service.\n// This is the same behavior as not including entproto.Methods.\nentproto.MethodAll\n```",
+      "source_content_hash": "938ee45dd689a3968c3c9b55ccba68d6229452d23feb40333850de858cdc5564",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_efa96cff"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "To generate a service with multiple methods, bitwise OR the flags.",
+      "source_content_hash": "dd5ffbc9229822fad35fcfec9a306a4b4a1a933d39a3a6754007f9518852afc2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如需生成包含多个方法的服务，可通过位或运算组合标志。"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "To see this in action, we can modify our ent schema. Let's say we wanted to prevent our gRPC client from mutating entries. We can accomplish this by modifying `ent/schema/user.go`:",
+      "source_content_hash": "7f808be9cb03143033914cbd655d63f4217423a1f4407e7db86487f1c86b0655",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们通过修改ent模式来实践这一功能。假设需要禁止gRPC客户端执行数据变更操作，可以修改`ent/schema/user.go`文件："
+      }
+    },
+    {
+      "segment_id": "6543a19e",
+      "source_content": "```go title=\"ent/schema/user.go\" {5}\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentproto.Message(),\n\t\tentproto.Service(\n\t\t\tentproto.Methods(entproto.MethodCreate | entproto.MethodGet | entproto.MethodList | entproto.MethodBatchCreate),\n        ),\n\t}\n}\n```",
+      "source_content_hash": "b0945fd3d356b93a7220bfb82b47e268fb77224f104f7d3015e04297338f11ca",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6543a19e"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "Re-running `go generate ./...` will give us the following service definition in `entpb.proto`:",
+      "source_content_hash": "31f9be910a2a485f66a60f99317f05417446a5ed50b1bd3e4fa1776347cd3260",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重新运行`go generate ./...`后，将在`entpb.proto`中生成如下服务定义："
+      }
+    },
+    {
+      "segment_id": "4ec2920d",
+      "source_content": "```protobuf title=\"ent/proto/entpb/entpb.proto\"\nservice UserService {\n  rpc Create ( CreateUserRequest ) returns ( User );\n\n  rpc Get ( GetUserRequest ) returns ( User );\n\n  rpc List ( ListUserRequest ) returns ( ListUserResponse );\n\n  rpc BatchCreate ( BatchCreateUsersRequest ) returns ( BatchCreateUsersResponse );\n}\n```",
+      "source_content_hash": "d98ae9a9d3f9bd5b64e9d137138de461f2d32fe184bfe8628722c2b06244cc70",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4ec2920d"
+      }
+    },
+    {
+      "segment_id": "e536ea0d",
+      "source_content": "Notice that the service no longer includes `Update` and `Delete` methods. Perfect! ",
+      "source_content_hash": "c62354185794490773495696501509bc8063f56d98c160e3b0c76ed05be47969",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到服务定义中已移除`Update`和`Delete`方法。完美符合需求！"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-grpc-service-generation-options.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.663268+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "b2395642982a36a22c2c4cd8ac6e057bb4c55ce3bc16a36afb746b1205189075"
+  }
+}

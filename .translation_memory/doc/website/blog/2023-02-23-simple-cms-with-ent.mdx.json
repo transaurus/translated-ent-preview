@@ -1,0 +1,1412 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2023-02-23-simple-cms-with-ent.mdx",
+  "source_file_content_hash": "b1b747d584e17dba709f689817f490dfe234e88e6a4b193a1db019525370ea8e",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: A beginner's guide to creating a web-app in Go using Ent\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\nimage: \"https://entgo.io/images/assets/cms-blog/share.png\"\n---",
+      "source_content_hash": "3203eac358b493ab8e56787c750143143449c59959397f5b221e5cd11c80958c",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "73ddcfdf",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_73ddcfdf"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "[Ent](https://entgo.io) is an open-source entity framework for Go. It is similar to more traditional ORMs, but has a \nfew distinct features that have made it very popular in the Go community. Ent was first open-sourced by\n[Ariel](https://github.com/a8m) in 2019, when he was working at Facebook. Ent grew from the pains of managing the \ndevelopment of applications with very large and complex data models and ran successfully inside Facebook for a year \nbefore open-sourcing it. After graduating from Facebook Open Source, Ent joined the Linux Foundation in September 2021.",
+      "source_content_hash": "65436232a4c8c11a7bc955cbb9d535ff5c8f14ea27dfe5d7132c5aebd2336a93",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[Ent](https://entgo.io) 是一个开源的 Go 实体框架。它与传统 ORM 类似，但具备一些独特特性，使其在 Go 社区广受欢迎。Ent 最初由 [Ariel](https://github.com/a8m) 于 2019 年在 Facebook 工作时开源，源于管理超大型复杂数据模型应用的开发痛点，在 Facebook 内部成功运行一年后才开源。2021 年 9 月从 Facebook 开源计划毕业后，Ent 加入了 Linux 基金会。"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "This tutorial is intended for Ent and Go novices who want to start by building a simple project: a very minimal content management system.",
+      "source_content_hash": "fe26baadc48fad5cde5bbccf238a2028d66bf060add0ea7cce0c2ae3507033be",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程面向希望构建简单项目（极简内容管理系统）的 Ent 和 Go 初学者。"
+      }
+    },
+    {
+      "segment_id": "f5f6d2ce",
+      "source_content": "Over the last few years, Ent has become one of the fastest growing ORMs in Go:",
+      "source_content_hash": "f80a409e68cf97c35b987696240bec4075a14bffcb2af5b33130e5186175b336",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "过去几年间，Ent 已成为 Go 生态中增长最快的 ORM 之一："
+      }
+    },
+    {
+      "segment_id": "2fdadb08",
+      "source_content": "![](https://entgo.io/images/assets/cms-blog/oss-insight-table.png)",
+      "source_content_hash": "596cac14a40f1bb51bdff5484cb97af639b07813a0b96825f098b6e229e2cdb5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![](https://entgo.io/images/assets/cms-blog/oss-insight-table.png)"
+      }
+    },
+    {
+      "segment_id": "42e34e45",
+      "source_content": "<div style={{textAlign: 'center'}}>\n\n*Source: [@ossinsight_bot on Twitter](https://twitter.com/ossinsight_bot/status/1593182222626213888), November 2022*\n\n</div>",
+      "source_content_hash": "7845b3c6ab8e9b697032818c2c3ed0ec46f9e73626d5b349e05adf1006fed08b",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_42e34e45"
+      }
+    },
+    {
+      "segment_id": "26524352",
+      "source_content": "Some of Ent's most cited features are:",
+      "source_content_hash": "9c7127a83185e9f261a54fc17bf119f63e78d71b6de6fcbfc05dd486166fee12",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent 最常被提及的特性包括："
+      }
+    },
+    {
+      "segment_id": "86b525ab",
+      "source_content": "* **A type-safe Go API for working with your database.** Forget about using `interface{}` or reflection to work with \n  your database. Use pure Go that your editor understands and your compiler enforces.\n  ![](https://entgo.io/images/assets/cms-blog/static.gif)\n* **Model your data in graph semantics** - Ent uses graph semantics to model your application's data. This makes it very easy to traverse complex datasets in a simple API.\n\n  Let’s say we want to get all users that are in groups that are about dogs. Here are two ways to write something like this with Ent:\n\n  ```go\n  // Start traversing from the topic.\n  client.Topic.Query().\n      Where(topic.Name(\"dogs\")).\n      QueryGroups().\n      QueryUsers().\n      All(ctx)\n  \n  // OR: Start traversing from the users and filter.\n  client.User.Query().\n      Where(\t\t\n          user.HasGroupsWith(  \n              group.HasTopicsWith(  \n                  topic.Name(\"dogs\"),  \n              ),  \n          ),\n      ).\n      All(ctx)\n  ```\n\n\n* **Automatically generate servers** - whether you need GraphQL, gRPC or an OpenAPI compliant API layer, Ent can \n  generate the necessary code you need to create a performant server on top of your database. Ent will generate\n  both the third-party schemas (GraphQL types, Protobuf messages, etc.) and optimized code for the repetitive\n  tasks for reading and writing from the database.\n* **Bundled with Atlas** - Ent is built with a rich integration with [Atlas](https://atlasgo.io), a robust schema \n  management tool with many advanced capabilities. Atlas can automatically plan schema migrations for you as\n  well as verify them in CI or deploy them to production for you. (Full disclosure: Ariel and I are the creators and maintainers)",
+      "source_content_hash": "b2fd2a6034fad29243de0d2f878c959d00ed83737ba3df5aeea45b0a1f4adcd2",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* **类型安全的数据库操作 Go API** - 告别 `interface{}` 和反射，使用编辑器可识别、编译器可检查的纯 Go 代码。\n  ![](https://entgo.io/images/assets/cms-blog/static.gif)\n* **图语义数据建模** - Ent 使用图语义建模应用数据，通过简洁 API 轻松遍历复杂数据集。\n\n  例如获取所有关注\"狗狗\"主题群组的用户：\n\n  ```go\n  // 从主题开始遍历\n  client.Topic.Query().\n      Where(topic.Name(\"dogs\")).\n      QueryGroups().\n      QueryUsers().\n      All(ctx)\n  \n  // 或：从用户开始过滤\n  client.User.Query().\n      Where(\t\t\n          user.HasGroupsWith(  \n              group.HasTopicsWith(  \n                  topic.Name(\"dogs\"),  \n              ),  \n          ),\n      ).\n      All(ctx)\n  ```\n\n* **自动生成服务层** - 无论是 GraphQL、gRPC 还是 OpenAPI 兼容的 API 层，Ent 都能生成在数据库之上构建高性能服务所需的代码，包括第三方模式（GraphQL 类型、Protobuf 消息等）和优化的数据库读写逻辑。\n* **内置 Atlas 集成** - Ent 深度集成 [Atlas](https://atlasgo.io)，这个强大的模式管理工具具备诸多高级能力，可自动规划模式迁移、在 CI 中验证或直接部署到生产环境。（注：Ariel 和我是 Atlas 的创建者和维护者）"
+      }
+    },
+    {
+      "segment_id": "bd92edfc",
+      "source_content": "#### Prerequisites",
+      "source_content_hash": "609f5a9f69c28db75ad093960816b14e7e64050e65b2f0306423715a76ee070d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 前置条件"
+      }
+    },
+    {
+      "segment_id": "a4bd3cfc",
+      "source_content": "* [Install Go](https://go.dev/doc/install)\n* [Install Docker](https://docs.docker.com/get-docker/)",
+      "source_content_hash": "e62d826b062602072f330d78c8be624e5cded57fbef49e84862972d4bafe6929",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* [安装 Go](https://go.dev/doc/install)\n* [安装 Docker](https://docs.docker.com/get-docker/)"
+      }
+    },
+    {
+      "segment_id": "c1d6a7ca",
+      "source_content": ":::info[Supporting repo]\n\nYou can find of the code shown in this tutorial in [this repo](https://github.com/rotemtam/ent-blog-example).\n\n:::",
+      "source_content_hash": "192425043dc34248cb85887c1b8f50faeeb31bb96d3b23e9a7252397c0d45a77",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[配套代码库]\n\n本教程所有代码可在 [此仓库](https://github.com/rotemtam/ent-blog-example) 查看。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "98355e36",
+      "source_content": "### Step 1: Setting up the database schema",
+      "source_content_hash": "e492cc711a7fe532ecbb89c62378f2a8408f846c24e5f447c34721983da10649",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 第一步：建立数据库模式"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "You can find the code described in this step in [this commit](https://github.com/rotemtam/ent-blog-example/commit/d4e4916231f05aa9a4b9ce93e75afdb72ab25799).",
+      "source_content_hash": "765518ba55ba4e681bae4ca394122a37d5ff2f151cd9d2ab8ba7d47a84eec326",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本步骤代码详见 [此提交](https://github.com/rotemtam/ent-blog-example/commit/d4e4916231f05aa9a4b9ce93e75afdb72ab25799)。"
+      }
+    },
+    {
+      "segment_id": "6270d577",
+      "source_content": "Let's start by initializing our project using `go mod init`:",
+      "source_content_hash": "811c7c333750e9e617cb15c4ee4bb6284db14afb18158bc45e471ec4f2686ae1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先使用 `go mod init` 初始化项目："
+      }
+    },
+    {
+      "segment_id": "092b29bb",
+      "source_content": "```\ngo mod init github.com/rotemtam/ent-blog-example\n```",
+      "source_content_hash": "91a95774477973cb2e378529f2c8412468a590c4aae97971d7a829cf663bf185",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_092b29bb"
+      }
+    },
+    {
+      "segment_id": "8126f763",
+      "source_content": "Go confirms our new module was created:",
+      "source_content_hash": "2da286be143ed531c1ca67013b6e484656f0a46ecfba17c368ca703e45bd8a87",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Go 确认新模块创建成功："
+      }
+    },
+    {
+      "segment_id": "26f7c825",
+      "source_content": "```\ngo: creating new go.mod: module github.com/rotemtam/ent-blog-example\n```",
+      "source_content_hash": "8bcc274a688dd6f6c08467ff52504c722d5545d8dabdd63e9f3fe813a5142565",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_26f7c825"
+      }
+    },
+    {
+      "segment_id": "86348f98",
+      "source_content": "The first thing we will handle in our demo project will be to setup our database. We create our application data model using Ent. Let's fetch it using `go get`:",
+      "source_content_hash": "1461cef01b13502e2d6cc74125ff11a73baa22661ebee4fbea36cac340a076cc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将使用 Ent 创建应用数据模型。通过 `go get` 获取依赖："
+      }
+    },
+    {
+      "segment_id": "daa16011",
+      "source_content": "```\ngo get -u entgo.io/ent@master\n```",
+      "source_content_hash": "4202ca30f0d1ac159d6d8ff3c061103495be5729e7eb8ace9cd9d8965ab11850",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daa16011"
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "Once installed, we can use the Ent CLI to initialize the models for the two types of entities we will be dealing with in this tutorial: the `User` and the `Post`.",
+      "source_content_hash": "a4d08a25a2e4919d2b9fd93bddbe3be859ee6bad3a2be20caaff88bcc57f4ea8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "安装完成后，使用 Ent CLI 初始化本教程要处理的两种实体类型：`User` 和 `Post` 的模型。"
+      }
+    },
+    {
+      "segment_id": "890e01bc",
+      "source_content": "```\ngo run -mod=mod entgo.io/ent/cmd/ent new User Post\n```",
+      "source_content_hash": "7d6a7b8a004ec11eb7fd3aefe967d52e630f036aaa2205e177f211467daf82a3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_890e01bc"
+      }
+    },
+    {
+      "segment_id": "d79a4831",
+      "source_content": "Notice that a few files are created:",
+      "source_content_hash": "7ddb85d7a4f950a219e7ce10abcb09d92fc6b1e39940474ca4b65d8bba0906f4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意生成了几个文件："
+      }
+    },
+    {
+      "segment_id": "64071bcc",
+      "source_content": "```\n.\n`-- ent\n    |-- generate.go\n    `-- schema\n        |-- post.go\n        `-- user.go\n\n2 directories, 3 files\n```",
+      "source_content_hash": "e0814bab0bde845d7c948a3b8b4a578ac6949d856cd073d6415f309688db39c5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_64071bcc"
+      }
+    },
+    {
+      "segment_id": "d21af28f",
+      "source_content": "Ent created the basic structure for our project:",
+      "source_content_hash": "42378e17f74e81c20f6dee0182e8fc2c2851bb20fb07b070f09fe5cfdb537210",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent创建了项目的基础结构："
+      }
+    },
+    {
+      "segment_id": "2890f5b2",
+      "source_content": "* `generate.go` - we will see in a bit how this file is used to invoke Ent's code-generation engine.\n* The `schema` directory, with a bare `ent.Schema` for each of the entities we requested.",
+      "source_content_hash": "2e5381bf2aa0e7cb21e2a5fdba26c64a7e089162c0f8213483a7744b384a1b68",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* `generate.go` - 稍后我们将看到如何使用该文件调用Ent的代码生成引擎\n* `schema`目录 - 包含我们请求的每个实体的基本`ent.Schema`定义"
+      }
+    },
+    {
+      "segment_id": "396efb28",
+      "source_content": "Let's continue by defining the schema for our entities. This is the schema definition for `User`:",
+      "source_content_hash": "5849a7a33b22cf91b0d608186d29818766789519606334d47a40c426afba226b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来我们定义实体结构。这是`User`的模式定义："
+      }
+    },
+    {
+      "segment_id": "1a63b635",
+      "source_content": "```go\n// Fields of the User.  \nfunc (User) Fields() []ent.Field {  \n   return []ent.Field{  \n      field.String(\"name\"),  \n      field.String(\"email\").\n            Unique(),  \n      field.Time(\"created_at\").\n            Default(time.Now),  \n   }  \n}  \n  \n// Edges of the User.  \nfunc (User) Edges() []ent.Edge {  \n   return []ent.Edge{  \n      edge.To(\"posts\", Post.Type),  \n   }  \n}\n```",
+      "source_content_hash": "d4764695013627eaddbc7be8d420dbeb8d42f30603a36ef4c8310d27699e1404",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1a63b635"
+      }
+    },
+    {
+      "segment_id": "bb1346b6",
+      "source_content": "Observe that we defined three fields, `name`, `email` and `created_at` (which takes the default value of `time.Now()`).\nSince we expect emails to be unique in our system we added that constraint on the `email` field.  In addition, we\ndefined an edge named `posts` to the `Post` type.  Edges are used in Ent to define relationships between entities.\nWhen working with a relational database, edges are translated into foreign keys and association tables.",
+      "source_content_hash": "81f6c7cea9122861d0fe88639590a74ecefc2ca300482dcd4f75ae8e97caf4e4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到我们定义了三个字段：`name`、`email`和`created_at`（默认值为`time.Now()`）。由于期望邮箱在系统中唯一，我们在`email`字段添加了唯一约束。此外，我们还定义了一个名为`posts`的边（edge）指向`Post`类型。在Ent中，边用于定义实体间的关系。在关系型数据库中，边会被转换为外键和关联表。"
+      }
+    },
+    {
+      "segment_id": "4fe849d4",
+      "source_content": "```go\n// Post holds the schema definition for the Post entity.\ntype Post struct {  \n   ent.Schema  \n}  \n  \n// Fields of the Post.  \nfunc (Post) Fields() []ent.Field {  \n   return []ent.Field{  \n      field.String(\"title\"),  \n      field.Text(\"body\"),  \n      field.Time(\"created_at\").\n            Default(time.Now),  \n   }  \n}  \n  \n// Edges of the Post.\nfunc (Post) Edges() []ent.Edge {  \n   return []ent.Edge{  \n      edge.From(\"author\", User.Type).  \n         Unique().  \n         Ref(\"posts\"),  \n   }  \n}\n```",
+      "source_content_hash": "9c34b89bd92ba73eb31874220bb916b5ca91b46ce963e29e38c3e85d655ca57f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4fe849d4"
+      }
+    },
+    {
+      "segment_id": "d636abf8",
+      "source_content": "On the `Post` schema, we defined three fields as well: `title`, `body` and `created_at`. In addition, we  defined an edge named `author` from `Post` to the `User` entity. We marked this edge as `Unique` because in our budding system, each post can have only one author. We used `Ref` to tell Ent that this edge's back reference is the `posts` edge on the `User`.",
+      "source_content_hash": "73c281f275572221b7191597f0e65c773f522c95e87e3a5fb104388becb54da7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在`Post`模式中，我们同样定义了三个字段：`title`、`body`和`created_at`。此外，我们定义了一个从`Post`指向`User`实体的`author`边。由于在我们的简单系统中每篇文章只能有一个作者，我们将此边标记为`Unique`。通过`Ref`方法告知Ent这个边的反向引用是`User`上的`posts`边。"
+      }
+    },
+    {
+      "segment_id": "99840f13",
+      "source_content": "Ent's power stems from it's code-generation engine. When developing with Ent, whenever we make any change to our application schema, we must invoke Ent's code-gen engine to regenerate our database access code. This is what allows Ent to maintain a type-safe and efficient Go API for us.",
+      "source_content_hash": "eec3d04cc323bac21b4c596d04c2c7fd3f36c12185ddb7f87266f0d50a20b46b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent的核心优势在于其代码生成引擎。使用Ent开发时，每当应用模式发生变更，都必须调用Ent的代码生成引擎来重新生成数据库访问代码。这正是Ent能够为开发者维护类型安全且高效Go API的秘诀。"
+      }
+    },
+    {
+      "segment_id": "85ea22dd",
+      "source_content": "Let's see this in action, run:",
+      "source_content_hash": "59f9942923fb3161a68b26f071e3c574ccacbbbaaeb73838e10dedc3b90ce4be",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们实际操作看看，运行："
+      }
+    },
+    {
+      "segment_id": "31b98214",
+      "source_content": "```\ngo generate ./...\n```",
+      "source_content_hash": "169bd91ca7dbf9fc3b48f52516db0bb4f86677ef2b120dca41c9d5e6c64cde52",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_31b98214"
+      }
+    },
+    {
+      "segment_id": "39c48ff7",
+      "source_content": "Observe that a whole *lot* of new Go files were created for us:",
+      "source_content_hash": "abd83b3191d1c1dd9dec7d5485b0917689e0b753fecfb74f67a87bf9aa4f5f23",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到生成了大量新的Go文件："
+      }
+    },
+    {
+      "segment_id": "b26685f5",
+      "source_content": "```\n.\n`-- ent\n    |-- client.go\n    |-- context.go\n    |-- ent.go\n    |-- enttest\n    |   `-- enttest.go\n/// .. Truncated for brevity \n    |-- user_query.go\n    `-- user_update.go\n\n9 directories, 29 files\n```",
+      "source_content_hash": "4387cd948986241f8f4bc2a6c87066a425ca94f15b0a637f938a4036f029c38b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b26685f5"
+      }
+    },
+    {
+      "segment_id": "f4b4753d",
+      "source_content": ":::info\nIf you're interested to see what the actual database schema for our application looks like, you can use a useful tool called `entviz`:\n```\ngo run -mod=mod ariga.io/entviz ./ent/schema\n```\nTo view the result, [click here](https://gh.atlasgo.cloud/explore/a0e79415).\n:::",
+      "source_content_hash": "5a2c2c287ace514fcdf21de719193db27cbfcfbc51299960ff5020ec7d007d38",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n如果想查看应用的实际数据库模式结构，可以使用实用工具`entviz`：\n```\ngo run -mod=mod ariga.io/entviz ./ent/schema\n```\n查看结果请[点击此处](https://gh.atlasgo.cloud/explore/a0e79415)。\n:::"
+      }
+    },
+    {
+      "segment_id": "ebfad7e4",
+      "source_content": "Once we have our data model defined, let's create the database schema for it.",
+      "source_content_hash": "9fde7af13a12b847a07ded4d88eeffecc4c521303a2a7ed4348005b0f5159d0e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "定义完数据模型后，让我们创建对应的数据库模式。"
+      }
+    },
+    {
+      "segment_id": "dad05c50",
+      "source_content": "To install the latest release of Atlas, simply run one of the following commands in your terminal, or check out the\n[Atlas website](https://atlasgo.io/getting-started#installation):",
+      "source_content_hash": "91fe478801d7b23d6fd4e9e3d94f8e4521445dd22c32a29671b107968e839a49",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要安装最新版Atlas，只需在终端运行以下命令之一，或访问[Atlas官网](https://atlasgo.io/getting-started#installation)："
+      }
+    },
+    {
+      "segment_id": "daa03ba9",
+      "source_content": "<Tabs\ndefaultValue=\"apple-intel-plain+linux\"\nvalues={[\n{label: 'macOS + Linux', value: 'apple-intel-plain+linux'},\n{label: 'Homebrew', value: 'apple-intel-brew'},\n{label: 'Go', value: 'go'},\n{label: 'Docker', value: 'docker'},\n{label: 'Windows', value: 'windows'},\n]}>\n<TabItem value=\"apple-intel-plain+linux\">\n\n```shell\ncurl -sSf https://atlasgo.sh | sh\n```\n\n</TabItem>\n<TabItem value=\"apple-intel-brew\">\n\n```shell\nbrew install ariga/tap/atlas\n```\n\n</TabItem>\n<TabItem value=\"go\">\n\n```shell\ngo install ariga.io/atlas/cmd/atlas@master\n```\n\n</TabItem>\n<TabItem value=\"docker\">\n\n```shell\ndocker pull arigaio/atlas\ndocker run --rm arigaio/atlas --help\n```\n\nIf the container needs access to the host network or a local directory, use the `--net=host` flag and mount the desired\ndirectory:\n\n```shell\ndocker run --rm --net=host \\\n  -v $(pwd)/migrations:/migrations \\\n  arigaio/atlas migrate apply\n  --url \"mysql://root:pass@:3306/test\"\n```\n\n</TabItem>\n<TabItem value=\"windows\">\n\nDownload the [latest release](https://release.ariga.io/atlas/atlas-windows-amd64-latest.exe) and\nmove the atlas binary to a file location on your system PATH.\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "a24498a6708d28a7ee8393f5ba8332064c2a70bfc3b6aa552d5f0d7fd3a47e99",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daa03ba9"
+      }
+    },
+    {
+      "segment_id": "f50056c0",
+      "source_content": "With Atlas installed, we can create the initial migration script:",
+      "source_content_hash": "7634eb24c856d484c7ea9637d4216f6d967664abf50e62abb0dcc3d643ac0ceb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "安装Atlas后，我们可以创建初始迁移脚本："
+      }
+    },
+    {
+      "segment_id": "b1274b5e",
+      "source_content": "```\natlas migrate diff add_users_posts \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://mysql/8/ent\"\n```",
+      "source_content_hash": "93f59a855f96a7411612f4a8632ee3e661439815822f2247cd89c1e72255b72a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b1274b5e"
+      }
+    },
+    {
+      "segment_id": "2d5a3f2f",
+      "source_content": "Observe that two new files were created:",
+      "source_content_hash": "b19c67ff59289243ad05d33e0a73d0d1b818fdc79e88301140923b9861f7d456",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意生成了两个新文件："
+      }
+    },
+    {
+      "segment_id": "b7c66f56",
+      "source_content": "```\nent/migrate/migrations\n|-- 20230226150934_add_users_posts.sql\n`-- atlas.sum\n```",
+      "source_content_hash": "26032c0fdf4fd09243e4900dc3044d2d8d1ff16229f1a498b6ba92876e536148",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b7c66f56"
+      }
+    },
+    {
+      "segment_id": "1d39fdbf",
+      "source_content": "The SQL file (the actual file name will vary on your machine depending on the timestamp in which you run `atlas migrate diff`) contains the SQL DDL statements required to set up the database schema on an empty MySQL database:",
+      "source_content_hash": "baf934875634c81013921e233e5d3ac4aa11d271643909ecb73625bdeceb68e4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "SQL文件（实际文件名会根据运行`atlas migrate diff`时的时间戳变化）包含在空MySQL数据库上建立模式所需的DDL语句："
+      }
+    },
+    {
+      "segment_id": "a54efbd2",
+      "source_content": "```sql\n-- create \"users\" table  \nCREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, `created_at` timestamp NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `email` (`email`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;  \n-- create \"posts\" table  \nCREATE TABLE `posts` (`id` bigint NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `body` longtext NOT NULL, `created_at` timestamp NOT NULL, `user_posts` bigint NULL, PRIMARY KEY (`id`), INDEX `posts_users_posts` (`user_posts`), CONSTRAINT `posts_users_posts` FOREIGN KEY (`user_posts`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL) CHARSET utf8mb4 COLLATE utf8mb4_bin;\n```",
+      "source_content_hash": "fb9481747c567a4b1300e9846bcffe273b862ea8960f10db2c11f2ac033b6934",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a54efbd2"
+      }
+    },
+    {
+      "segment_id": "aa705b4d",
+      "source_content": "To setup our development environment, let's use Docker to run a local `mysql` container:",
+      "source_content_hash": "b95957b1f29818d9eb6d69d7c5fbbcbd7c647ee7f35303fd848fb8c09366ae4e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了搭建开发环境，我们使用Docker运行本地`mysql`容器："
+      }
+    },
+    {
+      "segment_id": "ca8f8565",
+      "source_content": "```\ndocker run --rm --name entdb -d -p 3306:3306 -e MYSQL_DATABASE=ent -e MYSQL_ROOT_PASSWORD=pass mysql:8\n```",
+      "source_content_hash": "cfe4585e666dd8a31971de794aaea7aa91c406e18506aa1eb6329ef34572ef2c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ca8f8565"
+      }
+    },
+    {
+      "segment_id": "858b0a05",
+      "source_content": "Finally, let's run the migration script on our local database:",
+      "source_content_hash": "c86210f90af5a3e09cd9560e3c27cf7cacf07e2d0f0f15b21b747ed11f21a1ef",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后，在本地数据库上运行迁移脚本："
+      }
+    },
+    {
+      "segment_id": "45bc4861",
+      "source_content": "```\natlas migrate apply --dir file://ent/migrate/migrations \\\n  --url mysql://root:pass@localhost:3306/ent\n```",
+      "source_content_hash": "55b30bdc23ebef3a791b479308d80649022b1183149a562dd28ebc9087eff275",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_45bc4861"
+      }
+    },
+    {
+      "segment_id": "c9e08343",
+      "source_content": "Atlas reports that it successfully created the tables:",
+      "source_content_hash": "934ec961e4a489f8231ca483142e9b0155d2fb674c6543c86611cf23b0f6d580",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas报告已成功创建表："
+      }
+    },
+    {
+      "segment_id": "a85d7a64",
+      "source_content": "```\nMigrating to version 20230220115943 (1 migrations in total):\n\n  -- migrating version 20230220115943\n    -> CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, `created_at` timestamp NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `email` (`email`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;\n    -> CREATE TABLE `posts` (`id` bigint NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `body` longtext NOT NULL, `created_at` timestamp NOT NULL, `post_author` bigint NULL, PRIMARY KEY (`id`), INDEX `posts_users_author` (`post_author`), CONSTRAINT `posts_users_author` FOREIGN KEY (`post_author`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL) CHARSET utf8mb4 COLLATE utf8mb4_bin;\n  -- ok (55.972329ms)\n\n  -------------------------\n  -- 67.18167ms\n  -- 1 migrations \n  -- 2 sql statements\n\n```",
+      "source_content_hash": "5f6a2fe4173c7ece95fdb0c6e3d3391128787fbccfa69c3748a9b5ba06bb61b3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a85d7a64"
+      }
+    },
+    {
+      "segment_id": "e0e9d747",
+      "source_content": "### Step 2: Seeding our database",
+      "source_content_hash": "8425ce3fbe171e7fb73c0923d2d380f4c21bea2ad5df18218b5677935e92895d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 步骤2：数据库种子数据"
+      }
+    },
+    {
+      "segment_id": "3ed0b458",
+      "source_content": ":::info\n\nThe code for this step can be found in [this commit](https://github.com/rotemtam/ent-blog-example/commit/eae0c881a4edfbe04e6aa074d4c165e8ff3656b1).\n\n:::",
+      "source_content_hash": "3f7441f80268e39a2c80554a9465137c74a1db861b4254736ac6d707924134e6",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n本步骤代码可在此提交查看：[commit链接](https://github.com/rotemtam/ent-blog-example/commit/eae0c881a4edfbe04e6aa074d4c165e8ff3656b1)\n:::"
+      }
+    },
+    {
+      "segment_id": "ebe673d6",
+      "source_content": "While we are developing our content management system, it would be sad to load a web page for our system and not see content for it. Let's start by seeding data into our database and learn some Ent concepts.",
+      "source_content_hash": "0dcec470b0b0afc1ec173226af118396d4d66d1e7d381319ed6a1aa7063c8b7a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在开发内容管理系统时，如果加载网页却看不到任何内容会令人沮丧。让我们从向数据库填充种子数据开始，同时学习一些Ent的核心概念。"
+      }
+    },
+    {
+      "segment_id": "7e031d10",
+      "source_content": "To access our local MySQL database, we need a driver for it, use `go get` to fetch it:",
+      "source_content_hash": "5af043ee028b3518d2b6c082e5af38688944c6e64a6e872dbc0e83d539efd254",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要连接本地MySQL数据库，首先需要通过`go get`获取驱动程序："
+      }
+    },
+    {
+      "segment_id": "03aa621a",
+      "source_content": "```\ngo get -u github.com/go-sql-driver/mysql\n```",
+      "source_content_hash": "6833f1549e7ce153d64201ccc5aa2cc0fb4640ddaa2c3f09289e2ef464857c0f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_03aa621a"
+      }
+    },
+    {
+      "segment_id": "0302cdc1",
+      "source_content": "Create a file named `main.go` and add this basic seeding script.",
+      "source_content_hash": "fb2d18b7f82ea261ee966979503375a859ce6da8016e76568706fa34c89ba8e0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "创建名为`main.go`的文件并添加基础数据填充脚本："
+      }
+    },
+    {
+      "segment_id": "219a3173",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"flag\"\n\t\"fmt\"\n\t\"log\"\n\n\t\"github.com/rotemtam/ent-blog-example/ent\"\n\n\t_ \"github.com/go-sql-driver/mysql\"\n\t\"github.com/rotemtam/ent-blog-example/ent/user\"\n)\n\nfunc main() {\n\t// Read the connection string to the database from a CLI flag.\n\tvar dsn string\n\tflag.StringVar(&dsn, \"dsn\", \"\", \"database DSN\")\n\tflag.Parse()\n\n\t// Instantiate the Ent client.\n\tclient, err := ent.Open(\"mysql\", dsn)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed connecting to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\n\tctx := context.Background()\n\t// If we don't have any posts yet, seed the database.\n\tif !client.Post.Query().ExistX(ctx) {\n\t\tif err := seed(ctx, client); err != nil {\n\t\t\tlog.Fatalf(\"failed seeding the database: %v\", err)\n\t\t}\n\t}\n\t// ... Continue with server start.\n}\n\nfunc seed(ctx context.Context, client *ent.Client) error {\n\t// Check if the user \"rotemtam\" already exists.\n\tr, err := client.User.Query().\n\t\tWhere(\n\t\t\tuser.Name(\"rotemtam\"),\n\t\t).\n\t\tOnly(ctx)\n\tswitch {\n\t// If not, create the user.\n\tcase ent.IsNotFound(err):\n\t\tr, err = client.User.Create().\n\t\t\tSetName(\"rotemtam\").\n\t\t\tSetEmail(\"r@hello.world\").\n\t\t\tSave(ctx)\n\t\tif err != nil {\n\t\t\treturn fmt.Errorf(\"failed creating user: %v\", err)\n\t\t}\n\tcase err != nil:\n\t\treturn fmt.Errorf(\"failed querying user: %v\", err)\n\t}\n\t// Finally, create a \"Hello, world\" blogpost.\n\treturn client.Post.Create().\n\t\tSetTitle(\"Hello, World!\").\n\t\tSetBody(\"This is my first post\").\n\t\tSetAuthor(r).\n\t\tExec(ctx)\n}\n```",
+      "source_content_hash": "c23d58c8ca0e8721aa47413a21c4d330e8c96c11e8b4d5b1bc441c6ecd47e30c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_219a3173"
+      }
+    },
+    {
+      "segment_id": "85f6fcdd",
+      "source_content": "As you can see, this program first checks if any `Post` entity exists in the database, if it does not it invokes the `seed` function. This function uses Ent to retrieve the user named `rotemtam` from the database and in case it does not exist, tries to create it. Finally, the function creates a blog post with this user as its author.",
+      "source_content_hash": "ebfbbd67c79c1073330f20754c75032d70fffedc077c6661f9fa8a56dee17185",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如你所见，该程序首先检查数据库中是否存在`Post`实体，若不存在则调用`seed`函数。该函数使用Ent查询名为`rotemtam`的用户，若用户不存在则尝试创建，最后以此用户为作者创建博客文章。"
+      }
+    },
+    {
+      "segment_id": "9150ec12",
+      "source_content": "Run it:",
+      "source_content_hash": "311d4e52ebf9b876e382bbdabd6d346be48d58fbe1d6dd13b5f963820793333d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行脚本："
+      }
+    },
+    {
+      "segment_id": "eeb25400",
+      "source_content": "```\n go run main.go -dsn \"root:pass@tcp(localhost:3306)/ent?parseTime=true\"\n```",
+      "source_content_hash": "82a47d6caf661bb40914ee6b54b2055a2c9c0f7255d59d88ff6db99830941fd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eeb25400"
+      }
+    },
+    {
+      "segment_id": "0d14771f",
+      "source_content": "### Step 3: Creating the home page",
+      "source_content_hash": "56b73b13070a3ace30272be29edfd429f03274c36fc25ee6d296c5404dd507a6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 第三步：创建首页"
+      }
+    },
+    {
+      "segment_id": "8536fc61",
+      "source_content": ":::info\nThe code described in this step can be found in [this commit](https://github.com/rotemtam/ent-blog-example/commit/8196bb50400bbaed53d5a722e987fcd50ea1628f)\n:::",
+      "source_content_hash": "902b5209c3bcc15e481fa18fc1509dcc0815f2b33c755f71293fb8f2a46abc6e",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n本步骤相关代码可查看[此提交记录](https://github.com/rotemtam/ent-blog-example/commit/8196bb50400bbaed53d5a722e987fcd50ea1628f)\n:::"
+      }
+    },
+    {
+      "segment_id": "a24efd7d",
+      "source_content": "Let's now create the home page of the blog. This will consist of a few parts:",
+      "source_content_hash": "ea5e96c752c7fbac92b6e0424a67e932b7d67800c61e7096510a2df39ca5c138",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在开始构建博客首页，主要包含以下部分："
+      }
+    },
+    {
+      "segment_id": "c8184508",
+      "source_content": "1. **The view** - this is a Go html/template that renders the actual HTML the user will see.\n2. **The server code** - this contains the HTTP request handlers that our users' browsers will communicate with and will render our templates with data they retrieve from the database.\n3. **The router** - registers different paths to handlers.\n4. **A unit test** - to verify our server behaves correctly.",
+      "source_content_hash": "4027b6b4e8e9533572dd3ad666036fbf632fa4f0b9a617d9ce17d19f9d35252f",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. **视图层** - 使用Go的html/template模板引擎渲染用户可见的HTML页面\n2. **服务端代码** - 处理HTTP请求，从数据库获取数据并渲染模板\n3. **路由配置** - 将不同路径映射到对应的处理器\n4. **单元测试** - 验证服务端行为是否符合预期"
+      }
+    },
+    {
+      "segment_id": "548b3ae8",
+      "source_content": "#### The view",
+      "source_content_hash": "90be4168eab144e6afb7d9eea5d5b0393a754fa15c9d354ca7eb5e01a3a29993",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 视图层"
+      }
+    },
+    {
+      "segment_id": "9f46c1b6",
+      "source_content": "Go has an excellent templating engine that comes in two flavors: `text/template` for rendering general purpose text and `html/template` which had some extra security features to prevent code injection when working with HTML documents.  Read more about it [here](https://pkg.go.dev/html/template) .",
+      "source_content_hash": "1462895de0445ee0ce0911e0fa22bd596556f7220912f446fead8a1bbcda5af2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Go语言内置了优秀的模板引擎，分为两种：通用文本渲染的`text/template`和具备防代码注入特性的`html/template`。更多信息请参阅[官方文档](https://pkg.go.dev/html/template)。"
+      }
+    },
+    {
+      "segment_id": "ca714988",
+      "source_content": "Let's create our first template that will be used to display a list of blog posts. Create a new file named `templates/list.tmpl`:",
+      "source_content_hash": "e3b7015bfd5c064ad6ca1ed552416913a6fb227cf30e6d3162121cf2f9039e5c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "创建首个用于展示博客文章列表的模板文件`templates/list.tmpl`："
+      }
+    },
+    {
+      "segment_id": "5de6a9e7",
+      "source_content": "```gotemplate\n<html>\n<head>\n    <title>My Blog</title>\n    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css\" rel=\"stylesheet\"\n          integrity=\"sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD\" crossorigin=\"anonymous\">\n\n</head>\n<body>\n<div class=\"col-lg-8 mx-auto p-4 py-md-5\">\n    <header class=\"d-flex align-items-center pb-3 mb-5 border-bottom\">\n        <a href=\"/\" class=\"d-flex align-items-center text-dark text-decoration-none\">\n            <span class=\"fs-4\">Ent Blog Demo</span>\n        </a>\n    </header>\n\n    <main>\n        <div class=\"row g-5\">\n            <div class=\"col-md-12\">\n                {{- range . }}\n                    <h2>{{ .Title }}</h2>\n                    <p>\n                        {{ .CreatedAt.Format \"2006-01-02\" }} by {{ .Edges.Author.Name }}\n                    </p>\n                    <p>\n                        {{ .Body }}\n                    </p>\n                {{- end }}\n            </div>\n\n        </div>\n    </main>\n    <footer class=\"pt-5 my-5 text-muted border-top\">\n        <p>\n            This is the Ent Blog Demo. It is a simple blog application built with Ent and Go. Get started:\n        </p>\n        <pre>go get entgo.io/ent</pre>\n    </footer>\n</div>\n\n<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js\"\n        integrity=\"sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN\"\n        crossorigin=\"anonymous\"></script>\n</body>\n</html>\n```",
+      "source_content_hash": "40b84b9099f4cb283a6ad14b465702da9d3da0e68b00736712e0819ddd4e81d2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5de6a9e7"
+      }
+    },
+    {
+      "segment_id": "3353b597",
+      "source_content": "Here we are using a modified version of the [Bootstrap Starter Template](https://getbootstrap.com/docs/5.3/examples/starter-template/) as the basis of our UI. Let's highlight the important parts. As you will see below, in our `index` handler, we will pass this template a slice of `Post` objects.",
+      "source_content_hash": "3d98c3bb2c9aa69558b4921e2e760506b429d0fb5eb029673261ab1e7d83cfd4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这里我们基于[Bootstrap启动模板](https://getbootstrap.com/docs/5.3/examples/starter-template/)构建UI界面。重点说明：后续将在`index`处理器中向该模板传递`Post`对象切片。"
+      }
+    },
+    {
+      "segment_id": "0b7b2b74",
+      "source_content": "Inside the Go-template, whatever we pass to it as data is available as \"`.`\", this explains this line, where we use `range` to iterate over each post:",
+      "source_content_hash": "bdc8e53f930e6c6efbf623e6f5e234f62b78b79ef6a00516682e2bb002b85040",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在Go模板中，传入的数据通过\"`.`\"访问。这行代码使用`range`遍历每篇文章："
+      }
+    },
+    {
+      "segment_id": "a0d841d7",
+      "source_content": "```\n{{- range . }}\n```",
+      "source_content_hash": "3eb7f1aee22bfdd2bc4745acdde3a0c8f96893d9742a80665ef180262641409d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a0d841d7"
+      }
+    },
+    {
+      "segment_id": "96bae975",
+      "source_content": "Next, we print the title, creation time and the author name, via the `Author` edge:",
+      "source_content_hash": "e89e9446d93a107daa8a36ab645ebc6d8775919ad0ec66393c471287dcbab57f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着通过`Author`关系边获取并显示文章标题、创建时间和作者姓名："
+      }
+    },
+    {
+      "segment_id": "9b5b6a4a",
+      "source_content": "```\n<h2>{{ .Title }}</h2>\n<p>\n\t{{ .CreatedAt.Format \"2006-01-02\" }} by {{ .Edges.Author.Name }}\n</p>\n```",
+      "source_content_hash": "f3bcf6a0f2721c44e367620dbba6fce494acead6b45d9d768754ca24e6f3aa96",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9b5b6a4a"
+      }
+    },
+    {
+      "segment_id": "bc1752c9",
+      "source_content": "Finally, we print the post body and close the loop.",
+      "source_content_hash": "0f0eaf88ae32464b5ff481d75ff94240ae8d718391ffe28709ccc38b05e47c53",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后输出文章正文并结束循环。"
+      }
+    },
+    {
+      "segment_id": "684c7294",
+      "source_content": "```\n\t<p>\n\t\t{{ .Body }}\n\t</p>\n{{- end }}\n```",
+      "source_content_hash": "b08e7dd140769ab312c13773d6ac2a36f660a1216544251786213492640c1bf2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_684c7294"
+      }
+    },
+    {
+      "segment_id": "e548f48f",
+      "source_content": "After defining the template, we need to make it available to our program. We embed this template into our binary using the `embed` package ([docs](https://pkg.go.dev/embed)):",
+      "source_content_hash": "4feebbaf34efd42f1153cb88cbe99f50d72293aae276ea2680023689370f16de",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "定义模板后，需要通过`embed`包将其编译进二进制文件（参见[文档](https://pkg.go.dev/embed)）："
+      }
+    },
+    {
+      "segment_id": "74f81e8f",
+      "source_content": "```go\nvar (  \n   //go:embed templates/*   \n   resources embed.FS  \n   tmpl      = template.Must(template.ParseFS(resources, \"templates/*\"))  \n)\n```",
+      "source_content_hash": "aaf31aa4d4777a07a8dcf008ea4ddd2ab1ba169936e4a88620fd3344d13a97cd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_74f81e8f"
+      }
+    },
+    {
+      "segment_id": "df371c55",
+      "source_content": "#### Server code",
+      "source_content_hash": "9adaac4f8798a1ba2adf8467e3eda082a4675e455b049969c51e8d01905e7bc2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 服务端代码"
+      }
+    },
+    {
+      "segment_id": "11a78230",
+      "source_content": "We continue by defining a type named `server` and a constructor for it, `newServer`. This struct will have receiver methods for each HTTP handler we create and binds the Ent client we created at init to the server code.",
+      "source_content_hash": "374f9f2adf7872b2aa9a77e77a79b2c0d4e69640172a365630628136e393b94c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们定义`server`类型及其构造函数`newServer`。该结构体将包含各个HTTP处理器的接收方法，并将初始化时创建的Ent客户端绑定到服务端代码。"
+      }
+    },
+    {
+      "segment_id": "5018db49",
+      "source_content": "```go\ntype server struct {\n\tclient *ent.Client\n}\n\nfunc newServer(client *ent.Client) *server {\n\treturn &server{client: client}\n}\n\n```",
+      "source_content_hash": "6619d173c93921e987da166fb6d9ecd6cbab0382c758703bed095f117ebd5aa2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5018db49"
+      }
+    },
+    {
+      "segment_id": "8a5228e1",
+      "source_content": "Next, let's define the handler for our blog home page. This page should contain a list of all available blog posts:",
+      "source_content_hash": "7c481e0f55662179edccb2ddc7e73c7e6e933e73fd879a38903058cf56dee46b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来定义博客首页的处理器，该页面需展示所有可用文章："
+      }
+    },
+    {
+      "segment_id": "12615310",
+      "source_content": "```go\n// index serves the blog home page\nfunc (s *server) index(w http.ResponseWriter, r *http.Request) {\n\tposts, err := s.client.Post.\n\t\tQuery().\n\t\tWithAuthor().\n\t\tAll(r.Context())\n\tif err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t\treturn\n\t}\n\tif err := tmpl.Execute(w, posts); err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t}\n}\n```",
+      "source_content_hash": "83ea34dd30253ff17126508235d54b88e93828af1abf4993e82cb182290fe143",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_12615310"
+      }
+    },
+    {
+      "segment_id": "4fa5605e",
+      "source_content": "Let's zoom in on the Ent code here that is used to retrieve the posts from the database:",
+      "source_content_hash": "341d4c169ff376ee30563ce4705b20a2046ab658f7c2931a3460ab469f58d32b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "重点解析从数据库获取文章的Ent代码："
+      }
+    },
+    {
+      "segment_id": "d3541dbe",
+      "source_content": "```go\n// s.client.Post contains methods for interacting with Post entities\ns.client.Post.\n\t// Begin a query.\n\tQuery().\n\t// Retrieve the entities using the `Author` edge. (a `User` instance)\n\tWithAuthor().\n\t// Run the query against the database using the request context.\n\tAll(r.Context())\n```",
+      "source_content_hash": "c211d5256501faa3819f42bb8480b9f761688a61473df2a8a575ace3b9946b70",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d3541dbe"
+      }
+    },
+    {
+      "segment_id": "e8e93efb",
+      "source_content": "#### The router",
+      "source_content_hash": "3cab100dae28156e36c9f5e8801a29699df1ed1bfe193aa6aa4f011ffc41178b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 路由器"
+      }
+    },
+    {
+      "segment_id": "0ba09731",
+      "source_content": "To manage the routes for our application, let's use `go-chi`, a popular routing library for Go.",
+      "source_content_hash": "7b3a29ad6e5a238aa449eddb61c774c3b9a347b012b5e936207babe681f75968",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了管理应用程序的路由，我们使用`go-chi`——一个流行的Go路由库。"
+      }
+    },
+    {
+      "segment_id": "7bec73dd",
+      "source_content": "```\ngo get -u github.com/go-chi/chi/v5\n```",
+      "source_content_hash": "f7a1e94560d2dd5cee802a0594b8333953ba6e3a1b729ec96e08b6f5ca5dead7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7bec73dd"
+      }
+    },
+    {
+      "segment_id": "3e09f17b",
+      "source_content": "We define the `newRouter` function that sets up our router:",
+      "source_content_hash": "e58193e0d9d56981dda592d6532947fbdc39de49496fc6c9fb1736d15f3448c3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们定义`newRouter`函数来设置路由器："
+      }
+    },
+    {
+      "segment_id": "32f99f1f",
+      "source_content": "```go\n// newRouter creates a new router with the blog handlers mounted.\nfunc newRouter(srv *server) chi.Router {\n\tr := chi.NewRouter()\n\tr.Use(middleware.Logger)\n\tr.Use(middleware.Recoverer)\n\tr.Get(\"/\", srv.index)\n\treturn r\n}\n```",
+      "source_content_hash": "2a0b2d7c47a0d3dc90c12d1afb45a0941647d0ae353ab6ecc074f39b43755a14",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_32f99f1f"
+      }
+    },
+    {
+      "segment_id": "3d0a35df",
+      "source_content": "In this function, we first instantiate a new `chi.Router`, then register two middlewares:",
+      "source_content_hash": "65163e49ee6ce2e132feb22c3dbcf37500486cea3ff3364e6eee509c441fc404",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在这个函数中，我们首先实例化一个新的`chi.Router`，然后注册两个中间件："
+      }
+    },
+    {
+      "segment_id": "4e5c74e0",
+      "source_content": "* `middleware.Logger` is a basic access logger that prints out some information on every request our server handles.\n* `middleware.Recoverer` recovers from when our handlers panic, preventing a case where our entire server will crash because of an application error.",
+      "source_content_hash": "484552fe7a9b2ddc1180a637a203f7ec4e6acc7a8d03b46268a9dab21c2e1bf3",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* `middleware.Logger`是一个基本的访问日志记录器，它会打印出服务器处理的每个请求的一些信息。\n* `middleware.Recoverer`用于从处理程序的panic中恢复，防止因应用程序错误导致整个服务器崩溃。"
+      }
+    },
+    {
+      "segment_id": "077a2bd0",
+      "source_content": "Finally, we register the `index` function of the `server` struct to handle `GET` requests to the `/` path of our server.",
+      "source_content_hash": "6859b4d6b91d17f7d03914b816850af71dc005ef73b9c3916f823304066bc8d5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后，我们将`server`结构体的`index`函数注册为处理服务器根路径`/`的`GET`请求。"
+      }
+    },
+    {
+      "segment_id": "261891c2",
+      "source_content": "#### A unit test",
+      "source_content_hash": "5a00b600220cde79e0cf656d9e4a930a38a26ceb5d7a9010cf0e4c67fc2d2418",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 单元测试"
+      }
+    },
+    {
+      "segment_id": "14d50a1d",
+      "source_content": "Before wiring everything together, let's write a simple unit test to check that our code works as expected.",
+      "source_content_hash": "51f7aeede7745035e58c1615a0a8a79287eb917450e81796eccff74b14158d67",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在将所有内容连接起来之前，让我们编写一个简单的单元测试来验证代码是否按预期工作。"
+      }
+    },
+    {
+      "segment_id": "cff30da4",
+      "source_content": "To simplify our tests we will install the SQLite driver for Go which allows us to use an in-memory database:",
+      "source_content_hash": "7ed5a2d168f6387f818439bf9111290da731b34c513d6e510602627076e24e12",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为了简化测试，我们将安装Go的SQLite驱动，它允许我们使用内存数据库："
+      }
+    },
+    {
+      "segment_id": "e0c47761",
+      "source_content": "```\ngo get -u github.com/mattn/go-sqlite3\n```",
+      "source_content_hash": "264adf22f28bd2ac8982af6fb6e663ad409e59fc71bc655f06c9013f248f45e0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e0c47761"
+      }
+    },
+    {
+      "segment_id": "7c02538b",
+      "source_content": "Next, we install `testify`, a utility library that is commonly used for writing assertions in tests.",
+      "source_content_hash": "716dd1e3e5e2d8f664476aae559f3deda7eedd8394a6692ed5b1226efcce124c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们安装`testify`，这是一个常用于编写测试断言的实用库。"
+      }
+    },
+    {
+      "segment_id": "4e0c86c2",
+      "source_content": "```\ngo get github.com/stretchr/testify \n```",
+      "source_content_hash": "eb5de314188840cb1891912341785023926ada6ea09f67b61a5fcd4b70f47614",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4e0c86c2"
+      }
+    },
+    {
+      "segment_id": "c6dee347",
+      "source_content": "With these dependencies installed, create a new file named `main_test.go`:",
+      "source_content_hash": "a7cb9ed45c5d56247bdc6faed913c8c913e720c28b6678e7a7117e3b51ab568a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "安装这些依赖项后，创建一个名为`main_test.go`的新文件："
+      }
+    },
+    {
+      "segment_id": "050e4316",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n\t\"github.com/rotemtam/ent-blog-example/ent/enttest\"\n\t\"github.com/stretchr/testify/require\"\n)\n\nfunc TestIndex(t *testing.T) {\n\t// Initialize an Ent client that uses an in memory SQLite db.\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tdefer client.Close()\n\t\n\t// seed the database with our \"Hello, world\" post and user.\n\terr := seed(context.Background(), client)\n\trequire.NoError(t, err)\n\n\t// Initialize a server and router.\n\tsrv := newServer(client)\n\tr := newRouter(srv)\n\n\t// Create a test server using the `httptest` package.\n\tts := httptest.NewServer(r)\n\tdefer ts.Close()\n\n\t// Make a GET request to the server root path.\n\tresp, err := ts.Client().Get(ts.URL)\n\n\t// Assert we get a 200 OK status code.\n\trequire.NoError(t, err)\n\trequire.Equal(t, http.StatusOK, resp.StatusCode)\n\n\t// Read the response body and assert it contains \"Hello, world!\"\n\tbody, err := io.ReadAll(resp.Body)\n\trequire.NoError(t, err)\n\trequire.Contains(t, string(body), \"Hello, World!\")\n}\n```",
+      "source_content_hash": "c4dbb8ef518ca8627780ac655acfe32e0a0c8c59613c2bf567d979e11adb3429",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_050e4316"
+      }
+    },
+    {
+      "segment_id": "fef12d52",
+      "source_content": "Run the test to verify our server works correctly:",
+      "source_content_hash": "c7661159e6c27039514184003ac7e53790e7ac2d80715809da9d43526019f3af",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行测试以验证服务器是否正确工作："
+      }
+    },
+    {
+      "segment_id": "b54d2172",
+      "source_content": "```\ngo test ./...\n```",
+      "source_content_hash": "9cd06d0b4f4bc1384bcf37f195a02e8ed223b5668205a155e499ddec6871fb64",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b54d2172"
+      }
+    },
+    {
+      "segment_id": "359ebb36",
+      "source_content": "Observe our test passes:",
+      "source_content_hash": "b3078dc5117c8af2c267cb6fe5cbd6a3d5da6e91758fe3c938ffc626dc84d72a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察测试通过："
+      }
+    },
+    {
+      "segment_id": "0f5df84e",
+      "source_content": "```\nok      github.com/rotemtam/ent-blog-example    0.719s\n?       github.com/rotemtam/ent-blog-example/ent        [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/enttest        [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/hook   [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/migrate        [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/post   [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/predicate      [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/runtime        [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/schema [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/user   [no test files]\n\n```",
+      "source_content_hash": "0d275cd6ce3c94748baf3cf9a2bc50ee2f7f1d79ead315c822215b4a02a225c7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0f5df84e"
+      }
+    },
+    {
+      "segment_id": "dca946ac",
+      "source_content": "#### Putting everything together",
+      "source_content_hash": "7426f9296f9c7a908383a677951719022b321018325670abbdb3410ac3874b3c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 整合所有内容"
+      }
+    },
+    {
+      "segment_id": "32d0de04",
+      "source_content": "Finally, let's update our `main` function to put everything together:",
+      "source_content_hash": "5807d448570554870d412f099f4dad7a4e95a768786df815ebad28b122fe8874",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后，让我们更新`main`函数将所有内容整合在一起："
+      }
+    },
+    {
+      "segment_id": "26a800cc",
+      "source_content": "```go\nfunc main() {  \n   // Read the connection string to the database from a CLI flag.  \n   var dsn string  \n   flag.StringVar(&dsn, \"dsn\", \"\", \"database DSN\")  \n   flag.Parse()  \n  \n   // Instantiate the Ent client.  \n   client, err := ent.Open(\"mysql\", dsn)  \n   if err != nil {  \n      log.Fatalf(\"failed connecting to mysql: %v\", err)  \n   }  \n   defer client.Close()  \n  \n   ctx := context.Background()  \n   // If we don't have any posts yet, seed the database.  \n   if !client.Post.Query().ExistX(ctx) {  \n      if err := seed(ctx, client); err != nil {  \n         log.Fatalf(\"failed seeding the database: %v\", err)  \n      }  \n   }  \n   srv := newServer(client)  \n   r := newRouter(srv)  \n   log.Fatal(http.ListenAndServe(\":8080\", r))  \n}\n```",
+      "source_content_hash": "fc87ab2340f0a1f4040ab1cbf5b6cff38796a3f00566aed86b9400a2372b6901",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_26a800cc"
+      }
+    },
+    {
+      "segment_id": "90878fe8",
+      "source_content": "We can now run our application and stand amazed at our achievement: a working blog front page!",
+      "source_content_hash": "85280d784eaa1238d4b8357ab2eb21be50ac87dc673f29239714c6b661b4c288",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们可以运行我们的应用程序，并为我们的成就感到惊叹：一个正常工作的博客首页！"
+      }
+    },
+    {
+      "segment_id": "f61b8321",
+      "source_content": "```\n go run main.go -dsn \"root:pass@tcp(localhost:3306)/test?parseTime=true\"\n```",
+      "source_content_hash": "72e9d6171cb453cae1ba3324888cad4a1ac88eab6a7b4e00d9c6f65f82b57b4d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f61b8321"
+      }
+    },
+    {
+      "segment_id": "12532805",
+      "source_content": "![](https://entgo.io/images/assets/cms-blog/cms-01.png)",
+      "source_content_hash": "366d9b15ffc76c52585a779688ee3960cac1972be88cc55dc31ed765dc44b694",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![](https://entgo.io/images/assets/cms-blog/cms-01.png)"
+      }
+    },
+    {
+      "segment_id": "7cbcfb2d",
+      "source_content": "### Step 4: Adding content",
+      "source_content_hash": "b1406c03dfedd5448affd667f5cbb74bb6aa87252cdc10e98e57ad1dc88ca3e4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 步骤4：添加内容"
+      }
+    },
+    {
+      "segment_id": "02a0f7d2",
+      "source_content": ":::info[]\nYou can follow the changes in this step in [this commit](https://github.com/rotemtam/ent-blog-example/commit/2e412ab2cda0fd251ccb512099b802174d917511).\n:::",
+      "source_content_hash": "243df2aec38413a7ffbec8223aa1c19bb0b9719ad84ed1905bf3dde730d41bec",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[]\n您可以在此提交中跟随此步骤的更改：[此提交](https://github.com/rotemtam/ent-blog-example/commit/2e412ab2cda0fd251ccb512099b802174d917511)。\n:::"
+      }
+    },
+    {
+      "segment_id": "af5d3e44",
+      "source_content": "No content management system would be complete without the ability, well, to manage content. Let's demonstrate how we can add support for publishing new posts on our blog.",
+      "source_content_hash": "aeebd5bfc4063b9101b958c9007532b08d08c163889fbb8cbee964f521b28f1a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "没有内容管理功能的内容管理系统是不完整的。让我们演示如何为博客添加发布新文章的支持。"
+      }
+    },
+    {
+      "segment_id": "b5e8628c",
+      "source_content": "Let's start by creating the backend handler:",
+      "source_content_hash": "8cf1aa537ae987f35f1fca6e604ba09e6f5e2fe182a59affbe42c14c1007d5b8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们从创建后端处理程序开始："
+      }
+    },
+    {
+      "segment_id": "905abbcd",
+      "source_content": "```go\n// add creates a new blog post.\nfunc (s *server) add(w http.ResponseWriter, r *http.Request) {\n\tauthor, err := s.client.User.Query().Only(r.Context())\n\tif err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t\treturn\n\t}\n\tif err := s.client.Post.Create().\n\t\tSetTitle(r.FormValue(\"title\")).\n\t\tSetBody(r.FormValue(\"body\")).\n\t\tSetAuthor(author).\n\t\tExec(r.Context()); err != nil {\n\t\thttp.Error(w, err.Error(), http.StatusInternalServerError)\n\t}\n\thttp.Redirect(w, r, \"/\", http.StatusFound)\n}\n```",
+      "source_content_hash": "5eeae3d5b3be950a13e15ae6ccd3c86d58ec9c9e189e0a0e33158935d146acd0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_905abbcd"
+      }
+    },
+    {
+      "segment_id": "0b01a81d",
+      "source_content": "As you can see, the handler currently loads the *only* user from the `users` table (since we have yet to create a user management system or login capabilities). `Only` will fail unless exactly one result is retrieved from the database.",
+      "source_content_hash": "cf767f08b4984a3a8ba2e6b26e52ff44fa20d145f21192ab68b5c7665032a834",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如您所见，处理程序目前从`users`表中加载*唯一*的用户（因为我们尚未创建用户管理系统或登录功能）。`Only`只有在从数据库中检索到恰好一个结果时才会成功。"
+      }
+    },
+    {
+      "segment_id": "f9a30ebe",
+      "source_content": "Next, our handler creates a new post, by setting the title and body fields to values retrieved from `r.FormValue`. This is where Go stores all of the form input passed to an HTTP request.",
+      "source_content_hash": "bd00dc4b1bcc16b0b0a9798daf85f4a792b2d3387eb1ec78de96c4f27d340c4b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们的处理程序通过将标题和正文字段设置为从`r.FormValue`获取的值来创建新文章。这是Go存储传递给HTTP请求的所有表单输入的地方。"
+      }
+    },
+    {
+      "segment_id": "1f719a7f",
+      "source_content": "After creating the handler, we should wire it to our router:",
+      "source_content_hash": "fbccc582a06b1c40701c44d53af5c39000aa73c8ea8e338d4cbc865c5b1917ef",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "创建处理程序后，我们应该将其连接到路由器："
+      }
+    },
+    {
+      "segment_id": "f78ecdc2",
+      "source_content": "```go\n// newRouter creates a new router with the blog handlers mounted.\nfunc newRouter(srv *server) chi.Router {\n\tr := chi.NewRouter()\n\tr.Use(middleware.Logger)\n\tr.Use(middleware.Recoverer)\n\tr.Get(\"/\", srv.index)\n\t// highlight-next-line\n\tr.Post(\"/add\", srv.add)\n\treturn r\n}\n```",
+      "source_content_hash": "2ee41d897bc75afcd2ff01fd7158ce73b0aec7b685c2cdc27365a820367ed1ac",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f78ecdc2"
+      }
+    },
+    {
+      "segment_id": "e72dbd94",
+      "source_content": "Next, we can add an HTML `<form>` component that will be used by our user to write their content:",
+      "source_content_hash": "5b1cb45640faadeefe4e6f772390ea168a72405c1b50e1162b3f68bc5404dfad",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们可以添加一个HTML `<form>`组件，供用户用来编写内容："
+      }
+    },
+    {
+      "segment_id": "5b576ea2",
+      "source_content": "```html\n<div class=\"col-md-12\">\n\t<hr/>\n\t<h2>Create a new post</h2>\n\t<form action=\"/add\" method=\"post\">\n\t\t<div class=\"mb-3\">\n\t\t\t<label for=\"title\" class=\"form-label\">Title</label>\n\t\t\t<input name=\"title\" type=\"text\" class=\"form-control\" id=\"title\" placeholder=\"Once upon a time..\">\n\t\t</div>\n\t\t<div class=\"mb-3\">\n\t\t\t<label for=\"body\" class=\"form-label\">Body</label>\n\t\t\t<textarea name=\"body\" class=\"form-control\" id=\"body\" rows=\"8\"></textarea>\n\t\t</div>\n\t\t<div class=\"mb-3\">\n\t\t\t<button type=\"submit\" class=\"btn btn-primary mb-3\">Post</button>\n\t\t</div>\n\t</form>\n</div>\n```",
+      "source_content_hash": "1184197dd9f0714cd61ddf5b694f897dc42f1b6291e8769a71c08a48ecc645c9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5b576ea2"
+      }
+    },
+    {
+      "segment_id": "c31dcf3a",
+      "source_content": "Also, let's add a nice touch, where we display the blog posts from newest to oldest. To do this, modify the `index` handler to order the posts in a descending order using the `created_at` column:",
+      "source_content_hash": "9d31f5fdf0494beafbec26c3c752c04ea5a545b290330094f8a607ac9b15e83e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此外，让我们添加一个不错的细节，即按从新到旧的顺序显示博客文章。为此，修改`index`处理程序，使用`created_at`列按降序排序文章："
+      }
+    },
+    {
+      "segment_id": "4c69a582",
+      "source_content": "```go\nposts, err := s.client.Post.\n\tQuery().\n\tWithAuthor().\n\t// highlight-next-line\n\tOrder(ent.Desc(post.FieldCreatedAt)).\n\tAll(ctx)\n```",
+      "source_content_hash": "306234dfcc3c41ccf3942f3169935b8547ef6db21bd46298dd70dfbaa0eaaee6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4c69a582"
+      }
+    },
+    {
+      "segment_id": "b1763cf5",
+      "source_content": "Finally, let's add another unit test that verifies the add post flow works as expected:",
+      "source_content_hash": "0af790ab616c61328c602db10ffd57912639be514e531242d245cb050624934d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后，让我们添加另一个单元测试，验证添加文章的流程是否按预期工作："
+      }
+    },
+    {
+      "segment_id": "2993e70a",
+      "source_content": "```go\nfunc TestAdd(t *testing.T) {\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tdefer client.Close()\n\terr := seed(context.Background(), client)\n\trequire.NoError(t, err)\n\n\tsrv := newServer(client)\n\tr := newRouter(srv)\n\n\tts := httptest.NewServer(r)\n\tdefer ts.Close()\n\n\t// Post the form.\n\tresp, err := ts.Client().PostForm(ts.URL+\"/add\", map[string][]string{\n\t\t\"title\": {\"Testing, one, two.\"},\n\t\t\"body\":  {\"This is a test\"},\n\t})\n\trequire.NoError(t, err)\n\t// We should be redirected to the index page and receive 200 OK.\n\trequire.Equal(t, http.StatusOK, resp.StatusCode)\n\n\tbody, err := io.ReadAll(resp.Body)\n\trequire.NoError(t, err)\n\t\n\t// The home page should contain our new post.\n\trequire.Contains(t, string(body), \"This is a test\")\n}\n```",
+      "source_content_hash": "6f583e82a6809b75ac6b929f50c7f3e81608390ff68a0c8639f10f7e267a2f8c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2993e70a"
+      }
+    },
+    {
+      "segment_id": "d688e146",
+      "source_content": "Let's run the test:",
+      "source_content_hash": "e96d361f9a43d89a6832441803341c53929935e542a094a8396e650ded2db11d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "让我们运行测试："
+      }
+    },
+    {
+      "segment_id": "2522ffc3",
+      "source_content": "```\ngo test ./...\n```",
+      "source_content_hash": "9cd06d0b4f4bc1384bcf37f195a02e8ed223b5668205a155e499ddec6871fb64",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2522ffc3"
+      }
+    },
+    {
+      "segment_id": "cb63afa1",
+      "source_content": "And everything works!",
+      "source_content_hash": "5d76181a0fcaef9c9d6aac46e9f1b79511d98afd8bdd704e8a2770b23e4ab057",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "一切运行正常！"
+      }
+    },
+    {
+      "segment_id": "c9d3f882",
+      "source_content": "```\nok      github.com/rotemtam/ent-blog-example    0.493s\n?       github.com/rotemtam/ent-blog-example/ent        [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/enttest        [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/hook   [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/migrate        [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/post   [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/predicate      [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/runtime        [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/schema [no test files]\n?       github.com/rotemtam/ent-blog-example/ent/user   [no test files]\n\n```",
+      "source_content_hash": "5d66220cfcf37c4c975da2401e1f2f51ee50f0c1ef4866c7d6625ac19551d4d6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c9d3f882"
+      }
+    },
+    {
+      "segment_id": "3fbab5e3",
+      "source_content": "A passing unit test is great, but let's verify our changes visually:",
+      "source_content_hash": "c53abc4b12ef8a04fca7a4652d4f7268061708b6b8391bc47b6cd1f55eea9b9a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "单元测试通过固然可喜，但让我们直观验证一下改动效果："
+      }
+    },
+    {
+      "segment_id": "2fdac702",
+      "source_content": "![](https://entgo.io/images/assets/cms-blog/cms-02.png)",
+      "source_content_hash": "5f4baea22490021dfbb30329e95adf9e55cca1d1c78102a9e56b4793637d8d96",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![](https://entgo.io/images/assets/cms-blog/cms-02.png)"
+      }
+    },
+    {
+      "segment_id": "57855344",
+      "source_content": "Our form appears - great! After submitting it:",
+      "source_content_hash": "d31ba67b464e098285807beb8674c94934540094ced7b8cad1769c99b98d49b9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "表单已成功显示——太棒了！提交表单后："
+      }
+    },
+    {
+      "segment_id": "629030af",
+      "source_content": "![](https://entgo.io/images/assets/cms-blog/cms-03.png)",
+      "source_content_hash": "cfbe86dfde31bba99dc7fce24a45a7e1452ac441ee7b8f5ef08715e1c9e54216",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![](https://entgo.io/images/assets/cms-blog/cms-03.png)"
+      }
+    },
+    {
+      "segment_id": "7eb9758b",
+      "source_content": "Our new post is displayed. Well done!",
+      "source_content_hash": "546eda09994eaa16287a63c337563ad669215c547fbb7b1acad958b6fbf51485",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "新文章已完美展示。干得漂亮！"
+      }
+    },
+    {
+      "segment_id": "25a25dbe",
+      "source_content": "### Wrapping up",
+      "source_content_hash": "a3785475b5dd9a66ae4506648eaafecb51ead6eb80351473642adc6a4aba69b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 总结"
+      }
+    },
+    {
+      "segment_id": "5bc23d10",
+      "source_content": "In this post we demonstrated how to build a simple web application with Ent and Go. Our app is definitely bare but it deals with many of the bases that you will need to cover when building an application: defining your data model, managing your database schema, writing  server code, defining routes and building a UI.",
+      "source_content_hash": "f0e88ff326ddedbae46bb96b5adda062206e5a72437676e66972516b14b4da6b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文演示了如何使用Ent和Go构建简单的Web应用。虽然这个应用非常基础，但它涵盖了开发中的核心环节：定义数据模型、管理数据库模式、编写服务端代码、配置路由以及构建用户界面。"
+      }
+    },
+    {
+      "segment_id": "089f213a",
+      "source_content": "As things go with introductory content, we only touched the tip of the iceberg of what you can do with Ent, but I hope you got a taste for some of its core features.",
+      "source_content_hash": "2e1e4cb1ff625c34d6e8b67e5c173ccbf4231448f149398f7693414df966939b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "作为入门教程，我们仅浅尝辄止地展示了Ent的部分功能，但希望您已感受到其核心特性的魅力。"
+      }
+    },
+    {
+      "segment_id": "8139062a",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多Ent资讯：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 关注[Twitter官方账号](https://twitter.com/entgo_io)\n- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道\n- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2023-02-23-simple-cms-with-ent.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.667263+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "b1b747d584e17dba709f689817f490dfe234e88e6a4b193a1db019525370ea8e"
+  }
+}

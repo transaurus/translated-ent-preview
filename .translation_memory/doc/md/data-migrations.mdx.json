@@ -1,0 +1,412 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/data-migrations.mdx",
+  "source_file_content_hash": "a3f9188118cd7efcd917aa829b03f460de61381399c09031a96762a644bfbf9a",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: data-migrations\ntitle: Data Migrations\n---",
+      "source_content_hash": "d3014d621b2e58cb4b7f517ac6be110a1b7014be4637179b22c9dbfd1b7f9b7a",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Migrations are usually used for changing the database schema, but in some cases, there is a need to modify the data\nstored in the database. For example, adding seed data, or back-filling empty columns with custom default values.",
+      "source_content_hash": "a58583297d0a2f419e8b6b4a59b601025aba004712f6e10b3849e5e5c58be2b9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "迁移通常用于变更数据库模式，但在某些场景下，需要修改数据库中存储的数据。例如添加种子数据，或为空列回填自定义默认值。"
+      }
+    },
+    {
+      "segment_id": "8d66f911",
+      "source_content": "Migrations of this type are called data migrations. In this document, we will discuss how to use Ent to plan data\nmigrations and integrate them into your regular schema migrations workflow.",
+      "source_content_hash": "a7f873eec3dcdaf9744f864675bd471f55860a43dd8468b42b39817e6cd9a586",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这类迁移称为数据迁移。本文将探讨如何利用Ent规划数据迁移，并将其集成到常规的模式迁移工作流中。"
+      }
+    },
+    {
+      "segment_id": "e14c9928",
+      "source_content": "### Migration Types",
+      "source_content_hash": "a81d721d70d0e18140a715def281db177d4daa4302a0fdac4fbf4db8d847a22d",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 迁移类型"
+      }
+    },
+    {
+      "segment_id": "42ad8e83",
+      "source_content": "Ent currently supports two types of migrations, [versioned migration](versioned-migrations.mdx) and [declarative migration](migrate.md)\n(also known as automatic migration). Data migrations can be executed in both types of migrations.",
+      "source_content_hash": "dbb7a39cbd3f313cbdc430d5471498d00841c575748eb841bf3894e8f69dc8e7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent当前支持两种迁移类型：[版本化迁移](versioned-migrations.mdx)和[声明式迁移](migrate.md)（又称自动迁移）。两种类型均可执行数据迁移。"
+      }
+    },
+    {
+      "segment_id": "bc633244",
+      "source_content": "## Versioned Migrations",
+      "source_content_hash": "6d0473960506fc12be76efdd8289f84ecb9e0312f8deea56abd3e5db39b8ee8c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 版本化迁移"
+      }
+    },
+    {
+      "segment_id": "2df4f75f",
+      "source_content": "When using versioned migrations, data migrations should be stored on the same `migrations` directory and executed the\nsame way as regular migrations. It is recommended, however, to store data migrations and schema migrations in separate\nfiles so that they can be easily tested.",
+      "source_content_hash": "10526878c9cbfacf7aa5a96a90d5935fb9b44fd5a88040bb40f12a5c5881cb94",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用版本化迁移时，数据迁移文件应存放在相同的`migrations`目录下，执行方式与常规迁移相同。但建议将数据迁移与模式迁移分文件存储，便于单独测试。"
+      }
+    },
+    {
+      "segment_id": "ccc88b4c",
+      "source_content": "The format used for such migrations is SQL, as the file can be safely executed (and stored without changes) even if\nthe Ent schema was modified and the generated code is not compatible with the data migration file anymore.",
+      "source_content_hash": "88a1d2d4170e79505af83d5331a9a6e578b0be8c91699afd8ae58ca423435ea0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此类迁移采用SQL格式，即使Ent模式发生变更导致生成代码与数据迁移文件不兼容，仍可安全执行原始SQL文件。"
+      }
+    },
+    {
+      "segment_id": "4b1d2d7d",
+      "source_content": "There are two ways to create data migrations scripts, manually and generated. By manually editing, users write all the SQL\nstatements and can control exactly what will be executed. Alternatively, users can use Ent to generate the data migrations\nfor them. It is recommended to verify that the generated file was correctly generated, as in some cases it may need to\nbe manually fixed or edited.",
+      "source_content_hash": "d22bce735c232794a4620a5f8170861b2c8766f59f56ed252a7ee6f2f6a72952",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "创建数据迁移脚本有两种方式：手动编写与自动生成。手动编写需用户自行撰写所有SQL语句以精确控制执行逻辑；自动生成则通过Ent生成迁移脚本。建议对生成文件进行人工校验，某些边缘场景可能仍需手动修正。"
+      }
+    },
+    {
+      "segment_id": "a1b3d8cb",
+      "source_content": "### Manual Creation",
+      "source_content_hash": "a2b8f8c1b87ff5e191525920ea152e54c2cbb6e8195d3c28cf6b120e71ac7870",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 手动创建"
+      }
+    },
+    {
+      "segment_id": "517051a7",
+      "source_content": "1\\. If you don't have Atlas installed, check out its [getting-started](https://atlasgo.io/getting-started/#installation)\nguide.",
+      "source_content_hash": "1917b3831cb46b8a1a38a6ecf8eabef91f04e8a207ef97cf6d891139965a9ad4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 若未安装Atlas，请参考[入门指南](https://atlasgo.io/getting-started/#installation)进行安装。"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "2\\. Create a new migration file using [Atlas](https://atlasgo.io/versioned/new):",
+      "source_content_hash": "8b10f5c2940509caffebc6e7614ed232d0bee93739c8c45eb6b803ced7c00fb4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 使用[Atlas](https://atlasgo.io/versioned/new)创建新迁移文件："
+      }
+    },
+    {
+      "segment_id": "a11df754",
+      "source_content": "```shell\natlas migrate new <migration_name> \\\n  --dir \"file://my/project/migrations\"\n```",
+      "source_content_hash": "9aba5f89daa2ce0042992be953b9c32c17b89556fb1a9b33efa8bff6e6dc0d24",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a11df754"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "3\\. Edit the migration file and add the custom data migration there. For example:",
+      "source_content_hash": "be61a152f58a91a0184d77a4ef75466091998bc55a758f8ec3e9101be0e96c0f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 编辑迁移文件并添加自定义数据迁移逻辑。例如："
+      }
+    },
+    {
+      "segment_id": "4ec2920d",
+      "source_content": "```sql title=\"ent/migrate/migrations/20221126185750_backfill_data.sql\"\n-- Backfill NULL or null tags with a default value.\nUPDATE `users` SET `tags` = '[\"foo\",\"bar\"]' WHERE `tags` IS NULL OR JSON_CONTAINS(`tags`, 'null', '$');\n```",
+      "source_content_hash": "bbd541b2486dd39a3d86b98c0b3fd0eb71fc487d3debd4955e9357b3d93d9958",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4ec2920d"
+      }
+    },
+    {
+      "segment_id": "c504c207",
+      "source_content": "4\\. Update the migration directory [integrity file](https://atlasgo.io/concepts/migration-directory-integrity):",
+      "source_content_hash": "ccad4bdfe6f10c2e5a013aaa7bbd0a5a4fb96871b0a4aa1ef976950b4c4f2c96",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "4\\. 更新迁移目录的[完整性文件](https://atlasgo.io/concepts/migration-directory-integrity)："
+      }
+    },
+    {
+      "segment_id": "64b6f348",
+      "source_content": "```shell\natlas migrate hash \\\n  --dir \"file://my/project/migrations\"\n```",
+      "source_content_hash": "d0d64dbe87da345ea2749d959e0b30b8034e08542d76160984beb31dba8dc1ab",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_64b6f348"
+      }
+    },
+    {
+      "segment_id": "4d52a261",
+      "source_content": "Check out the [Testing](#testing) section below if you're unsure how to test the data migration file.",
+      "source_content_hash": "8601794159609cbb75c115343dba0b37aa88089c62b21a387ad74cfa03f6a15f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若不确定如何测试数据迁移文件，请参阅下文[测试](#testing)章节。"
+      }
+    },
+    {
+      "segment_id": "7283cdac",
+      "source_content": "### Generated Scripts",
+      "source_content_hash": "dc698ac06bb20b0d9fe067426f6cab44e484b550a17fec7c859b437382619098",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 自动生成脚本"
+      }
+    },
+    {
+      "segment_id": "1131ef75",
+      "source_content": "Currently, Ent provides initial support for generating data migration files. By using this option, users can simplify the\nprocess of writing complex SQL statements manually in most cases. Still, it is recommended to verify that the generated\nfile was correctly generated, as in some edge cases it may need to be manually edited.",
+      "source_content_hash": "979b48106121c9a771f29caf49097f730017f583405fdd89a25f3aa3517f23dc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当前Ent提供数据迁移文件的初步生成支持。该功能可简化复杂SQL语句的手动编写过程，但在极端情况下仍需人工校验生成结果。"
+      }
+    },
+    {
+      "segment_id": "5dae11e3",
+      "source_content": "1\\. Create your [versioned-migration setup](/docs/versioned/intro), in case it\nis not set.",
+      "source_content_hash": "ec1f9484cf3419fb924ab780935e75579d439bc593b5389229994c77ef7d7c14",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 若未配置[版本化迁移](/docs/versioned/intro)，请先完成基础设置。"
+      }
+    },
+    {
+      "segment_id": "06e24cc0",
+      "source_content": "2\\. Create your first data-migration function. Below, you will find some examples that demonstrate how to write such a\nfunction:",
+      "source_content_hash": "753868d95ae7cd27adeb484c5438b0c2035b5f2a6e96fbf2571631032120cfa7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 创建首个数据迁移函数。下方示例演示如何编写此类函数："
+      }
+    },
+    {
+      "segment_id": "4b067dc3",
+      "source_content": "<Tabs>\n<TabItem value=\"single\" label=\"Single Statement\" default>\n\n```go title=\"ent/migrate/migratedata/migratedata.go\"\npackage migratedata\n\n// BackfillUnknown back-fills all empty users' names with the default value 'Unknown'.\nfunc BackfillUnknown(dir *migrate.LocalDir) error {\n\tw := &schema.DirWriter{Dir: dir}\n\tclient := ent.NewClient(ent.Driver(schema.NewWriteDriver(dialect.MySQL, w)))\n\n\t// Change all empty names to 'unknown'.\n\terr := client.User.\n\t\tUpdate().\n\t\tWhere(\n\t\t\tuser.NameEQ(\"\"),\n\t\t).\n\t\tSetName(\"Unknown\").\n\t\tExec(context.Background())\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed generating statement: %w\", err)\n\t}\n\n\t// Write the content to the migration directory.\n\treturn w.FlushChange(\n\t\t\"unknown_names\",\n\t\t\"Backfill all empty user names with default value 'unknown'.\",\n\t)\n}\n```\n\nThen, using this function in `ent/migrate/main.go` will generate the following migration file:\n\n```sql title=\"migrations/20221126185750_unknown_names.sql\"\n-- Backfill all empty user names with default value 'unknown'.\nUPDATE `users` SET `name` = 'Unknown' WHERE `users`.`name` = '';\n```\n\n</TabItem>\n<TabItem value=\"multi\" label=\"Multi Statement\">\n\n```go title=\"ent/migrate/migratedata/migratedata.go\"\npackage migratedata\n\n// BackfillUserTags is used to generate the migration file '20221126185750_backfill_user_tags.sql'.\nfunc BackfillUserTags(dir *migrate.LocalDir) error {\n\tw := &schema.DirWriter{Dir: dir}\n\tclient := ent.NewClient(ent.Driver(schema.NewWriteDriver(dialect.MySQL, w)))\n\n\t// Add defaults \"foo\" and \"bar\" tags for users without any.\n\terr := client.User.\n\t\tUpdate().\n\t\tWhere(func(s *sql.Selector) {\n\t\t\ts.Where(\n\t\t\t\tsql.Or(\n\t\t\t\t\tsql.IsNull(user.FieldTags),\n\t\t\t\t\tsqljson.ValueIsNull(user.FieldTags),\n\t\t\t\t),\n\t\t\t)\n\t\t}).\n\t\tSetTags([]string{\"foo\", \"bar\"}).\n\t\tExec(context.Background())\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed generating backfill statement: %w\", err)\n\t}\n\t// Document all changes until now with a custom comment.\n\tw.Change(\"Backfill NULL or null tags with a default value.\")\n\n\t// Append the \"org\" special tag for users with a specific prefix or suffix.\n\terr = client.User.\n\t\tUpdate().\n\t\tWhere(\n\t\t\tuser.Or(\n\t\t\t\tuser.NameHasPrefix(\"org-\"),\n\t\t\t\tuser.NameHasSuffix(\"-org\"),\n\t\t\t),\n\t\t\t// Append to only those without this tag.\n\t\t\tfunc(s *sql.Selector) {\n\t\t\t\ts.Where(\n\t\t\t\t\tsql.Not(sqljson.ValueContains(user.FieldTags, \"org\")),\n\t\t\t\t)\n\t\t\t},\n\t\t).\n\t\tAppendTags([]string{\"org\"}).\n\t\tExec(context.Background())\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed generating backfill statement: %w\", err)\n\t}\n\t// Document all changes until now with a custom comment.\n\tw.Change(\"Append the 'org' tag for organization accounts in case they don't have it.\")\n\n\t// Write the content to the migration directory.\n\treturn w.Flush(\"backfill_user_tags\")\n}\n```\n\nThen, using this function in `ent/migrate/main.go` will generate the following migration file:\n\n```sql title=\"migrations/20221126185750_backfill_user_tags.sql\"\n-- Backfill NULL or null tags with a default value.\nUPDATE `users` SET `tags` = '[\"foo\",\"bar\"]' WHERE `tags` IS NULL OR JSON_CONTAINS(`tags`, 'null', '$');\n-- Append the 'org' tag for organization accounts in case they don't have it.\nUPDATE `users` SET `tags` = CASE WHEN (JSON_TYPE(JSON_EXTRACT(`tags`, '$')) IS NULL OR JSON_TYPE(JSON_EXTRACT(`tags`, '$')) = 'NULL') THEN JSON_ARRAY('org') ELSE JSON_ARRAY_APPEND(`tags`, '$', 'org') END WHERE (`users`.`name` LIKE 'org-%' OR `users`.`name` LIKE '%-org') AND (NOT (JSON_CONTAINS(`tags`, '\"org\"', '$') = 1));\n```\n\n</TabItem>\n<TabItem value=\"seed\" label=\"Data Seeding\">\n\n```go title=\"ent/migrate/migratedata/migratedata.go\"\npackage migratedata\n\n// SeedUsers add the initial users to the database.\nfunc SeedUsers(dir *migrate.LocalDir) error {\n\tw := &schema.DirWriter{Dir: dir}\n\tclient := ent.NewClient(ent.Driver(schema.NewWriteDriver(dialect.MySQL, w)))\n\n\t// The statement that generates the INSERT statement.\n\terr := client.User.CreateBulk(\n\t\tclient.User.Create().SetName(\"a8m\").SetAge(1).SetTags([]string{\"foo\"}),\n\t\tclient.User.Create().SetName(\"nati\").SetAge(1).SetTags([]string{\"bar\"}),\n\t).Exec(context.Background())\n\tif err != nil {\n\t\treturn fmt.Errorf(\"failed generating statement: %w\", err)\n\t}\n\n\t// Write the content to the migration directory.\n\treturn w.FlushChange(\n\t\t\"seed_users\",\n\t\t\"Add the initial users to the database.\",\n\t)\n}\n```\n\nThen, using this function in `ent/migrate/main.go` will generate the following migration file:\n\n```sql title=\"migrations/20221126212120_seed_users.sql\"\n-- Add the initial users to the database.\nINSERT INTO `users` (`age`, `name`, `tags`) VALUES (1, 'a8m', '[\"foo\"]'), (1, 'nati', '[\"bar\"]');\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "c6e33dbc420df865b43585410637ffd1d595a535583c78ecaef8e6880c8b7198",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4b067dc3"
+      }
+    },
+    {
+      "segment_id": "09512450",
+      "source_content": "3\\. In case the generated file was edited, the migration directory [integrity file](https://atlasgo.io/concepts/migration-directory-integrity)\nneeds to be updated with the following command:",
+      "source_content_hash": "efbf6e28458465e27c8359fb4c287bb8f864a925ca5a03e54f682115c3fd1176",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 若对生成文件进行了编辑，需通过以下命令更新迁移目录[完整性文件](https://atlasgo.io/concepts/migration-directory-integrity)："
+      }
+    },
+    {
+      "segment_id": "6b0761da",
+      "source_content": "```shell\natlas migrate hash \\\n  --dir \"file://my/project/migrations\"\n```",
+      "source_content_hash": "d0d64dbe87da345ea2749d959e0b30b8034e08542d76160984beb31dba8dc1ab",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6b0761da"
+      }
+    },
+    {
+      "segment_id": "976a3cd0",
+      "source_content": "### Testing",
+      "source_content_hash": "e600c5a3766f90eb690427f5996238246828c1ea4bc6cb05442e0d2418b72896",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 测试"
+      }
+    },
+    {
+      "segment_id": "f6479c91",
+      "source_content": "After adding the migration files, it is highly recommended that you apply them on a local database to ensure they are\nvalid and achieve the intended results. The following process can be done manually or automated by a program.",
+      "source_content_hash": "9831316aea1b313259678719d040887a174617835ee57fe88465d4d80562478a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "添加迁移文件后，强烈建议在本地数据库应用这些文件以验证其有效性及预期结果。该过程可手动执行或通过程序自动化。"
+      }
+    },
+    {
+      "segment_id": "49be422b",
+      "source_content": "1\\. Execute all migration files until the last created one, the data migration file:",
+      "source_content_hash": "2aff5f9a24ec0c83b1884098dfd96fa7af60efc497f72671298a8f11b0842b02",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 执行所有迁移文件直至最新创建的数据迁移文件："
+      }
+    },
+    {
+      "segment_id": "5ad8d2b2",
+      "source_content": "```shell\n# Total number of files.\nnumber_of_files=$(ls ent/migrate/migrations/*.sql | wc -l)\n\n# Execute all files without the latest.\natlas migrate apply $[number_of_files-1] \\\n  --dir \"file://my/project/migrations\" \\\n  -u \"mysql://root:pass@localhost:3306/test\"\n```",
+      "source_content_hash": "59ee56291227cdc6defe70d8a541f5399e6993e58f9ce9976a724313ece8b64c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5ad8d2b2"
+      }
+    },
+    {
+      "segment_id": "d119b75c",
+      "source_content": "2\\. Ensure the last migration file is pending execution:",
+      "source_content_hash": "ca0f9194f9f87225a90d6c35585977061aa63342d30497c5c586c6bfb4f1f51a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 确认最新迁移文件处于待执行状态："
+      }
+    },
+    {
+      "segment_id": "bce471ae",
+      "source_content": "```shell\natlas migrate status \\\n  --dir \"file://my/project/migrations\" \\\n  -u \"mysql://root:pass@localhost:3306/test\"\n\nMigration Status: PENDING\n  -- Current Version: <VERSION_N-1>\n  -- Next Version:    <VERSION_N>\n  -- Executed Files:  <N-1>\n  -- Pending Files:   1\n```",
+      "source_content_hash": "fa2d77e12e9687610ef3cd9af6746df3a93d88a888d4ba2c262885d18995ce32",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bce471ae"
+      }
+    },
+    {
+      "segment_id": "65be34cb",
+      "source_content": "3\\. Fill the local database with temporary data that represents the production database before running the data\nmigration file.",
+      "source_content_hash": "d90f18e3047de27ba0842d4d623eef5eee3553c891da0770605a8a6898dae3ab",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 在本地数据库填充临时数据，模拟执行数据迁移前的生产环境数据状态。"
+      }
+    },
+    {
+      "segment_id": "13440cd7",
+      "source_content": "4\\. Run `atlas migrate apply` and ensure it was executed successfully.",
+      "source_content_hash": "80782f99f88f80a3c19e0c97dd325b094ffd39be5132792aaef88f4d4c998986",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "4\\. 运行 `atlas migrate apply` 并确保其执行成功。"
+      }
+    },
+    {
+      "segment_id": "9d91602e",
+      "source_content": "```shell\natlas migrate apply \\\n  --dir \"file://my/project/migrations\" \\\n  -u \"mysql://root:pass@localhost:3306/test\"\n```",
+      "source_content_hash": "de88446e27c6bde8b1bbd5f290b410ff9809b2cf92cb7902e2ca0d30f3ec35c7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9d91602e"
+      }
+    },
+    {
+      "segment_id": "93f7c834",
+      "source_content": "Note, by using `atlas schema clean` you can clean the database you use for local development and repeat this process\nuntil the data migration file achieves the desired result.",
+      "source_content_hash": "1db0ddddc8cdea466f6bc94608848689da10fe9663f0cc56468ca80f474d0c0c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意：通过使用 `atlas schema clean` 命令，您可以清理用于本地开发的数据库，并重复此流程直至数据迁移文件达到预期效果。"
+      }
+    },
+    {
+      "segment_id": "b1889ce8",
+      "source_content": "## Automatic Migrations",
+      "source_content_hash": "8bc6f0cb49e9a4f400fd4bb3cfe6627192683a24c946b2262bdeefce243635cd",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自动迁移"
+      }
+    },
+    {
+      "segment_id": "30aa9816",
+      "source_content": "In the declarative workflow, data migrations are implemented using Diff or Apply [Hooks](migrate.md#atlas-diff-and-apply-hooks).\nThis is because, unlike the versioned option, migrations of this type do not hold a name or a version when they are applied.\nTherefore, when a data is written using hooks, the type of the `schema.Change` must be checked before its\nexecution to ensure the data migration was not applied more than once.",
+      "source_content_hash": "16dabfd0e199c0c1a5b75cbad2eff3a82ca386356f16258b6d34ec612e11bb0f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在声明式工作流中，数据迁移通过 Diff 或 Apply [钩子](migrate.md#atlas-diff-and-apply-hooks)实现。这是因为与版本化方案不同，此类迁移在应用时不保留名称或版本号。因此，当使用钩子写入数据时，必须在执行前检查 `schema.Change` 的类型，以确保数据迁移不会重复执行。"
+      }
+    },
+    {
+      "segment_id": "229a037e",
+      "source_content": "```go\nfunc FillNullValues(dbdialect string) schema.ApplyHook {\n\treturn func(next schema.Applier) schema.Applier {\n\t\treturn schema.ApplyFunc(func(ctx context.Context, conn dialect.ExecQuerier, plan *migrate.Plan) error {\n\t\t\t//highlight-next-line-info\n\t\t\t// Search the schema.Change that triggers the data migration.\n\t\t\thasC := func() bool {\n\t\t\t\tfor _, c := range plan.Changes {\n\t\t\t\t\tm, ok := c.Source.(*schema.ModifyTable)\n\t\t\t\t\tif ok && m.T.Name == user.Table && schema.Changes(m.Changes).IndexModifyColumn(user.FieldName) != -1 {\n\t\t\t\t\t\treturn true\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\treturn false\n\t\t\t}()\n\t\t\t// Change was found, apply the data migration.\n\t\t\tif hasC {\n\t\t\t    //highlight-info-start\n\t\t\t    // At this stage, there are three ways to UPDATE the NULL values to \"Unknown\".\n\t\t\t    // Append a custom migrate.Change to migrate.Plan, execute an SQL statement\n\t\t\t    // directly on the dialect.ExecQuerier, or use the generated ent.Client.\n\t\t\t    //highlight-info-end\n\n\t\t\t    // Create a temporary client from the migration connection.\n\t\t\t    client := ent.NewClient(\n\t\t\t    \tent.Driver(sql.NewDriver(dbdialect, sql.Conn{ExecQuerier: conn.(*sql.Tx)})),\n\t\t\t    )\n\t\t\t    if err := client.User.\n\t\t\t    \tUpdate().\n\t\t\t    \tSetName(\"Unknown\").\n\t\t\t    \tWhere(user.NameIsNil()).\n\t\t\t    \tExec(ctx); err != nil {\n\t\t\t    \treturn err\n\t\t\t    }\n\t\t\t}\n\t\t\treturn next.Apply(ctx, conn, plan)\n\t\t})\n\t}\n}\n```",
+      "source_content_hash": "ad10ab381632b24984617618189adc54e55d640c8b370adbfe7e27765665e94f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_229a037e"
+      }
+    },
+    {
+      "segment_id": "83d7d3bc",
+      "source_content": "For more examples, check out the [Apply Hook](migrate.md#apply-hook-example) examples section.",
+      "source_content_hash": "b9d91351f0cdc6b72b280638307139b3f9486bcee5072d21631a45b86fa1b563",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更多示例请参阅 [Apply Hook](migrate.md#apply-hook-example) 示例章节。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/data-migrations.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.661953+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "a3f9188118cd7efcd917aa829b03f460de61381399c09031a96762a644bfbf9a"
+  }
+}

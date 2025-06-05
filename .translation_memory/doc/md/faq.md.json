@@ -1,0 +1,792 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/faq.md",
+  "source_file_content_hash": "61445789798691fe93406dbe2e0822494b32c2a1bbcf662c98a2628c3fb4c84e",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: faq\ntitle: Frequently Asked Questions (FAQ)\nsidebar_label: FAQ\n---",
+      "source_content_hash": "f82695b08d30f0b9e7b42929cce83cc93b8de11d0d1d3efaf5ee872f6c8ec060",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "a703643c",
+      "source_content": "## Questions",
+      "source_content_hash": "60cc6f1a0163ec5db1883d378e359be39ad4efa513fa05f14cd526a4e8debd0e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 常见问题"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "[How to create an entity from a struct `T`?](#how-to-create-an-entity-from-a-struct-t)  \n[How to create a struct (or a mutation) level validator?](#how-to-create-a-mutation-level-validator)  \n[How to write an audit-log extension?](#how-to-write-an-audit-log-extension)  \n[How to write custom predicates?](#how-to-write-custom-predicates)  \n[How to add custom predicates to the codegen assets?](#how-to-add-custom-predicates-to-the-codegen-assets)  \n[How to define a network address field in PostgreSQL?](#how-to-define-a-network-address-field-in-postgresql)  \n[How to customize time fields to type `DATETIME` in MySQL?](#how-to-customize-time-fields-to-type-datetime-in-mysql)  \n[How to use a custom generator of IDs?](#how-to-use-a-custom-generator-of-ids)  \n[How to use a custom XID globally unique ID?](#how-to-use-a-custom-xid-globally-unique-id)  \n[How to define a spatial data type field in MySQL?](#how-to-define-a-spatial-data-type-field-in-mysql)  \n[How to extend the generated models?](#how-to-extend-the-generated-models)  \n[How to extend the generated builders?](#how-to-extend-the-generated-builders)   \n[How to store Protobuf objects in a BLOB column?](#how-to-store-protobuf-objects-in-a-blob-column)  \n[How to add `CHECK` constraints to table?](#how-to-add-check-constraints-to-table)  \n[How to define a custom precision numeric field?](#how-to-define-a-custom-precision-numeric-field)  \n[How to configure two or more `DB` to separate read and write?](#how-to-configure-two-or-more-db-to-separate-read-and-write)  \n[How to configure `json.Marshal` to inline the `edges` keys in the top level object?](#how-to-configure-jsonmarshal-to-inline-the-edges-keys-in-the-top-level-object)",
+      "source_content_hash": "21a7ad76e8505ff829254be689f7a84ea7a4efd6fb544f3bb334a2716c1690ec",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[如何从结构体 `T` 创建实体？](#how-to-create-an-entity-from-a-struct-t)  \n[如何创建结构体（或变更）级别的验证器？](#how-to-create-a-mutation-level-validator)  \n[如何编写审计日志扩展？](#how-to-write-an-audit-log-extension)  \n[如何编写自定义谓词？](#how-to-write-custom-predicates)  \n[如何将自定义谓词添加到代码生成资源中？](#how-to-add-custom-predicates-to-the-codegen-assets)  \n[如何在 PostgreSQL 中定义网络地址字段？](#how-to-define-a-network-address-field-in-postgresql)  \n[如何在 MySQL 中将时间字段自定义为 `DATETIME` 类型？](#how-to-customize-time-fields-to-type-datetime-in-mysql)  \n[如何使用自定义 ID 生成器？](#how-to-use-a-custom-generator-of-ids)  \n[如何使用全局唯一的自定义 XID？](#how-to-use-a-custom-xid-globally-unique-id)  \n[如何在 MySQL 中定义空间数据类型字段？](#how-to-define-a-spatial-data-type-field-in-mysql)  \n[如何扩展生成的模型？](#how-to-extend-the-generated-models)  \n[如何扩展生成的构建器？](#how-to-extend-the-generated-builders)   \n[如何在 BLOB 列中存储 Protobuf 对象？](#how-to-store-protobuf-objects-in-a-blob-column)  \n[如何为表添加 `CHECK` 约束？](#how-to-add-check-constraints-to-table)  \n[如何定义自定义精度的数字字段？](#how-to-define-a-custom-precision-numeric-field)  \n[如何配置多个 `DB` 以分离读写？](#how-to-configure-two-or-more-db-to-separate-read-and-write)  \n[如何配置 `json.Marshal` 将 `edges` 键内联到顶层对象中？](#how-to-configure-jsonmarshal-to-inline-the-edges-keys-in-the-top-level-object)"
+      }
+    },
+    {
+      "segment_id": "fa430ad4",
+      "source_content": "## Answers",
+      "source_content_hash": "870bc5c04ef997f17c8a6500dd057712488ad10f182b5dfa78e4c39227bd0fb4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 问题解答"
+      }
+    },
+    {
+      "segment_id": "f2f30ae8",
+      "source_content": "#### How to create an entity from a struct `T`?",
+      "source_content_hash": "a399bb7f655c999140f94029a4d535fd38d139e87f7839243ba45974607c7d33",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何从结构体 `T` 创建实体？"
+      }
+    },
+    {
+      "segment_id": "dfe931a2",
+      "source_content": "The different builders don't support the option of setting the entity fields (or edges) from a given struct `T`.\nThe reason is that there's no way to distinguish between zero/real values when updating the database (for example, `&ent.T{Age: 0, Name: \"\"}`).\nSetting these values, may set incorrect values in the database or update unnecessary columns.",
+      "source_content_hash": "dd68022b24a61aeb48bf6e5bcb64d05e916aa8ad839ad17cf43dd05296f45942",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "不同的构建器不支持从给定结构体 `T` 设置实体字段（或边）的功能。原因在于更新数据库时无法区分零值/真实值（例如 `&ent.T{Age: 0, Name: \"\"}`）。设置这些值可能会在数据库中写入错误数据或更新不必要的列。"
+      }
+    },
+    {
+      "segment_id": "bdc231b1",
+      "source_content": "However, the [external template](templates.md) option lets you extend the default code-generation assets by adding custom logic.\nFor example, in order to generate a method for each of the create-builders, that accepts a struct as an input and configure the builder,\nuse the following template:",
+      "source_content_hash": "3a051ef593fd8cc70d459ba17d2983b40ffff3b7d8100f439114a794be36f6d8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "不过，[外部模板](templates.md)选项允许您通过添加自定义逻辑来扩展默认的代码生成资源。例如，要为每个创建构建器生成一个方法，该方法接受结构体作为输入并配置构建器，可使用以下模板："
+      }
+    },
+    {
+      "segment_id": "de8f60af",
+      "source_content": "```gotemplate\n{{ range $n := $.Nodes }}\n    {{ $builder := $n.CreateName }}\n    {{ $receiver := $n.CreateReceiver }}\n\n    func ({{ $receiver }} *{{ $builder }}) Set{{ $n.Name }}(input *{{ $n.Name }}) *{{ $builder }} {\n        {{- range $f := $n.Fields }}\n            {{- $setter := print \"Set\" $f.StructField }}\n            {{ $receiver }}.{{ $setter }}(input.{{ $f.StructField }})\n        {{- end }}\n        return {{ $receiver }}\n    }\n{{ end }}\n```",
+      "source_content_hash": "aac9ec0763038fd433208daf72ede71357edbe7bb0253a45d8ee177d698d3044",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_de8f60af"
+      }
+    },
+    {
+      "segment_id": "60410af6",
+      "source_content": "#### How to create a mutation level validator?",
+      "source_content_hash": "e300af2860f8cde15c53c5dc128c9847f6ba2e818b90b60daa97a16f4239f1bd",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何创建变更级别的验证器？"
+      }
+    },
+    {
+      "segment_id": "b9aaa519",
+      "source_content": "In order to implement a mutation-level validator, you can either use [schema hooks](hooks.md#schema-hooks) for validating\nchanges applied on one entity type, or use [transaction hooks](transactions.md#hooks) for validating mutations that being\napplied on multiple entity types (e.g. a GraphQL mutation). For example:",
+      "source_content_hash": "612c273279af3c65203b642973b38a478d53c1bbe928708535e7b0b3fc8b824a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要实现变更级别的验证器，您可以使用[模式钩子](hooks.md#schema-hooks)来验证应用于单一实体类型的变更，或使用[事务钩子](transactions.md#hooks)来验证应用于多个实体类型的变更（例如 GraphQL 变更）。示例如下："
+      }
+    },
+    {
+      "segment_id": "3c08ed05",
+      "source_content": "```go\n// A VersionHook is a dummy example for a hook that validates the \"version\" field\n// is incremented by 1 on each update. Note that this is just a dummy example, and\n// it doesn't promise consistency in the database.\nfunc VersionHook() ent.Hook {\n\ttype OldSetVersion interface {\n\t\tSetVersion(int)\n\t\tVersion() (int, bool)\n\t\tOldVersion(context.Context) (int, error)\n\t}\n\treturn func(next ent.Mutator) ent.Mutator {\n\t\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n\t\t\tver, ok := m.(OldSetVersion)\n\t\t\tif !ok {\n\t\t\t\treturn next.Mutate(ctx, m)\n\t\t\t}\n\t\t\toldV, err := ver.OldVersion(ctx)\n\t\t\tif err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\tcurV, exists := ver.Version()\n\t\t\tif !exists {\n\t\t\t\treturn nil, fmt.Errorf(\"version field is required in update mutation\")\n\t\t\t}\n\t\t\tif curV != oldV+1 {\n\t\t\t\treturn nil, fmt.Errorf(\"version field must be incremented by 1\")\n\t\t\t}\n\t\t\t// Add an SQL predicate that validates the \"version\" column is equal\n\t\t\t// to \"oldV\" (ensure it wasn't changed during the mutation by others).\n\t\t\treturn next.Mutate(ctx, m)\n\t\t})\n\t}\n}\n```",
+      "source_content_hash": "2e9087bdba044a844e25cba8767278f8d4fa6674d3dedc405151cea5d5b0fb5e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3c08ed05"
+      }
+    },
+    {
+      "segment_id": "e33a2404",
+      "source_content": "#### How to write an audit-log extension?",
+      "source_content_hash": "a24bdf2eeb155d780af77d5ae24a1f869b4d56b564f7ed4f1716b7480b69aa68",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何编写审计日志扩展？"
+      }
+    },
+    {
+      "segment_id": "82e90254",
+      "source_content": "The preferred way for writing such an extension is to use [ent.Mixin](schema-mixin.md). Use the `Fields` option for\nsetting the fields that are shared between all schemas that import the mixed-schema, and use the `Hooks` option for\nattaching a mutation-hook for all mutations that are being applied on these schemas. Here's an example, based on a\ndiscussion in the [repository issue-tracker](https://github.com/ent/ent/issues/830):",
+      "source_content_hash": "2ae536e3c9bf360e4c9adec4c27ea0773be974bf1277e95449ea81ca7ef98f88",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "编写此类扩展的首选方式是使用 [ent.Mixin](schema-mixin.md)。使用 `Fields` 选项设置所有导入混合模式的模式之间共享的字段，并使用 `Hooks` 选项为应用于这些模式的所有变更附加变更钩子。以下示例基于[仓库问题跟踪器](https://github.com/ent/ent/issues/830)中的讨论："
+      }
+    },
+    {
+      "segment_id": "a476a172",
+      "source_content": "```go\n// AuditMixin implements the ent.Mixin for sharing\n// audit-log capabilities with package schemas.\ntype AuditMixin struct{\n\tmixin.Schema\n}\n\n// Fields of the AuditMixin.\nfunc (AuditMixin) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Time(\"created_at\").\n\t\t\tImmutable().\n\t\t\tDefault(time.Now),\n\t\tfield.Int(\"created_by\").\n\t\t\tOptional(),\n\t\tfield.Time(\"updated_at\").\n\t\t\tDefault(time.Now).\n\t\t\tUpdateDefault(time.Now),\n\t\tfield.Int(\"updated_by\").\n\t\t\tOptional(),\n\t}\n}\n\n// Hooks of the AuditMixin.\nfunc (AuditMixin) Hooks() []ent.Hook {\n\treturn []ent.Hook{\n\t\thooks.AuditHook,\n\t}\n}\n\n// A AuditHook is an example for audit-log hook.\nfunc AuditHook(next ent.Mutator) ent.Mutator {\n\t// AuditLogger wraps the methods that are shared between all mutations of\n\t// schemas that embed the AuditLog mixin. The variable \"exists\" is true, if\n\t// the field already exists in the mutation (e.g. was set by a different hook).\n\ttype AuditLogger interface {\n\t\tSetCreatedAt(time.Time)\n\t\tCreatedAt() (value time.Time, exists bool)\n\t\tSetCreatedBy(int)\n\t\tCreatedBy() (id int, exists bool)\n\t\tSetUpdatedAt(time.Time)\n\t\tUpdatedAt() (value time.Time, exists bool)\n\t\tSetUpdatedBy(int)\n\t\tUpdatedBy() (id int, exists bool)\n\t}\n\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n\t\tml, ok := m.(AuditLogger)\n\t\tif !ok {\n\t\t\treturn nil, fmt.Errorf(\"unexpected audit-log call from mutation type %T\", m)\n\t\t}\n\t\tusr, err := viewer.UserFromContext(ctx)\n\t\tif err != nil {\n\t\t\treturn nil, err\n\t\t}\n\t\tswitch op := m.Op(); {\n\t\tcase op.Is(ent.OpCreate):\n\t\t\tml.SetCreatedAt(time.Now())\n\t\t\tif _, exists := ml.CreatedBy(); !exists {\n\t\t\t\tml.SetCreatedBy(usr.ID)\n\t\t\t}\n\t\tcase op.Is(ent.OpUpdateOne | ent.OpUpdate):\n\t\t\tml.SetUpdatedAt(time.Now())\n\t\t\tif _, exists := ml.UpdatedBy(); !exists {\n\t\t\t\tml.SetUpdatedBy(usr.ID)\n\t\t\t}\n\t\t}\n\t\treturn next.Mutate(ctx, m)\n\t})\n}\n```",
+      "source_content_hash": "5353de70eb0cba596b978530a3343e203317e774c9e9057ea1d0569e65c8e9cd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a476a172"
+      }
+    },
+    {
+      "segment_id": "6ffd1ebe",
+      "source_content": "#### How to write custom predicates?",
+      "source_content_hash": "9c02620db39ac003ae84346e6ce18acf09c9a6b79826d68fb859625e15ad0f26",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何编写自定义谓词？"
+      }
+    },
+    {
+      "segment_id": "89cf7bac",
+      "source_content": "Users can provide custom predicates to apply on the query before it's executed. For example:",
+      "source_content_hash": "d75b31b55d0cc78066360d8a0be06dcf59cc968cc075ccce39f6e9a3725e8b33",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "用户可以在查询执行前提供自定义谓词来应用。例如："
+      }
+    },
+    {
+      "segment_id": "31b98214",
+      "source_content": "```go\npets := client.Pet.\n\tQuery().\n\tWhere(predicate.Pet(func(s *sql.Selector) {\n\t\ts.Where(sql.InInts(pet.OwnerColumn, 1, 2, 3))\n\t})).\n\tAllX(ctx)\n\nusers := client.User.\n\tQuery().\n\tWhere(predicate.User(func(s *sql.Selector) {\n\t\ts.Where(sqljson.ValueContains(user.FieldTags, \"tag\"))\n\t})).\n\tAllX(ctx)\n```",
+      "source_content_hash": "4faa4a404dfa436616a580b2020664160dd9ababa8c676e476794b5d7ff840fb",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_31b98214"
+      }
+    },
+    {
+      "segment_id": "295367fa",
+      "source_content": "For more examples, go to the [predicates](predicates.md#custom-predicates) page, or search in the repository\nissue-tracker for more advance examples like [issue-842](https://github.com/ent/ent/issues/842#issuecomment-707896368).",
+      "source_content_hash": "bf9aa8f1da3ec7f03e965464295584d873dbb477cd16708669b606835a456487",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "更多示例请参阅[谓词](predicates.md#custom-predicates)页面，或在仓库问题跟踪器中搜索更高级的示例，如[issue-842](https://github.com/ent/ent/issues/842#issuecomment-707896368)。"
+      }
+    },
+    {
+      "segment_id": "de588fa2",
+      "source_content": "#### How to add custom predicates to the codegen assets?",
+      "source_content_hash": "7fa6dc3cc80a934f7ad6603ea1095940227e0d89a940d76a60f2d70970a792c8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何将自定义谓词添加到代码生成资产中？"
+      }
+    },
+    {
+      "segment_id": "3799844b",
+      "source_content": "The [template](templates.md) option enables the capability for extending or overriding the default codegen assets.\nIn order to generate a type-safe predicate for the [example above](#how-to-write-custom-predicates), use the template\noption for doing it as follows:",
+      "source_content_hash": "6a8bd8663b7696848a8dccbde7256143879c720ad5a7cdc2f116a07182163ca3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[模板](templates.md)选项支持扩展或覆盖默认的代码生成资产。要为[上述示例](#how-to-write-custom-predicates)生成类型安全的谓词，可按如下方式使用模板选项："
+      }
+    },
+    {
+      "segment_id": "bb86adcb",
+      "source_content": "```gotemplate\n{{/* A template that adds the \"<F>Glob\" predicate for all string fields. */}}\n{{ define \"where/additional/strings\" }}\n    {{ range $f := $.Fields }}\n        {{ if $f.IsString }}\n            {{ $func := print $f.StructField \"Glob\" }}\n            // {{ $func }} applies the Glob predicate on the {{ quote $f.Name }} field.\n            func {{ $func }}(pattern string) predicate.{{ $.Name }} {\n                return predicate.{{ $.Name }}(func(s *sql.Selector) {\n                    s.Where(sql.P(func(b *sql.Builder) {\n                        b.Ident(s.C({{ $f.Constant }})).WriteString(\" glob\" ).Arg(pattern)\n                    }))\n                })\n            }\n        {{ end }}\n    {{ end }}\n{{ end }}\n```",
+      "source_content_hash": "257f15100105a9239b4a30eff099bbce7edee86fca9dce45b123bfee50b5420e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bb86adcb"
+      }
+    },
+    {
+      "segment_id": "3079a4d2",
+      "source_content": "#### How to define a network address field in PostgreSQL?",
+      "source_content_hash": "c2a991bdeab48f76b6dcf921cc52f640f3873b9957c0e12ae686925093f4ba77",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何在PostgreSQL中定义网络地址字段？"
+      }
+    },
+    {
+      "segment_id": "e4945edb",
+      "source_content": "The [GoType](schema-fields.mdx#go-type) and the [SchemaType](schema-fields.mdx#database-type)\noptions allow users to define database-specific fields. For example, in order to define a\n [`macaddr`](https://www.postgresql.org/docs/13/datatype-net-types.html#DATATYPE-MACADDR) field, use the following configuration:",
+      "source_content_hash": "c929538212cfc4bc1a13d99dd560f5522157cc96c2d9faf3f4cd11d2a55a2177",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[GoType](schema-fields.mdx#go-type)和[SchemaType](schema-fields.mdx#database-type)选项允许用户定义数据库特定的字段。例如，要定义[`macaddr`](https://www.postgresql.org/docs/13/datatype-net-types.html#DATATYPE-MACADDR)字段，请使用以下配置："
+      }
+    },
+    {
+      "segment_id": "60efc494",
+      "source_content": "```go\nfunc (T) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"mac\").\n\t\t\tGoType(&MAC{}).\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.Postgres: \"macaddr\",\n\t\t\t}).\n\t\t\tValidate(func(s string) error {\n\t\t\t\t_, err := net.ParseMAC(s)\n\t\t\t\treturn err\n\t\t\t}),\n\t}\n}\n\n// MAC represents a physical hardware address.\ntype MAC struct {\n\tnet.HardwareAddr\n}\n\n// Scan implements the Scanner interface.\nfunc (m *MAC) Scan(value any) (err error) {\n\tswitch v := value.(type) {\n\tcase nil:\n\tcase []byte:\n\t\tm.HardwareAddr, err = net.ParseMAC(string(v))\n\tcase string:\n\t\tm.HardwareAddr, err = net.ParseMAC(v)\n\tdefault:\n\t\terr = fmt.Errorf(\"unexpected type %T\", v)\n\t}\n\treturn\n}\n\n// Value implements the driver Valuer interface.\nfunc (m MAC) Value() (driver.Value, error) {\n\treturn m.HardwareAddr.String(), nil\n}\n```",
+      "source_content_hash": "ed4ab20d41c9f57cb9d47bb99bb61495d74ba8be62499047f9f0c012a9906721",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_60efc494"
+      }
+    },
+    {
+      "segment_id": "12bc7444",
+      "source_content": "Note that, if the database doesn't support the `macaddr` type (e.g. SQLite on testing), the field fallback to its\nnative type (i.e. `string`).",
+      "source_content_hash": "2412ec55ff98c1a332041ef1bbb5e0acbdb13ccc8dd09a4c4ad5816bc22e31d3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意，如果数据库不支持`macaddr`类型（例如测试用的SQLite），该字段会回退到其原生类型（即`string`）。"
+      }
+    },
+    {
+      "segment_id": "bb5297fc",
+      "source_content": "`inet` example:",
+      "source_content_hash": "a8d9d3fff57313ec5f401a73e686ac2c037f75f34dc29b332ceb29bf4733c5ff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`inet`示例："
+      }
+    },
+    {
+      "segment_id": "8aee8de6",
+      "source_content": "```go\nfunc (T) Fields() []ent.Field {\n    return []ent.Field{\n\t\tfield.String(\"ip\").\n\t\t\tGoType(&Inet{}).\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.Postgres: \"inet\",\n\t\t\t}).\n\t\t\tValidate(func(s string) error {\n\t\t\t\tif net.ParseIP(s) == nil {\n\t\t\t\t\treturn fmt.Errorf(\"invalid value for ip %q\", s)\n\t\t\t\t}\n\t\t\t\treturn nil\n\t\t\t}),\n    }\n}\n\n// Inet represents a single IP address\ntype Inet struct {\n    net.IP\n}\n\n// Scan implements the Scanner interface\nfunc (i *Inet) Scan(value any) (err error) {\n    switch v := value.(type) {\n    case nil:\n    case []byte:\n        if i.IP = net.ParseIP(string(v)); i.IP == nil {\n            err = fmt.Errorf(\"invalid value for ip %q\", v)\n        }\n    case string:\n        if i.IP = net.ParseIP(v); i.IP == nil {\n            err = fmt.Errorf(\"invalid value for ip %q\", v)\n        }\n    default:\n        err = fmt.Errorf(\"unexpected type %T\", v)\n    }\n    return\n}\n\n// Value implements the driver Valuer interface\nfunc (i Inet) Value() (driver.Value, error) {\n    return i.IP.String(), nil\n}\n```",
+      "source_content_hash": "e91d709124246df2dd56588896f1b632abfb6bb31c242be62b015d93db7d5ced",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8aee8de6"
+      }
+    },
+    {
+      "segment_id": "6946e2b2",
+      "source_content": "#### How to customize time fields to type `DATETIME` in MySQL?",
+      "source_content_hash": "2327f10a30f6d84e1c6e37a17131f59506bafb50cb3a240d478dff9c9377cea0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何在MySQL中将时间字段自定义为`DATETIME`类型？"
+      }
+    },
+    {
+      "segment_id": "27f3a471",
+      "source_content": "`Time` fields use the MySQL `TIMESTAMP` type in the schema creation by default, and this type\n has a range of '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC (see, [MySQL docs](https://dev.mysql.com/doc/refman/5.6/en/datetime.html)).",
+      "source_content_hash": "166dcee5e3b1a455f750db5359a0e3d4c5bdc0d766ce88174fd4b085dca926a7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，`Time`字段在模式创建中使用MySQL的`TIMESTAMP`类型，该类型的范围为UTC时间'1970-01-01 00:00:01'到'2038-01-19 03:14:07'（参见[MySQL文档](https://dev.mysql.com/doc/refman/5.6/en/datetime.html)）。"
+      }
+    },
+    {
+      "segment_id": "b8954ec9",
+      "source_content": "In order to customize time fields for a wider range, use the MySQL `DATETIME` as follows:",
+      "source_content_hash": "00a9d2341df432a1bf71d5d35a397d2b3044595137b0d53b12f2d8734f5e0975",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要为更宽的时间范围自定义时间字段，请按如下方式使用MySQL的`DATETIME`："
+      }
+    },
+    {
+      "segment_id": "6b628553",
+      "source_content": "```go\nfield.Time(\"birth_date\").\n\tOptional().\n\tSchemaType(map[string]string{\n\t\tdialect.MySQL: \"datetime\",\n\t}),\n```",
+      "source_content_hash": "852bb356034b67de0080a270090223bf207872fdf028f88982e3239ac0a5ecf5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6b628553"
+      }
+    },
+    {
+      "segment_id": "4632603c",
+      "source_content": "#### How to use a custom generator of IDs?",
+      "source_content_hash": "d0ee3113dcfb21140d7b9eba2e10f3ccf4c028c833f48d02f83bfd60e8e7fd82",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何使用自定义ID生成器？"
+      }
+    },
+    {
+      "segment_id": "9802de48",
+      "source_content": "If you're using a custom ID generator instead of using auto-incrementing IDs in\nyour database (e.g. Twitter's [Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010)),\nyou will need to write a custom ID field which automatically calls the generator\non resource creation.",
+      "source_content_hash": "40a12d74f8aaf757c59fe708c673c96188ce30c4390b1e4a7ce7c204f94f14e3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果在数据库中使用自定义ID生成器而非自增ID（例如Twitter的[Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010)），则需要编写一个自定义ID字段，在资源创建时自动调用生成器。"
+      }
+    },
+    {
+      "segment_id": "7441a9ec",
+      "source_content": "To achieve this, you can either make use of `DefaultFunc` or of schema hooks -\ndepending on your use case. If the generator does not return an error,\n`DefaultFunc` is more concise, whereas setting a hook on resource creation\nwill allow you to capture errors as well. An example of how to use\n`DefaultFunc` can be seen in the section regarding [the ID field](schema-fields.mdx#id-field).",
+      "source_content_hash": "9991f5022b427b3054b224d9d3230f19a122a98f4be232e34e745afb8fb2f06d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "为此，可以根据用例选择使用`DefaultFunc`或模式钩子。如果生成器不返回错误，`DefaultFunc`更为简洁；而设置资源创建钩子则允许捕获错误。有关如何使用`DefaultFunc`的示例，请参阅[ID字段](schema-fields.mdx#id-field)部分。"
+      }
+    },
+    {
+      "segment_id": "6c135b48",
+      "source_content": "Here is an example of how to use a custom generator with hooks, taking as an\nexample [sonyflake](https://github.com/sony/sonyflake).",
+      "source_content_hash": "3ff5b0d333bb74f15aa69bc57c81aec6f081e7f10385de5d404bca8971ac7b05",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下是使用钩子与自定义生成器的示例，以[sonyflake](https://github.com/sony/sonyflake)为例。"
+      }
+    },
+    {
+      "segment_id": "ebc7af28",
+      "source_content": "```go\n// BaseMixin to be shared will all different schemas.\ntype BaseMixin struct {\n\tmixin.Schema\n}\n\n// Fields of the Mixin.\nfunc (BaseMixin) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Uint64(\"id\"),\n\t}\n}\n\n// Hooks of the Mixin.\nfunc (BaseMixin) Hooks() []ent.Hook {\n\treturn []ent.Hook{\n\t\thook.On(IDHook(), ent.OpCreate),\n\t}\n}\n\nfunc IDHook() ent.Hook {\n    sf := sonyflake.NewSonyflake(sonyflake.Settings{})\n\ttype IDSetter interface {\n\t\tSetID(uint64)\n\t}\n\treturn func(next ent.Mutator) ent.Mutator {\n\t\treturn ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {\n\t\t\tis, ok := m.(IDSetter)\n\t\t\tif !ok {\n\t\t\t\treturn nil, fmt.Errorf(\"unexpected mutation %T\", m)\n\t\t\t}\n\t\t\tid, err := sf.NextID()\n\t\t\tif err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\tis.SetID(id)\n\t\t\treturn next.Mutate(ctx, m)\n\t\t})\n\t}\n}\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Mixin of the User.\nfunc (User) Mixin() []ent.Mixin {\n\treturn []ent.Mixin{\n\t\t// Embed the BaseMixin in the user schema.\n\t\tBaseMixin{},\n\t}\n}\n```",
+      "source_content_hash": "6c31b0381f0300259a01c2a0d2a12ccdcf6c60ffe56be63bde65edeb066b62b9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ebc7af28"
+      }
+    },
+    {
+      "segment_id": "20ca1bf3",
+      "source_content": "#### How to use a custom XID globally unique ID?",
+      "source_content_hash": "1ff19359ca8f30d0cb41dd8643c000fa692dd68ccb016b77b9f2a3fa3ff2a62e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何使用自定义XID全局唯一ID？"
+      }
+    },
+    {
+      "segment_id": "7ba83bb3",
+      "source_content": "Package [xid](https://github.com/rs/xid) is a globally unique ID generator library that uses the [Mongo Object ID](https://docs.mongodb.org/manual/reference/object-id/)\nalgorithm to generate a 12 byte, 20 character ID with no configuration. The xid package comes with [database/sql](https://pkg.go.dev/database/sql) `sql.Scanner` and `driver.Valuer` interfaces required by Ent for serialization.",
+      "source_content_hash": "2952750aa4dc4c5150a90ab63450024fc29a8bada4c049d85ab721e63fc63915",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "包[xid](https://github.com/rs/xid)是一个全局唯一ID生成库，使用[Mongo Object ID](https://docs.mongodb.org/manual/reference/object-id/)算法生成12字节、20字符的ID，无需配置。xid包提供了Ent所需的[database/sql](https://pkg.go.dev/database/sql) `sql.Scanner`和`driver.Valuer`接口用于序列化。"
+      }
+    },
+    {
+      "segment_id": "b0e8431f",
+      "source_content": "To store an XID in any string field use the [GoType](schema-fields.mdx#go-type) schema configuration:",
+      "source_content_hash": "c0d73616c4d5d83cb856146764a575554ea54760c5a7cffe558f8af7e99ce7d6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要在任何字符串字段中存储XID，请使用[GoType](schema-fields.mdx#go-type)模式配置："
+      }
+    },
+    {
+      "segment_id": "32d77c24",
+      "source_content": "```go\n// Fields of type T.\nfunc (T) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"id\").\n\t\t\tGoType(xid.ID{}).\n\t\t\tDefaultFunc(xid.New),\n\t}\n}\n```",
+      "source_content_hash": "b3eff3ad8e483e04c2a326b8e50cba93908d8439b81f1db16220c8b03aa895b7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_32d77c24"
+      }
+    },
+    {
+      "segment_id": "3bb26da2",
+      "source_content": "Or as a reusable [Mixin](schema-mixin.md) across multiple schemas: ",
+      "source_content_hash": "348f5214b6ace4c2a0d3a7ee8bf1adc4dbcfa706ef2984fbbca8a5a74b3dc401",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "或作为跨多个模式可重用的[Mixin](schema-mixin.md)："
+      }
+    },
+    {
+      "segment_id": "bb90a650",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n\t\"entgo.io/ent/schema/mixin\"\n\t\"github.com/rs/xid\"\n)\n\n// BaseMixin to be shared will all different schemas.\ntype BaseMixin struct {\n\tmixin.Schema\n}\n\n// Fields of the User.\nfunc (BaseMixin) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"id\").\n\t\t\tGoType(xid.ID{}).\n\t\t\tDefaultFunc(xid.New),\n\t}\n}\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Mixin of the User.\nfunc (User) Mixin() []ent.Mixin {\n\treturn []ent.Mixin{\n\t\t// Embed the BaseMixin in the user schema.\n\t\tBaseMixin{},\n\t}\n}\n```",
+      "source_content_hash": "34de0238476bb4306130d25b397d0900e13909b91b3ce667f1a07f5aabc1aa87",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bb90a650"
+      }
+    },
+    {
+      "segment_id": "04bb83ba",
+      "source_content": "In order to use extended identifiers (XIDs) with gqlgen, follow the configuration mentioned in the [issue tracker](https://github.com/ent/ent/issues/1526#issuecomment-831034884).",
+      "source_content_hash": "c2eb0b2178db36e921bf9035b61857c96c0f0ac40313adaabf47a99a938d2924",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要在gqlgen中使用扩展标识符（XID），请按照[问题跟踪器](https://github.com/ent/ent/issues/1526#issuecomment-831034884)中提到的配置操作。"
+      }
+    },
+    {
+      "segment_id": "4170d23c",
+      "source_content": "#### How to define a spatial data type field in MySQL?",
+      "source_content_hash": "4723eeba1fcbab25fa4e80aedafd9af3e447fecdd81e63c82600797b1a8fd0ae",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何在MySQL中定义空间数据类型字段？"
+      }
+    },
+    {
+      "segment_id": "76356197",
+      "source_content": "The [GoType](schema-fields.mdx#go-type) and the [SchemaType](schema-fields.mdx#database-type)\noptions allow users to define database-specific fields. For example, in order to define a\n[`POINT`](https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html) field, use the following configuration:",
+      "source_content_hash": "0d758401b935cf8968a4f019f541631e62f8fe6c1aa70e433285228f759b04b0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过 [GoType](schema-fields.mdx#go-type) 和 [SchemaType](schema-fields.mdx#database-type) 选项，用户可以定义数据库特定的字段类型。例如，要定义一个 [`POINT`](https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html) 类型的字段，可使用如下配置："
+      }
+    },
+    {
+      "segment_id": "85b79081",
+      "source_content": "```go\n// Fields of the Location.\nfunc (Location) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.Other(\"coords\", &Point{}).\n\t\t\tSchemaType(Point{}.SchemaType()),\n\t}\n}\n```",
+      "source_content_hash": "7ba6b09a0392f1275295965cfba079c19ca9dbe666dd12fd5b4176514eb5fc6e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_85b79081"
+      }
+    },
+    {
+      "segment_id": "9b5b6a4a",
+      "source_content": "```go\npackage schema\n\nimport (\n\t\"database/sql/driver\"\n\t\"fmt\"\n\n\t\"entgo.io/ent/dialect\"\n\t\"entgo.io/ent/dialect/sql\"\n\t\"github.com/paulmach/orb\"\n\t\"github.com/paulmach/orb/encoding/wkb\"\n)\n\n// A Point consists of (X,Y) or (Lat, Lon) coordinates\n// and it is stored in MySQL the POINT spatial data type.\ntype Point [2]float64\n\n// Scan implements the Scanner interface.\nfunc (p *Point) Scan(value any) error {\n\tbin, ok := value.([]byte)\n\tif !ok {\n\t\treturn fmt.Errorf(\"invalid binary value for point\")\n\t}\n\tvar op orb.Point\n\tif err := wkb.Scanner(&op).Scan(bin[4:]); err != nil {\n\t\treturn err\n\t}\n\tp[0], p[1] = op.X(), op.Y()\n\treturn nil\n}\n\n// Value implements the driver Valuer interface.\nfunc (p Point) Value() (driver.Value, error) {\n\top := orb.Point{p[0], p[1]}\n\treturn wkb.Value(op).Value()\n}\n\n// FormatParam implements the sql.ParamFormatter interface to tell the SQL\n// builder that the placeholder for a Point parameter needs to be formatted.\nfunc (p Point) FormatParam(placeholder string, info *sql.StmtInfo) string {\n\tif info.Dialect == dialect.MySQL {\n\t\treturn \"ST_GeomFromWKB(\" + placeholder + \")\"\n\t}\n\treturn placeholder\n}\n\n// SchemaType defines the schema-type of the Point object.\nfunc (Point) SchemaType() map[string]string {\n\treturn map[string]string{\n\t\tdialect.MySQL: \"POINT\",\n\t}\n}\n```",
+      "source_content_hash": "d7f2c94ada389338744ac8e43e0a10917eec9f4857eaf7e3db17def8b309b3d3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9b5b6a4a"
+      }
+    },
+    {
+      "segment_id": "eed7cff5",
+      "source_content": "A full example exists in the [example repository](https://github.com/a8m/entspatial).",
+      "source_content_hash": "0e0eb9507e7547c6d28b8a24ccfa0990e05984477fd3a39730063ac0d4e2e5f8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例可参考 [示例仓库](https://github.com/a8m/entspatial)。"
+      }
+    },
+    {
+      "segment_id": "bb7f44f4",
+      "source_content": "#### How to extend the generated models?",
+      "source_content_hash": "fb58655e73ed7f3cf3f486d4014966e3f1f93e81c7a148090b8f545ab77e5960",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何扩展生成的模型？"
+      }
+    },
+    {
+      "segment_id": "8856ba44",
+      "source_content": "Ent supports extending generated types (both global types and models) using custom templates. For example, in order to\nadd additional struct fields or methods to the generated model, we can override the `model/fields/additional` template like in this\n[example](https://github.com/ent/ent/blob/dd4792f5b30bdd2db0d9a593a977a54cb3f0c1ce/examples/entcpkg/ent/template/static.tmpl).",
+      "source_content_hash": "b6825c8ff64f24e6f25becc9c44165b543ced91258627f2886161c9446cda8f0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent支持通过自定义模板扩展生成的类型（包括全局类型和模型）。例如，要为生成的模型添加额外结构体字段或方法，可以覆写 `model/fields/additional` 模板，具体可参考此[示例](https://github.com/ent/ent/blob/dd4792f5b30bdd2db0d9a593a977a54cb3f0c1ce/examples/entcpkg/ent/template/static.tmpl)。"
+      }
+    },
+    {
+      "segment_id": "4a2bee77",
+      "source_content": "If your custom fields/methods require additional imports, you can add those imports using custom templates as well:",
+      "source_content_hash": "c6ae27d55970e854ea0a1b5ef1691679bd330c52d98142b40704b41f85dd3853",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若自定义字段/方法需要额外导入包，也可通过模板添加："
+      }
+    },
+    {
+      "segment_id": "08404d6e",
+      "source_content": "```gotemplate\n{{- define \"import/additional/field_types\" -}}\n    \"github.com/path/to/your/custom/type\"\n{{- end -}}\n\n{{- define \"import/additional/client_dependencies\" -}}\n    \"github.com/path/to/your/custom/type\"\n{{- end -}}\n```",
+      "source_content_hash": "ac6682808546e288e8f3348665b7f81beda0d5c03a2e29dac319029c399be83e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_08404d6e"
+      }
+    },
+    {
+      "segment_id": "758b872b",
+      "source_content": "#### How to extend the generated builders?",
+      "source_content_hash": "e6f2c822aad95179fb78391c24ae7cd3819e90b4c6c7d373671e4aa009c452ac",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何扩展生成的构建器？"
+      }
+    },
+    {
+      "segment_id": "298a32fc",
+      "source_content": "See the *[Injecting External Dependencies](code-gen.md#external-dependencies)* section, or follow the\nexample on [GitHub](https://github.com/ent/ent/tree/master/examples/entcpkg).",
+      "source_content_hash": "4c50dd05612fb8978a43e766287e972378aa99b53643aabd3e016f0cc615b5d9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "参阅 *[注入外部依赖](code-gen.md#external-dependencies)* 章节，或参考 [GitHub示例](https://github.com/ent/ent/tree/master/examples/entcpkg)。"
+      }
+    },
+    {
+      "segment_id": "439bee7e",
+      "source_content": "#### How to store Protobuf objects in a BLOB column?",
+      "source_content_hash": "da2262ac058d310b00351432d08c40151ec1dfd0147db15979549f4c55557173",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何在BLOB列存储Protobuf对象？"
+      }
+    },
+    {
+      "segment_id": "90365458",
+      "source_content": "Assuming we have a Protobuf message defined:",
+      "source_content_hash": "5695f63bafeb45901c38d78e21babe4faaf0d7b840714e1f6ded04a61d4626d4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "假设已有Protobuf消息定义："
+      }
+    },
+    {
+      "segment_id": "c26299dc",
+      "source_content": "```protobuf\nsyntax = \"proto3\";\n\npackage pb;\n\noption go_package = \"project/pb\";\n\nmessage Hi {\n  string Greeting = 1;\n}\n```",
+      "source_content_hash": "19ff260bd08f459305e0d695453801920900101ffeed22b8d893baa77ace586f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c26299dc"
+      }
+    },
+    {
+      "segment_id": "9d789e30",
+      "source_content": "We add receiver methods to the generated protobuf struct such that it implements [ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field#ValueScanner)",
+      "source_content_hash": "669b372913c73d269a19ea9cf06b059bf84d002cb64ec107aec2acd1e63643bd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们为生成的protobuf结构体添加接收方法，使其实现 [ValueScanner](https://pkg.go.dev/entgo.io/ent/schema/field#ValueScanner) 接口："
+      }
+    },
+    {
+      "segment_id": "791b2266",
+      "source_content": "```go\nfunc (x *Hi) Value() (driver.Value, error) {\n\treturn proto.Marshal(x)\n}\n\nfunc (x *Hi) Scan(src any) error {\n\tif src == nil {\n\t\treturn nil\n\t}\n\tif b, ok := src.([]byte); ok {\n\t\tif err := proto.Unmarshal(b, x); err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t}\n\treturn fmt.Errorf(\"unexpected type %T\", src)\n}\n```",
+      "source_content_hash": "fc2ad6839b211b6f17f4b44ca739701d44472487f86ed177579445c7aea62285",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_791b2266"
+      }
+    },
+    {
+      "segment_id": "24b35bc5",
+      "source_content": "We add a new `field.Bytes` to our schema, setting the generated protobuf struct as its underlying `GoType`:",
+      "source_content_hash": "b24226c4f960735011f8f4f50f818fb63be940b841e2976bad90a7c79fab6038",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在schema中添加 `field.Bytes` 类型字段，并将生成的protobuf结构体设为其底层 `GoType`："
+      }
+    },
+    {
+      "segment_id": "6babd923",
+      "source_content": "```go\n// Fields of the Message.\nfunc (Message) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Bytes(\"hi\").\n\t\t\tGoType(&pb.Hi{}),\n\t}\n}\n```",
+      "source_content_hash": "d69ff5f44146e44a11a205e4bdf7c0e7c8db617126819e94459a3ed163810230",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6babd923"
+      }
+    },
+    {
+      "segment_id": "afdc84d2",
+      "source_content": "Test that it works:",
+      "source_content_hash": "45dcb3a067fe276fda50da59b7a2f7ebac2758faf190ad70ae992cb10d01a005",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "测试验证："
+      }
+    },
+    {
+      "segment_id": "7c0558d3",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"testing\"\n\n\t\"project/ent/enttest\"\n\t\"project/pb\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n\t\"github.com/stretchr/testify/require\"\n)\n\nfunc TestMain(t *testing.T) {\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tdefer client.Close()\n\n\tmsg := client.Message.Create().\n\t\tSetHi(&pb.Hi{\n\t\t\tGreeting: \"hello\",\n\t\t}).\n\t\tSaveX(context.TODO())\n\n\tret := client.Message.GetX(context.TODO(), msg.ID)\n\trequire.Equal(t, \"hello\", ret.Hi.Greeting)\n}\n```",
+      "source_content_hash": "70358ae2689b3212b508541903812fc57209f64922a89cefadc365035bfcf487",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7c0558d3"
+      }
+    },
+    {
+      "segment_id": "77dc047b",
+      "source_content": "#### How to add `CHECK` constraints to table?",
+      "source_content_hash": "0fffc9d3310eda91bea2ab3bae3ce37c666757db062f429cd48bd5b8030add91",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何为表添加 `CHECK` 约束？"
+      }
+    },
+    {
+      "segment_id": "1dde0925",
+      "source_content": "The [`entsql.Annotation`](schema-annotations.md) option allows adding custom `CHECK` constraints to the `CREATE TABLE`\nstatement. In order to add `CHECK` constraints to your schema, use the following example:",
+      "source_content_hash": "89cac4010315086a473627892a15b60deb2bbf1774cd50ba0c8edc05a4dafd63",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过 [`entsql.Annotation`](schema-annotations.md) 选项可在 `CREATE TABLE` 语句中添加自定义 `CHECK` 约束。具体配置示例如下："
+      }
+    },
+    {
+      "segment_id": "025bc303",
+      "source_content": "```go\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\t&entsql.Annotation{\n\t\t\t// The `Check` option allows adding an\n\t\t\t// unnamed CHECK constraint to table DDL.\n\t\t\tCheck: \"website <> 'entgo.io'\",\n\n\t\t\t// The `Checks` option allows adding multiple CHECK constraints\n\t\t\t// to table creation. The keys are used as the constraint names.\n\t\t\tChecks: map[string]string{\n\t\t\t\t\"valid_nickname\":  \"nickname <> firstname\",\n\t\t\t\t\"valid_firstname\": \"length(first_name) > 1\",\n\t\t\t},\n\t\t},\n\t}\n}\n```",
+      "source_content_hash": "e7ca80d730ac800cbb6f7d566791692cd6b0653d48ea6f7c39b4bdfab92220ad",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_025bc303"
+      }
+    },
+    {
+      "segment_id": "3ffae646",
+      "source_content": "#### How to define a custom precision numeric field?",
+      "source_content_hash": "3746ba9f4c6291b121fe8096e419d0779ccd478e5aa10106c9c6cce02f44e224",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何定义自定义精度数值字段？"
+      }
+    },
+    {
+      "segment_id": "0df213ce",
+      "source_content": "Using [GoType](schema-fields.mdx#go-type) and [SchemaType](schema-fields.mdx#database-type) it is possible to define\ncustom precision numeric fields. For example, defining a field that uses [big.Int](https://pkg.go.dev/math/big).",
+      "source_content_hash": "9629a8e6dee348d9b6bf78e26f8d1210249cef1160235b3782e56eafb9e3aa23",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "结合 [GoType](schema-fields.mdx#go-type) 和 [SchemaType](schema-fields.mdx#database-type) 可定义自定义精度数值字段，例如使用 [big.Int](https://pkg.go.dev/math/big) 的字段："
+      }
+    },
+    {
+      "segment_id": "fe61d237",
+      "source_content": "```go\nfunc (T) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"precise\").\n\t\t\tGoType(new(BigInt)).\n\t\t\tSchemaType(map[string]string{\n\t\t\t\tdialect.SQLite:   \"numeric(78, 0)\",\n\t\t\t\tdialect.Postgres: \"numeric(78, 0)\",\n\t\t\t}),\n\t}\n}\n\ntype BigInt struct {\n\tbig.Int\n}\n\nfunc (b *BigInt) Scan(src any) error {\n\tvar i sql.NullString\n\tif err := i.Scan(src); err != nil {\n\t\treturn err\n\t}\n\tif !i.Valid {\n\t\treturn nil\n\t}\n\tif _, ok := b.Int.SetString(i.String, 10); ok {\n\t\treturn nil\n\t}\n\treturn fmt.Errorf(\"could not scan type %T with value %v into BigInt\", src, src)\n}\n\nfunc (b *BigInt) Value() (driver.Value, error) {\n\treturn b.String(), nil\n}\n```",
+      "source_content_hash": "7a7e5edac0b06fb99eb95bc956baf2c7f138067bff91bc1e956a0f59680af0cf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_fe61d237"
+      }
+    },
+    {
+      "segment_id": "f88a1fd5",
+      "source_content": "#### How to configure two or more `DB` to separate read and write?",
+      "source_content_hash": "bed92ea4c63bc4c386f4500a5043b6656bcfeabb903182b4806624d9cf5a568e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何配置多个 `DB` 实现读写分离？"
+      }
+    },
+    {
+      "segment_id": "7c5ccba4",
+      "source_content": "You can wrap the `dialect.Driver` with your own driver and implement this logic. For example.",
+      "source_content_hash": "9fa59fc7c62006a4b6770ae19130a611311b75b20ba537d7adeaa4f4e8ad9860",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过封装 `dialect.Driver` 实现自定义驱动逻辑，例如："
+      }
+    },
+    {
+      "segment_id": "8beee012",
+      "source_content": "You can extend it, add support for multiple read replicas and add some load-balancing magic.",
+      "source_content_hash": "e0406e8bb2eceb77bec94d6a08081de05742d48b7896c018ebb4a8a61c9bc329",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可进一步扩展该方案，支持多读副本并添加负载均衡策略。"
+      }
+    },
+    {
+      "segment_id": "3ac736c9",
+      "source_content": "```go\nfunc main() {\n\t// ...\n\twd, err := sql.Open(dialect.MySQL, \"root:pass@tcp(<addr>)/<database>?parseTime=True\")\n\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\trd, err := sql.Open(dialect.MySQL, \"readonly:pass@tcp(<addr>)/<database>?parseTime=True\")\n\tif err != nil {\n\t\tlog.Fatal(err)\n\t}\n\tclient := ent.NewClient(ent.Driver(&multiDriver{w: wd, r: rd}))\n\tdefer client.Close()\n\t// Use the client here.\n}\n\ntype multiDriver struct {\n\tr, w dialect.Driver\n}\n\nvar _ dialect.Driver = (*multiDriver)(nil)\n\nfunc (d *multiDriver) Query(ctx context.Context, query string, args, v any) error {\n\te := d.r\n\t// Mutation statements that use the RETURNING clause.\n\tif ent.QueryFromContext(ctx) == nil {\n\t\te = d.w\n\t}\n\treturn e.Query(ctx, query, args, v)\n}\n\nfunc (d *multiDriver) Exec(ctx context.Context, query string, args, v any) error {\n\treturn d.w.Exec(ctx, query, args, v)\n}\n\nfunc (d *multiDriver) Tx(ctx context.Context) (dialect.Tx, error) {\n\treturn d.w.Tx(ctx)\n}\n\nfunc (d *multiDriver) BeginTx(ctx context.Context, opts *sql.TxOptions) (dialect.Tx, error) {\n\treturn d.w.(interface {\n\t\tBeginTx(context.Context, *sql.TxOptions) (dialect.Tx, error)\n\t}).BeginTx(ctx, opts)\n}\n\nfunc (d *multiDriver) Close() error {\n\trerr := d.r.Close()\n\twerr := d.w.Close()\n\tif rerr != nil {\n\t\treturn rerr\n\t}\n\tif werr != nil {\n\t\treturn werr\n\t}\n\treturn nil\n}\n\nfunc (d *multiDriver) Dialect() string {\n\treturn d.r.Dialect()\n}\n```",
+      "source_content_hash": "afab4bc4d5bafe37d354d1209b1573d536519f2d364cfdb2a80d70d5a673af51",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3ac736c9"
+      }
+    },
+    {
+      "segment_id": "77e702d3",
+      "source_content": "#### How to configure `json.Marshal` to inline the `edges` keys in the top level object?",
+      "source_content_hash": "5d92a730d38db687c34473e372aeb9b48cdeb3fc8abb2cf163c1463812f7eb0e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 如何配置 `json.Marshal` 将 `edges` 键内联到顶层对象？"
+      }
+    },
+    {
+      "segment_id": "b1763cf5",
+      "source_content": "To encode entities without the `edges` attribute, users can follow these two steps:",
+      "source_content_hash": "ca6f12595769471c9893cc8df123bb631642e477603cc2a7f85c9ee863ba284f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "实现无 `edges` 属性的实体编码需两步："
+      }
+    },
+    {
+      "segment_id": "c3a4ba5d",
+      "source_content": "1. Omit the default `edges` tag generated by Ent.\n2. Extend the generated models with a custom MarshalJSON method.",
+      "source_content_hash": "70dcb5c784e9e86b1305908c7c0714bf001a1a812cfad33eabe1b97923bd46da",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 移除Ent生成的默认 `edges` 标签\n2. 通过自定义MarshalJSON方法扩展生成模型"
+      }
+    },
+    {
+      "segment_id": "e00c1030",
+      "source_content": "These two steps can be automated using [codegen extensions](extension.md), and a full working example is available under\nthe [examples/jsonencode](https://github.com/ent/ent/tree/master/examples/jsonencode) directory.",
+      "source_content_hash": "0e2edb16bc5a4342d1a43609603faa22bc5502dbd063445d2ba0fe56905de6be",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过[代码生成扩展](extension.md)自动化实现，完整示例见 [examples/jsonencode](https://github.com/ent/ent/tree/master/examples/jsonencode) 目录。"
+      }
+    },
+    {
+      "segment_id": "eba60b69",
+      "source_content": "```go title=\"ent/entc.go\" {17,28}\n//go:build ignore\n// +build ignore\n\npackage main\n\nimport (\n\t\"log\"\n\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n\t\"entgo.io/ent/schema/edge\"\n)\n\nfunc main() {\n\topts := []entc.Option{\n\t\tentc.Extensions{\n\t\t\t&EncodeExtension{},\n\t\t),\n\t}\n\terr := entc.Generate(\"./schema\", &gen.Config{}, opts...)\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n\n// EncodeExtension is an implementation of entc.Extension that adds a MarshalJSON\n// method to each generated type <T> and inlines the Edges field to the top level JSON.\ntype EncodeExtension struct {\n\tentc.DefaultExtension\n}\n\n// Templates of the extension.\nfunc (e *EncodeExtension) Templates() []*gen.Template {\n\treturn []*gen.Template{\n\t\tgen.MustParse(gen.NewTemplate(\"model/additional/jsonencode\").\n\t\t\tParse(`\n{{ if $.Edges }}\n\t// MarshalJSON implements the json.Marshaler interface.\n\tfunc ({{ $.Receiver }} *{{ $.Name }}) MarshalJSON() ([]byte, error) {\n\t\ttype Alias {{ $.Name }}\n\t\treturn json.Marshal(&struct {\n\t\t\t*Alias\n\t\t\t{{ $.Name }}Edges\n\t\t}{\n\t\t\tAlias: (*Alias)({{ $.Receiver }}),\n\t\t\t{{ $.Name }}Edges: {{ $.Receiver }}.Edges,\n\t\t})\n\t}\n{{ end }}\n`)),\n\t}\n}\n\n// Hooks of the extension.\nfunc (e *EncodeExtension) Hooks() []gen.Hook {\n\treturn []gen.Hook{\n\t\tfunc(next gen.Generator) gen.Generator {\n\t\t\treturn gen.GenerateFunc(func(g *gen.Graph) error {\n\t\t\t\ttag := edge.Annotation{StructTag: `json:\"-\"`}\n\t\t\t\tfor _, n := range g.Nodes {\n\t\t\t\t\tn.Annotations.Set(tag.Name(), tag)\n\t\t\t\t}\n\t\t\t\treturn next.Generate(g)\n\t\t\t})\n\t\t},\n\t}\n}\n```",
+      "source_content_hash": "c4048fed4381594fc652e7759fdb4a5e6c268bfaa72dc439ea99ab86abb993f9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eba60b69"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/faq.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.686041+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "61445789798691fe93406dbe2e0822494b32c2a1bbcf662c98a2628c3fb4c84e"
+  }
+}

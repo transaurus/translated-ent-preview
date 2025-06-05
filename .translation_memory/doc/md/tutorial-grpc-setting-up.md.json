@@ -1,0 +1,172 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-grpc-setting-up.md",
+  "source_file_content_hash": "29e5696dfae5e0303563157b86893e5b6f7a6bbd5d0918c2e3ca26d9a6e5304c",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: grpc-setting-up\ntitle: Setting Up\nsidebar_label: Setting Up \n---",
+      "source_content_hash": "2ccae3d2f28a5270f31689ed84baef716cc70a0b8f7f0fd87b01c8df1f19e413",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "Let's start by initializing a new Go module for our project:",
+      "source_content_hash": "497158b230ffec52e19b240587d94028e752c63e04f892a5e6e5c6d3a56dc7e2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先，我们为项目初始化一个新的Go模块："
+      }
+    },
+    {
+      "segment_id": "71d8dc9b",
+      "source_content": "```console\nmkdir ent-grpc-example\ncd ent-grpc-example\ngo mod init ent-grpc-example\n```",
+      "source_content_hash": "e6c7d60e6d77444a3671bf2006f68e8f5e94d75b91bec9f1e43c64de86f0c896",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_71d8dc9b"
+      }
+    },
+    {
+      "segment_id": "cf898102",
+      "source_content": "Next, we use `go run` to invoke the ent code generator to initialize a schema:",
+      "source_content_hash": "cb1b98a00bf4c1ad7c1ddddd54e4c8608255d9c7c97df78645d9e7cd4ba2489c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着，使用`go run`调用ent代码生成器来初始化一个模式："
+      }
+    },
+    {
+      "segment_id": "93be3c14",
+      "source_content": "```console\ngo run -mod=mod entgo.io/ent/cmd/ent new User\n```",
+      "source_content_hash": "a2bdf6896e1c9f236ac8def5dab27404f92f4ddef0f8569e28ba09e86daa2fd6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_93be3c14"
+      }
+    },
+    {
+      "segment_id": "f5f6d2ce",
+      "source_content": "Our directory should now look like:",
+      "source_content_hash": "d5f5b65d4b865d673192c61ea2f8bea3046416482f7189c977378fe2d34cb801",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时项目目录结构应如下所示："
+      }
+    },
+    {
+      "segment_id": "41a8ae85",
+      "source_content": "```console\n.\n├── ent\n│   ├── generate.go\n│   └── schema\n│       └── user.go\n├── go.mod\n└── go.sum\n```",
+      "source_content_hash": "99ef6fbb31f9722d8680f3e990c24f52973517ed879f32a85d8abd3d67826ad3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_41a8ae85"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "Next, let's add the `entproto` package to our project:",
+      "source_content_hash": "e493f0a45a9024450df1c2ecafead2ca16f545c90d2a0d79929816de3ab1c53d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，将`entproto`包添加到项目中："
+      }
+    },
+    {
+      "segment_id": "ef6eebef",
+      "source_content": "```console\ngo get -u entgo.io/contrib/entproto\n```",
+      "source_content_hash": "a39e9df816e0518ab0468b2a3ac8a42e5f6f74b8af1102e19c4411b5076aca11",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ef6eebef"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "Next, we will define the schema for the `User` entity. Open `ent/schema/user.go` and edit:",
+      "source_content_hash": "75bec4ee93cffd482882a73112d699e6f4925e6ce4cc779a8c5b74abb2123e58",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们将定义`User`实体的模式。打开`ent/schema/user.go`进行编辑："
+      }
+    },
+    {
+      "segment_id": "bca33820",
+      "source_content": "```go title=\"ent/schema/user.go\"\npackage schema\n\nimport (\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema/field\"\n)\n\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tUnique(),\n\t\tfield.String(\"email_address\").\n\t\t\tUnique(),\n\t}\n}\n```",
+      "source_content_hash": "df8eb97603485ce62059507441be7b44a7a1c5d1b5aa412d84d0c8e0f6aee644",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bca33820"
+      }
+    },
+    {
+      "segment_id": "5dae11e3",
+      "source_content": "In this step, we added two unique fields to our `User` entity: `name` and `email_address`. The `ent.Schema` is just the definition of the schema. To create usable production code from it we need to run Ent's code generation tool on it. Run:",
+      "source_content_hash": "c8cc872a13e6feb21e3625b945326850556b0275ee4b6f3e0288a6bca00a6eff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这一步中，我们为`User`实体添加了两个唯一字段：`name`和`email_address`。`ent.Schema`仅是模式的定义。要从中生成可用的生产代码，需要运行Ent的代码生成工具。执行："
+      }
+    },
+    {
+      "segment_id": "1d510af2",
+      "source_content": "```console\ngo generate ./...\n```",
+      "source_content_hash": "3b1b797ac1e2e1e33c2e6be0404437245718435d754a214abccbe1f3a73b7d04",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1d510af2"
+      }
+    },
+    {
+      "segment_id": "e7772088",
+      "source_content": "Notice that new files were created from our schema definition:",
+      "source_content_hash": "3ab2433a6fa5e2616327336a5044864431366dd6956d8bcb52d42b8cbfffffb3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意此时已根据模式定义生成了新文件："
+      }
+    },
+    {
+      "segment_id": "bc137a19",
+      "source_content": "```console\n├── ent\n│   ├── client.go\n│   ├── config.go\n// .... many more\n│   ├── user\n│   ├── user.go\n│   ├── user_create.go\n│   ├── user_delete.go\n│   ├── user_query.go\n│   └── user_update.go\n├── go.mod\n└── go.sum\n```",
+      "source_content_hash": "5367300521dbab19b16128ad7e9c6d8479cf19fb9810a25d1cafa2571fab5139",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bc137a19"
+      }
+    },
+    {
+      "segment_id": "2547a6bb",
+      "source_content": "At this point, we can open a connection to a database, run a migration to create the `users` table, and start reading and writing data to it. This is covered on the [Setup Tutorial](tutorial-setup.md), so let's cut to the chase and learn about generating Protobuf definitions and gRPC servers from our schema.",
+      "source_content_hash": "767da347b7fb4fea5b0f707c1efd14d529d7f9c4663ac6d30aee45e4f1346810",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "至此，我们可以连接数据库、运行迁移创建`users`表并开始读写数据。这部分内容在[设置教程](tutorial-setup.md)中有详细说明，现在让我们直接进入主题，学习如何从模式生成Protobuf定义和gRPC服务器。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-grpc-setting-up.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.669085+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "29e5696dfae5e0303563157b86893e5b6f7a6bbd5d0918c2e3ca26d9a6e5304c"
+  }
+}

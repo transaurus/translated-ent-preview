@@ -1,0 +1,272 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-grpc-edges.md",
+  "source_file_content_hash": "21baa0017f3853fd9d10765293a7a16d38c92b1182b506090cfeb1d6fa173580",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: grpc-edges\ntitle: Working with Edges\nsidebar_label: Working with Edges\n---",
+      "source_content_hash": "9ba57e0c02de0da17f2a1cb87a9d96a27668c5da17a0698b4651434d4a9041c6",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "Edges enable us to express the relationship between different entities in our ent application. Let's see how they work\ntogether with generated gRPC services.",
+      "source_content_hash": "02e6c05957a7707790ce37b6769edcb42c3ee289fc8eb1de5eb0e439edc99791",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "边（Edges）使我们能够在ent应用中表达不同实体之间的关系。让我们看看它们如何与生成的gRPC服务协同工作。"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Let's start by adding a new entity, `Category` and create edges relating our `User` type to it:",
+      "source_content_hash": "6054cfb7c851aa6aa386e7c29f9c8040e0d87c1f2364c85e8bd78ab4d63bdbef",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先我们添加一个新实体`Category`，并创建与`User`类型关联的边："
+      }
+    },
+    {
+      "segment_id": "43a8bc7e",
+      "source_content": "```go title=\"ent/schema/category.go\"\npackage schema\n\nimport (\n\t\"entgo.io/contrib/entproto\"\n\t\"entgo.io/ent\"\n\t\"entgo.io/ent/schema\"\n\t\"entgo.io/ent/schema/edge\"\n\t\"entgo.io/ent/schema/field\"\n)\n\ntype Category struct {\n\tent.Schema\n}\n\nfunc (Category) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\").\n\t\t\tAnnotations(entproto.Field(2)),\n\t}\n}\n\nfunc (Category) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentproto.Message(),\n\t}\n}\n\nfunc (Category) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"admin\", User.Type).\n\t\t\tUnique().\n\t\t\tAnnotations(entproto.Field(3)),\n\t}\n}\n```",
+      "source_content_hash": "3b8ffaf4b132befe9fb24cd66d8bbbb1dc6768bd0503f0649c804239e6d14b1d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_43a8bc7e"
+      }
+    },
+    {
+      "segment_id": "a9d49f92",
+      "source_content": "Creating the inverse relation on the `User`:",
+      "source_content_hash": "8b8fc60ecd7948ebefd8cd06369e77e60274418d768a4d076bb47e31c80ee2cc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在`User`端创建反向关系："
+      }
+    },
+    {
+      "segment_id": "95318d95",
+      "source_content": "```go title=\"ent/schema/user.go\" {4-6}\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.From(\"administered\", Category.Type).\n\t\t\tRef(\"admin\").\n\t\t\tAnnotations(entproto.Field(5)),\n\t}\n}\n```",
+      "source_content_hash": "e80ec216821fe858ac624fc9ca5ecbf83f621167ca09eda323d96dad92df6b3b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_95318d95"
+      }
+    },
+    {
+      "segment_id": "1131ef75",
+      "source_content": "Notice a few things:",
+      "source_content_hash": "cfc77c1f00a79364316a6cf5a16615b222c0ec67265129994d9206e5776ea78f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意以下几点："
+      }
+    },
+    {
+      "segment_id": "ea0c7bae",
+      "source_content": "* Our edges also receive an `entproto.Field` annotation. We will see why in a minute.\n* We created a one-to-many relationship where a `Category` has a single `admin`, and a `User` can administer multiple\n  categories.",
+      "source_content_hash": "d36da224398968457b5e320a389ffbbcd06d9203f894b9c8f13ed7f9295a8b60",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 我们的边也带有`entproto.Field`注解，稍后会解释原因\n* 我们创建了一对多关系：一个`Category`有单个`admin`，而一个`User`可以管理多个分类"
+      }
+    },
+    {
+      "segment_id": "0bb95128",
+      "source_content": "Re-generating the project with `go generate ./...`, notice the changes to the `.proto` file:",
+      "source_content_hash": "b89a96fa993958b657abaadcf1392cbc8ac6c4440eebb7a577b5dd60c8441735",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过`go generate ./...`重新生成项目后，观察`.proto`文件的变化："
+      }
+    },
+    {
+      "segment_id": "29ad5b0e",
+      "source_content": "```protobuf title=\"ent/proto/entpb/entpb.proto\" {1-7,18}\nmessage Category {\n  int64 id = 1;\n\n  string name = 2;\n\n  User admin = 3;\n}\n\nmessage User {\n  int64 id = 1;\n\n  string name = 2;\n\n  string email_address = 3;\n\n  google.protobuf.StringValue alias = 4;\n\n  repeated Category administered = 5;\n}\n```",
+      "source_content_hash": "89ed599eabf005dcf4949aaf346cd31fb6090470b3407538c86654ffb3c2d129",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_29ad5b0e"
+      }
+    },
+    {
+      "segment_id": "5803caac",
+      "source_content": "Observe the following changes:",
+      "source_content_hash": "1f4fda5342a65c074d05dc661cef40a38e78ebef61afffa6f8e4c799e76e902c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "主要变更包括："
+      }
+    },
+    {
+      "segment_id": "d0b8a6db",
+      "source_content": "* A new message, `Category` was created. This message has a field named `admin` corresponding to the `admin` edge on\n  the `Category` schema. It is a non-repeated field because we set the edge to be `.Unique()`. It's field number is `3`,\n  corresponding to the `entproto.Field` annotation on the edge definition.\n* A new field `administered` was added to the `User` message definition. It is a `repeated` field, corresponding to the\n  fact that we did not mark the edge as `Unique` in this direction. It's field number is `5`, corresponding to the\n  `entproto.Field` annotation on the edge.",
+      "source_content_hash": "19e5c185a2ac5e2784e4e2075c8c0fb8731e815a01efff82f498b4b4e5ba0f95",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 新增了`Category`消息类型，其中包含与模式中`admin`边对应的`admin`字段。由于该边被标记为`.Unique()`，这是一个非重复字段，其字段编号`3`对应边定义中的`entproto.Field`注解\n* `User`消息定义中新增了`administered`字段。由于该方向未标记为`Unique`，这是一个重复字段，其字段编号`5`同样对应边上的注解"
+      }
+    },
+    {
+      "segment_id": "c19de48a",
+      "source_content": "### Creating Entities with their Edges",
+      "source_content_hash": "2d79a3b2a2d72aead226bd837d3b4e242583516ec75b21a459295985f2e57838",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 创建带边的实体"
+      }
+    },
+    {
+      "segment_id": "6ca4479f",
+      "source_content": "Let's demonstrate how to create an entity with its edges by writing a test:",
+      "source_content_hash": "e24a3c6070303327e482ad2687628ad68d9b14dafb76554a285f362c3fbbc34f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过编写测试来演示如何创建带边的实体："
+      }
+    },
+    {
+      "segment_id": "1cf51900",
+      "source_content": "```go\npackage main\n\nimport (\n\t\"context\"\n\t\"testing\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n\n\t\"ent-grpc-example/ent/category\"\n\t\"ent-grpc-example/ent/enttest\"\n\t\"ent-grpc-example/ent/proto/entpb\"\n\t\"ent-grpc-example/ent/user\"\n)\n\nfunc TestServiceWithEdges(t *testing.T) {\n\t// start by initializing an ent client connected to an in memory sqlite instance\n\tctx := context.Background()\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tdefer client.Close()\n\n\t// next, initialize the UserService. Notice we won't be opening an actual port and\n\t// creating a gRPC server and instead we are just calling the library code directly. \n\tsvc := entpb.NewUserService(client)\n\n\t// next, we create a category directly using the ent client.\n\t// Notice we are initializing it with no relation to a User.\n\tcat := client.Category.Create().SetName(\"cat_1\").SaveX(ctx)\n\n\t// next, we invoke the User service's `Create` method. Notice we are\n\t// passing a list of entpb.Category instances with only the ID set. \n\tcreate, err := svc.Create(ctx, &entpb.CreateUserRequest{\n\t\tUser: &entpb.User{\n\t\t\tName:         \"user\",\n\t\t\tEmailAddress: \"user@service.code\",\n\t\t\tAdministered: []*entpb.Category{\n\t\t\t\t{Id: int64(cat.ID)},\n\t\t\t},\n\t\t},\n\t})\n\tif err != nil {\n\t\tt.Fatal(\"failed creating user using UserService\", err)\n\t}\n\n\t// to verify everything worked correctly, we query the category table to check\n\t// we have exactly one category which is administered by the created user.\n\tcount, err := client.Category.\n\t\tQuery().\n\t\tWhere(\n\t\t\tcategory.HasAdminWith(\n\t\t\t\tuser.ID(int(create.Id)),\n\t\t\t),\n\t\t).\n\t\tCount(ctx)\n\tif err != nil {\n\t\tt.Fatal(\"failed counting categories admin by created user\", err)\n\t}\n\tif count != 1 {\n\t\tt.Fatal(\"expected exactly one group to managed by the created user\")\n\t}\n}\n```",
+      "source_content_hash": "e7283fcb787998487be124f12f50675306e040f6e16ab4bce90076f5b7302df1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1cf51900"
+      }
+    },
+    {
+      "segment_id": "fd7ed056",
+      "source_content": "To create the edge from the created `User` to the existing `Category` we do not need to populate the entire `Category`\nobject. Instead we only populate the `Id` field. This is picked up by the generated service code:",
+      "source_content_hash": "ac965332cd41bfb288759e007b69285b09c973f426a73bd6ab4ed3a7067da8cb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要从已创建的`User`关联到现有`Category`，我们不需要填充整个`Category`对象，只需填充`Id`字段即可，生成的服务代码会自动处理："
+      }
+    },
+    {
+      "segment_id": "8ecb92db",
+      "source_content": "```go title=\"ent/proto/entpb/entpb_user_service.go\" {3-6}\nfunc (svc *UserService) createBuilder(user *User) (*ent.UserCreate, error) {\n\t  // truncated ...\n\tfor _, item := range user.GetAdministered() {\n\t\tadministered := int(item.GetId())\n\t\tm.AddAdministeredIDs(administered)\n\t}\n\treturn m, nil\n}\n```",
+      "source_content_hash": "44c7a04a0eef4683855185860fae072beaaf8d8c8bb9b2b6685e1458d21612a5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8ecb92db"
+      }
+    },
+    {
+      "segment_id": "c66e62ef",
+      "source_content": "### Retrieving Edge IDs for Entities",
+      "source_content_hash": "caad6692f8f50723a5de3c344aa08661707dc8841f3d2f955453fab79fb76660",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 获取实体的边ID"
+      }
+    },
+    {
+      "segment_id": "fe25bd72",
+      "source_content": "We have seen how to create relations between entities, but how do we retrieve that data from the generated gRPC\nservice? ",
+      "source_content_hash": "8ad9772c2e076574c8c21bac3725651d630f0fb322d3f360313807f40a6c4f94",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们已经了解如何创建实体间关系，但如何从生成的gRPC服务中获取这些数据？"
+      }
+    },
+    {
+      "segment_id": "4e2e17c5",
+      "source_content": "Consider this example test:",
+      "source_content_hash": "e751ba188bb0cce1cf2791c94334ef7b5e6eac64b5916d02c733989fc817c430",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "参考以下测试示例："
+      }
+    },
+    {
+      "segment_id": "bea1601a",
+      "source_content": "```go\nfunc TestGet(t *testing.T) {\n\t// start by initializing an ent client connected to an in memory sqlite instance\n\tctx := context.Background()\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tdefer client.Close()\n\n\t// next, initialize the UserService. Notice we won't be opening an actual port and\n\t// creating a gRPC server and instead we are just calling the library code directly.\n\tsvc := entpb.NewUserService(client)\n\n\t// next, create a user, a category and set that user to be the admin of the category\n\tuser := client.User.Create().\n\t\tSetName(\"rotemtam\").\n\t\tSetEmailAddress(\"r@entgo.io\").\n\t\tSaveX(ctx)\n\n\tclient.Category.Create().\n\t\tSetName(\"category\").\n\t\tSetAdmin(user).\n\t\tSaveX(ctx)\n\n\t// next, retrieve the user without edge information\n\tget, err := svc.Get(ctx, &entpb.GetUserRequest{\n\t\tId: int64(user.ID),\n\t})\n\tif err != nil {\n\t\tt.Fatal(\"failed retrieving the created user\", err)\n\t}\n\tif len(get.Administered) != 0 {\n\t\tt.Fatal(\"by default edge information is not supposed to be retrieved\")\n\t}\n\n\t// next, retrieve the user *WITH* edge information\n\tget, err = svc.Get(ctx, &entpb.GetUserRequest{\n\t\tId:   int64(user.ID),\n\t\tView: entpb.GetUserRequest_WITH_EDGE_IDS,\n\t})\n\tif err != nil {\n\t\tt.Fatal(\"failed retrieving the created user\", err)\n\t}\n\tif len(get.Administered) != 1 {\n\t\tt.Fatal(\"using WITH_EDGE_IDS edges should be returned\")\n\t}\n}\n```",
+      "source_content_hash": "d22aaa719e8f19b8ea0551a564a25605b1a15e8325105fc4eba2f933ba84750d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bea1601a"
+      }
+    },
+    {
+      "segment_id": "d3912b2e",
+      "source_content": "As you can see in the test, by default, edge information is not returned by the `Get` method of the service. This is\ndone deliberately because the amount of entities related to an entity is unbound. To allow the caller of to specify\nwhether or not to return the edge information or not, the generated service adheres to [AIP-157](https://google.aip.dev/157)\n(Partial Responses). In short, the `GetUserRequest` message includes an enum named `View`:",
+      "source_content_hash": "2ba8799dab273f29561086152678044852e8bc77ce0843d45f6fd47e7ac9d249",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如测试所示，默认情况下服务的`Get`方法不会返回边信息。这是有意为之，因为实体关联的其他实体数量可能是无限的。为了让调用方指定是否返回边信息，生成的服务遵循[AIP-157](https://google.aip.dev/157)（部分响应规范）。具体来说，`GetUserRequest`消息包含一个名为`View`的枚举："
+      }
+    },
+    {
+      "segment_id": "bce471ae",
+      "source_content": "```protobuf title=\"ent/proto/entpb/entpb.proto\"\nmessage GetUserRequest {\n  int64 id = 1;\n\n  View view = 2;\n\n  enum View {\n    VIEW_UNSPECIFIED = 0;\n\n    BASIC = 1;\n\n    WITH_EDGE_IDS = 2;\n  }\n}\n```",
+      "source_content_hash": "55c3ed899d5039031b83a88d6893aa1e5380506f3a83f80d6784b9dec7156196",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bce471ae"
+      }
+    },
+    {
+      "segment_id": "41e7f712",
+      "source_content": "Consider the generated code for the `Get` method:",
+      "source_content_hash": "f5570b0d9aee273116f162daa45812670d921ae33bfba438ae48996da2ac5c11",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "观察生成的`Get`方法代码："
+      }
+    },
+    {
+      "segment_id": "2ef49e00",
+      "source_content": "```go title=\"ent/proto/entpb/entpb_user_service.go\"\n// Get implements UserServiceServer.Get\nfunc (svc *UserService) Get(ctx context.Context, req *GetUserRequest) (*User, error) {\n\t// .. truncated ..\n\tswitch req.GetView() {\n\tcase GetUserRequest_VIEW_UNSPECIFIED, GetUserRequest_BASIC:\n\t\tget, err = svc.client.User.Get(ctx, int(req.GetId()))\n\tcase GetUserRequest_WITH_EDGE_IDS:\n\t\tget, err = svc.client.User.Query().\n\t\t\tWhere(user.ID(int(req.GetId()))).\n\t\t\tWithAdministered(func(query *ent.CategoryQuery) {\n\t\t\t\tquery.Select(category.FieldID)\n\t\t\t}).\n\t\t\tOnly(ctx)\n\tdefault:\n\t\treturn nil, status.Errorf(codes.InvalidArgument, \"invalid argument: unknown view\")\n\t}\n// .. truncated ..\n}\n```",
+      "source_content_hash": "b952b0cc75b5c21b3ba22b47d6a2e592f2448c734753db998a71ff3173a5a676",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2ef49e00"
+      }
+    },
+    {
+      "segment_id": "53e725dc",
+      "source_content": "By default, `client.User.Get` is invoked, which does not return any edge ID information, but if `WITH_EDGE_IDS` is passed,\nthe endpoint will retrieve the `ID` field for any `Category` related to the user via the `administered` edge.",
+      "source_content_hash": "07795193a9d2cce058a2a1bba151717e52940c0bdd81b106082a4d19f208d2db",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认调用`client.User.Get`不会返回任何边ID信息，但如果传入`WITH_EDGE_IDS`，端点将获取通过`administered`边与用户关联的所有`Category`的`ID`字段。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-grpc-edges.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.684484+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "21baa0017f3853fd9d10765293a7a16d38c92b1182b506090cfeb1d6fa173580"
+  }
+}

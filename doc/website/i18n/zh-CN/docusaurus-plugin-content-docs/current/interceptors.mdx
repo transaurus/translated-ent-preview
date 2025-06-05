@@ -1,0 +1,399 @@
+---
+id: interceptors
+title: Interceptors
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+拦截器（Interceptors）是用于各类Ent查询的执行中间件。与钩子（hooks）不同，拦截器作用于读取路径，通过接口实现方式允许在查询的不同阶段进行拦截和修改，从而提供对查询行为更细粒度的控制。例如，可参考下文所述的[Traverser接口](#defining-a-traverser)。
+
+## 定义拦截器
+
+要定义`Interceptor`，用户可以声明实现`Intercept`方法的结构体，或使用预定义的`ent.InterceptFunc`适配器。
+
+```go
+ent.InterceptFunc(func(next ent.Querier) ent.Querier {
+	return ent.QuerierFunc(func(ctx context.Context, query ent.Query) (ent.Value, error) {
+		// Do something before the query execution.
+		value, err := next.Query(ctx, query)
+		// Do something after the query execution.
+		return value, err
+	})
+})
+```
+
+上例中，`ent.Query`代表生成的查询构建器（如`ent.<T>Query`），访问其方法需要进行类型断言。例如：
+
+```go
+ent.InterceptFunc(func(next ent.Querier) ent.Querier {
+    return ent.QuerierFunc(func(ctx context.Context, query ent.Query) (ent.Value, error) {
+        if q, ok := query.(*ent.UserQuery); ok {
+            q.Where(user.Name("a8m"))
+        }
+        return next.Query(ctx, query)
+    })
+})
+```
+
+但通过`intercept`特性标志生成的工具，可创建适用于任意查询类型的通用拦截器。该特性标志可通过以下两种方式添加到项目中：
+
+#### 配置方式
+
+<Tabs>
+<TabItem value="cli" label="CLI" default>
+
+If you are using the default go generate config, add `--feature intercept` option to the `ent/generate.go` file as follows:
+
+```go title="ent/generate.go"
+package ent
+
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature intercept ./schema
+```
+
+It is recommended to add the [`schema/snapshot`](features.md#auto-solve-merge-conflicts) feature-flag along with the
+`intercept` flag to enhance the development experience, for example:
+
+```go
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature intercept,schema/snapshot ./schema
+```
+
+</TabItem>
+<TabItem value="entc" label="Go">
+
+If you are using the configuration from the GraphQL documentation, add the feature flag as follows:
+
+```go
+// +build ignore
+
+package main
+
+
+import (
+    "log"
+
+    "entgo.io/ent/entc"
+    "entgo.io/ent/entc/gen"
+)
+
+func main() {
+	opts := []entc.Option{
+        entc.FeatureNames("intercept"),
+	}
+    if err := entc.Generate("./schema", &gen.Config{}, opts...); err != nil {
+		log.Fatalf("running ent codegen: %v", err)
+	}
+}
+```
+
+
+It is recommended to add the [`schema/snapshot`](features.md#auto-solve-merge-conflicts) feature-flag along with the
+`intercept` flag to enhance the development experience, for example:
+
+```diff
+opts := []entc.Option{
+-    entc.FeatureNames("intercept"),
++    entc.FeatureNames("intercept", "schema/snapshot"),
+}
+```
+
+</TabItem>
+</Tabs>
+
+#### 拦截器注册
+
+:::important
+需注意：与[模式钩子](hooks.md#hooks-registration)类似，若在模式中使用**`Interceptors`**选项，**必须**在主包中添加以下导入语句，以避免模式包与生成的ent包之间可能出现的循环引用：
+```go
+import _ "<project>/ent/runtime"
+```
+:::
+
+#### 使用生成的`intercept`包
+
+添加特性标志后，即可使用`intercept`包创建拦截器：
+
+<Tabs>
+<TabItem value="func" label="intercept.Func" default>
+
+```go
+client.Intercept(
+	intercept.Func(func(ctx context.Context, q intercept.Query) error {
+		// Limit all queries to 1000 records.
+		q.Limit(1000)
+		return nil
+	})
+)
+```
+
+</TabItem>
+<TabItem value="traverse-func" label="intercept.TraverseFunc">
+
+```go
+client.Intercept(
+	intercept.TraverseFunc(func(ctx context.Context, q intercept.Query) error {
+        // Apply a predicate/filter to all queries.
+		q.WhereP(predicate)
+		return nil
+	})
+)
+```
+
+</TabItem>
+<TabItem value="new-query" label="intercept.NewQuery">
+
+```go
+ent.InterceptFunc(func(next ent.Querier) ent.Querier {
+	return ent.QuerierFunc(func(ctx context.Context, query ent.Query) (ent.Value, error) {
+        // Get a generic query from a typed-query.
+		q, err := intercept.NewQuery(query)
+        if err != nil {
+            return nil, err
+        }
+        q.Limit(1000)
+		return next.Intercept(ctx, query)
+	})
+})
+```
+
+</TabItem>
+</Tabs>
+
+## 定义遍历器（Traverser）
+
+某些场景下，需要拦截[图遍历](traversals.md)并在查询返回节点前修改其构建器。例如在下述查询中，我们需要确保系统中**所有**图遍历仅处理`active`状态的用户：
+
+```go
+intercept.TraverseUser(func(ctx context.Context, q *ent.UserQuery) error {
+	q.Where(user.Active(true))
+	return nil
+})
+```
+
+定义并注册此类遍历器后，将对系统中所有图遍历生效。例如：
+
+```go
+func TestTypedTraverser(t *testing.T) {
+	ctx := context.Background()
+	client := enttest.Open(t, dialect.SQLite, "file:ent?mode=memory&_fk=1")
+	defer client.Close()
+	a8m, nat := client.User.Create().SetName("a8m").SaveX(ctx), client.User.Create().SetName("nati").SetActive(false).SaveX(ctx)
+	client.Pet.CreateBulk(
+		client.Pet.Create().SetName("a").SetOwner(a8m),
+		client.Pet.Create().SetName("b").SetOwner(a8m),
+		client.Pet.Create().SetName("c").SetOwner(nat),
+	).ExecX(ctx)
+
+    // highlight-start
+	// Get pets of all users.
+	if n := client.User.Query().QueryPets().CountX(ctx); n != 3 {
+		t.Errorf("got %d pets, want 3", n)
+	}
+    // highlight-end
+
+	// Add an interceptor that filters out inactive users.
+	client.User.Intercept(
+		intercept.TraverseUser(func(ctx context.Context, q *ent.UserQuery) error {
+			q.Where(user.Active(true))
+			return nil
+		}),
+	)
+
+    // highlight-start
+	// Only pets of active users are returned.
+	if n := client.User.Query().QueryPets().CountX(ctx); n != 2 {
+		t.Errorf("got %d pets, want 2", n)
+	}
+    // highlight-end
+}
+```
+
+## 拦截器与遍历器的区别
+
+`Interceptors`和`Traversers`均可用于修改查询行为，但作用于不同执行阶段。拦截器作为中间件，允许在查询执行前修改查询语句，并在数据库返回记录后修改结果集，因此仅作用于查询的最终阶段——即实际执行数据库语句时。而遍历器在更早阶段调用，可在图遍历的每一步中修改中间查询和最终查询，然后才将它们组合起来。
+
+总结而言，Traverse函数更适合为图遍历添加默认过滤器，而Intercept函数更适合实现应用的日志记录或缓存功能。
+
+```go
+client.User.Query().
+    QueryGroups().	// User traverse functions applied.
+    QueryPosts().	// Group traverse functions applied.
+    All(ctx)	    // Post traverse and intercept functions applied.
+```
+
+## 示例
+
+### 软删除
+
+软删除模式是拦截器与钩子的典型用例。以下示例展示如何通过[`ent.Mixin`](schema-mixin.md)为项目中所有模式添加该功能：
+
+<Tabs>
+<TabItem value="mixin" label="Mixin" default>
+
+```go
+// SoftDeleteMixin implements the soft delete pattern for schemas.
+type SoftDeleteMixin struct {
+	mixin.Schema
+}
+
+// Fields of the SoftDeleteMixin.
+func (SoftDeleteMixin) Fields() []ent.Field {
+	return []ent.Field{
+		field.Time("delete_time").
+			Optional(),
+	}
+}
+
+type softDeleteKey struct{}
+
+// SkipSoftDelete returns a new context that skips the soft-delete interceptor/mutators.
+func SkipSoftDelete(parent context.Context) context.Context {
+	return context.WithValue(parent, softDeleteKey{}, true)
+}
+
+// Interceptors of the SoftDeleteMixin.
+func (d SoftDeleteMixin) Interceptors() []ent.Interceptor {
+	return []ent.Interceptor{
+		intercept.TraverseFunc(func(ctx context.Context, q intercept.Query) error {
+			// Skip soft-delete, means include soft-deleted entities.
+			if skip, _ := ctx.Value(softDeleteKey{}).(bool); skip {
+				return nil
+			}
+			d.P(q)
+			return nil
+		}),
+	}
+}
+
+// Hooks of the SoftDeleteMixin.
+func (d SoftDeleteMixin) Hooks() []ent.Hook {
+	return []ent.Hook{
+		hook.On(
+			func(next ent.Mutator) ent.Mutator {
+				return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+					// Skip soft-delete, means delete the entity permanently.
+					if skip, _ := ctx.Value(softDeleteKey{}).(bool); skip {
+						return next.Mutate(ctx, m)
+					}
+					mx, ok := m.(interface {
+						SetOp(ent.Op)
+						Client() *gen.Client
+						SetDeleteTime(time.Time)
+						WhereP(...func(*sql.Selector))
+					})
+					if !ok {
+						return nil, fmt.Errorf("unexpected mutation type %T", m)
+					}
+					d.P(mx)
+					mx.SetOp(ent.OpUpdate)
+					mx.SetDeleteTime(time.Now())
+					return mx.Client().Mutate(ctx, m)
+				})
+			},
+			ent.OpDeleteOne|ent.OpDelete,
+		),
+	}
+}
+
+// P adds a storage-level predicate to the queries and mutations.
+func (d SoftDeleteMixin) P(w interface{ WhereP(...func(*sql.Selector)) }) {
+	w.WhereP(
+		sql.FieldIsNull(d.Fields()[0].Descriptor().Name),
+	)
+}
+```
+
+</TabItem>
+<TabItem value="schema" label="Mixin usage">
+
+```go
+// Pet holds the schema definition for the Pet entity.
+type Pet struct {
+	ent.Schema
+}
+
+// Mixin of the Pet.
+func (Pet) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+        //highlight-next-line
+		SoftDeleteMixin{},
+	}
+}
+```
+
+</TabItem>
+<TabItem value="runtime" label="Runtime usage">
+
+```go
+// Filter out soft-deleted entities.
+pets, err := client.Pet.Query().All(ctx)
+if err != nil {
+    return err
+}
+
+// Include soft-deleted entities.
+pets, err := client.Pet.Query().All(schema.SkipSoftDelete(ctx))
+if err != nil {
+    return err
+}
+```
+
+</TabItem>
+</Tabs>
+
+### 限制记录数量
+
+以下示例演示如何使用拦截器函数限制数据库返回的记录数量：
+
+```go
+client.Intercept(
+    intercept.Func(func(ctx context.Context, q intercept.Query) error {
+		// LimitInterceptor limits the number of records returned from
+		// the database to 1000, in case Limit was not explicitly set.
+		if ent.QueryFromContext(ctx).Limit == nil {
+			q.Limit(1000)
+		}
+		return nil
+	}),
+)
+```
+
+### 多项目支持
+
+以下示例展示了如何编写一个可在多个项目中复用的通用拦截器：
+
+<Tabs>
+<TabItem value="definition" label="Definition">
+
+```go
+// Project-level example. The usage of "entgo" package emphasizes that this interceptor does not rely on any generated code.
+func SharedLimiter[Q interface{ Limit(int) }](f func(entgo.Query) (Q, error), limit int) entgo.Interceptor {
+	return entgo.InterceptFunc(func(next entgo.Querier) entgo.Querier {
+		return entgo.QuerierFunc(func(ctx context.Context, query entgo.Query) (entgo.Value, error) {
+			l, err := f(query)
+			if err != nil {
+				return nil, err
+			}
+			l.Limit(limit)
+			// LimitInterceptor limits the number of records returned from the
+			// database to the configured one, in case Limit was not explicitly set.
+			if entgo.QueryFromContext(ctx).Limit == nil {
+				l.Limit(limit)
+			}
+			return next.Query(ctx, query)
+		})
+	})
+}
+```
+
+</TabItem>
+<TabItem value="usage" label="Usage">
+
+```go
+client1.Intercept(SharedLimiter(intercept1.NewQuery, limit))
+
+client2.Intercept(SharedLimiter(intercept2.NewQuery, limit))
+```
+
+</TabItem>
+</Tabs>

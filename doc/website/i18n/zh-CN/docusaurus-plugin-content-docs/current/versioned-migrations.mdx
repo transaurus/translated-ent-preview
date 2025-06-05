@@ -1,0 +1,836 @@
+---
+id: versioned-migrations
+title: Versioned Migrations
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import InstallationInstructions from './components/_installation_instructions.mdx';
+import AtlasMigrateDiff from './components/_atlas_migrate_diff.mdx';
+import AtlasMigrateApply from './components/_atlas_migrate_apply.mdx';
+
+## 快速指南
+
+以下是自动生成并执行数据库迁移文件的简要步骤。如需深入了解，请继续阅读[下一章节](#in-depth-guide)。
+
+### 生成迁移文件
+
+<InstallationInstructions />
+
+运行以下命令为Ent模式自动生成迁移文件：
+
+<AtlasMigrateDiff/>
+
+:::info[[开发数据库](https://atlasgo.io/concepts/dev-database)的作用]
+Atlas通过将迁移目录中的SQL文件执行到提供的[开发数据库](https://atlasgo.io/concepts/dev-database)来加载当前状态。随后将其与`ent/schema`包定义的期望状态进行对比，并编写从当前状态迁移至期望状态的迁移计划。
+:::
+
+### 应用迁移
+
+执行以下命令将待处理的迁移文件应用到数据库：
+
+<AtlasMigrateApply/>
+
+更多信息请参阅[Atlas文档](https://atlasgo.io/versioned/apply)。
+
+### 迁移状态
+
+使用以下命令获取连接数据库的详细迁移状态信息：
+
+<Tabs
+defaultValue="mysql"
+values={[
+{label: 'MySQL', value: 'mysql'},
+{label: 'MariaDB', value: 'maria'},
+{label: 'PostgreSQL', value: 'postgres'},
+{label: 'SQLite', value: 'sqlite'},
+]}>
+<TabItem value="mysql">
+
+```shell
+atlas migrate status \
+  --dir "file://ent/migrate/migrations" \
+  --url "mysql://root:pass@localhost:3306/example"
+```
+
+</TabItem>
+<TabItem value="maria">
+
+```shell
+atlas migrate status \
+  --dir "file://ent/migrate/migrations" \
+  --url "maria://root:pass@localhost:3306/example"
+```
+
+</TabItem>
+<TabItem value="postgres">
+
+```shell
+atlas migrate status \
+  --dir "file://ent/migrate/migrations" \
+  --url "postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable"
+```
+
+</TabItem>
+<TabItem value="sqlite">
+
+```shell
+atlas migrate status \
+  --dir "file://ent/migrate/migrations" \
+  --url "sqlite://file.db?_fk=1"
+```
+
+</TabItem>
+</Tabs>
+
+## 深度指南
+
+若使用[Atlas](https://github.com/ariga/atlas)迁移引擎，可采用版本化迁移工作流。Atlas不会直接将变更应用到数据库，而是生成包含必要SQL语句的迁移文件集。这些文件可被golang-migrate、Flyway和Liquibase等现有迁移工具编辑和应用。
+
+### 生成版本化迁移文件
+
+迁移文件通过计算两个状态间的差异生成。Ent模式反映的状态称为期望状态，而当前状态则是最近变更前的最终状态。Ent有两种确定当前状态的方式：
+
+1. 回放现有迁移目录并检查模式（默认方式）
+2. 连接现有数据库并检查模式
+
+我们推荐使用第一种方式，其优势在于无需连接生产数据库即可创建差异。此外，这种方式也适用于存在多个处于不同迁移状态的部署场景。
+
+![atlas版本化迁移流程](https://entgo.io/images/assets/migrate-atlas-replay.png)
+
+自动生成迁移文件可采用以下两种方式之一：
+
+1. 对`ent/schema`包使用[Atlas](https://atlasgo.io)的`migrate diff`命令
+2. 启用`sql/versioned-migration`特性标志，并编写使用Atlas包生成迁移文件的小型脚本
+
+#### 选项1：使用`atlas migrate diff`命令
+
+<AtlasMigrateDiff/>
+
+:::note
+要在版本化迁移中启用[`GlobalUniqueID`](migrate.md#universal-ids)选项，需在目标状态后添加查询参数`globalid=1`。例如：`--to "ent://ent/schema?globalid=1"`。
+:::
+
+成功执行上述命令后运行`ls ent/migrate/migrations`，您将看到Atlas创建的两个文件：
+
+<Tabs
+defaultValue="migration_file"
+values={[
+{label: '20220811114629_create_users.sql', value: 'migration_file'},
+{label: 'atlas.sum', value: 'sum_file'},
+]}>
+<TabItem value="migration_file">
+
+```sql
+-- create "users" table
+CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+
+```
+
+</TabItem>
+<TabItem value="sum_file">
+
+In addition to the migration directory, Atlas maintains a file name `atlas.sum` which is used
+to ensure the integrity of the migration directory and force developers to deal with situations
+where migration order or contents were modified after the fact.
+
+```text
+h1:vj6fBSDiLEwe+jGdHQvM2NU8G70lAfXwmI+zkyrxMnk=
+20220811114629_create_users.sql h1:wrm4K8GSucW6uMJX7XfmfoVPhyzz3vN5CnU1mam2Y4c=
+
+```
+
+</TabItem>
+</Tabs>
+
+前往[应用迁移文件](#apply-migration-files)章节了解如何执行生成的迁移文件。
+
+#### 选项2：创建迁移生成脚本
+
+第一步是通过传入`sql/versioned-migration`特性标志启用版本化迁移功能。根据执行Ent代码生成器的方式，您需要选择以下两种方案之一：
+
+<Tabs
+defaultValue="ent"
+values={[
+{label: 'Using Ent CLI', value: 'ent'},
+{label: 'Using the entc package', value: 'entc'},
+]}>
+<TabItem value="ent">
+
+If you are using the default go generate configuration, simply add the `--feature sql/versioned-migration` to
+the `ent/generate.go` file as follows:
+
+```go
+package ent
+
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature sql/versioned-migration ./schema
+```
+
+</TabItem>
+<TabItem value="entc">
+
+If you are using the code generation package (e.g. if you are using an Ent extension like `entgql`),
+add the feature flag as follows:
+
+```go
+//go:build ignore
+
+package main
+
+import (
+	"log"
+
+	"entgo.io/ent/entc"
+	"entgo.io/ent/entc/gen"
+)
+
+func main() {
+	err := entc.Generate("./schema", &gen.Config{
+		//highlight-next-line
+		Features: []gen.Feature{gen.FeatureVersionedMigration},
+	})
+	if err != nil {
+		log.Fatalf("running ent codegen: %v", err)
+	}
+}
+```
+
+</TabItem>
+</Tabs>
+
+使用`go generate`运行代码生成后，新的迁移文件创建方法已添加到您的`ent/migrate`包中。后续步骤如下：
+
+1\. 提供Atlas[开发数据库](https://atlasgo.io/concepts/dev-database)的URL以重放迁移目录并计算**当前**状态。我们使用`docker`运行本地数据库容器：
+
+<Tabs
+defaultValue="mysql"
+values={[
+{label: 'MySQL', value: 'mysql'},
+{label: 'MariaDB', value: 'mariadb'},
+{label: 'PostgreSQL', value: 'postgres'},
+]}>
+<TabItem value="mysql">
+
+```bash
+docker run --name migration --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=pass -e MYSQL_DATABASE=test -d mysql
+```
+
+</TabItem>
+<TabItem value="mariadb">
+
+```bash
+docker run --name migration --rm -p 3306:3306 -e MYSQL_ROOT_PASSWORD=pass -e MYSQL_DATABASE=test -d mariadb
+```
+
+</TabItem>
+<TabItem value="postgres">
+
+```bash
+docker run --name migration --rm -p 5432:5432 -e POSTGRES_PASSWORD=pass -e POSTGRES_DB=test -d postgres
+```
+
+</TabItem>
+</Tabs>
+
+2\. 在`ent/migrate`包下创建名为`main.go`的文件和`migrations`目录，并根据项目需求自定义迁移生成逻辑。
+
+<Tabs
+defaultValue="atlas"
+values={[
+{label: 'Atlas', value: 'atlas'},
+{label: 'golang-migrate/migrate', value: 'golang_migrate'},
+{label: 'pressly/goose', value: 'goose'},
+{label: 'amacneil/dbmate', value: 'dbmate'},
+{label: 'Flyway', value: 'flyway'},
+{label: 'Liquibase', value: 'liquibase'},
+]}>
+<TabItem value="atlas">
+
+```go title="ent/migrate/main.go"
+//go:build ignore
+
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"<project>/ent/migrate"
+
+	atlas "ariga.io/atlas/sql/migrate"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql/schema"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	ctx := context.Background()
+	// Create a local migration directory able to understand Atlas migration file format for replay.
+	dir, err := atlas.NewLocalDir("ent/migrate/migrations")
+	if err != nil {
+		log.Fatalf("failed creating atlas migration directory: %v", err)
+	}
+	// Migrate diff options.
+	opts := []schema.MigrateOption{
+		schema.WithDir(dir),                         // provide migration directory
+		schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
+		schema.WithDialect(dialect.MySQL),           // Ent dialect to use
+		schema.WithFormatter(atlas.DefaultFormatter),
+	}
+	if len(os.Args) != 2 {
+		log.Fatalln("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'")
+	}
+	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
+	err = migrate.NamedDiff(ctx, "mysql://root:pass@localhost:3306/test", os.Args[1], opts...)
+	if err != nil {
+		log.Fatalf("failed generating migration file: %v", err)
+	}
+}
+```
+
+</TabItem>
+<TabItem value="golang_migrate">
+
+```go title="ent/migrate/main.go"
+//go:build ignore
+
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"<project>/ent/migrate"
+
+	"ariga.io/atlas/sql/sqltool"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql/schema"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	ctx := context.Background()
+	// Create a local migration directory able to understand golang-migrate migration file format for replay.
+	dir, err := sqltool.NewGolangMigrateDir("ent/migrate/migrations")
+	if err != nil {
+		log.Fatalf("failed creating atlas migration directory: %v", err)
+	}
+	// Migrate diff options.
+	opts := []schema.MigrateOption{
+		schema.WithDir(dir),                         // provide migration directory
+		schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
+		schema.WithDialect(dialect.MySQL),           // Ent dialect to use
+	}
+	if len(os.Args) != 2 {
+		log.Fatalln("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'")
+	}
+	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
+	err = migrate.NamedDiff(ctx, "mysql://root:pass@localhost:3306/test", os.Args[1], opts...)
+	if err != nil {
+		log.Fatalf("failed generating migration file: %v", err)
+	}
+}
+```
+
+</TabItem>
+<TabItem value="goose">
+
+```go title="ent/migrate/main.go"
+//go:build ignore
+
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"<project>/ent/migrate"
+
+	"ariga.io/atlas/sql/sqltool"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql/schema"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	ctx := context.Background()
+	// Create a local migration directory able to understand goose migration file format for replay.
+	dir, err := sqltool.NewGooseDir("ent/migrate/migrations")
+	if err != nil {
+		log.Fatalf("failed creating atlas migration directory: %v", err)
+	}
+	// Migrate diff options.
+	opts := []schema.MigrateOption{
+		schema.WithDir(dir),                         // provide migration directory
+		schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
+		schema.WithDialect(dialect.MySQL),           // Ent dialect to use
+	}
+	if len(os.Args) != 2 {
+		log.Fatalln("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'")
+	}
+	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
+	err = migrate.NamedDiff(ctx, "mysql://root:pass@localhost:3306/test", os.Args[1], opts...)
+	if err != nil {
+		log.Fatalf("failed generating migration file: %v", err)
+	}
+}
+```
+
+</TabItem>
+<TabItem value="dbmate">
+
+```go title="ent/migrate/main.go"
+//go:build ignore
+
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"<project>/ent/migrate"
+
+	"ariga.io/atlas/sql/sqltool"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql/schema"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	ctx := context.Background()
+	// Create a local migration directory able to understand dbmate migration file format for replay.
+	dir, err := sqltool.NewDBMateDir("ent/migrate/migrations")
+	if err != nil {
+		log.Fatalf("failed creating atlas migration directory: %v", err)
+	}
+	// Migrate diff options.
+	opts := []schema.MigrateOption{
+		schema.WithDir(dir),                         // provide migration directory
+		schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
+		schema.WithDialect(dialect.MySQL),           // Ent dialect to use
+	}
+	if len(os.Args) != 2 {
+		log.Fatalln("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'")
+	}
+	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
+	err = migrate.NamedDiff(ctx, "mysql://root:pass@localhost:3306/test", os.Args[1], opts...)
+	if err != nil {
+		log.Fatalf("failed generating migration file: %v", err)
+	}
+}
+```
+
+</TabItem>
+<TabItem value="flyway">
+
+```go title="ent/migrate/main.go"
+//go:build ignore
+
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"<project>/ent/migrate"
+
+	"ariga.io/atlas/sql/sqltool"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql/schema"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	ctx := context.Background()
+	// Create a local migration directory able to understand Flyway migration file format for replay.
+	dir, err := sqltool.NewFlywayDir("ent/migrate/migrations")
+	if err != nil {
+		log.Fatalf("failed creating atlas migration directory: %v", err)
+	}
+	// Migrate diff options.
+	opts := []schema.MigrateOption{
+		schema.WithDir(dir),                         // provide migration directory
+		schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
+		schema.WithDialect(dialect.MySQL),           // Ent dialect to use
+	}
+	if len(os.Args) != 2 {
+		log.Fatalln("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'")
+	}
+	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
+	err = migrate.NamedDiff(ctx, "mysql://root:pass@localhost:3306/test", os.Args[1], opts...)
+	if err != nil {
+		log.Fatalf("failed generating migration file: %v", err)
+	}
+}
+```
+
+</TabItem>
+<TabItem value="liquibase">
+
+```go title="ent/migrate/main.go"
+//go:build ignore
+
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"<project>/ent/migrate"
+
+	"ariga.io/atlas/sql/sqltool"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql/schema"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	ctx := context.Background()
+	// Create a local migration directory able to understand Liquibase migration file format for replay.
+	dir, err := sqltool.NewLiquibaseDir("ent/migrate/migrations")
+	if err != nil {
+		log.Fatalf("failed creating atlas migration directory: %v", err)
+	}
+	// Migrate diff options.
+	opts := []schema.MigrateOption{
+		schema.WithDir(dir),                         // provide migration directory
+		schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
+		schema.WithDialect(dialect.MySQL),           // Ent dialect to use
+	}
+	if len(os.Args) != 2 {
+		log.Fatalln("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'")
+	}
+	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
+	err = migrate.NamedDiff(ctx, "mysql://root:pass@localhost:3306/test", os.Args[1], opts...)
+	if err != nil {
+		log.Fatalf("failed generating migration file: %v", err)
+	}
+}
+```
+
+</TabItem>
+</Tabs>
+
+3\. 通过从项目根目录执行`go run -mod=mod ent/migrate/main.go <name>`触发迁移生成。例如：
+
+```bash
+go run -mod=mod ent/migrate/main.go create_users
+```
+
+上述命令成功执行后运行`ls ent/migrate/migrations`，您将看到Atlas创建的两个文件：
+
+<Tabs
+defaultValue="migration_file"
+values={[
+{label: '20220811114629_create_users.sql', value: 'migration_file'},
+{label: 'atlas.sum', value: 'sum_file'},
+]}>
+<TabItem value="migration_file">
+
+```sql
+-- create "users" table
+CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+
+```
+
+</TabItem>
+<TabItem value="sum_file">
+
+In addition to the migration directory, Atlas maintains a file name `atlas.sum` which is used
+to ensure the integrity of the migration directory and force developers to deal with situations
+where migration order or contents were modified after the fact.
+
+```text
+h1:vj6fBSDiLEwe+jGdHQvM2NU8G70lAfXwmI+zkyrxMnk=
+20220811114629_create_users.sql h1:wrm4K8GSucW6uMJX7XfmfoVPhyzz3vN5CnU1mam2Y4c=
+
+```
+
+</TabItem>
+</Tabs>
+
+完整参考示例存在于[GitHub仓库](https://github.com/ent/ent/tree/master/examples/migration)。
+
+### 验证与检查迁移
+
+使用Atlas生成迁移文件后，我们可以运行[`atlas migrate lint`](https://atlasgo.io/versioned/lint)命令来验证和分析迁移目录内容，并对所选变更生成诊断报告：
+
+1. 确保迁移历史可从任意时间点重放
+2. 防止多名团队成员并发修改迁移目录时出现意外历史变更（更多一致性检查详见[下文章节](#atlas-migration-directory-integrity-file)）
+3. 检测是否包含[破坏性](https://atlasgo.io/lint/analyzers#destructive-changes)或不可逆变更，或是否存在依赖表内容可能导致迁移失败的情况
+
+运行`atlas migrate lint`命令时需配置以下参数：
+
+- `--dev-url` 用于重放变更的[开发数据库](https://atlasgo.io/concepts/dev-database)URL
+- `--dir` 迁移目录URL，默认为`file://migrations`
+- `--dir-format` 自定义目录格式，默认为`atlas`
+- (可选) `--log` 使用Go模板自定义日志输出
+- (可选) `--latest` 对最新的`N`个迁移文件进行分析
+- (可选) `--git-base` 基于Git基准分支进行分析
+
+#### 安装Atlas：
+
+<InstallationInstructions />
+
+#### 运行`atlas migrate lint`命令：
+
+<Tabs
+defaultValue="mysql"
+values={[
+{label: 'MySQL', value: 'mysql'},
+{label: 'MariaDB', value: 'maria'},
+{label: 'PostgreSQL', value: 'postgres'},
+{label: 'SQLite', value: 'sqlite'},
+]}>
+<TabItem value="mysql">
+
+```shell
+atlas migrate lint \
+  --dev-url="docker://mysql/8/test" \
+  --dir="file://ent/migrate/migrations" \
+  --latest=1
+```
+
+</TabItem>
+<TabItem value="maria">
+
+```shell
+atlas migrate lint \
+  --dev-url="docker://mariadb/latest/test" \
+  --dir="file://ent/migrate/migrations" \
+  --latest=1
+```
+
+</TabItem>
+<TabItem value="postgres">
+
+```shell
+atlas migrate lint \
+  --dev-url="docker://postgres/15/test?search_path=public" \
+  --dir="file://ent/migrate/migrations" \
+  --latest=1
+```
+
+</TabItem>
+<TabItem value="sqlite">
+
+```shell
+atlas migrate lint \
+  --dev-url="sqlite://file?mode=memory" \
+  --dir="file://ent/migrate/migrations" \
+  --latest=1
+```
+
+</TabItem>
+</Tabs>
+
+运行结果示例如下：
+
+```text {3,7}
+20221114090322_add_age.sql: data dependent changes detected:
+
+	L2: Adding a non-nullable "double" column "age" on table "users" without a default value implicitly sets existing rows with 0
+
+20221114101516_add_name.sql: data dependent changes detected:
+
+	L2: Adding a non-nullable "varchar" column "name" on table "users" without a default value implicitly sets existing rows with ""
+```
+
+#### 关于全局唯一ID的特别说明
+
+**本节仅适用于使用[全局唯一ID](migrate.md/#universal-ids)特性的MySQL用户**
+
+使用全局唯一ID时，Ent会为每个表分配`1<<32`范围的整数值。具体实现方式是：第一个表的自增起始值为`1`，第二个表为`4294967296`，第三个表为`8589934592`，以此类推。这些起始值的分配顺序会被记录在名为`ent_types`的额外表中。在MySQL 5.6和5.7版本中，自增起始值仅保存在内存中（参见[文档](https://dev.mysql.com/doc/refman/8.0/en/innodb-auto-increment-handling.html)中**InnoDB AUTO_INCREMENT计数器初始化**章节），并在服务重启时通过检查每个表的最后插入ID重新计算。如果某个表尚未插入任何行，其自增起始值会被设为0。在线迁移功能原本可以通过检查`ent_types`表来修正计数器值，但在版本化迁移中这一机制不再生效。为确保服务器重启后配置正确，必须调用Atlas结构体的`VerifyTableRange`方法：
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"<project>/ent"
+	"<project>/ent/migrate"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/schema"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+func main() {
+	drv, err := sql.Open("mysql", "user:pass@tcp(localhost:3306)/ent")
+	if err != nil {
+		log.Fatalf("failed opening connection to mysql: %v", err)
+	}
+	defer drv.Close()
+	// Verify the type allocation range.
+	m, err := schema.NewMigrate(drv, nil)
+	if err != nil {
+		log.Fatalf("failed creating migrate: %v", err)
+	}
+	if err := m.VerifyTableRange(context.Background(), migrate.Tables); err != nil {
+		log.Fatalf("failed verifyint range allocations: %v", err)
+	}
+	client := ent.NewClient(ent.Driver(drv))
+	// ... do stuff with the client
+}
+```
+
+:::caution[重要提示]
+从旧版本升级到MySQL 8后，仍需执行该方法一次以更新起始值。由于MySQL 8开始计数器不再仅存储于内存中，首次执行后后续无需重复调用。
+:::
+
+### 应用迁移文件
+
+Ent推荐使用Atlas CLI将生成的迁移文件应用到数据库。如需使用其他迁移管理工具，Ent也原生支持多种工具的迁移文件生成。
+
+<AtlasMigrateApply/>
+
+更多信息请参阅[Atlas文档](https://atlasgo.io/versioned/apply)。
+
+:::info
+
+旧版Ent默认使用[`golang-migrate/migrate`](https://github.com/golang-migrate/migrate)作为迁移执行引擎。为便于过渡，Atlas可帮助导入golang-migrate格式的迁移文件，详见[Atlas文档](https://atlasgo.io/versioned/import)。
+
+:::
+
+## 从自动迁移切换到版本化迁移
+
+若需将已投入生产的Ent应用从自动迁移切换至新版版本化迁移，需执行额外步骤。
+
+### 创建反映当前部署状态的初始迁移文件
+
+首先确保Schema定义与已部署版本同步，然后启动空数据库并按前文所述执行diff命令。这将生成创建当前Schema图状态所需的SQL语句。若先前启用了[全局唯一ID](migrate.md#universal-ids)，所有部署实例都会包含名为`ent_types`的特殊数据库表。上述命令会生成创建该表及其内容的SQL语句（类似如下）：
+
+```sql
+CREATE TABLE `users` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT);
+CREATE TABLE `groups` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT);
+INSERT INTO sqlite_sequence (name, seq) VALUES ("groups", 4294967296);
+CREATE TABLE `ent_types` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `type` text NOT NULL);
+CREATE UNIQUE INDEX `ent_types_type_key` ON `ent_types` (`type`);
+INSERT INTO `ent_types` (`type`) VALUES ('users'), ('groups');
+```
+
+为确保不破坏现有代码，必须使生成文件内容与源数据库中的表内容完全一致。例如，若生成的迁移文件显示顺序为(`users,groups`)，但实际部署表中的顺序为(`groups,users`)：
+
+| id  | type   |
+|-----|--------|
+| 1   | groups |
+| 2   | users  |
+
+此时需手动调整生成迁移文件中的条目顺序。
+
+### 使用Atlas基线迁移
+
+若使用Atlas作为迁移执行引擎，可直接使用`--baseline`标志。其他工具请参考其官方文档。
+
+```shell
+atlas migrate apply \
+  --dir "file://migrations"
+  --url mysql://root:pass@localhost:3306/ent
+  --baseline "<version>"
+```
+
+## Atlas迁移目录完整性文件
+
+### 问题描述
+
+假设有多个团队并行开发功能且均需执行迁移。若团队A与团队B未及时协调，可能会因版本控制系统（如git）不会对新迁移文件引发合并冲突，最终生成损坏的迁移文件集（例如重复添加相同表或列）。以下示例展示了此类情况：
+
+![atlas-versioned-migrations-no-conflict](https://entgo.io/images/assets/migrate/no-conflict.svg)
+
+假设团队A和团队B各自在分支上新增User模式并生成版本化迁移文件。
+
+```sql title="20220318104614_team_A.sql"
+-- create "users" table
+CREATE TABLE `users` (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    // highlight-start
+    `team_a_col` INTEGER NOT NULL,
+    // highlight-end
+    PRIMARY KEY (`id`)
+) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+```
+
+```sql title="20220318104615_team_B.sql"
+-- create "users" table
+CREATE TABLE `users` (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    // highlight-start
+     `team_b_col` INTEGER NOT NULL,
+    // highlight-end
+     PRIMARY KEY (`id`)
+) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+```
+
+若两者同时将分支合并至主分支，git不会提示冲突且表面一切正常。但尝试应用待执行迁移时会导致迁移失败：
+
+```shell
+mysql> CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `team_a_col` INTEGER NOT NULL, PRIMARY KEY (`id`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+[2022-04-14 10:00:38] completed in 31 ms
+
+mysql> CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `team_b_col` INTEGER NOT NULL, PRIMARY KEY (`id`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+[2022-04-14 10:00:48] [42S01][1050] Table 'users' already exists
+```
+
+根据SQL语句不同，可能使数据库处于不可用状态。
+
+### 解决方案
+
+所幸Atlas迁移引擎提供了防止并发创建新迁移文件及保护迁移历史免遭意外更改的机制——**迁移目录完整性文件**。该机制通过在迁移目录中添加名为`atlas.sum`的文件实现。团队A的迁移目录中该文件示例如下：
+
+```text
+h1:KRFsSi68ZOarsQAJZ1mfSiMSkIOZlMq4RzyF//Pwf8A=
+20220318104614_team_A.sql h1:EGknG5Y6GQYrc4W8e/r3S61Aqx2p+NmQyVz/2m8ZNwA=
+
+```
+
+`atlas.sum`文件包含每个迁移文件的校验值（通过反向单分支Merkle哈希树实现）及所有文件的汇总值。新增文件会导致汇总文件变更，从而在多数版本控制系统中引发合并冲突。以下演示如何通过**迁移目录完整性文件**自动检测前述问题。
+
+:::note
+请注意，此功能需在系统中安装Atlas CLI，请确保先遵循[安装指南](https://atlasgo.io/cli/getting-started/setting-up#install-the-cli)。
+:::
+
+在早期Ent版本中，完整性文件为可选功能。但我们认为该特性能为迁移提供重要安全保障，因此现在默认生成汇总文件，未来版本可能移除禁用选项。当前若需禁用完整性检查，可使用`schema.DisableChecksum()`选项。
+
+迁移目录除常规`.sql`文件外将包含`atlas.sum`文件。每次生成新迁移文件时该文件会自动更新。但任何对迁移目录的手动修改都会导致目录与`atlas.sum`文件不同步。通过Atlas CLI可检查同步状态并进行修复：
+
+```shell
+# If there is no output, the migration directory is in-sync.
+atlas migrate validate --dir file://<path-to-your-migration-directory>
+```
+
+```shell
+# If the migration directory and sum file are out-of-sync the Atlas CLI will tell you.
+atlas migrate validate --dir file://<path-to-your-migration-directory>
+Error: checksum mismatch
+
+You have a checksum error in your migration directory.
+This happens if you manually create or edit a migration file.
+Please check your migration files and run
+
+'atlas migrate hash'
+
+to re-hash the contents and resolve the error.
+
+exit status 1
+```
+
+若确认迁移文件内容正确，可重新计算`atlas.sum`中的哈希值：
+
+```shell
+# Recompute the sum file.
+atlas migrate hash --dir file://<path-to-your-migration-directory>
+```
+
+回到前述问题，若团队A先将变更合并至主分支，团队B随后尝试合并时会出现如下合并冲突：
+
+![atlas-versioned-migrations-no-conflict](https://entgo.io/images/assets/migrate/conflict.svg)
+
+可在CI流程中添加`atlas migrate validate`调用以持续检查迁移目录。即使团队成员手动修改后忘记更新`atlas.sum`文件，CI流程也会立即发现问题。

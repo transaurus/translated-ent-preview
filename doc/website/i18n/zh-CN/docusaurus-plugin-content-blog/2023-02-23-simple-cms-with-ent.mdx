@@ -1,0 +1,867 @@
+---
+title: A beginner's guide to creating a web-app in Go using Ent
+author: Rotem Tamir
+authorURL: "https://github.com/rotemtam"
+authorImageURL: "https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80"
+authorTwitter: _rtam
+image: "https://entgo.io/images/assets/cms-blog/share.png"
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+[Ent](https://entgo.io) 是一个开源的 Go 实体框架。它与传统 ORM 类似，但具备一些独特特性，使其在 Go 社区广受欢迎。Ent 最初由 [Ariel](https://github.com/a8m) 于 2019 年在 Facebook 工作时开源，源于管理超大型复杂数据模型应用的开发痛点，在 Facebook 内部成功运行一年后才开源。2021 年 9 月从 Facebook 开源计划毕业后，Ent 加入了 Linux 基金会。
+
+本教程面向希望构建简单项目（极简内容管理系统）的 Ent 和 Go 初学者。
+
+过去几年间，Ent 已成为 Go 生态中增长最快的 ORM 之一：
+
+![](https://entgo.io/images/assets/cms-blog/oss-insight-table.png)
+
+<div style={{textAlign: 'center'}}>
+
+*Source: [@ossinsight_bot on Twitter](https://twitter.com/ossinsight_bot/status/1593182222626213888), November 2022*
+
+</div>
+
+Ent 最常被提及的特性包括：
+
+* **类型安全的数据库操作 Go API** - 告别 `interface{}` 和反射，使用编辑器可识别、编译器可检查的纯 Go 代码。
+  ![](https://entgo.io/images/assets/cms-blog/static.gif)
+* **图语义数据建模** - Ent 使用图语义建模应用数据，通过简洁 API 轻松遍历复杂数据集。
+
+  例如获取所有关注"狗狗"主题群组的用户：
+
+  ```go
+  // 从主题开始遍历
+  client.Topic.Query().
+      Where(topic.Name("dogs")).
+      QueryGroups().
+      QueryUsers().
+      All(ctx)
+  
+  // 或：从用户开始过滤
+  client.User.Query().
+      Where(		
+          user.HasGroupsWith(  
+              group.HasTopicsWith(  
+                  topic.Name("dogs"),  
+              ),  
+          ),
+      ).
+      All(ctx)
+  ```
+
+* **自动生成服务层** - 无论是 GraphQL、gRPC 还是 OpenAPI 兼容的 API 层，Ent 都能生成在数据库之上构建高性能服务所需的代码，包括第三方模式（GraphQL 类型、Protobuf 消息等）和优化的数据库读写逻辑。
+* **内置 Atlas 集成** - Ent 深度集成 [Atlas](https://atlasgo.io)，这个强大的模式管理工具具备诸多高级能力，可自动规划模式迁移、在 CI 中验证或直接部署到生产环境。（注：Ariel 和我是 Atlas 的创建者和维护者）
+
+#### 前置条件
+
+* [安装 Go](https://go.dev/doc/install)
+* [安装 Docker](https://docs.docker.com/get-docker/)
+
+:::info[配套代码库]
+
+本教程所有代码可在 [此仓库](https://github.com/rotemtam/ent-blog-example) 查看。
+
+:::
+
+### 第一步：建立数据库模式
+
+本步骤代码详见 [此提交](https://github.com/rotemtam/ent-blog-example/commit/d4e4916231f05aa9a4b9ce93e75afdb72ab25799)。
+
+首先使用 `go mod init` 初始化项目：
+
+```
+go mod init github.com/rotemtam/ent-blog-example
+```
+
+Go 确认新模块创建成功：
+
+```
+go: creating new go.mod: module github.com/rotemtam/ent-blog-example
+```
+
+我们将使用 Ent 创建应用数据模型。通过 `go get` 获取依赖：
+
+```
+go get -u entgo.io/ent@master
+```
+
+安装完成后，使用 Ent CLI 初始化本教程要处理的两种实体类型：`User` 和 `Post` 的模型。
+
+```
+go run -mod=mod entgo.io/ent/cmd/ent new User Post
+```
+
+注意生成了几个文件：
+
+```
+.
+`-- ent
+    |-- generate.go
+    `-- schema
+        |-- post.go
+        `-- user.go
+
+2 directories, 3 files
+```
+
+Ent创建了项目的基础结构：
+
+* `generate.go` - 稍后我们将看到如何使用该文件调用Ent的代码生成引擎
+* `schema`目录 - 包含我们请求的每个实体的基本`ent.Schema`定义
+
+接下来我们定义实体结构。这是`User`的模式定义：
+
+```go
+// Fields of the User.  
+func (User) Fields() []ent.Field {  
+   return []ent.Field{  
+      field.String("name"),  
+      field.String("email").
+            Unique(),  
+      field.Time("created_at").
+            Default(time.Now),  
+   }  
+}  
+  
+// Edges of the User.  
+func (User) Edges() []ent.Edge {  
+   return []ent.Edge{  
+      edge.To("posts", Post.Type),  
+   }  
+}
+```
+
+可以看到我们定义了三个字段：`name`、`email`和`created_at`（默认值为`time.Now()`）。由于期望邮箱在系统中唯一，我们在`email`字段添加了唯一约束。此外，我们还定义了一个名为`posts`的边（edge）指向`Post`类型。在Ent中，边用于定义实体间的关系。在关系型数据库中，边会被转换为外键和关联表。
+
+```go
+// Post holds the schema definition for the Post entity.
+type Post struct {  
+   ent.Schema  
+}  
+  
+// Fields of the Post.  
+func (Post) Fields() []ent.Field {  
+   return []ent.Field{  
+      field.String("title"),  
+      field.Text("body"),  
+      field.Time("created_at").
+            Default(time.Now),  
+   }  
+}  
+  
+// Edges of the Post.
+func (Post) Edges() []ent.Edge {  
+   return []ent.Edge{  
+      edge.From("author", User.Type).  
+         Unique().  
+         Ref("posts"),  
+   }  
+}
+```
+
+在`Post`模式中，我们同样定义了三个字段：`title`、`body`和`created_at`。此外，我们定义了一个从`Post`指向`User`实体的`author`边。由于在我们的简单系统中每篇文章只能有一个作者，我们将此边标记为`Unique`。通过`Ref`方法告知Ent这个边的反向引用是`User`上的`posts`边。
+
+Ent的核心优势在于其代码生成引擎。使用Ent开发时，每当应用模式发生变更，都必须调用Ent的代码生成引擎来重新生成数据库访问代码。这正是Ent能够为开发者维护类型安全且高效Go API的秘诀。
+
+让我们实际操作看看，运行：
+
+```
+go generate ./...
+```
+
+可以看到生成了大量新的Go文件：
+
+```
+.
+`-- ent
+    |-- client.go
+    |-- context.go
+    |-- ent.go
+    |-- enttest
+    |   `-- enttest.go
+/// .. Truncated for brevity 
+    |-- user_query.go
+    `-- user_update.go
+
+9 directories, 29 files
+```
+
+:::info
+如果想查看应用的实际数据库模式结构，可以使用实用工具`entviz`：
+```
+go run -mod=mod ariga.io/entviz ./ent/schema
+```
+查看结果请[点击此处](https://gh.atlasgo.cloud/explore/a0e79415)。
+:::
+
+定义完数据模型后，让我们创建对应的数据库模式。
+
+要安装最新版Atlas，只需在终端运行以下命令之一，或访问[Atlas官网](https://atlasgo.io/getting-started#installation)：
+
+<Tabs
+defaultValue="apple-intel-plain+linux"
+values={[
+{label: 'macOS + Linux', value: 'apple-intel-plain+linux'},
+{label: 'Homebrew', value: 'apple-intel-brew'},
+{label: 'Go', value: 'go'},
+{label: 'Docker', value: 'docker'},
+{label: 'Windows', value: 'windows'},
+]}>
+<TabItem value="apple-intel-plain+linux">
+
+```shell
+curl -sSf https://atlasgo.sh | sh
+```
+
+</TabItem>
+<TabItem value="apple-intel-brew">
+
+```shell
+brew install ariga/tap/atlas
+```
+
+</TabItem>
+<TabItem value="go">
+
+```shell
+go install ariga.io/atlas/cmd/atlas@master
+```
+
+</TabItem>
+<TabItem value="docker">
+
+```shell
+docker pull arigaio/atlas
+docker run --rm arigaio/atlas --help
+```
+
+If the container needs access to the host network or a local directory, use the `--net=host` flag and mount the desired
+directory:
+
+```shell
+docker run --rm --net=host \
+  -v $(pwd)/migrations:/migrations \
+  arigaio/atlas migrate apply
+  --url "mysql://root:pass@:3306/test"
+```
+
+</TabItem>
+<TabItem value="windows">
+
+Download the [latest release](https://release.ariga.io/atlas/atlas-windows-amd64-latest.exe) and
+move the atlas binary to a file location on your system PATH.
+
+</TabItem>
+</Tabs>
+
+安装Atlas后，我们可以创建初始迁移脚本：
+
+```
+atlas migrate diff add_users_posts \
+  --dir "file://ent/migrate/migrations" \
+  --to "ent://ent/schema" \
+  --dev-url "docker://mysql/8/ent"
+```
+
+注意生成了两个新文件：
+
+```
+ent/migrate/migrations
+|-- 20230226150934_add_users_posts.sql
+`-- atlas.sum
+```
+
+SQL文件（实际文件名会根据运行`atlas migrate diff`时的时间戳变化）包含在空MySQL数据库上建立模式所需的DDL语句：
+
+```sql
+-- create "users" table  
+CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, `created_at` timestamp NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `email` (`email`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;  
+-- create "posts" table  
+CREATE TABLE `posts` (`id` bigint NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `body` longtext NOT NULL, `created_at` timestamp NOT NULL, `user_posts` bigint NULL, PRIMARY KEY (`id`), INDEX `posts_users_posts` (`user_posts`), CONSTRAINT `posts_users_posts` FOREIGN KEY (`user_posts`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+```
+
+为了搭建开发环境，我们使用Docker运行本地`mysql`容器：
+
+```
+docker run --rm --name entdb -d -p 3306:3306 -e MYSQL_DATABASE=ent -e MYSQL_ROOT_PASSWORD=pass mysql:8
+```
+
+最后，在本地数据库上运行迁移脚本：
+
+```
+atlas migrate apply --dir file://ent/migrate/migrations \
+  --url mysql://root:pass@localhost:3306/ent
+```
+
+Atlas报告已成功创建表：
+
+```
+Migrating to version 20230220115943 (1 migrations in total):
+
+  -- migrating version 20230220115943
+    -> CREATE TABLE `users` (`id` bigint NOT NULL AUTO_INCREMENT, `name` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, `created_at` timestamp NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `email` (`email`)) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+    -> CREATE TABLE `posts` (`id` bigint NOT NULL AUTO_INCREMENT, `title` varchar(255) NOT NULL, `body` longtext NOT NULL, `created_at` timestamp NOT NULL, `post_author` bigint NULL, PRIMARY KEY (`id`), INDEX `posts_users_author` (`post_author`), CONSTRAINT `posts_users_author` FOREIGN KEY (`post_author`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL) CHARSET utf8mb4 COLLATE utf8mb4_bin;
+  -- ok (55.972329ms)
+
+  -------------------------
+  -- 67.18167ms
+  -- 1 migrations 
+  -- 2 sql statements
+
+```
+
+### 步骤2：数据库种子数据
+
+:::info
+本步骤代码可在此提交查看：[commit链接](https://github.com/rotemtam/ent-blog-example/commit/eae0c881a4edfbe04e6aa074d4c165e8ff3656b1)
+:::
+
+在开发内容管理系统时，如果加载网页却看不到任何内容会令人沮丧。让我们从向数据库填充种子数据开始，同时学习一些Ent的核心概念。
+
+要连接本地MySQL数据库，首先需要通过`go get`获取驱动程序：
+
+```
+go get -u github.com/go-sql-driver/mysql
+```
+
+创建名为`main.go`的文件并添加基础数据填充脚本：
+
+```go
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+
+	"github.com/rotemtam/ent-blog-example/ent"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/rotemtam/ent-blog-example/ent/user"
+)
+
+func main() {
+	// Read the connection string to the database from a CLI flag.
+	var dsn string
+	flag.StringVar(&dsn, "dsn", "", "database DSN")
+	flag.Parse()
+
+	// Instantiate the Ent client.
+	client, err := ent.Open("mysql", dsn)
+	if err != nil {
+		log.Fatalf("failed connecting to mysql: %v", err)
+	}
+	defer client.Close()
+
+	ctx := context.Background()
+	// If we don't have any posts yet, seed the database.
+	if !client.Post.Query().ExistX(ctx) {
+		if err := seed(ctx, client); err != nil {
+			log.Fatalf("failed seeding the database: %v", err)
+		}
+	}
+	// ... Continue with server start.
+}
+
+func seed(ctx context.Context, client *ent.Client) error {
+	// Check if the user "rotemtam" already exists.
+	r, err := client.User.Query().
+		Where(
+			user.Name("rotemtam"),
+		).
+		Only(ctx)
+	switch {
+	// If not, create the user.
+	case ent.IsNotFound(err):
+		r, err = client.User.Create().
+			SetName("rotemtam").
+			SetEmail("r@hello.world").
+			Save(ctx)
+		if err != nil {
+			return fmt.Errorf("failed creating user: %v", err)
+		}
+	case err != nil:
+		return fmt.Errorf("failed querying user: %v", err)
+	}
+	// Finally, create a "Hello, world" blogpost.
+	return client.Post.Create().
+		SetTitle("Hello, World!").
+		SetBody("This is my first post").
+		SetAuthor(r).
+		Exec(ctx)
+}
+```
+
+如你所见，该程序首先检查数据库中是否存在`Post`实体，若不存在则调用`seed`函数。该函数使用Ent查询名为`rotemtam`的用户，若用户不存在则尝试创建，最后以此用户为作者创建博客文章。
+
+运行脚本：
+
+```
+ go run main.go -dsn "root:pass@tcp(localhost:3306)/ent?parseTime=true"
+```
+
+### 第三步：创建首页
+
+:::info
+本步骤相关代码可查看[此提交记录](https://github.com/rotemtam/ent-blog-example/commit/8196bb50400bbaed53d5a722e987fcd50ea1628f)
+:::
+
+现在开始构建博客首页，主要包含以下部分：
+
+1. **视图层** - 使用Go的html/template模板引擎渲染用户可见的HTML页面
+2. **服务端代码** - 处理HTTP请求，从数据库获取数据并渲染模板
+3. **路由配置** - 将不同路径映射到对应的处理器
+4. **单元测试** - 验证服务端行为是否符合预期
+
+#### 视图层
+
+Go语言内置了优秀的模板引擎，分为两种：通用文本渲染的`text/template`和具备防代码注入特性的`html/template`。更多信息请参阅[官方文档](https://pkg.go.dev/html/template)。
+
+创建首个用于展示博客文章列表的模板文件`templates/list.tmpl`：
+
+```gotemplate
+<html>
+<head>
+    <title>My Blog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+</head>
+<body>
+<div class="col-lg-8 mx-auto p-4 py-md-5">
+    <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
+        <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+            <span class="fs-4">Ent Blog Demo</span>
+        </a>
+    </header>
+
+    <main>
+        <div class="row g-5">
+            <div class="col-md-12">
+                {{- range . }}
+                    <h2>{{ .Title }}</h2>
+                    <p>
+                        {{ .CreatedAt.Format "2006-01-02" }} by {{ .Edges.Author.Name }}
+                    </p>
+                    <p>
+                        {{ .Body }}
+                    </p>
+                {{- end }}
+            </div>
+
+        </div>
+    </main>
+    <footer class="pt-5 my-5 text-muted border-top">
+        <p>
+            This is the Ent Blog Demo. It is a simple blog application built with Ent and Go. Get started:
+        </p>
+        <pre>go get entgo.io/ent</pre>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+</body>
+</html>
+```
+
+这里我们基于[Bootstrap启动模板](https://getbootstrap.com/docs/5.3/examples/starter-template/)构建UI界面。重点说明：后续将在`index`处理器中向该模板传递`Post`对象切片。
+
+在Go模板中，传入的数据通过"`.`"访问。这行代码使用`range`遍历每篇文章：
+
+```
+{{- range . }}
+```
+
+接着通过`Author`关系边获取并显示文章标题、创建时间和作者姓名：
+
+```
+<h2>{{ .Title }}</h2>
+<p>
+	{{ .CreatedAt.Format "2006-01-02" }} by {{ .Edges.Author.Name }}
+</p>
+```
+
+最后输出文章正文并结束循环。
+
+```
+	<p>
+		{{ .Body }}
+	</p>
+{{- end }}
+```
+
+定义模板后，需要通过`embed`包将其编译进二进制文件（参见[文档](https://pkg.go.dev/embed)）：
+
+```go
+var (  
+   //go:embed templates/*   
+   resources embed.FS  
+   tmpl      = template.Must(template.ParseFS(resources, "templates/*"))  
+)
+```
+
+#### 服务端代码
+
+我们定义`server`类型及其构造函数`newServer`。该结构体将包含各个HTTP处理器的接收方法，并将初始化时创建的Ent客户端绑定到服务端代码。
+
+```go
+type server struct {
+	client *ent.Client
+}
+
+func newServer(client *ent.Client) *server {
+	return &server{client: client}
+}
+
+```
+
+接下来定义博客首页的处理器，该页面需展示所有可用文章：
+
+```go
+// index serves the blog home page
+func (s *server) index(w http.ResponseWriter, r *http.Request) {
+	posts, err := s.client.Post.
+		Query().
+		WithAuthor().
+		All(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := tmpl.Execute(w, posts); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+```
+
+重点解析从数据库获取文章的Ent代码：
+
+```go
+// s.client.Post contains methods for interacting with Post entities
+s.client.Post.
+	// Begin a query.
+	Query().
+	// Retrieve the entities using the `Author` edge. (a `User` instance)
+	WithAuthor().
+	// Run the query against the database using the request context.
+	All(r.Context())
+```
+
+#### 路由器
+
+为了管理应用程序的路由，我们使用`go-chi`——一个流行的Go路由库。
+
+```
+go get -u github.com/go-chi/chi/v5
+```
+
+我们定义`newRouter`函数来设置路由器：
+
+```go
+// newRouter creates a new router with the blog handlers mounted.
+func newRouter(srv *server) chi.Router {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Get("/", srv.index)
+	return r
+}
+```
+
+在这个函数中，我们首先实例化一个新的`chi.Router`，然后注册两个中间件：
+
+* `middleware.Logger`是一个基本的访问日志记录器，它会打印出服务器处理的每个请求的一些信息。
+* `middleware.Recoverer`用于从处理程序的panic中恢复，防止因应用程序错误导致整个服务器崩溃。
+
+最后，我们将`server`结构体的`index`函数注册为处理服务器根路径`/`的`GET`请求。
+
+#### 单元测试
+
+在将所有内容连接起来之前，让我们编写一个简单的单元测试来验证代码是否按预期工作。
+
+为了简化测试，我们将安装Go的SQLite驱动，它允许我们使用内存数据库：
+
+```
+go get -u github.com/mattn/go-sqlite3
+```
+
+接下来，我们安装`testify`，这是一个常用于编写测试断言的实用库。
+
+```
+go get github.com/stretchr/testify 
+```
+
+安装这些依赖项后，创建一个名为`main_test.go`的新文件：
+
+```go
+package main
+
+import (
+	"context"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/rotemtam/ent-blog-example/ent/enttest"
+	"github.com/stretchr/testify/require"
+)
+
+func TestIndex(t *testing.T) {
+	// Initialize an Ent client that uses an in memory SQLite db.
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	defer client.Close()
+	
+	// seed the database with our "Hello, world" post and user.
+	err := seed(context.Background(), client)
+	require.NoError(t, err)
+
+	// Initialize a server and router.
+	srv := newServer(client)
+	r := newRouter(srv)
+
+	// Create a test server using the `httptest` package.
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	// Make a GET request to the server root path.
+	resp, err := ts.Client().Get(ts.URL)
+
+	// Assert we get a 200 OK status code.
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, resp.StatusCode)
+
+	// Read the response body and assert it contains "Hello, world!"
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	require.Contains(t, string(body), "Hello, World!")
+}
+```
+
+运行测试以验证服务器是否正确工作：
+
+```
+go test ./...
+```
+
+观察测试通过：
+
+```
+ok      github.com/rotemtam/ent-blog-example    0.719s
+?       github.com/rotemtam/ent-blog-example/ent        [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/enttest        [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/hook   [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/migrate        [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/post   [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/predicate      [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/runtime        [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/schema [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/user   [no test files]
+
+```
+
+#### 整合所有内容
+
+最后，让我们更新`main`函数将所有内容整合在一起：
+
+```go
+func main() {  
+   // Read the connection string to the database from a CLI flag.  
+   var dsn string  
+   flag.StringVar(&dsn, "dsn", "", "database DSN")  
+   flag.Parse()  
+  
+   // Instantiate the Ent client.  
+   client, err := ent.Open("mysql", dsn)  
+   if err != nil {  
+      log.Fatalf("failed connecting to mysql: %v", err)  
+   }  
+   defer client.Close()  
+  
+   ctx := context.Background()  
+   // If we don't have any posts yet, seed the database.  
+   if !client.Post.Query().ExistX(ctx) {  
+      if err := seed(ctx, client); err != nil {  
+         log.Fatalf("failed seeding the database: %v", err)  
+      }  
+   }  
+   srv := newServer(client)  
+   r := newRouter(srv)  
+   log.Fatal(http.ListenAndServe(":8080", r))  
+}
+```
+
+现在我们可以运行我们的应用程序，并为我们的成就感到惊叹：一个正常工作的博客首页！
+
+```
+ go run main.go -dsn "root:pass@tcp(localhost:3306)/test?parseTime=true"
+```
+
+![](https://entgo.io/images/assets/cms-blog/cms-01.png)
+
+### 步骤4：添加内容
+
+:::info[]
+您可以在此提交中跟随此步骤的更改：[此提交](https://github.com/rotemtam/ent-blog-example/commit/2e412ab2cda0fd251ccb512099b802174d917511)。
+:::
+
+没有内容管理功能的内容管理系统是不完整的。让我们演示如何为博客添加发布新文章的支持。
+
+让我们从创建后端处理程序开始：
+
+```go
+// add creates a new blog post.
+func (s *server) add(w http.ResponseWriter, r *http.Request) {
+	author, err := s.client.User.Query().Only(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if err := s.client.Post.Create().
+		SetTitle(r.FormValue("title")).
+		SetBody(r.FormValue("body")).
+		SetAuthor(author).
+		Exec(r.Context()); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+```
+
+如您所见，处理程序目前从`users`表中加载*唯一*的用户（因为我们尚未创建用户管理系统或登录功能）。`Only`只有在从数据库中检索到恰好一个结果时才会成功。
+
+接下来，我们的处理程序通过将标题和正文字段设置为从`r.FormValue`获取的值来创建新文章。这是Go存储传递给HTTP请求的所有表单输入的地方。
+
+创建处理程序后，我们应该将其连接到路由器：
+
+```go
+// newRouter creates a new router with the blog handlers mounted.
+func newRouter(srv *server) chi.Router {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Get("/", srv.index)
+	// highlight-next-line
+	r.Post("/add", srv.add)
+	return r
+}
+```
+
+接下来，我们可以添加一个HTML `<form>`组件，供用户用来编写内容：
+
+```html
+<div class="col-md-12">
+	<hr/>
+	<h2>Create a new post</h2>
+	<form action="/add" method="post">
+		<div class="mb-3">
+			<label for="title" class="form-label">Title</label>
+			<input name="title" type="text" class="form-control" id="title" placeholder="Once upon a time..">
+		</div>
+		<div class="mb-3">
+			<label for="body" class="form-label">Body</label>
+			<textarea name="body" class="form-control" id="body" rows="8"></textarea>
+		</div>
+		<div class="mb-3">
+			<button type="submit" class="btn btn-primary mb-3">Post</button>
+		</div>
+	</form>
+</div>
+```
+
+此外，让我们添加一个不错的细节，即按从新到旧的顺序显示博客文章。为此，修改`index`处理程序，使用`created_at`列按降序排序文章：
+
+```go
+posts, err := s.client.Post.
+	Query().
+	WithAuthor().
+	// highlight-next-line
+	Order(ent.Desc(post.FieldCreatedAt)).
+	All(ctx)
+```
+
+最后，让我们添加另一个单元测试，验证添加文章的流程是否按预期工作：
+
+```go
+func TestAdd(t *testing.T) {
+	client := enttest.Open(t, "sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	defer client.Close()
+	err := seed(context.Background(), client)
+	require.NoError(t, err)
+
+	srv := newServer(client)
+	r := newRouter(srv)
+
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	// Post the form.
+	resp, err := ts.Client().PostForm(ts.URL+"/add", map[string][]string{
+		"title": {"Testing, one, two."},
+		"body":  {"This is a test"},
+	})
+	require.NoError(t, err)
+	// We should be redirected to the index page and receive 200 OK.
+	require.Equal(t, http.StatusOK, resp.StatusCode)
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	
+	// The home page should contain our new post.
+	require.Contains(t, string(body), "This is a test")
+}
+```
+
+让我们运行测试：
+
+```
+go test ./...
+```
+
+一切运行正常！
+
+```
+ok      github.com/rotemtam/ent-blog-example    0.493s
+?       github.com/rotemtam/ent-blog-example/ent        [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/enttest        [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/hook   [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/migrate        [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/post   [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/predicate      [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/runtime        [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/schema [no test files]
+?       github.com/rotemtam/ent-blog-example/ent/user   [no test files]
+
+```
+
+单元测试通过固然可喜，但让我们直观验证一下改动效果：
+
+![](https://entgo.io/images/assets/cms-blog/cms-02.png)
+
+表单已成功显示——太棒了！提交表单后：
+
+![](https://entgo.io/images/assets/cms-blog/cms-03.png)
+
+新文章已完美展示。干得漂亮！
+
+### 总结
+
+本文演示了如何使用Ent和Go构建简单的Web应用。虽然这个应用非常基础，但它涵盖了开发中的核心环节：定义数据模型、管理数据库模式、编写服务端代码、配置路由以及构建用户界面。
+
+作为入门教程，我们仅浅尝辄止地展示了Ent的部分功能，但希望您已感受到其核心特性的魅力。
+
+:::note[获取更多Ent资讯：]
+
+- 订阅我们的[新闻通讯](https://entgo.substack.com/)
+- 关注[Twitter官方账号](https://twitter.com/entgo_io)
+- 加入[Gophers Slack](https://entgo.io/docs/slack)的#ent频道
+- 参与[Ent Discord社区](https://discord.gg/qZmPgTE6RX)
+
+:::

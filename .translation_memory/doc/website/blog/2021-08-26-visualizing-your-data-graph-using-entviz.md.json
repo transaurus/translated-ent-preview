@@ -1,0 +1,412 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-08-26-visualizing-your-data-graph-using-entviz.md",
+  "source_file_content_hash": "0cd0bf66e3f6e37397b6f9bc7669d2a22c5977fb58fd631ab585ed165eda609e",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Visualizing your Data Graph Using entviz\nauthor: Amit Shani\nauthorURL: \"https://github.com/hedwigz\"\nauthorImageURL: \"https://avatars.githubusercontent.com/u/8277210?v=4\"\nauthorTwitter: itsamitush\n---",
+      "source_content_hash": "0ef79cdead7814ebe46a5b0457d44b4f681925b161220ac7d761199ce0872560",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Joining an existing project with a large codebase can be a daunting task.  ",
+      "source_content_hash": "b199a9463ed8f9dc3f67d12aab5e0d959650c9a456f9182a6390f6a1925aff63",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "加入一个已有大型代码库的项目可能令人望而生畏。"
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "Understanding the data model of an application is key for developers to start working on an existing project. One  commonly used tool to help overcome this challenge, and enable developers to grasp an application's data model is an [ER (Entity Relation) diagram](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model).  ",
+      "source_content_hash": "7c6511757b105fc563aa0b32e4266b5ee31538c5364b7c7c0b533be90e4c7be9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "理解应用程序的数据模型是开发者开始参与现有项目的关键。为帮助克服这一挑战，开发者常用工具之一是[ER（实体关系）图](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model)，它能帮助开发者快速掌握应用的数据模型。"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "ER diagrams provide a visual representation of your data model, and details each field of the entities. Many tools can help create these, where one example is Jetbrains DataGrip, that can generate an ER diagram by connecting to and inspecting an existing database:",
+      "source_content_hash": "36486050cc25de73b607f01e2cd62ec28f5084348b6aa3b951328b4d5926e1eb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "ER图以可视化形式呈现数据模型，并详细展示每个实体的字段。许多工具可辅助创建这类图表，例如Jetbrains DataGrip，它可以通过连接并检查现有数据库来生成ER图："
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "[Ent](https://entgo.io/docs/getting-started/), a simple, yet powerful entity framework for Go, was originally developed inside Facebook specifically for dealing with projects with large and complex data models.\nThis is why Ent uses code generation - it gives type-safety and code-completion out-of-the-box which helps explain the data model and improves developer velocity.\nOn top of all of this, wouldn't it be great to automatically generate ER diagrams that maintain a high-level view of the data model in a visually appealing representation? (I mean, who doesn't love visualizations?) ",
+      "source_content_hash": "0d84ec96054604e9c77ffc09eb6ce70c7c5d45baecc4a095efa11a41b8759314",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[Ent](https://entgo.io/docs/getting-started/)是一个简单而强大的Go语言实体框架，最初在Facebook内部开发，专门用于处理具有大型复杂数据模型的项目。\n这正是Ent采用代码生成的原因——它能提供开箱即用的类型安全与代码补全，既有助于解释数据模型，又能提升开发效率。\n除此之外，若能自动生成ER图，以视觉吸引力的方式维护数据模型的高层视图岂不更妙？（毕竟，谁不爱可视化呢？）"
+      }
+    },
+    {
+      "segment_id": "95b38f97",
+      "source_content": "### Introducing entviz",
+      "source_content_hash": "12b9ff77d3ca3b2f17c1ec4e3b72f69d2169877506d54110560088362205f25a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 介绍entviz"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "[entviz](https://github.com/hedwigz/entviz) is an ent extension that automatically generates a static HTML page that visualizes your data graph.",
+      "source_content_hash": "6c8fc347b45393afdbdb3fe28b375a7f78b4e3448717b2fdc3ef49a8de7d5a42",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[entviz](https://github.com/hedwigz/entviz)是一个Ent扩展，可自动生成静态HTML页面来可视化您的数据图谱。"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "If you want to know more about how entviz was implemented, checkout the [implementation section](#implementation).",
+      "source_content_hash": "33028f94ae1a4fb30152ded37a141ff5396caca255cb97c5db844ee964a1061f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若想了解entviz的实现原理，请查看[实现章节](#implementation)。"
+      }
+    },
+    {
+      "segment_id": "109ace10",
+      "source_content": "### See it in action",
+      "source_content_hash": "0aea97eb60ad53e8a7d2537fd687cf567491da2104914fefd12bb4d893e0336b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 实际演示"
+      }
+    },
+    {
+      "segment_id": "97ae4a01",
+      "source_content": "First, let's add the entviz extension to our entc.go file:",
+      "source_content_hash": "ea461923d1f4f06d7b3093d76f4c15a727f894f17d9a63d6ac67a05f2433adeb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先，将entviz扩展添加到我们的entc.go文件中："
+      }
+    },
+    {
+      "segment_id": "4dd51304",
+      "source_content": "```bash\ngo get github.com/hedwigz/entviz\n```",
+      "source_content_hash": "6c4d156f2a1ed3ea38df763fe6ac903e8939cf342dfea52745c36f9b9e7d4267",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4dd51304"
+      }
+    },
+    {
+      "segment_id": "688f7369",
+      "source_content": ":::info\nIf you are not familiar with `entc` you're welcome to read [entc documentation](https://entgo.io/docs/code-gen#use-entc-as-a-package) to learn more about it.\n:::",
+      "source_content_hash": "c7bc4fb31361990cb1a7ace3dbd46f0c2a244573fdbcf25e1547533b96db65c9",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n如果您不熟悉`entc`，欢迎阅读[entc文档](https://entgo.io/docs/code-gen#use-entc-as-a-package)了解更多。\n:::"
+      }
+    },
+    {
+      "segment_id": "45022e4f",
+      "source_content": "```go title=\"ent/entc.go\"\nimport (\n\t\"log\"\n\n\t\"entgo.io/ent/entc\"\n\t\"entgo.io/ent/entc/gen\"\n\t\"github.com/hedwigz/entviz\"\n)\n\nfunc main() {\n\terr := entc.Generate(\"./schema\", &gen.Config{}, entc.Extensions(entviz.Extension{}))\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "66c8a3237d76bcbd5a541956f71a37c8077c7e3e41fe48a9b703381c7dd5bdfa",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_45022e4f"
+      }
+    },
+    {
+      "segment_id": "40158b4b",
+      "source_content": "Let's say we have a simple schema with a user entity and some fields:",
+      "source_content_hash": "41cc3634257e3316d8a48fc132033c8d0c5d42dbfb7fdc993f34d6cc80bb66db",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "假设我们有一个包含用户实体及若干字段的简单模式："
+      }
+    },
+    {
+      "segment_id": "c05ad55e",
+      "source_content": "```go title=\"ent/schema/user.go\"\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"email\"),\n\t\tfield.Time(\"created\").\n\t\t\tDefault(time.Now),\n\t}\n}\n```",
+      "source_content_hash": "7b30e79acea95e7fc3deb63e13277596b7996bc69c948784112855fc84dbbc0e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c05ad55e"
+      }
+    },
+    {
+      "segment_id": "147e8550",
+      "source_content": "Now, entviz will automatically generate a visualization of our graph everytime we run: ",
+      "source_content_hash": "f2feb22f93ff101df8616949b984c568e45d1129128916b7361313105b310afc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在，每次运行以下命令时，entviz会自动生成我们的图谱可视化："
+      }
+    },
+    {
+      "segment_id": "bc137a19",
+      "source_content": "```bash\ngo generate ./...\n```",
+      "source_content_hash": "6db9cb3159d7d5724348dd0cde65e32843f037c31a8b73f31fd6de6d59e1177e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bc137a19"
+      }
+    },
+    {
+      "segment_id": "6cc549f2",
+      "source_content": "You should now see a new file called `schema-viz.html` in your ent directory:",
+      "source_content_hash": "d24f1a001c9ed5aabf518efa5d71c844f491b76c9c91b2bf6bf08d77d254332c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您将在ent目录中看到一个名为`schema-viz.html`的新文件："
+      }
+    },
+    {
+      "segment_id": "c808e01e",
+      "source_content": "```bash\n$ ll ./ent/schema-viz.html\n-rw-r--r-- 1 hedwigz hedwigz 7.3K Aug 27 09:00 schema-viz.html\n```",
+      "source_content_hash": "4aedea6c2d163aa4b38a0fd641fad241117c56c6c2ba03fc4e1cfd6ecd6d9585",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c808e01e"
+      }
+    },
+    {
+      "segment_id": "463ed165",
+      "source_content": "Open the html file with your favorite browser to see the visualization",
+      "source_content_hash": "9d1200f8546db09fcc1e2f341957e25957bc9c555cd5d9266368233dd4ed641b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "用您喜欢的浏览器打开该HTML文件即可查看可视化效果"
+      }
+    },
+    {
+      "segment_id": "a5c5772a",
+      "source_content": "![tutorial image](https://entgo.io/images/assets/entviz/entviz-tutorial-1.png)",
+      "source_content_hash": "e46bfb45704e7d5f6f458e5e84bded9c4cd8c338a03134fe2eeccd25c2dd835c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![教程图片](https://entgo.io/images/assets/entviz/entviz-tutorial-1.png)"
+      }
+    },
+    {
+      "segment_id": "fbc2db85",
+      "source_content": "Next, let's add another entity named Post, and see how our visualization changes:",
+      "source_content_hash": "620470067a3fec6231755f4d6f3487bcb59c0e70919df3f61cc5ba3f7f1582cb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们添加一个名为Post的实体，观察可视化如何变化："
+      }
+    },
+    {
+      "segment_id": "8c3563d3",
+      "source_content": "```bash\nent new Post\n```",
+      "source_content_hash": "e6f2256e2a9f51f36a7a3818d1c22bc5f4c46e2da8563ef499777b4d2fdb9fcd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_8c3563d3"
+      }
+    },
+    {
+      "segment_id": "f6563256",
+      "source_content": "```go title=\"ent/schema/post.go\"\n// Fields of the Post.\nfunc (Post) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"content\"),\n\t\tfield.Time(\"created\").\n\t\t\tDefault(time.Now),\n\t}\n}\n```",
+      "source_content_hash": "1f3675f33f3aa4a7e3a9f7a1c7fb0b7aae3320cf54cdf1564be647e709e4cf95",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f6563256"
+      }
+    },
+    {
+      "segment_id": "2822251a",
+      "source_content": "Now we add an ([O2M](https://entgo.io/docs/schema-edges/#o2m-two-types)) edge from User to Post:",
+      "source_content_hash": "d302b3e24347e9f24fc863ea4fa760005efbf4c625fd2a7917ee5c4c7ffc5f98",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们添加从User到Post的([O2M](https://entgo.io/docs/schema-edges/#o2m-two-types))边："
+      }
+    },
+    {
+      "segment_id": "dc73c0d2",
+      "source_content": "```go title=\"ent/schema/post.go\"\n// Edges of the User.\nfunc (User) Edges() []ent.Edge {\n\treturn []ent.Edge{\n\t\tedge.To(\"posts\", Post.Type),\n\t}\n}\n```",
+      "source_content_hash": "579701f11c987b80c973af6d198ece7fb174a9c3840658cc7a4ecdf3f3da9088",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dc73c0d2"
+      }
+    },
+    {
+      "segment_id": "f0984c2a",
+      "source_content": "Finally, regenerate the code:",
+      "source_content_hash": "3211b71e270ffbbf2afd4a992266f7e7bbb88e6c507d10d3fd238da995a0e54d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后重新生成代码："
+      }
+    },
+    {
+      "segment_id": "c9873cf8",
+      "source_content": "```bash\ngo generate ./...\n```",
+      "source_content_hash": "6db9cb3159d7d5724348dd0cde65e32843f037c31a8b73f31fd6de6d59e1177e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c9873cf8"
+      }
+    },
+    {
+      "segment_id": "0801d969",
+      "source_content": "Refresh your browser to see the updated result!",
+      "source_content_hash": "7d88b2c51492edd73d4af1fc3b0bd52edac73a153298ce049e97c9a238a57c92",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "刷新浏览器即可查看更新后的结果！"
+      }
+    },
+    {
+      "segment_id": "3c19e221",
+      "source_content": "![tutorial image 2](https://entgo.io/images/assets/entviz/entviz-tutorial-2.png)",
+      "source_content_hash": "35030e506bdd8cdd0006e3fb35a00c128f0b7cf3c3a91fd0b99da0a5d09f8c2e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![教程图片2](https://entgo.io/images/assets/entviz/entviz-tutorial-2.png)"
+      }
+    },
+    {
+      "segment_id": "48155948",
+      "source_content": "### Implementation",
+      "source_content_hash": "869d223f9a997bb69e40ed50d81213d4c552024f0338d9e31c4183f20d71e14f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 实现"
+      }
+    },
+    {
+      "segment_id": "44aaa880",
+      "source_content": "Entviz was implemented by extending ent via its [extension API](https://github.com/ent/ent/blob/1304dc3d795b3ea2de7101c7ca745918def668ef/entc/entc.go#L197).\nThe Ent extension API lets you aggregate multiple [templates](https://entgo.io/docs/templates/), [hooks](https://entgo.io/docs/hooks/), [options](https://entgo.io/docs/code-gen/#code-generation-options) and [annotations](https://entgo.io/docs/templates/#annotations).\nFor instance, entviz uses templates to add another go file, `entviz.go`, which exposes the `ServeEntviz` method that can be used as an http handler, like so:",
+      "source_content_hash": "a45e1a217700bca06e96399a4beecd4d783cafdef529372479d028a53a3fcc13",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Entviz 是通过扩展 Ent 的[扩展 API](https://github.com/ent/ent/blob/1304dc3d795b3ea2de7101c7ca745918def668ef/entc/entc.go#L197) 实现的。  \nEnt 扩展 API 允许您聚合多个[模板](https://entgo.io/docs/templates/)、[钩子](https://entgo.io/docs/hooks/)、[选项](https://entgo.io/docs/code-gen/#code-generation-options)和[注解](https://entgo.io/docs/templates/#annotations)。  \n例如，entviz 使用模板添加了另一个 Go 文件 `entviz.go`，该文件公开了 `ServeEntviz` 方法，可用作 HTTP 处理器，如下所示："
+      }
+    },
+    {
+      "segment_id": "1a63b635",
+      "source_content": "```go\nfunc main() {\n\thttp.ListenAndServe(\"localhost:3002\", ent.ServeEntviz())\n}\n```",
+      "source_content_hash": "e805e3a8476a27b66d64ab7bf998209350e19e436248db363ba77c3c64afa3e0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "5f82a1e9",
+      "source_content": "We define an extension struct which embeds the default extension, and we export our template via the `Templates` method:",
+      "source_content_hash": "030b561f8542e26967d95ccdcd95f057733ec255e5276b0a44469a1bb54127b7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "4e583d18",
+      "source_content": "```go\n//go:embed entviz.go.tmpl\nvar tmplfile string\n \ntype Extension struct {\n\tentc.DefaultExtension\n}\n \nfunc (Extension) Templates() []*gen.Template {\n\treturn []*gen.Template{\n\t\tgen.MustParse(gen.NewTemplate(\"entviz\").Parse(tmplfile)),\n\t}\n}\n```",
+      "source_content_hash": "52cb84db96173f38dae7fb31d00a16041f7582d2d8bfc1a0994482f13d865974",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "bb1346b6",
+      "source_content": "The template file is the code that we want to generate:",
+      "source_content_hash": "04dca0d184082c3ec67ac9bd57f177e9e9788bd9e937717c2cc9815677936cfd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "e908327f",
+      "source_content": "```gotemplate\n{{ define \"entviz\"}}\n \n{{ $pkg := base $.Config.Package }}\n{{ template \"header\" $ }}\nimport (\n\t_ \"embed\"\n\t\"net/http\"\n\t\"strings\"\n\t\"time\"\n)\n\n//go:embed schema-viz.html\nvar html string\n\nfunc ServeEntviz() http.Handler {\n\tgenerateTime := time.Now()\n\treturn http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {\n\t\thttp.ServeContent(w, req, \"schema-viz.html\", generateTime, strings.NewReader(html))\n\t})\n}\n{{ end }}\n```",
+      "source_content_hash": "f462a7f3e8f4fd3087b5594e1ee41fb908e39def4677d410a97154ef4f74716d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {}
+    },
+    {
+      "segment_id": "2dbfc5f7",
+      "source_content": "That's it! now we have a new method in ent package.  ",
+      "source_content_hash": "9013221640f8a60409f9764f6bd4cfd34d2edf09b189170d056fd664a8485f33",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "3f77c6a0",
+      "source_content": "### Wrapping-Up",
+      "source_content_hash": "e51c02e1e868db054ed8fe119116249bc70d84bac4b2d7c34db05bb4f6f38bb8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "39f476dc",
+      "source_content": "We saw how ER diagrams help developers keep track of their data model. Next, we introduced entviz - an Ent extension that automatically generates an ER diagram for Ent schemas. We saw how entviz utilizes Ent's extension API to extend the code generation and add extra functionality. Finally, you got to see it in action by installing and use entviz in your own project. If you like the code and/or want to contribute - feel free to checkout the [project on github](https://github.com/hedwigz/entviz).",
+      "source_content_hash": "3d6ab15ecf0f54b00f8e07ff989d010f72ba39db971f365a592413455b90c62d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "827eb9a3",
+      "source_content": "Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack/).",
+      "source_content_hash": "d0537932cd96ebc172f07d40432ff073381adb709b3fdc6d263a79438858fef3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {}
+    },
+    {
+      "segment_id": "a1fdc22e",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {}
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-08-26-visualizing-your-data-graph-using-entviz.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.678085+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "0cd0bf66e3f6e37397b6f9bc7669d2a22c5977fb58fd631ab585ed165eda609e"
+  }
+}

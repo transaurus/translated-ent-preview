@@ -1,0 +1,572 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-gql-filter-input.md",
+  "source_file_content_hash": "86e404dc26d2ecf6c495454b8534902768570e0b6be8dc784231c6f548cb136d",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-gql-filter-input\ntitle: Filter Inputs\nsidebar_label: Filter Inputs\n---",
+      "source_content_hash": "a5375a8c89c179e20e15b0ade169c41a6038bb3131a168f6926d803a8f418e62",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "In this section, we continue the [GraphQL example](tutorial-todo-gql.mdx) by explaining how to generate\ntype-safe GraphQL filters (i.e. `Where` predicates) from our `ent/schema`, and allow users to seamlessly\nmap GraphQL queries to Ent queries. For example, the following GraphQL query, maps to the Ent query below:",
+      "source_content_hash": "8bbb2a3279afeb65ea813fd621fda0550afe02c02a320239a0b6a7f58ed46840",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节我们将延续[GraphQL示例教程](tutorial-todo-gql.mdx)，讲解如何从`ent/schema`生成类型安全的GraphQL过滤器（即`Where`谓词），并让用户能无缝地将GraphQL查询映射到Ent查询。例如以下GraphQL查询会映射到对应的Ent查询："
+      }
+    },
+    {
+      "segment_id": "8ac585fb",
+      "source_content": "**GraphQL**",
+      "source_content_hash": "1ecb894e29f8727a2cfb00cafc56fc0b93764781bdf8afc4d123af4796599048",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**GraphQL**"
+      }
+    },
+    {
+      "segment_id": "b9c7a144",
+      "source_content": "```graphql\n{\n  hasParent: true,\n  hasChildrenWith: {\n    status: IN_PROGRESS,\n  }\n}\n```",
+      "source_content_hash": "e4ff7087889cb9c014ef9709afd81cd336e1e04ebab96abcfdb0e6d6e7ecf4e8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b9c7a144"
+      }
+    },
+    {
+      "segment_id": "2df4f75f",
+      "source_content": "**Ent**",
+      "source_content_hash": "9588611b3a0f9af2e00f601b29d9d4d5c26830ec64fbc705ef4c00fc2f3a7b4e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**Ent**"
+      }
+    },
+    {
+      "segment_id": "f2b711c6",
+      "source_content": "```go\nclient.Todo.\n    Query().\n    Where(\n        todo.HasParent(),\n        todo.HasChildrenWith(\n            todo.StatusEQ(todo.StatusInProgress),\n        ),\n    ).\n    All(ctx)\n```",
+      "source_content_hash": "0a3e2838576679bd9b494c25ae49bb158cdb57f3f8d33a911ee9faea0be86f8d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f2b711c6"
+      }
+    },
+    {
+      "segment_id": "109ace10",
+      "source_content": "#### Clone the code (optional)",
+      "source_content_hash": "b068b18a91c2d1cb5709786f96baae783976def17ac4580a202a72c3f85fa808",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 克隆代码（可选）"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "The code for this tutorial is available under [github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example),\nand tagged (using Git) in each step. If you want to skip the basic setup and start with the initial version of the GraphQL\nserver, you can clone the repository and run the program as follows:",
+      "source_content_hash": "c5ddf1e7fc5a58b55d73a9234b2b91ae7191a444529dad40258da4c79ab1ab7f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程代码托管在[github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example)，每个步骤都有对应的Git标签。若想跳过基础配置直接使用GraphQL服务器的初始版本，可克隆仓库并按如下方式运行："
+      }
+    },
+    {
+      "segment_id": "026f2f3e",
+      "source_content": "```console\ngit clone git@github.com:a8m/ent-graphql-example.git\ncd ent-graphql-example \ngo run ./cmd/todo/\n```",
+      "source_content_hash": "2fa40aa0226f164db69ac24b995a3ed9a55deb1c19c3ff3ea6301a27aaf46a06",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_026f2f3e"
+      }
+    },
+    {
+      "segment_id": "c674e260",
+      "source_content": "### Configure Ent",
+      "source_content_hash": "052a13beb7fff643a89a3fee55820e574004036cb4ce13247b4cdc50a6ffb0b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 配置Ent"
+      }
+    },
+    {
+      "segment_id": "a44047a5",
+      "source_content": "Go to your `ent/entc.go` file, and add the 4 highlighted lines (extension options):",
+      "source_content_hash": "59a14781750ad0694bc19a984cd8043ba95bb9f124a41f08b98099e3b645a54f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在`ent/entc.go`文件中添加以下4个高亮显示的扩展选项："
+      }
+    },
+    {
+      "segment_id": "64b6f348",
+      "source_content": "```go {3-6} title=\"ent/entc.go\"\nfunc main() {\n\tex, err := entgql.NewExtension(\n\t\tentgql.WithSchemaGenerator(),\n\t\tentgql.WithWhereInputs(true),\n\t\tentgql.WithConfigPath(\"gqlgen.yml\"),\n\t\tentgql.WithSchemaPath(\"ent.graphql\"),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"creating entgql extension: %v\", err)\n\t}\n\topts := []entc.Option{\n\t\tentc.Extensions(ex),\n\t\tentc.TemplateDir(\"./template\"),\n\t}\n\tif err := entc.Generate(\"./schema\", &gen.Config{}, opts...); err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n} \n```",
+      "source_content_hash": "69b8669a8b3f51ef085d939db5de8853acf8794e858462d6b2381f5b0173ae95",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_64b6f348"
+      }
+    },
+    {
+      "segment_id": "eab056be",
+      "source_content": "The `WithWhereInputs` option enables the filter generation, the `WithConfigPath` configures the path to the `gqlgen`\nconfig file, which allows the extension to more accurately map GraphQL to Ent types. The last option `WithSchemaPath`,\nconfigures a path to a new, or an existing GraphQL schema to write the generated filters to.",
+      "source_content_hash": "5b8ec86aba91d54e67ed6afe2a17a419a6ee36998eacbfc636d5dbf1ae34435c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`WithWhereInputs`选项启用过滤器生成，`WithConfigPath`配置指向`gqlgen`配置文件的路径，使扩展能更精确地映射GraphQL与Ent类型。最后一个选项`WithSchemaPath`则配置生成过滤器时写入的新建或现有GraphQL模式路径。"
+      }
+    },
+    {
+      "segment_id": "afa378f7",
+      "source_content": "After changing the `entc.go` configuration, we're ready to execute the code generation as follows:",
+      "source_content_hash": "e5b35747b4e4ec00866e98ea1db8aab0f3faf279ae21f66b438ac7a3ccd93bfb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "修改`entc.go`配置后，执行以下代码生成命令："
+      }
+    },
+    {
+      "segment_id": "a89f84e1",
+      "source_content": "```console\ngo generate .\n```",
+      "source_content_hash": "65b390e439640c248a3f07585790149d3fbc532f31c916907186dbec65eb332c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a89f84e1"
+      }
+    },
+    {
+      "segment_id": "a5c5772a",
+      "source_content": "Observe that Ent has generated `<T>WhereInput` for each type in your schema in a file named `ent/gql_where_input.go`. Ent\nalso generates a GraphQL schema as well (`ent.graphql`), so you don't need to `autobind` them to `gqlgen` manually.\nFor example:",
+      "source_content_hash": "effb06bf28609dca9d5b518f733a1e780306b8d0b8fc4f36f629cf3d9b6ccedb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此时Ent会在`ent/gql_where_input.go`中为每个schema类型生成`<T>WhereInput`结构体，同时自动生成GraphQL模式文件(`ent.graphql`)，无需手动将其与`gqlgen`进行autobind绑定。例如："
+      }
+    },
+    {
+      "segment_id": "b73a4a7a",
+      "source_content": "```go title=\"ent/gql_where_input.go\"\n// TodoWhereInput represents a where input for filtering Todo queries.\ntype TodoWhereInput struct {\n\tNot *TodoWhereInput   `json:\"not,omitempty\"`\n\tOr  []*TodoWhereInput `json:\"or,omitempty\"`\n\tAnd []*TodoWhereInput `json:\"and,omitempty\"`\n\n\t// \"created_at\" field predicates.\n\tCreatedAt      *time.Time  `json:\"createdAt,omitempty\"`\n\tCreatedAtNEQ   *time.Time  `json:\"createdAtNEQ,omitempty\"`\n\tCreatedAtIn    []time.Time `json:\"createdAtIn,omitempty\"`\n\tCreatedAtNotIn []time.Time `json:\"createdAtNotIn,omitempty\"`\n\tCreatedAtGT    *time.Time  `json:\"createdAtGT,omitempty\"`\n\tCreatedAtGTE   *time.Time  `json:\"createdAtGTE,omitempty\"`\n\tCreatedAtLT    *time.Time  `json:\"createdAtLT,omitempty\"`\n\tCreatedAtLTE   *time.Time  `json:\"createdAtLTE,omitempty\"`\n\n\t// \"status\" field predicates.\n\tStatus      *todo.Status  `json:\"status,omitempty\"`\n\tStatusNEQ   *todo.Status  `json:\"statusNEQ,omitempty\"`\n\tStatusIn    []todo.Status `json:\"statusIn,omitempty\"`\n\tStatusNotIn []todo.Status `json:\"statusNotIn,omitempty\"`\n\n    // .. truncated ..\n}\n```",
+      "source_content_hash": "d1cec1bc1cd58f98ab90c163bf2d123b2fb087a70888c24b1dc71a020128cde4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b73a4a7a"
+      }
+    },
+    {
+      "segment_id": "99070903",
+      "source_content": "```graphql title=\"ent.graphql\"\n\"\"\"\nTodoWhereInput is used for filtering Todo objects.\nInput was generated by ent.\n\"\"\"\ninput TodoWhereInput {\n  not: TodoWhereInput\n  and: [TodoWhereInput!]\n  or: [TodoWhereInput!]\n  \n  \"\"\"created_at field predicates\"\"\"\n  createdAt: Time\n  createdAtNEQ: Time\n  createdAtIn: [Time!]\n  createdAtNotIn: [Time!]\n  createdAtGT: Time\n  createdAtGTE: Time\n  createdAtLT: Time\n  createdAtLTE: Time\n  \n  \"\"\"status field predicates\"\"\"\n  status: Status\n  statusNEQ: Status\n  statusIn: [Status!]\n  statusNotIn: [Status!]\n    \n  # .. truncated ..\n}\n```",
+      "source_content_hash": "a79ef6d052a452855fcd60706056c374c87a72fe3cf3dadda76cb7049278af97",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_99070903"
+      }
+    },
+    {
+      "segment_id": "af6c6e42",
+      "source_content": ":::info\nIf your project contains more than 1 GraphQL schema (e.g. `todo.graphql` and `ent.graphql`), you should configure\n`gqlgen.yml` file as follows:\n\n```yaml\nschema:\n  - todo.graphql\n  # The ent.graphql schema was generated by Ent.\n  - ent.graphql\n```\n:::",
+      "source_content_hash": "6ac3c3d5bb67efadbedccc1a334ebcc1f3c50eba20632de544fdf2b05734bc31",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info\n若项目包含多个GraphQL模式文件（如`todo.graphql`和`ent.graphql`），需按如下方式配置`gqlgen.yml`：\n\n```yaml\nschema:\n  - todo.graphql\n  # ent.graphql由Ent自动生成\n  - ent.graphql\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "2f2d5f01",
+      "source_content": "### Configure GQL",
+      "source_content_hash": "8fab7dd629e0936a3cd5098698ebb752efd3736b96468002500babb286383228",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 配置GQL"
+      }
+    },
+    {
+      "segment_id": "44285072",
+      "source_content": "After running the code generation, we're ready to complete the integration and expose the filtering capabilities in GraphQL:",
+      "source_content_hash": "35ea674c37498a1fb8e0859b4772866a411bbf021b45ea424d7aa603a20414ff",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成代码生成后，即可通过以下步骤在GraphQL中启用过滤功能："
+      }
+    },
+    {
+      "segment_id": "a8f09c71",
+      "source_content": "1\\. Edit the GraphQL schema to accept the new filter types:",
+      "source_content_hash": "1c1213ba0d22f792b5b29fb5b68643296dc9cf57669ccbad15d6425786ddd138",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 修改GraphQL模式以接收新的过滤器类型："
+      }
+    },
+    {
+      "segment_id": "b68d496b",
+      "source_content": "```graphql {8} title=\"ent.graphql\"\ntype Query {\n  todos(\n    after: Cursor,\n    first: Int,\n    before: Cursor,\n    last: Int,\n    orderBy: TodoOrder,\n    where: TodoWhereInput,\n  ): TodoConnection!\n}\n```",
+      "source_content_hash": "56d15d9737a02af87278f948d7398d17b3c90acc3e4c69a7f530563d9e9adc46",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b68d496b"
+      }
+    },
+    {
+      "segment_id": "99840f13",
+      "source_content": "2\\. Use the new filter types in GraphQL resolvers:",
+      "source_content_hash": "2c4b1186252b002c8153f37a6c1b5d737d03ed34836744c3659a171556ba68a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在GraphQL解析器中使用新过滤器类型："
+      }
+    },
+    {
+      "segment_id": "7eccd6ba",
+      "source_content": "```go {5} title=\"ent.resolvers.go\"\nfunc (r *queryResolver) Todos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TodoOrder, where *ent.TodoWhereInput) (*ent.TodoConnection, error) {\n\treturn r.client.Todo.Query().\n\t\tPaginate(ctx, after, first, before, last,\n\t\t\tent.WithTodoOrder(orderBy),\n\t\t\tent.WithTodoFilter(where.Filter),\n\t\t)\n}\n```",
+      "source_content_hash": "37fd3db4578824de123493676aa665784d47b0393327f6f3429c63e5deefbac0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7eccd6ba"
+      }
+    },
+    {
+      "segment_id": "61282bab",
+      "source_content": "### Execute Queries",
+      "source_content_hash": "72e62e8528538abe64524334d83553bc8b34d923b651abb2d8bdaddc4a09bbed",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 执行查询"
+      }
+    },
+    {
+      "segment_id": "4e2e17c5",
+      "source_content": "As mentioned above, with the new GraphQL filter types, you can express the same Ent filters you use in your\nGo code.",
+      "source_content_hash": "aa191e66a362271961346cb57dcb451a5b00a26f0e576485674dd1750ceed2ad",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如上所述，通过新的GraphQL过滤器类型，您可以用Go代码中的Ent过滤器语法来表达查询条件。"
+      }
+    },
+    {
+      "segment_id": "4b62f7d8",
+      "source_content": "#### Conjunction, disjunction and negation",
+      "source_content_hash": "443eb0988762e3fdfea6fd5a3b6795647bc9f9fdce6ce10c5bf3ce12f685ecf7",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 合取、析取与否定"
+      }
+    },
+    {
+      "segment_id": "4899bc54",
+      "source_content": "The `Not`, `And` and `Or` operators can be added to the `where` clause using the `not`, `and` and `or` fields. For example:",
+      "source_content_hash": "330b680a1f3d96b0c6a2d0f3a695349dae84b4a0e0ab2630dff51f5995d65514",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可通过`not`、`and`和`or`字段在`where`子句中添加`Not`、`And`和`Or`运算符。例如："
+      }
+    },
+    {
+      "segment_id": "21f43a9a",
+      "source_content": "```graphql {3-15}\nquery {\n  todos(\n    where: {\n      or: [\n        {\n          status: COMPLETED\n        },\n        {\n          not: {\n            hasParent: true,\n            status: IN_PROGRESS\n          }\n        }\n      ]\n    }\n  ) {\n    edges {\n      node {\n        id\n        text\n      }\n      cursor\n    }\n  }\n}\n```",
+      "source_content_hash": "19e2aacd678729ef73206eafa4f04464836e7fc213023569d6e87fd233e28155",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_21f43a9a"
+      }
+    },
+    {
+      "segment_id": "833ce577",
+      "source_content": "When multiple filter fields are provided, Ent implicitly adds the `And` operator.",
+      "source_content_hash": "2bbfb83c0a11d2221d25235083c80a7c29dedc1e1a9ee2acecd417bbbdc27e65",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当提供多个过滤字段时，Ent会隐式添加`And`运算符。"
+      }
+    },
+    {
+      "segment_id": "3d4d9546",
+      "source_content": "```graphql\n{\n  status: COMPLETED,\n  textHasPrefix: \"GraphQL\",\n}\n```",
+      "source_content_hash": "98b65525e02a5adcaea6b5aa14d7f99ca68249017cd3d32e7ded7e317f9f812d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3d4d9546"
+      }
+    },
+    {
+      "segment_id": "85821ad3",
+      "source_content": "The above query will produce the following Ent query:",
+      "source_content_hash": "f2b59306dd6fcfc5f32ae0e3611e9e67b32a6a79088ec66403ebac97493be882",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述查询将生成如下Ent查询："
+      }
+    },
+    {
+      "segment_id": "7b2a4831",
+      "source_content": "```go\nclient.Todo.\n\tQuery().\n\tWhere(\n\t\ttodo.And(\n\t\t\ttodo.StatusEQ(todo.StatusCompleted),\n\t\t\ttodo.TextHasPrefix(\"GraphQL\"),\n\t\t)\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "aa8ee31275e91701ace1e691bf80bfefc3eb2e6e26c48eb9c84f78912c6d3a42",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7b2a4831"
+      }
+    },
+    {
+      "segment_id": "5f4381f8",
+      "source_content": "#### Edge/Relation filters",
+      "source_content_hash": "a6055b178cfc380791cbc649f4f070de343e2f2d3329d65505786c3eadfbd9a2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 边/关系过滤器"
+      }
+    },
+    {
+      "segment_id": "80dbdeb8",
+      "source_content": "[Edge (relation) predicates](https://entgo.io/docs/predicates#edge-predicates) can be expressed in the same Ent syntax:",
+      "source_content_hash": "de5948d8512e1630546c09b0e1180dfe0d465ae12e58c2e411cec3b69e6ce2e4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "[边(关系)谓词](https://entgo.io/docs/predicates#edge-predicates)可使用相同的Ent语法表达："
+      }
+    },
+    {
+      "segment_id": "4f217d4a",
+      "source_content": "```graphql\n{\n  hasParent: true,\n  hasChildrenWith: {\n    status: IN_PROGRESS,\n  }\n}\n```",
+      "source_content_hash": "e4ff7087889cb9c014ef9709afd81cd336e1e04ebab96abcfdb0e6d6e7ecf4e8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4f217d4a"
+      }
+    },
+    {
+      "segment_id": "41e7f712",
+      "source_content": "The above query will produce the following Ent query:",
+      "source_content_hash": "f2b59306dd6fcfc5f32ae0e3611e9e67b32a6a79088ec66403ebac97493be882",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该查询将生成如下Ent查询："
+      }
+    },
+    {
+      "segment_id": "2ef49e00",
+      "source_content": "```go\nclient.Todo.\n\tQuery().\n\tWhere(\n\t\ttodo.HasParent(),\n\t\ttodo.HasChildrenWith(\n\t\t\ttodo.StatusEQ(todo.StatusInProgress),\n\t\t),\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "76604b0ad53934ff74b4bf44ba2b2681e6f1364a8e3dc536cba15d58a2419db4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2ef49e00"
+      }
+    },
+    {
+      "segment_id": "bb74dfa2",
+      "source_content": "### Custom filters",
+      "source_content_hash": "c2787145e16a18f1257eacdf176798d741d78ab865b51100e4a9c85389846198",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 自定义过滤器"
+      }
+    },
+    {
+      "segment_id": "f4b938fe",
+      "source_content": "Sometimes we need to add custom conditions to our filters, while it is always possible to use [Templates](https://pkg.go.dev/entgo.io/contrib@master/entgql#WithTemplates) and [SchemaHooks](https://pkg.go.dev/entgo.io/contrib@master/entgql#WithSchemaHook)\nit's not always the easiest solution, specially if we only want to add simple conditions.",
+      "source_content_hash": "15fe98d237f2dede95aa06cebcb21de81c838031c9b57881cf96820bbc138f1e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "有时我们需要为过滤器添加自定义条件。虽然始终可以通过[模板](https://pkg.go.dev/entgo.io/contrib@master/entgql#WithTemplates)和[SchemaHooks](https://pkg.go.dev/entgo.io/contrib@master/entgql#WithSchemaHook)实现，但对于简单条件而言，这些方案可能过于复杂。"
+      }
+    },
+    {
+      "segment_id": "590d1cd9",
+      "source_content": "Luckily by using a combination of the [GraphQL object type extensions](https://spec.graphql.org/October2021/#sec-Object-Extensions) and custom resolvers, we can achieve this functionality.",
+      "source_content_hash": "e82329450be7ca6b58aa128b98531758c554663588ed4b9b9adad4e219322bd8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "幸运的是，结合使用[GraphQL对象类型扩展](https://spec.graphql.org/October2021/#sec-Object-Extensions)和自定义解析器，我们可以轻松实现该功能。"
+      }
+    },
+    {
+      "segment_id": "b632973a",
+      "source_content": "Let's see an example of adding a custom `isCompleted` filter that will receive a boolean value and filter\nall the TODO's that have the `completed` status.",
+      "source_content_hash": "c808390a5c1e65556eea2c18d8a29994636bd146c791995811a6cd29f254f56e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下面以添加`isCompleted`过滤器为例，该过滤器接收布尔值参数，用于筛选具有`completed`状态的所有待办事项。"
+      }
+    },
+    {
+      "segment_id": "5014d30c",
+      "source_content": "Let's start by extending the `TodoWhereInput`:",
+      "source_content_hash": "da1e51d44b97b1aa66aff5f28572f1305e8c387d2b883ae3cde2cf5bed5fe649",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先扩展`TodoWhereInput`类型："
+      }
+    },
+    {
+      "segment_id": "a54efbd2",
+      "source_content": "```graphql title=\"todo.graphql\"\nextend input TodoWhereInput {\n  isCompleted: Boolean\n}\n```",
+      "source_content_hash": "daa2a6f262c16705bb5e0a81d7f7548521d593ab79d5a2243d5a40110c18652d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a54efbd2"
+      }
+    },
+    {
+      "segment_id": "7fa65ec5",
+      "source_content": "After running the code generation, we should see a new field resolver inside the `todo.resolvers.go` file:",
+      "source_content_hash": "09d4502f6b6c003fd509c49e086d8545dacf2c6578507a71fb32daf4e85de05a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行代码生成后，我们会在`todo.resolvers.go`文件中看到新增的字段解析器："
+      }
+    },
+    {
+      "segment_id": "ca8f8565",
+      "source_content": "```go title=\"todo.resolvers.go\"\nfunc (r *todoWhereInputResolver) IsCompleted(ctx context.Context, obj *ent.TodoWhereInput, data *bool) error {\n\tpanic(fmt.Errorf(\"not implemented\"))\n}\n```",
+      "source_content_hash": "06e744815511462b0f09b231822648c595f1d5689841e50f5755515abb66eee9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ca8f8565"
+      }
+    },
+    {
+      "segment_id": "c95293b9",
+      "source_content": "We can now use the `AddPredicates` method inside the `ent.TodoWhereInput` struct to implement our custom filtering:",
+      "source_content_hash": "6612d717bd6bbde0b4d8c15d556cbbfbf3aed640eabca319d7f2acc3638acd45",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在可以通过`ent.TodoWhereInput`结构体的`AddPredicates`方法实现自定义过滤逻辑："
+      }
+    },
+    {
+      "segment_id": "63d9cf48",
+      "source_content": "```go title=\"todo.resolvers.go\"\nfunc (r *todoWhereInputResolver) IsCompleted(ctx context.Context, obj *ent.TodoWhereInput, data *bool) error {\n\tif obj == nil || data == nil {\n\t\treturn nil\n\t}\n\tif *data {\n\t\tobj.AddPredicates(todo.StatusEQ(todo.StatusCompleted))\n\t} else {\n\t\tobj.AddPredicates(todo.StatusNEQ(todo.StatusCompleted))\n\t}\n\treturn nil\n}\n```",
+      "source_content_hash": "e05843209bc724e1bd6d826ea4a9e21391180bc1c7ca815ea45a0a106b21b284",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_63d9cf48"
+      }
+    },
+    {
+      "segment_id": "e020f7ed",
+      "source_content": "We can use this new filtering as any other predicate:",
+      "source_content_hash": "99c04cef7a60baf4fd2ba9e84751f887d841cc8732ccac69a7c16a19caedacba",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该过滤器可以像其他谓词条件一样使用："
+      }
+    },
+    {
+      "segment_id": "36948d49",
+      "source_content": "```graphql\n{\n  isCompleted: true,\n}\n# including the not, and and or fields\n{\n  not: {\n    isCompleted: true,\n  }\n}\n```",
+      "source_content_hash": "7807c42119076203022d9bd07d643645be20bfae5942d7d22f4f32a77ee0c382",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_36948d49"
+      }
+    },
+    {
+      "segment_id": "3d6aa925",
+      "source_content": "### Usage as predicates",
+      "source_content_hash": "65d722d8fba820dbecd204cf6985683ee202124c9da06952f1010bb7a4cb37ae",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 作为谓词使用"
+      }
+    },
+    {
+      "segment_id": "b682f1ac",
+      "source_content": "The `Filter` option lets use the generated `WhereInput`s as regular predicates on any type of query:",
+      "source_content_hash": "d6ab52f695690d54c3cd2d89bbc8f6c64e5dd6bf4bd95809ee79cc0f7118d849",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`Filter`选项允许将生成的`WhereInput`类型作为常规谓词用于各类查询："
+      }
+    },
+    {
+      "segment_id": "bad1188f",
+      "source_content": "```go\nquery := ent.Todo.Query()\nquery, err := input.Filter(query)\nif err != nil {\n\treturn nil, err\n}\nreturn query.All(ctx)\n```",
+      "source_content_hash": "247531004cc889aa0e927dfc80b7c3105f1fb8dfa126042342e23ca414121a2a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bad1188f"
+      }
+    },
+    {
+      "segment_id": "eb394df3",
+      "source_content": "---",
+      "source_content_hash": "cb3f91d54eee30e53e35b2b99905f70f169ed549fd78909d3dac2defc9ed8d3b",
+      "node_type": "thematicBreak",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "---"
+      }
+    },
+    {
+      "segment_id": "647ea627",
+      "source_content": "Well done! As you can see, by changing a few lines of code our application now exposes a type-safe GraphQL filters\nthat automatically map to Ent queries. Have questions? Need help with getting started? Feel free to join our [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack).",
+      "source_content_hash": "08509d2fdf64b8f829219903795028fe0ad59bd61fce7527fcce66eb513dc219",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完成！如您所见，只需修改少量代码，我们的应用就能自动生成类型安全的GraphQL过滤器，并将其映射为Ent查询。如有疑问或需要入门帮助，欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack)。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-gql-filter-input.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.672879+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "86e404dc26d2ecf6c495454b8534902768570e0b6be8dc784231c6f548cb136d"
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/versioned/04-new-migration.mdx",
+  "source_file_content_hash": "60a893be177c7eeed3dcf5dc4cc539f5c1ca44cd3af628ef1d86425f58271cc5",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Planning a Migration\nid: new-migration\n---",
+      "source_content_hash": "b5c256484839990d9aac72184850370c34160b81f95aebd7eeb94c6263452a8f",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "0d5e1c45",
+      "source_content": ":::info[Supporting repository]\n\nThe change described in this section can be found in\n[PR #6](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/6/files)\nin the supporting repository.\n\n:::",
+      "source_content_hash": "348cc217040385fcdc49805ed8d5a1dcbb53affad06a5b2b0182fd25c5cfb3b8",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[支持仓库]\n\n本节描述的变更可在支持仓库的\n[PR #6](https://github.com/rotemtam/ent-versioned-migrations-demo/pull/6/files)\n中查看。\n\n:::"
+      }
+    },
+    {
+      "segment_id": "d350c018",
+      "source_content": "## Planning a migration",
+      "source_content_hash": "b6055daf1848ccd1a2f6eafbecaa6640bf42db457cdd49d7ae97ecd4d2b824fa",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 规划迁移方案"
+      }
+    },
+    {
+      "segment_id": "1acb9a05",
+      "source_content": "In this section, we will discuss how to plan a new schema migration when we\nmake a change to our project's Ent schema. Consider we want to add a new field\nto our `User` entity, adding a new optional field named `title`:",
+      "source_content_hash": "35989f647d6d30d8e0c8dedbd6177c097596448c609d784a0f1ac77838fcf3a6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节将讨论当项目Ent模式发生变更时，如何规划新的模式迁移。假设我们需要在`User`实体中添加一个名为`title`的新可选字段："
+      }
+    },
+    {
+      "segment_id": "f2b711c6",
+      "source_content": "```go title=ent/schema/user.go\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"email\"). // <-- Our new field\n            Unique(),\n        // highlight-start\n\t\tfield.String(\"title\").\n            Optional(),\n        // highlight-end\n\t}\n}\n```",
+      "source_content_hash": "287d16e944609fe4d7e903f1e43d8148cfe9a2a742f59417b888f29fd07d572a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f2b711c6"
+      }
+    },
+    {
+      "segment_id": "c3a738de",
+      "source_content": "After adding the new field, we need to rerun code-gen for our project:",
+      "source_content_hash": "c241065f666c41e699c1aea94c0bcf49bd8508b0e6493e6cb43c10423adacc58",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "添加新字段后，需要重新运行项目的代码生成："
+      }
+    },
+    {
+      "segment_id": "bca33820",
+      "source_content": "```shell\ngo generate ./...\n```",
+      "source_content_hash": "780ca61cb12a088b45cb673df23fcb5e0e7165e08ab2fe378946fdf45830541e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bca33820"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "Next, we need to create a new migration file for our change using the Atlas CLI:",
+      "source_content_hash": "d79184183e2460a95165d2ea9bd5b000c1e732aaa5945906deaf97a6e0c706e4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来使用Atlas CLI为变更创建新的迁移文件："
+      }
+    },
+    {
+      "segment_id": "2f83a0f4",
+      "source_content": "<Tabs\ndefaultValue=\"mysql\"\nvalues={[\n{label: 'MySQL', value: 'mysql'},\n{label: 'MariaDB', value: 'maria'},\n{label: 'PostgreSQL', value: 'postgres'},\n{label: 'SQLite', value: 'sqlite'},\n]}>\n<TabItem value=\"mysql\">\n\n```shell\natlas migrate diff add_user_title \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://mysql/8/ent\"\n```\n\n</TabItem>\n<TabItem value=\"maria\">\n\n```shell\natlas migrate diff add_user_title \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://mariadb/latest/test\"\n```\n\n</TabItem>\n<TabItem value=\"postgres\">\n\n```shell\natlas migrate diff add_user_title \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://postgres/15/test?search_path=public\"\n```\n\n</TabItem>\n<TabItem value=\"sqlite\">\n\n```shell\natlas migrate diff add_user_title \\\n  --dir \"file://ent/migrate/migrations\" \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"sqlite://file?mode=memory&_fk=1\"\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "0bcf9b0635733ff412adfa1fbc88c5343ff1c67afd83beface69f0e7ab539f3e",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2f83a0f4"
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "Observe a new file named `20221115101649_add_user_title.sql` was created under\nthe `ent/migrate/migrations/` directory. This file contains the SQL statements\nto create the newly added `title` field in the `users` table:",
+      "source_content_hash": "b905628d65ea7e1e4c07a046f3a94caac70be08a99935355ca7cd767d10113de",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到在`ent/migrate/migrations/`目录下生成了名为`20221115101649_add_user_title.sql`的新文件，该文件包含在`users`表中创建新增`title`字段的SQL语句："
+      }
+    },
+    {
+      "segment_id": "a476a172",
+      "source_content": "```sql title=ent/migrate/migrations/20221115101649_add_user_title.sql\n-- modify \"users\" table\nALTER TABLE `users` ADD COLUMN `title` varchar(255) NULL;\n```",
+      "source_content_hash": "3a11fecb737ef8fb95fdfd9e0cb50ebe823a4499298ef5f66206dc771cc7350e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a476a172"
+      }
+    },
+    {
+      "segment_id": "4be28ed1",
+      "source_content": "Great! We've successfully used the Atlas CLI to automatically\ngenerate a new migration file for our change.",
+      "source_content_hash": "07c2e17a3eee95a38cfa8c2ee59ef3ea02676d50e63dfb860119843d9faa5a00",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "成功！我们已使用Atlas CLI自动生成了针对变更的新迁移文件。"
+      }
+    },
+    {
+      "segment_id": "a81544fd",
+      "source_content": "To apply the migration, we can run the following command:",
+      "source_content_hash": "f277ca4fa94f87ca8f2cd4a94dcbcb1f07e890542c3ee0e8adca326046615ebb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "执行以下命令应用迁移："
+      }
+    },
+    {
+      "segment_id": "03a9ab41",
+      "source_content": "```shell\natlas migrate apply --dir file://ent/migrate/migrations --url mysql://root:pass@localhost:3306/db\n```",
+      "source_content_hash": "c529ba0dc62f17aa4065f4ea2998f6e7c7ad94b419f6c0855d76ada000709a9f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_03a9ab41"
+      }
+    },
+    {
+      "segment_id": "e9313fef",
+      "source_content": "Atlas reports:",
+      "source_content_hash": "e18d60faf6f9045c301055165ccd938a5dcd503317c9383637c20e195530e031",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Atlas返回报告："
+      }
+    },
+    {
+      "segment_id": "f155ef1e",
+      "source_content": "```shell\nMigrating to version 20221115101649 from 20221114165732 (1 migrations in total):\n\n  -- migrating version 20221115101649\n    -> ALTER TABLE `users` ADD COLUMN `title` varchar(255) NULL;\n  -- ok (36.152277ms)\n\n  -------------------------\n  -- 44.1116ms\n  -- 1 migrations\n  -- 1 sql statements\n```",
+      "source_content_hash": "0d207ba057d6146ca57676f90edd056e34110a66260d3b98c8d7df804c6bf6a2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f155ef1e"
+      }
+    },
+    {
+      "segment_id": "8fcdd6d4",
+      "source_content": "In the next section, we will discuss how to plan custom schema migrations for our project.",
+      "source_content_hash": "f0228162a4a637eeabdab79b72b393a1c291498139f5ecd4a7a1471ff041e738",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下一节我们将讨论如何为项目规划自定义模式迁移。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/versioned/04-new-migration.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.670061+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "60a893be177c7eeed3dcf5dc4cc539f5c1ca44cd3af628ef1d86425f58271cc5"
+  }
+}

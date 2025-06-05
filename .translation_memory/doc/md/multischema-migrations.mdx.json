@@ -1,0 +1,182 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/multischema-migrations.mdx",
+  "source_file_content_hash": "a949a80f3674b4a4eed6df85e2eb2dd5cdad46db0710743456427dc8bfcd573b",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: multischema-migrations\ntitle: Multi-Schema Migration\n---",
+      "source_content_hash": "3f40d2a0b09420c5b1252a3a7889f56a82937c0e4f9c749b5363e830b2172e93",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "4d1292be",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';\nimport InstallationInstructions from './components/_installation_instructions.mdx';",
+      "source_content_hash": "acb9352e4f5842cac843ba0dfe88d3ccba41a6dd57c5413e07a94198329c2457",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4d1292be"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "Using the [Atlas](https://atlasgo.io) migration engine, an Ent schema can be defined and managed across multiple\ndatabase schemas. This guides show how to achieve this with three simple steps:",
+      "source_content_hash": "7ab8bce33df1e4a517ff3c041d4368f2e004f3f8476fe195cf8ec73ce0c87972",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用 [Atlas](https://atlasgo.io) 迁移引擎，可以跨多个数据库模式定义和管理 Ent 模式。本指南通过三个简单步骤实现这一目标："
+      }
+    },
+    {
+      "segment_id": "2e76584d",
+      "source_content": ":::info[[Atlas Pro Feature](https://atlasgo.io/features#pro-plan)]\nThe _multi-schema migration_ feature is fully implemented in the Atlas CLI and requires a login to use:\n```\natlas login\n```\n:::",
+      "source_content_hash": "e441657162c17fe72b500acc560267c8254ce58f70590043b708d3962fd479b8",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[[Atlas Pro 功能](https://atlasgo.io/features#pro-plan)]\n_多模式迁移_功能已在 Atlas CLI 中完整实现，需登录后使用：\n```\natlas login\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "bc633244",
+      "source_content": "## Install Atlas",
+      "source_content_hash": "bf92a270e324b46f2c1d6f24555018906dc2df68b19873079220409508dabfad",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 安装 Atlas"
+      }
+    },
+    {
+      "segment_id": "5dfba1c3",
+      "source_content": "<InstallationInstructions />",
+      "source_content_hash": "a4404b9dce43845ec41e6725e25a8cfce8953ea9daeac173794ed9b031a06194",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5dfba1c3"
+      }
+    },
+    {
+      "segment_id": "95b38f97",
+      "source_content": "## Login to Atlas",
+      "source_content_hash": "e256bf54631891b6388a26350087fe6f85606d3b82220c15db06e45dc9ae443c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 登录 Atlas"
+      }
+    },
+    {
+      "segment_id": "a89b882e",
+      "source_content": "```shell\n$ atlas login a8m\n//highlight-next-line-info\nYou are now connected to \"a8m\" on Atlas Cloud.\n```",
+      "source_content_hash": "496821c033e70d4510db88b24c2448b81f6a4860a232e94aa6828c08a6979cd4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a89b882e"
+      }
+    },
+    {
+      "segment_id": "b25f21be",
+      "source_content": "## Annotate your Ent schemas",
+      "source_content_hash": "f87bca5887155fe1fa6afea9969727f558cc38cb5ea2bde765cc7ca1985cc7d6",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 注解您的 Ent 模式"
+      }
+    },
+    {
+      "segment_id": "7499a4e7",
+      "source_content": "The `entsql` package allows annotating an Ent schema with a database schema name. For example:",
+      "source_content_hash": "6b63e75108da8bba8cec174d31a74e791693a768ef1a3dc481f12664fcfd4509",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`entsql` 包允许用数据库模式名称注解 Ent 模式。例如："
+      }
+    },
+    {
+      "segment_id": "076d64d1",
+      "source_content": "```go\n// Annotations of the User.\nfunc (User) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentsql.Schema(\"db3\"),\n\t}\n}\n```",
+      "source_content_hash": "d181916c6594293b2e99a18432c0b627b4c4ed0972fd26bf4a2af020513da8cd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_076d64d1"
+      }
+    },
+    {
+      "segment_id": "aa1e7006",
+      "source_content": "To share the same schema configuration across multiple Ent schemas, you can either use `ent.Mixin` or define and embed a _base_ schema:",
+      "source_content_hash": "435e0d92dbe64984cd9a6de71ea520cdc357c01e7f99024c30e95ca97b6d84cc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要在多个 Ent 模式间共享相同的模式配置，您可以使用 `ent.Mixin` 或定义并嵌入一个_基础_模式："
+      }
+    },
+    {
+      "segment_id": "92b13a72",
+      "source_content": "<Tabs>\n<TabItem value=\"mixin\" label=\"Mixin schema\">\n\n```go title=\"mixin.go\"\n// Mixin holds the default configuration for most schemas in this package.\ntype Mixin struct {\n\tmixin.Schema\n}\n\n// Annotations of the Mixin.\nfunc (Mixin) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentsql.Schema(\"db1\"),\n\t}\n}\n```\n\n```go title=\"user.go\"\n// User holds the edge schema definition of the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Mixin defines the schemas that mixed into this schema.\nfunc (User) Mixin() []ent.Mixin {\n\treturn []ent.Mixin{\n//highlight-next-line\n\t\tMixin{},\n\t}\n}\n```\n\n</TabItem>\n<TabItem value=\"base\" label=\"Base schema\">\n\n```go title=\"base.go\"\n// base holds the default configuration for most schemas in this package.\ntype base struct {\n\tent.Schema\n}\n\n// Annotations of the base schema.\nfunc (base) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentsql.Schema(\"db1\"),\n\t}\n}\n```\n\n```go title=\"user.go\"\n// User holds the edge schema definition of the User entity.\ntype User struct {\n//highlight-next-line\n    base\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "cf778ed65acb9c3468a86727906a0de65136993c513725c3d3d59497fb0cee59",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_92b13a72"
+      }
+    },
+    {
+      "segment_id": "42a5832e",
+      "source_content": "## Generate migrations",
+      "source_content_hash": "0383a293a147b8ab9216ae39649ccd33420daedeef79fcb66605b2e3de414252",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 生成迁移"
+      }
+    },
+    {
+      "segment_id": "0e80209e",
+      "source_content": "To generate a migration, use the `atlas migrate diff` command. For example:",
+      "source_content_hash": "d426d4b77782bb6db72fdeb291ad39e73155ac855cb61ab75af7c821c08164b7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "使用 `atlas migrate diff` 命令生成迁移。例如："
+      }
+    },
+    {
+      "segment_id": "905803c8",
+      "source_content": "<Tabs\ndefaultValue=\"mysql\"\nvalues={[\n{label: 'MySQL', value: 'mysql'},\n{label: 'MariaDB', value: 'maria'},\n{label: 'PostgreSQL', value: 'postgres'},\n]}>\n<TabItem value=\"mysql\">\n\n```shell\natlas migrate diff \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://mysql/8\"\n```\n\n</TabItem>\n<TabItem value=\"maria\">\n\n```shell\natlas migrate diff \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://maria/8\"\n```\n\n</TabItem>\n<TabItem value=\"postgres\">\n\n```shell\natlas migrate diff \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://postgres/15/dev\"\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "91984f25f102cc67d47e9f115fea94defec62b3c4c9df6b5cf53d7ca3bab8e10",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_905803c8"
+      }
+    },
+    {
+      "segment_id": "9a6ceddd",
+      "source_content": ":::note\nThe `migrate` diff command generates a list of SQL statements without indentation by default. If you would like to\ngenerate the SQL statements with indentation, use the `--format` flag. For example:\n\n```shell\natlas migrate diff \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://postgres/15/dev\" \\\n// highlight-next-line\n  --format \"{{ sql . \\\"  \\\" }}\"\n```\n:::",
+      "source_content_hash": "eae31c8468c346ae68581620177edbf416538a4680221441dac910918202e230",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n默认情况下，`migrate diff` 命令会生成无缩进的 SQL 语句列表。如需生成带缩进的 SQL 语句，请使用 `--format` 标志。例如：\n\n```shell\natlas migrate diff \\\n  --to \"ent://ent/schema\" \\\n  --dev-url \"docker://postgres/15/dev\" \\\n// highlight-next-line\n  --format \"{{ sql . \\\"  \\\" }}\"\n```\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/multischema-migrations.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.667011+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "a949a80f3674b4a4eed6df85e2eb2dd5cdad46db0710743456427dc8bfcd573b"
+  }
+}

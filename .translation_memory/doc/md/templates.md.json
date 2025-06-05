@@ -1,0 +1,422 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/templates.md",
+  "source_file_content_hash": "2573ecba8c802557ffb6a6dd873b60b42edd44d6be7fb89384167f66f7800fce",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: templates\ntitle: External Templates\n---",
+      "source_content_hash": "0495712dfcdf5d5b49f681430a2e8f204c52083fdbae5909b76bdf2dcfbe0e2d",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "bb42506b",
+      "source_content": "`ent` accepts external [Go templates](https://golang.org/pkg/text/template) to execute using the `--template` flag.\nIf the template name already defined by `ent`, it will override the existing one. Otherwise, it will write the\nexecution output to a file with the same name as the template. For example:",
+      "source_content_hash": "c9bfc8aa4c331d4c0cdc328860d9d8167942f8a5bd69cb8de7eac785a943c94a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`ent` 通过 `--template` 标志支持执行外部 [Go 模板](https://golang.org/pkg/text/template)。若模板名称已被 `ent` 预定义，则会覆盖现有模板；否则会将执行输出写入与模板同名的文件。例如："
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "`stringer.tmpl` - This template example will be written in a file named: `ent/stringer.go`.",
+      "source_content_hash": "eb3a924012514da9c2df8e4e58e958ceb72439f85ac68b6ac0c8dceb7d2b65dd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`stringer.tmpl` - 此模板示例将被写入名为 `ent/stringer.go` 的文件。"
+      }
+    },
+    {
+      "segment_id": "ee201347",
+      "source_content": "```gotemplate\n{{/* The line below tells Intellij/GoLand to enable the autocompletion based on the *gen.Graph type. */}}\n{{/* gotype: entgo.io/ent/entc/gen.Graph */}}\n\n{{ define \"stringer\" }}\n\n{{/* Add the base header for the generated file */}}\n{{ $pkg := base $.Config.Package }}\n{{ template \"header\" $ }}\n\n{{/* Loop over all nodes and implement the \"GoStringer\" interface */}}\n{{ range $n := $.Nodes }}\n\t{{ $receiver := $n.Receiver }}\n\tfunc ({{ $receiver }} *{{ $n.Name }}) GoString() string {\n\t\tif {{ $receiver }} == nil {\n\t\t\treturn fmt.Sprintf(\"{{ $n.Name }}(nil)\")\n\t\t}\n\t\treturn {{ $receiver }}.String()\n\t}\n{{ end }}\n\n{{ end }}\n```",
+      "source_content_hash": "f96bd3d5c79946bcb4a28918756092259c31a0329797490b461ab5e19ed1449a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ee201347"
+      }
+    },
+    {
+      "segment_id": "517051a7",
+      "source_content": "`debug.tmpl` - This template example will be written in a file named: `ent/debug.go`.",
+      "source_content_hash": "19777ad36491479ba071e35aa3b58cb3b14f0d47a714cfdfc0e8991fd31e784f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`debug.tmpl` - 此模板示例将被写入名为 `ent/debug.go` 的文件。"
+      }
+    },
+    {
+      "segment_id": "4dd51304",
+      "source_content": "```gotemplate\n{{ define \"debug\" }}\n\n{{/* A template that adds the functionality for running each client <T> in debug mode */}}\n\n{{/* Add the base header for the generated file */}}\n{{ $pkg := base $.Config.Package }}\n{{ template \"header\" $ }}\n\n{{/* Loop over all nodes and add option the \"Debug\" method */}}\n{{ range $n := $.Nodes }}\n\t{{ $client := print $n.Name \"Client\" }}\n\tfunc (c *{{ $client }}) Debug() *{{ $client }} {\n\t\tif c.debug {\n\t\t\treturn c\n\t\t}\n\t\tcfg := config{driver: dialect.Debug(c.driver, c.log), log: c.log, debug: true, hooks: c.hooks}\n\t\treturn &{{ $client }}{config: cfg}\n\t}\n{{ end }}\n\n{{ end }}\n```",
+      "source_content_hash": "34a339bb874c6669c3ac5674ff7592fdefc2b36e8302cf817bdb6d05c27b4da7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4dd51304"
+      }
+    },
+    {
+      "segment_id": "6ea4c715",
+      "source_content": "In order to override an existing template, use its name. For example:",
+      "source_content_hash": "8e2e30525563bddac119ab658ca5b153ef51ae12fd53d776d601734c64bf82bb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若要覆盖现有模板，需使用其预定义名称。例如："
+      }
+    },
+    {
+      "segment_id": "750e2f7e",
+      "source_content": "```gotemplate\n{{/* A template for adding additional fields to specific types. */}}\n{{ define \"model/fields/additional\" }}\n\t{{- /* Add static fields to the \"Card\" entity. */}}\n\t{{- if eq $.Name \"Card\" }}\n\t\t// StaticField defined by templates.\n\t\tStaticField string `json:\"static_field,omitempty\"`\n\t{{- end }}\n{{ end }}\n```",
+      "source_content_hash": "8afbc8bfacf9fcb836321d5c18b9bd0df169ee762de313c30e45287cf72e7dfd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_750e2f7e"
+      }
+    },
+    {
+      "segment_id": "daed5acb",
+      "source_content": "## Helper Templates",
+      "source_content_hash": "56d1964a0d6039c96eefea418752626fd664a05d29de8abd0366d402e7cd2350",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 辅助模板"
+      }
+    },
+    {
+      "segment_id": "6cc549f2",
+      "source_content": "As mentioned above, `ent` writes each template's execution output to a file named the same as the template.\nFor example, the output from a template defined as `{{ define \"stringer\" }}` will be written to a file named\n`ent/stringer.go`.",
+      "source_content_hash": "3f7e33479d5b36cbf2400f6c194bede28fae016f9dd5f42182555975aaad42b4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如前所述，`ent` 会将每个模板的执行输出写入与模板同名的文件。例如，定义为 `{{ define \"stringer\" }}` 的模板输出将写入 `ent/stringer.go` 文件。"
+      }
+    },
+    {
+      "segment_id": "7736989b",
+      "source_content": "By default, `ent` writes each template declared with `{{ define \"<name>\" }}` to a file. However, it is sometimes\ndesirable to define helper templates - templates that will not be invoked directly but rather be executed by other\ntemplates. To facilitate this use case, `ent` supports two naming formats that designate a template as a helper.\nThe formats are:",
+      "source_content_hash": "ec5c51e67cc1441bad05c87318e0f6166e1c47818d4e693e829b602bcc5b01a1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "默认情况下，`ent` 会将所有通过 `{{ define \"<name>\" }}` 声明的模板写入独立文件。但有时需要定义辅助模板——这些模板不会被直接调用，而是由其他模板执行。为此，`ent` 支持两种命名格式来标识辅助模板："
+      }
+    },
+    {
+      "segment_id": "fbc2db85",
+      "source_content": "1\\. `{{ define \"helper/.+\" }}` for global helper templates. For example:",
+      "source_content_hash": "6418ddcdcb3f35ad4fd45c79eb5065f1ff8f0ebc113c1bd112e97e6701de1aee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. `{{ define \"helper/.+\" }}` 用于全局辅助模板。例如："
+      }
+    },
+    {
+      "segment_id": "b73a4a7a",
+      "source_content": "```gotemplate\n{{ define \"helper/foo\" }}\n    {{/* Logic goes here. */}}\n{{ end }}\n\n{{ define \"helper/bar/baz\" }}\n    {{/* Logic goes here. */}}\n{{ end }}\n```",
+      "source_content_hash": "f55756584f1c6f8b92b0da6e7d19f320c509b5a2945a8137166c1411c01a4557",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b73a4a7a"
+      }
+    },
+    {
+      "segment_id": "82e90254",
+      "source_content": "2\\. `{{ define \"<root-template>/helper/.+\" }}` for local helper templates. A template is considered as \"root\" if\nits execution output is written to a file. For example:",
+      "source_content_hash": "b47cb92381e848cb4677b900c24c3a6b0fb1ed0ad14b377e07bdae69076fde1c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. `{{ define \"<root-template>/helper/.+\" }}` 用于局部辅助模板。若模板的执行输出会被写入文件，则视为\"根模板\"。例如："
+      }
+    },
+    {
+      "segment_id": "dc73c0d2",
+      "source_content": "```gotemplate\n{{/* A root template that is executed on the `gen.Graph` and will be written to a file named: `ent/http.go`.*/}}\n{{ define \"http\" }}\n    {{ range $n := $.Nodes }}\n        {{ template \"http/helper/get\" $n }}\n        {{ template \"http/helper/post\" $n }}\n    {{ end }}\n{{ end }}\n\n{{/* A helper template that is executed on `gen.Type` */}}\n{{ define \"http/helper/get\" }}\n    {{/* Logic goes here. */}}\n{{ end }}\n\n{{/* A helper template that is executed on `gen.Type` */}}\n{{ define \"http/helper/post\" }}\n    {{/* Logic goes here. */}}\n{{ end }}\n```",
+      "source_content_hash": "09a12b11adc1bbc54ea15d693c46bb6b17d5428b0cf87e17aad6649dd8901355",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dc73c0d2"
+      }
+    },
+    {
+      "segment_id": "638efb88",
+      "source_content": "## Annotations",
+      "source_content_hash": "82240f01a68b4c2d7f31c325f0b755f82e1304978e68685ff85b2c545f7708aa",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 注解"
+      }
+    },
+    {
+      "segment_id": "a8610918",
+      "source_content": "Schema annotations allow attaching metadata to fields and edges and inject them to external templates.  \nAn annotation must be a Go type that is serializable to JSON raw value (e.g. struct, map or slice)\nand implement the [Annotation](https://pkg.go.dev/entgo.io/ent/schema?tab=doc#Annotation) interface.",
+      "source_content_hash": "27ffef057ebb9a55d1dde5215255155788d1436dfa874cf22126c6ace301feec",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "模式注解允许将元数据附加到字段和边，并将其注入外部模板。注解必须是可序列化为 JSON 原始值的 Go 类型（如结构体、映射或切片），并实现 [Annotation](https://pkg.go.dev/entgo.io/ent/schema?tab=doc#Annotation) 接口。"
+      }
+    },
+    {
+      "segment_id": "b6152880",
+      "source_content": "Here's an example of an annotation and its usage in schema and template:",
+      "source_content_hash": "799cb4a56ad25a400466d1d3bc5a117168e978d99839c13d0577acda7b7464a6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下为注解在模式和模板中的使用示例："
+      }
+    },
+    {
+      "segment_id": "b9331170",
+      "source_content": "1\\. An annotation definition:",
+      "source_content_hash": "c398e652a88006bb4b062db3f5e102040569f6b81c8cf6eaa8c4ae15213752e1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 注解定义："
+      }
+    },
+    {
+      "segment_id": "2f34b0ad",
+      "source_content": "```go\npackage entgql\n\n// Annotation annotates fields with metadata for templates.\ntype Annotation struct {\n\t// OrderField is the ordering field as defined in graphql schema.\n\tOrderField string\n}\n\n// Name implements ent.Annotation interface.\nfunc (Annotation) Name() string {\n\treturn \"EntGQL\"\n}\n```",
+      "source_content_hash": "c957a278e57aedda9e7666c862efffaa9af25e293bb85643b9176ee0b35a1970",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2f34b0ad"
+      }
+    },
+    {
+      "segment_id": "a9c2a503",
+      "source_content": "2\\. Annotation usage in ent/schema:",
+      "source_content_hash": "324d4ea6ab897947683f4486fda109bcfee5e7d66287bd31abe89362bb1400e0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在 ent/schema 中使用注解："
+      }
+    },
+    {
+      "segment_id": "4fe849d4",
+      "source_content": "```go\n// User schema.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the user.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Time(\"creation_date\").\n\t\t\tAnnotations(entgql.Annotation{\n\t\t\t\tOrderField: \"CREATED_AT\",\n\t\t\t}),\n\t}\n}\n```",
+      "source_content_hash": "d0e21308b854b38f6f777597e44021a266eec603b38d0d651d45057a754ed0c2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4fe849d4"
+      }
+    },
+    {
+      "segment_id": "6f08f877",
+      "source_content": "3\\. Annotation usage in external templates:",
+      "source_content_hash": "bbd162905212bc7efc273a21816f744771f3a25ac60346b48bc9f81caee07041",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 在外部模板中使用注解："
+      }
+    },
+    {
+      "segment_id": "7c894678",
+      "source_content": "```gotemplate\n{{ range $node := $.Nodes }}\n\t{{ range $f := $node.Fields }}\n\t\t{{/* Get the annotation by its name. See: Annotation.Name */}}\n\t\t{{ if $annotation := $f.Annotations.EntGQL }}\n\t\t\t{{/* Get the field from the annotation. */}}\n\t\t\t{{ $orderField := $annotation.OrderField }}\n\t\t{{ end }}\n\t{{ end }}\n{{ end }}\n```",
+      "source_content_hash": "bd7ccbf59c2cab0e4ec0ac6bc3fed03b6078dd9ff825978da5fc0d6d4ad13029",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7c894678"
+      }
+    },
+    {
+      "segment_id": "67edbbc4",
+      "source_content": "## Global Annotations",
+      "source_content_hash": "917aa4ffd2678779d411d7942f925350b4458e6acee004d4866f1b6fd641a36b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 全局注解"
+      }
+    },
+    {
+      "segment_id": "61a78cbe",
+      "source_content": "Global annotation is a type of annotation that is injected into the `gen.Config` object and can be accessed globally\nin all templates. For example, an annotation that holds a config file information (e.g. `gqlgen.yml` or `swagger.yml`)\nadd can accessed in all templates:",
+      "source_content_hash": "7c75bd120a6641bfb17bbb92173ac4b80e4daf9b37af322c0805ace9a04c7b71",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "全局注解是一种注入到 `gen.Config` 对象中的注解类型，可在所有模板中全局访问。例如，持有配置文件信息（如 `gqlgen.yml` 或 `swagger.yml`）的注解可被所有模板访问："
+      }
+    },
+    {
+      "segment_id": "e29bd639",
+      "source_content": "1\\. An annotation definition:",
+      "source_content_hash": "c398e652a88006bb4b062db3f5e102040569f6b81c8cf6eaa8c4ae15213752e1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 注解定义："
+      }
+    },
+    {
+      "segment_id": "44ecd2e3",
+      "source_content": "```go\npackage gqlconfig\n\nimport (\n\t\"entgo.io/ent/schema\"\n\t\"github.com/99designs/gqlgen/codegen/config\"\n)\n\n// Annotation defines a custom annotation\n// to be inject globally to all templates.\ntype Annotation struct {\n    Config *config.Config\n}\n\nfunc (Annotation) Name() string {\n    return \"GQL\"\n}\n\nvar _ schema.Annotation = (*Annotation)(nil)\n```",
+      "source_content_hash": "304d7bae107f1079844b798687eb2d7ec303bc10f5c1b5013e8ee93a6de87555",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_44ecd2e3"
+      }
+    },
+    {
+      "segment_id": "ebfad7e4",
+      "source_content": "2\\. Annotation usage in `ent/entc.go`:",
+      "source_content_hash": "6ee7418e2e44bf475cacd9baaa5c8a8b2430c26643851bd38be80c97d9fec1ed",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在 `ent/entc.go` 中使用注解："
+      }
+    },
+    {
+      "segment_id": "a4a54521",
+      "source_content": "```go\nfunc main() {\n\tcfg, err := config.LoadConfig(\"<path to gqlgen.yml>\")\n\tif err != nil {\n\t\tlog.Fatalf(\"loading gqlgen config: %v\", err)\n\t}\n\topts := []entc.Option{\n\t\tentc.TemplateDir(\"./template\"),\n\t\tentc.Annotations(gqlconfig.Annotation{Config: cfg}),\n\t}\n\terr = entc.Generate(\"./schema\", &gen.Config{\n\t\tTemplates: entgql.AllTemplates,\n\t}, opts...)\n\tif err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "51412af3f07a6691265f3197547a49e186cc9fc7cf1dcecedea66cec3e092bde",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a4a54521"
+      }
+    },
+    {
+      "segment_id": "49be422b",
+      "source_content": "3\\. Annotation usage in external templates:",
+      "source_content_hash": "bbd162905212bc7efc273a21816f744771f3a25ac60346b48bc9f81caee07041",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 在外部模板中使用注解："
+      }
+    },
+    {
+      "segment_id": "5ad8d2b2",
+      "source_content": "```gotemplate\n{{- with $.Annotations.GQL.Config.StructTag }}\n    {{/* Access the GQL configuration on *gen.Graph */}}\n{{- end }}\n\n{{ range $node := $.Nodes }}\n    {{- with $node.Config.Annotations.GQL.Config.StructTag }}\n        {{/* Access the GQL configuration on *gen.Type */}}\n    {{- end }}\n{{ end }}\n```",
+      "source_content_hash": "55bb657dfd996e33b2c756454f3769d2d7e4096cf061752dd45226c81014fcc9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_5ad8d2b2"
+      }
+    },
+    {
+      "segment_id": "c9f45ca3",
+      "source_content": "## Examples",
+      "source_content_hash": "0d19ab46319785768005536313f02bd3b9b779aaed82eeac5bf7a7f796ad3ef1",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 示例"
+      }
+    },
+    {
+      "segment_id": "735cb1a2",
+      "source_content": "- A custom template for implementing the `Node` API for GraphQL - \n[Github](https://github.com/ent/ent/blob/master/entc/integration/template/ent/template/node.tmpl).\n\n- An example for executing external templates with custom functions. See  [configuration](https://github.com/ent/ent/blob/master/examples/entcpkg/ent/entc.go) and its\n[README](https://github.com/ent/ent/blob/master/examples/entcpkg) file.",
+      "source_content_hash": "349dbb0fa1b273df5712bb95f68d0d60356eeff652f1aa7f3647e2ee4f12a5e3",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 为 GraphQL 实现 `Node` API 的自定义模板 - \n[Github](https://github.com/ent/ent/blob/master/entc/integration/template/ent/template/node.tmpl)。\n\n- 使用自定义函数执行外部模板的示例。参见 [配置](https://github.com/ent/ent/blob/master/examples/entcpkg/ent/entc.go) 及其 \n[README](https://github.com/ent/ent/blob/master/examples/entcpkg) 文件。"
+      }
+    },
+    {
+      "segment_id": "9349ceaa",
+      "source_content": "## Documentation",
+      "source_content_hash": "060d66a4f3c0a5664c7d286ce86eaabb082ea7e6c9ec334ef16290c32c44f14e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 文档"
+      }
+    },
+    {
+      "segment_id": "e636ba62",
+      "source_content": "Templates are executed on either a specific node type, or the entire schema graph. For API\ndocumentation, see the <a target=\"_blank\" href=\"https://pkg.go.dev/entgo.io/ent/entc/gen?tab=doc\">GoDoc</a>.",
+      "source_content_hash": "20f6756ee990c44345f1fa8a02f19ce69f7047d0ea51b678ab99ca7dbe0f4344",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "模板可在特定节点类型或整个模式图上执行。API文档请参阅<a target=\"_blank\" href=\"https://pkg.go.dev/entgo.io/ent/entc/gen?tab=doc\">GoDoc</a>。"
+      }
+    },
+    {
+      "segment_id": "89d451de",
+      "source_content": "## AutoCompletion",
+      "source_content_hash": "5bab5b85588c79b33d20abae8cd22ba132fe28a65993c1a8b0e7170a67cfc754",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自动补全"
+      }
+    },
+    {
+      "segment_id": "32fb7230",
+      "source_content": "JetBrains users can add the following template annotation to enable the autocompletion in their templates:",
+      "source_content_hash": "81d2d2124a4061222e4b1e3f8c2129bf52b80959dfdb0032c83f9365da523bfc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "JetBrains用户可通过添加以下模板注解来启用模板中的自动补全功能："
+      }
+    },
+    {
+      "segment_id": "868a2ef9",
+      "source_content": "```gotemplate\n{{/* The line below tells Intellij/GoLand to enable the autocompletion based on the *gen.Graph type. */}}\n{{/* gotype: entgo.io/ent/entc/gen.Graph */}}\n\n{{ define \"template\" }}\n    {{/* ... */}}\n{{ end }}\n```",
+      "source_content_hash": "bf0c3954bb5ce138c4190d2c0aec13c907bc70410f88a7e963ed2a00a756633b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_868a2ef9"
+      }
+    },
+    {
+      "segment_id": "12bc7444",
+      "source_content": "See it in action:",
+      "source_content_hash": "fcb1ad81e696b0443eda397696149d3f184d2e699085ec1f4791ec750bffd7e0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "实际效果如下："
+      }
+    },
+    {
+      "segment_id": "f50056c0",
+      "source_content": "![template-autocomplete](https://entgo.io/images/assets/template-autocomplete.gif)",
+      "source_content_hash": "93ea0d462276ab4c684ccfb49d9a8b641f8313bc952db16fa307f9f669593a75",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![template-autocomplete](https://entgo.io/images/assets/template-autocomplete.gif)"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/templates.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.655767+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "2573ecba8c802557ffb6a6dd873b60b42edd44d6be7fb89384167f66f7800fce"
+  }
+}

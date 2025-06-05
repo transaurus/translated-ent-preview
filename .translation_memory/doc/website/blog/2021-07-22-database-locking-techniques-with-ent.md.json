@@ -1,0 +1,412 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "blog/2021-07-22-database-locking-techniques-with-ent.md",
+  "source_file_content_hash": "d65dc5e6a905e34a963ac8f17f9a161df3399bbb9630d7b80d5842d3fc3dc7b6",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\ntitle: Database Locking Techniques with Ent\nauthor: Rotem Tamir\nauthorURL: \"https://github.com/rotemtam\"\nauthorImageURL: \"https://s.gravatar.com/avatar/36b3739951a27d2e37251867b7d44b1a?s=80\"\nauthorTwitter: _rtam\n---",
+      "source_content_hash": "2e822a968072a6e11c6777433a03aad2395f6ad1dbf17109ae59d1e912a29486",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "53eaf0e1",
+      "source_content": "Locks are one of the fundamental building blocks of any concurrent \ncomputer program. When many things are happening simultaneously, \nprogrammers reach out to locks to guarantee the mutual exclusion of \nconcurrent access to a resource. Locks (and other mutual exclusion \nprimitives) exist in many different layers of the stack from low-level\nCPU instructions to application-level APIs (such as `sync.Mutex` in Go).",
+      "source_content_hash": "6755b90279bda9341e1698b0eba97aad920d3b79b3a84e4e990cd157320a1b3b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "锁是任何并发计算机程序的基础构建模块之一。当多个操作同时发生时，程序员会借助锁来确保对资源的并发访问具有互斥性。锁（及其他互斥原语）存在于技术栈的各个层级——从底层的CPU指令到应用层API（如Go语言中的`sync.Mutex`）。"
+      }
+    },
+    {
+      "segment_id": "86b54d44",
+      "source_content": "When working with relational databases, one of the common needs of \napplication developers is the ability to acquire a lock on records.\nImagine an `inventory` table, listing items available for sale on \nan e-commerce website. This table might have a column named `state`\nthat could either be set to `available` or `purchased`.  avoid the\nscenario where two users think they have successfully purchased the\nsame inventory item, the application must prevent two operations\nfrom mutating the item from an available to a purchased state.",
+      "source_content_hash": "f94c448d489c99f7036e45af62e4dc02a107144b8016eff0f945c50d3a026fae",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在使用关系型数据库时，应用开发者的常见需求之一是对记录加锁。假设有一个电商网站的`inventory`库存表，其中包含表示商品状态的`state`列（可能值为`available`可购买或`purchased`已售出）。为避免两个用户误认为同时成功购买了同一商品，应用程序必须阻止两个操作同时将商品状态从\"可购买\"修改为\"已售出\"。"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "How can the application guarantee this? Having the server check \nif the desired item is `available` before setting it to `purchased` \nwould not be good enough. Imagine a scenario where two users \nsimultaneously try to purchase the same item. Two requests would\ntravel from their browsers to the application server and arrive \nroughly at the same time. Both would query the database for the \nitem's state, and see the item is `available`. Seeing this, both\nrequest handlers would issue an `UPDATE` query setting the state\nto `purchased` and the `buyer_id` to the id of the requesting user.\nBoth queries will succeed, but the final state of the record will \nbe that the user who issued the `UPDATE` query last will be\nconsidered the buyer of the item.",
+      "source_content_hash": "797772363f981eedac644b80510eedb3998d59aa4b8ea1d3c89fb208408fefda",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如何实现这种保证？仅让服务器在更新前检查商品是否处于`available`状态是不够的。设想两个用户同时购买同一商品：两个请求会几乎同时到达应用服务器，两者查询数据库时都会看到商品状态为\"可购买\"，继而各自发出将状态改为\"已售出\"并设置`buyer_id`的`UPDATE`语句。虽然两个查询都会执行成功，但最终只有最后执行更新操作的买家会被记录为商品所有者。"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "Over the years, different techniques have evolved to allow developers\nto write applications that provide these guarantees to users. Some \nof them involve explicit locking mechanisms provided by databases, \nwhile others rely on more general ACID properties of databases to\nachieve mutual exclusion. In this post we will explore the \nimplementation of two of these techniques using Ent.",
+      "source_content_hash": "262cb02ce1c7418d5a16c3adfe470e94af13632c87271d67f3981b49748058aa",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "多年来，开发者逐渐形成了多种技术方案来满足这类需求。有些方案依赖数据库提供的显式锁机制，有些则利用数据库ACID特性实现互斥。本文将探讨如何通过Ent框架实现其中两种技术方案。"
+      }
+    },
+    {
+      "segment_id": "35a77014",
+      "source_content": "### Optimistic Locking",
+      "source_content_hash": "b748412d2c5f96c45c07d3fe9ec0a61e48a672138f18940cd54f0ed7b4bf492b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 乐观锁（Optimistic Locking）"
+      }
+    },
+    {
+      "segment_id": "13d9cd70",
+      "source_content": "Optimistic locking (sometimes also called Optimistic Concurrency \nControl) is a technique that can be used to achieve locking\nbehavior without explicitly acquiring a lock on any record.",
+      "source_content_hash": "3dec77871480ab7667ff9f919930a643fd73a7d002286833abd932529fdf9a36",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "乐观锁（有时也称乐观并发控制）是一种无需显式加锁即可实现锁定行为的技术。"
+      }
+    },
+    {
+      "segment_id": "c504c207",
+      "source_content": "On a high-level, this is how optimistic locking works:",
+      "source_content_hash": "a6c2d5aa5edad13b2f82d25a7bea8151e4c650e7d30e3e1bc3c27aa23957d77b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "其核心工作原理如下："
+      }
+    },
+    {
+      "segment_id": "310e47b7",
+      "source_content": "- Each record is assigned a numeric version number. This value \n  must be monotonically increasing. Often Unix timestamps of the latest row update are used.\n- A transaction reads a record, noting its version number from the \n  database.\n- An `UPDATE` statement is issued to modify the record:\n    - The statement must include a predicate requiring that the \n      version number has not changed from its previous value. For example: `WHERE id=<id> AND version=<previous version>`.\n    - The statement must increase the version. Some applications\n      will increase the current value by 1, and some will set it\n      to the current timestamp.\n- The database returns the amount of rows modified by\n  the `UPDATE` statement. If the number is 0, this means someone\n  else has modified the record between the time we read it, and \n  the time we wanted to update it. The transaction is considered \n  failed, rolled back and can be retried.",
+      "source_content_hash": "7455d2bb149955f047421284d9301a48235ecf95025d8519a4dbf98fcbd86dc8",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 每条记录分配一个数值版本号（必须单调递增，通常使用最后更新的Unix时间戳）\n- 事务读取记录时获取当前版本号\n- 执行更新操作时：\n    - UPDATE语句必须包含版本号未变更的条件（如`WHERE id=<id> AND version=<previous version>`）\n    - 必须递增版本号（可通过+1或设置为当前时间戳实现）\n- 数据库返回受影响行数。若为0，表示读取记录后、更新前该记录已被修改，此时事务应回滚并重试"
+      }
+    },
+    {
+      "segment_id": "657c2b20",
+      "source_content": "Optimistic locking is commonly used in \"low contention\" \nenvironments (situations where the likelihood of two transactions \ninterfering with one another is relatively low) and where the \nlocking logic can be trusted to happen in the application layer.\nIf there are writers to the database that we cannot ensure to\nobey the required logic, this technique is rendered useless.",
+      "source_content_hash": "1a618656f53760d1407a190ae9c39bfd98d4d19373ca1812a916023e689fb29d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "乐观锁通常适用于\"低竞争\"环境（即事务冲突概率较低），且要求所有写操作都必须遵循版本控制逻辑。如果存在不遵守此逻辑的写入方，该技术将失效。"
+      }
+    },
+    {
+      "segment_id": "6cc549f2",
+      "source_content": "Let’s see how this technique can be employed using Ent. ",
+      "source_content_hash": "90e9c89f081f4179feaa7aa96f381869031103f94e3889fc4ae3da57e446ffee",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下面演示如何通过Ent实现乐观锁："
+      }
+    },
+    {
+      "segment_id": "d0dd855b",
+      "source_content": "We start by defining our `ent.Schema` for a `User`. The user has an \n`online` boolean field to specify whether they are currently\nonline and an `int64` field for the current version number.",
+      "source_content_hash": "0a31d7bfdff4be145a0d0f3fa9d74ade9f8af34aa9c1e300c38b0f09f863ca61",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先定义包含`online`布尔字段（用户在线状态）和`int64`版本号字段的`User`实体模式："
+      }
+    },
+    {
+      "segment_id": "a716abf2",
+      "source_content": "```go\n// User holds the schema definition for the User entity.\ntype User struct {\n\tent.Schema\n}\n\n// Fields of the User.\nfunc (User) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Bool(\"online\"),\n\t\tfield.Int64(\"version\").\n\t\t\tDefaultFunc(func() int64 {\n\t\t\t\treturn time.Now().UnixNano()\n\t\t\t}).\n\t\t\tComment(\"Unix time of when the latest update occurred\")\n\t}\n}\n```",
+      "source_content_hash": "f80c6b5ccfda1ed6e0918ef6191619e9c5f33ddcd6f734000a4054fdc940f600",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a716abf2"
+      }
+    },
+    {
+      "segment_id": "25212439",
+      "source_content": "Next, let's implement a simple optimistically locked update to our\n`online` field:",
+      "source_content_hash": "0ca83505fa3f885bdce177c79fe3262d8a2b90bcc57309ea0b5b66e749089bca",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接着实现基于乐观锁的`online`字段更新逻辑："
+      }
+    },
+    {
+      "segment_id": "1cf51900",
+      "source_content": "```go\nfunc optimisticUpdate(tx *ent.Tx, prev *ent.User, online bool) error {\n\t// The next version number for the record must monotonically increase\n\t// using the current timestamp is a common technique to achieve this. \n\tnextVer := time.Now().UnixNano()\n\n\t// We begin the update operation:\n\tn := tx.User.Update().\n\n\t\t// We limit our update to only work on the correct record and version:\n\t\tWhere(user.ID(prev.ID), user.Version(prev.Version)).\n\n\t\t// We set the next version:\n\t\tSetVersion(nextVer).\n\n\t\t// We set the value we were passed by the user:\n\t\tSetOnline(online).\n\t\tSaveX(context.Background())\n\n\t// SaveX returns the number of affected records. If this value is \n\t// different from 1 the record must have been changed by another\n\t// process.\n\tif n != 1 {\n\t\treturn fmt.Errorf(\"update failed: user id=%d updated by another process\", prev.ID)\n\t}\n\treturn nil\n}\n```",
+      "source_content_hash": "d0446712193129c80320b16e7f8c79e90cb76a65e5de9b5fa69e59c5fb7dfaaa",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_1cf51900"
+      }
+    },
+    {
+      "segment_id": "9c9e2b64",
+      "source_content": "Next, let's write a test to verify that if two processes try to\nedit the same record, only one will succeed:",
+      "source_content_hash": "6a5688cd787ce90855e00a5ffa9539f98de6c694310df5212c797eeee655169c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们编写一个测试用例来验证当两个进程尝试编辑同一条记录时，只有其中一个会成功："
+      }
+    },
+    {
+      "segment_id": "601bdf38",
+      "source_content": "```go\nfunc TestOCC(t *testing.T) {\n\tclient := enttest.Open(t, \"sqlite3\", \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tctx := context.Background()\n\n\t// Create the user for the first time.\n\torig := client.User.Create().SetOnline(true).SaveX(ctx)\n\n\t// Read another copy of the same user.\n\tuserCopy := client.User.GetX(ctx, orig.ID)\n\n\t// Open a new transaction:\n\ttx, err := client.Tx(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating transaction: %v\", err)\n\t}\n\n\t// Try to update the record once. This should succeed.\n\tif err := optimisticUpdate(tx, userCopy, false); err != nil {\n\t\ttx.Rollback()\n\t\tlog.Fatal(\"unexpected failure:\", err)\n\t}\n\n\t// Try to update the record a second time. This should fail.\n\terr = optimisticUpdate(tx, orig, false)\n\tif err == nil {\n\t\tlog.Fatal(\"expected second update to fail\")\n\t}\n\tfmt.Println(err)\n}\n```",
+      "source_content_hash": "10aadfd2119921317159082aac8f3011b87085ccdf27a12569f806793196137d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_601bdf38"
+      }
+    },
+    {
+      "segment_id": "fd7ed056",
+      "source_content": "Running our test:",
+      "source_content_hash": "606c95a7afb362cd1db185f8a61e94b492251e7b2ada33327046e008a0d48479",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行测试："
+      }
+    },
+    {
+      "segment_id": "dddc2d3c",
+      "source_content": "```go\n=== RUN   TestOCC\nupdate failed: user id=1 updated by another process\n--- PASS: Test (0.00s)\n```",
+      "source_content_hash": "60d882a0ffc77f4748026c678e2cb57c601a9d06f5ba54e90ee55f60ba2541f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_dddc2d3c"
+      }
+    },
+    {
+      "segment_id": "85ea22dd",
+      "source_content": "Great! Using optimistic locking we can prevent two processes from\nstepping on each other's toes!",
+      "source_content_hash": "d865899dfeeba41b56e61bb49d82dbd0c20e5ad9308408effe10ebbea4749338",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完美！通过乐观锁机制，我们可以避免两个进程相互干扰！"
+      }
+    },
+    {
+      "segment_id": "a75f8411",
+      "source_content": "### Pessimistic Locking",
+      "source_content_hash": "e2163003103341ac31f144da7b1a3c5f27a611600fe6596062ed0433b5b5b913",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 悲观锁"
+      }
+    },
+    {
+      "segment_id": "39c48ff7",
+      "source_content": "As we've mentioned above, optimistic locking isn't always \nappropriate. For use cases where we prefer to delegate the \nresponsibility for maintaining the integrity of the lock to\nthe databases, some database engines (such as MySQL, Postgres,\nand MariaDB, but not SQLite) offer pessimistic locking\ncapabilities.  These databases support a modifier to `SELECT` \nstatements that is called `SELECT ... FOR UPDATE`. The MySQL \ndocumentation [explains](https://dev.mysql.com/doc/refman/8.0/en/innodb-locking-reads.html):",
+      "source_content_hash": "74953f06eb8bbeaca03874ee713661ed334e10593786c5f520236296e9558a93",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如前所述，乐观锁并非适用于所有场景。对于更倾向于将锁完整性维护职责委托给数据库的用例，部分数据库引擎（如MySQL、PostgreSQL和MariaDB，但SQLite不支持）提供了悲观锁功能。这些数据库支持在`SELECT`语句中添加`SELECT ... FOR UPDATE`修饰符。MySQL官方文档如此[解释](https://dev.mysql.com/doc/refman/8.0/en/innodb-locking-reads.html)："
+      }
+    },
+    {
+      "segment_id": "8d3c3759",
+      "source_content": "> A SELECT ... FOR UPDATE reads the latest available data, setting\n> exclusive locks on each row it reads. Thus, it sets the same locks \n> a searched SQL UPDATE would set on the rows.",
+      "source_content_hash": "9c02e374399c7b76721bf60020f03abbed5f1fdadd6e3678289c3db178bb5c4d",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> `SELECT ... FOR UPDATE`会读取最新的可用数据，并对读取的每行记录设置排他锁。其锁机制与SQL更新语句对行记录的锁定方式相同。"
+      }
+    },
+    {
+      "segment_id": "b27c61de",
+      "source_content": "Alternatively, users can use `SELECT ... FOR SHARE` statements, as \nexplained by the docs, `SELECT ... FOR SHARE`:",
+      "source_content_hash": "7f4bad4fc9a68d679347d8736d07db9683b25ce6e3da7d3f7fc72c353d33d644",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "用户也可以使用`SELECT ... FOR SHARE`语句，文档中说明该语句："
+      }
+    },
+    {
+      "segment_id": "ca690100",
+      "source_content": "> Sets a shared mode lock on any rows that are read. Other sessions\n> can read the rows, but cannot modify them until your transaction\n> commits. If any of these rows were changed by another transaction\n> that has not yet committed, your query waits until that \n> transaction ends and then uses the latest values.",
+      "source_content_hash": "419e1c87b1477a82f038959080d4fb92411301262e129ca208683cbdf80b9e25",
+      "node_type": "blockquote",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "> 对读取的所有行设置共享模式锁。其他会话可以读取这些行，但在您的事务提交前无法修改。如果这些行被其他尚未提交的事务修改，您的查询将等待该事务结束后使用最新值。"
+      }
+    },
+    {
+      "segment_id": "38f964f1",
+      "source_content": "Ent has recently added support for `FOR SHARE`/ `FOR UPDATE` \nstatements via a feature-flag called `sql/lock`. To use it,\nmodify your `generate.go` file to include `--feature sql/lock`:",
+      "source_content_hash": "7e41e9d3387776f300985b444ad9c9acb36cef476f42150f6d43f6f76c4fbd5a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent近期通过名为`sql/lock`的特性标志增加了对`FOR SHARE`/`FOR UPDATE`语句的支持。使用时需在`generate.go`文件中添加`--feature sql/lock`参数："
+      }
+    },
+    {
+      "segment_id": "d9ca18af",
+      "source_content": "```go\n//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate --feature sql/lock ./schema \n```",
+      "source_content_hash": "c5bb4b4a89393539a30c30930499aee539cbcb110acf950c09fd8ff35dc38505",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9ca18af"
+      }
+    },
+    {
+      "segment_id": "eeeea5ce",
+      "source_content": "Next, let's implement a function that will use pessimistic\nlocking to make sure only a single process can update our `User` \nobject's `online` field:",
+      "source_content_hash": "1b8d2775683f9d9d54c4efba7cd740680dbf99f4ee25088b30226775a3594094",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下面我们实现一个使用悲观锁确保单进程独占更新`User`对象`online`字段的函数："
+      }
+    },
+    {
+      "segment_id": "ff27b4c2",
+      "source_content": "```go\nfunc pessimisticUpdate(tx *ent.Tx, id int, online bool) (*ent.User, error) {\n\tctx := context.Background()\n\n\t// On our active transaction, we begin a query against the user table\n\tu, err := tx.User.Query().\n\n\t\t// We add a predicate limiting the lock to the user we want to update.\n\t\tWhere(user.ID(id)).\n\n\t\t// We use the ForUpdate method to tell ent to ask our DB to lock\n\t\t// the returned records for update.\n\t\tForUpdate(\n\t\t\t// We specify that the query should not wait for the lock to be\n\t\t\t// released and instead fail immediately if the record is locked.\n\t\t\tsql.WithLockAction(sql.NoWait),\n\t\t).\n\t\tOnly(ctx)\n\t\n\t// If we failed to acquire the lock we do not proceed to update the record.\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\t\n\t// Finally, we set the online field to the desired value. \n\treturn u.Update().SetOnline(online).Save(ctx)\n}\n```",
+      "source_content_hash": "8e38c8c80b9771a51cd46b775d1b46e4eefbcd62aafd8b99c4ac32e92ed644e6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ff27b4c2"
+      }
+    },
+    {
+      "segment_id": "dfb6fc67",
+      "source_content": "Now, let's write a test that verifies that if two processes try to \nedit the same record, only one will succeed:",
+      "source_content_hash": "f18a1e7349d9e524c2a5350b80b3473ff1ebc77753d5287145e9ca348624a279",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在编写测试用例验证当两个进程尝试编辑同一条记录时的独占性："
+      }
+    },
+    {
+      "segment_id": "cdbe4894",
+      "source_content": "```go\nfunc TestPessimistic(t *testing.T) {\n\tctx := context.Background()\n\tclient := enttest.Open(t, dialect.MySQL, \"root:pass@tcp(localhost:3306)/test?parseTime=True\")\n\n\t// Create the user for the first time.\n\torig := client.User.Create().SetOnline(true).SaveX(ctx)\n\n\t// Open a new transaction. This transaction will acquire the lock on our user record.\n\ttx, err := client.Tx(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating transaction: %v\", err)\n\t}\n\tdefer tx.Commit()\n\t\n\t// Open a second transaction. This transaction is expected to fail at \n\t// acquiring the lock on our user record. \n\ttx2, err := client.Tx(ctx)\n\tif err != nil {\n\t\tlog.Fatalf(\"failed creating transaction: %v\", err)\n\t}\n\tdefer tx.Commit()\n\t\n\t// The first update is expected to succeed.\n\tif _, err := pessimisticUpdate(tx, orig.ID, true); err != nil {\n\t\tlog.Fatalf(\"unexpected error: %s\", err)\n\t}\n\t\n\t// Because we did not run tx.Commit yet, the row is still locked when\n\t// we try to update it a second time. This operation is expected to \n\t// fail. \n\t_, err = pessimisticUpdate(tx2, orig.ID, true)\n\tif err == nil {\n\t\tlog.Fatal(\"expected second update to fail\")\n\t}\n\tfmt.Println(err)\n}\n```",
+      "source_content_hash": "79bcd6190caa184f0291734220095ba9d0b68510ece4b280936950094d97ebd6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cdbe4894"
+      }
+    },
+    {
+      "segment_id": "46e586a3",
+      "source_content": "A few things are worth mentioning in this example:",
+      "source_content_hash": "f8dedabf5e30b237b891b0ed4f230bbf541d68d9212d9a191ee3acc916b9e8b2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此示例中有几点值得注意："
+      }
+    },
+    {
+      "segment_id": "fc4d82ef",
+      "source_content": "- Notice that we use a real MySQL instance to run this test \n  against, as SQLite does not support `SELECT .. FOR UPDATE`.\n- For the simplicity of the example, we used the `sql.NoWait` \n  option to tell the database to return an error if the lock cannot be acquired. This means that the calling application needs to retry the write after receiving the error. If we don't specify this option, we can create flows where our application blocks until the lock is released and then proceeds without retrying. This is not always desirable but it opens up some interesting design options.\n- We must always commit our transaction. Forgetting to do so can\n  result in some serious issues. Remember that while the lock\n  is maintained, no one can read or update this record.",
+      "source_content_hash": "42cf833b4997ee050fca04b2893ff963b707686eeda8b4ca1e49a9d485e86cff",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- 由于SQLite不支持`SELECT .. FOR UPDATE`，我们使用真实MySQL实例运行测试\n- 为简化示例，采用`sql.NoWait`选项使数据库在无法获取锁时立即返回错误。这意味着调用应用需在收到错误后重试写入操作。若不指定该选项，可实现应用阻塞至锁释放后继续执行的流程（虽不总是理想方案，但提供了有趣的设计可能性）\n- 必须显式提交事务。忘记提交可能导致严重问题——只要锁保持，其他操作都无法读取或更新该记录"
+      }
+    },
+    {
+      "segment_id": "60e22db4",
+      "source_content": "Running our test:",
+      "source_content_hash": "606c95a7afb362cd1db185f8a61e94b492251e7b2ada33327046e008a0d48479",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行测试："
+      }
+    },
+    {
+      "segment_id": "d0a5d100",
+      "source_content": "```go\n=== RUN   TestPessimistic\nError 3572: Statement aborted because lock(s) could not be acquired immediately and NOWAIT is set.\n--- PASS: TestPessimistic (0.08s)\n```",
+      "source_content_hash": "067e60f373d4e2e867702d72083d4c3186261c8293d1990858769a9d92a32a15",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d0a5d100"
+      }
+    },
+    {
+      "segment_id": "8517ac25",
+      "source_content": "Great! We have used MySQL's \"locking reads\" capabilities and Ent's\nnew support for it to implement a locking mechanism that provides \nreal mutual exclusion guarantees.",
+      "source_content_hash": "bdcbba9b68c44a9ea097735c83ad2bf89dc24f79c9414ea2b4eee5194d3b4a7f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "成功！我们利用MySQL的\"锁定读取\"功能及Ent的新特性支持，实现了具有真正互斥保证的锁机制。"
+      }
+    },
+    {
+      "segment_id": "b8925cfb",
+      "source_content": "### Conclusion",
+      "source_content_hash": "e405d447b86099a6a4fe827d18ae4510cbb9c8932c9e40b54204211fe19518d2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 结论"
+      }
+    },
+    {
+      "segment_id": "95b3e282",
+      "source_content": "We began this post by presenting the type of business requirements \nthat lead application developers to reach out for locking techniques when working with databases. We continued by presenting two different approaches to achieving mutual exclusion when updating database records and demonstrated how to employ these techniques using Ent.",
+      "source_content_hash": "3b575877a611f83c295ed93300641c9e82869895b1648f05e59b60a66a826463",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本文开篇阐述了促使开发者使用数据库锁技术的业务需求场景，继而介绍了实现记录更新互斥的两种不同方案，并演示了如何通过Ent应用这些技术。"
+      }
+    },
+    {
+      "segment_id": "e020f7ed",
+      "source_content": "Have questions? Need help with getting started? Feel free to join \nour [Discord server](https://discord.gg/qZmPgTE6RX) or [Slack channel](https://entgo.io/docs/slack).",
+      "source_content_hash": "3f0f2da88e9e2378b5a4d03a9f70d92a86baa349e86f1483dca80a6485f8633a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如有疑问或需要入门帮助？欢迎加入我们的[Discord服务器](https://discord.gg/qZmPgTE6RX)或[Slack频道](https://entgo.io/docs/slack)。"
+      }
+    },
+    {
+      "segment_id": "94e6f51a",
+      "source_content": ":::note[For more Ent news and updates:]\n\n- Subscribe to our [Newsletter](https://entgo.substack.com/)\n- Follow us on [Twitter](https://twitter.com/entgo_io)\n- Join us on #ent on the [Gophers Slack](https://entgo.io/docs/slack)\n- Join us on the [Ent Discord Server](https://discord.gg/qZmPgTE6RX)\n\n:::",
+      "source_content_hash": "d4f11098ea703d24e53854ec8e2219390959641026efa07de5a588379be52b78",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[获取更多 Ent 资讯与更新：]\n\n- 订阅我们的[新闻通讯](https://entgo.substack.com/)\n- 在[Twitter](https://twitter.com/entgo_io)上关注我们\n- 加入 [Gophers Slack](https://entgo.io/docs/slack) 的 #ent 频道\n- 加入 [Ent Discord 服务器](https://discord.gg/qZmPgTE6RX)\n\n:::"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-blog/2021-07-22-database-locking-techniques-with-ent.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.656111+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "d65dc5e6a905e34a963ac8f17f9a161df3399bbb9630d7b80d5842d3fc3dc7b6"
+  }
+}

@@ -1,0 +1,552 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/schema-view.mdx",
+  "source_file_content_hash": "86552d52c495d4f1c395159f2b5c89f52fdf6f823ae23019bfa3aa4ba229f3cd",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: schema-views\ntitle: Views\nslug: /schema-views\n---",
+      "source_content_hash": "131fc0daac6040268a4daa9c6ac1a85814eb111300d29c2364e31683d77accc4",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_10c4cb47"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "Ent supports working with database views. Unlike regular Ent types (schemas), which are usually backed by tables, views\nact as \"virtual tables\" and their data results from a query. The following examples demonstrate how to define a `VIEW`\nin Ent. For more details on the different options, follow the rest of the guide.",
+      "source_content_hash": "3de52a9b9b33310ffe1b714292fe2c40343bc4f427255fc43f88972c9ecc3750",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent支持操作数据库视图。与通常由表支撑的常规Ent类型（模式）不同，视图作为\"虚拟表\"存在，其数据来源于查询结果。以下示例演示如何在Ent中定义`VIEW`。更多选项细节，请参阅指南后续内容。"
+      }
+    },
+    {
+      "segment_id": "899bc9b4",
+      "source_content": "<Tabs>\n<TabItem value=\"Builder Definition\">\n\n```go title=\"ent/schema/user.go\"\n// CleanUser represents a user without its PII field.\ntype CleanUser struct {\n\tent.View\n}\n\n// Annotations of the CleanUser.\nfunc (CleanUser) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentsql.ViewFor(dialect.Postgres, func(s *sql.Selector) {\n\t\t\ts.Select(\"name\", \"public_info\").From(sql.Table(\"users\"))\n\t\t}),\n\t}\n}\n\n// Fields of the CleanUser.\nfunc (CleanUser) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"public_info\"),\n\t}\n}\n```\n</TabItem>\n<TabItem value=\"Raw Definition\">\n\n```go title=\"ent/schema/user.go\"\n// CleanUser represents a user without its PII field.\ntype CleanUser struct {\n\tent.View\n}\n\n// Annotations of the CleanUser.\nfunc (CleanUser) Annotations() []schema.Annotation {\n    return []schema.Annotation{\n        // Alternatively, you can use raw definitions to define the view.\n        // But note, this definition is skipped if the ViewFor annotation\n        // is defined for the dialect we generated migration to (Postgres).\n        entsql.View(`SELECT name, public_info FROM users`),\n    }\n}\n\n// Fields of the CleanUser.\nfunc (CleanUser) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"public_info\"),\n\t}\n}\n```\n</TabItem>\n<TabItem value=\"External Definition\">\n\n```go title=\"ent/schema/user.go\"\n// CleanUser represents a user without its PII field.\ntype CleanUser struct {\n\tent.View\n}\n\n// View definition is specified in a separate file (`schema.sql`),\n// and loaded using Atlas' `composite_schema` data-source.\n\n// Fields of the CleanUser.\nfunc (CleanUser) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"public_info\"),\n\t}\n}\n```\n</TabItem>\n</Tabs>",
+      "source_content_hash": "64d4e8392e2ea98e0e35e44993ce719ac0e77de2d4671aefaca12ad30f3b218e",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_899bc9b4"
+      }
+    },
+    {
+      "segment_id": "93d92b0f",
+      "source_content": ":::info[key differences between tables and views]\n- Views are read-only, and therefore, no mutation builders are generated for them. If you want to define insertable/updatable\n  views, define them as regular schemas and follow the guide below to configure their migrations.\n- Unlike `ent.Schema`, `ent.View` does not have a default `ID` field. If you want to include an `id` field in your view,\n  you can explicitly define it as a field.\n- Hooks cannot be registered on views, as they are read-only.\n- Atlas provides built-in support for Ent views, for both versioned migrations and testing. However, if you are not\n  using Atlas and want to use views, you need to manage their migrations manually since Ent does not offer schema\n  migrations for them.\n:::",
+      "source_content_hash": "6a10879c826dd1d33ce8e7580724b711009d8f51990c00fc67f7231afe07abc2",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[表与视图的关键区别]\n- 视图是只读的，因此不会为其生成变更构建器。如需定义可插入/更新的视图，请将其定义为常规模式并按照下文指南配置迁移。\n- 与`ent.Schema`不同，`ent.View`默认不包含`ID`字段。如需在视图中包含`id`字段，可显式定义该字段。\n- 由于视图只读特性，无法注册钩子。\n- Atlas为Ent视图提供开箱即用的支持，包括版本化迁移和测试。但若未使用Atlas，需手动管理视图迁移，因Ent不提供其模式迁移功能。\n:::"
+      }
+    },
+    {
+      "segment_id": "99d0dd9b",
+      "source_content": "## Introduction",
+      "source_content_hash": "d753efbab681fa4da82470d9a83b1c202de58f92fd498e77a269c1163bc4714b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 简介"
+      }
+    },
+    {
+      "segment_id": "d79a4831",
+      "source_content": "Views defined in the `ent/schema` package embed the `ent.View` type instead of the `ent.Schema` type. Besides fields,\nthey can have edges, interceptors, and annotations to enable additional integrations. For example:",
+      "source_content_hash": "bf0e1de60a78bcbd2cdab567882a3d329a77180d100c1d22b896fe4fe11b55fc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "定义在`ent/schema`包中的视图需嵌入`ent.View`类型而非`ent.Schema`类型。除字段外，它们可包含边、拦截器和注解以实现额外集成。例如："
+      }
+    },
+    {
+      "segment_id": "d44e4104",
+      "source_content": "```go title=\"ent/schema/user.go\"\n// CleanUser represents a user without its PII field.\ntype CleanUser struct {\n\tent.View\n}\n\n// Fields of the CleanUser.\nfunc (CleanUser) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\t// Note, unlike real schemas (tables, defined with ent.Schema),\n\t\t// the \"id\" field should be defined manually if needed.\n\t\tfield.Int(\"id\"),\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"public_info\"),\n\t}\n}\n```",
+      "source_content_hash": "51c172702260b3722c786927167fb028aef374e4570b17d09e10d1209770326c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d44e4104"
+      }
+    },
+    {
+      "segment_id": "f38d1cb0",
+      "source_content": "Once defined, you can run `go generate ./ent` to create the assets needed to interact with this view. For example:",
+      "source_content_hash": "7694171f31e565da5fc2652283c49250007c46a28be03436bff6edfb5e3e7ba6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "定义完成后，可运行`go generate ./ent`生成与该视图交互所需的资源。例如："
+      }
+    },
+    {
+      "segment_id": "e2c67c87",
+      "source_content": "```go\nclient.CleanUser.Query().OnlyX(ctx)\n```",
+      "source_content_hash": "2854d7927e9d0a097319b7710a92aa63638ad89b861ed2aa201ec31b3ba39642",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e2c67c87"
+      }
+    },
+    {
+      "segment_id": "c364340c",
+      "source_content": "Note, the `Create`/`Update`/`Delete` builders are not generated for `ent.View`s.",
+      "source_content_hash": "a12bf2c2d5d452b923dfff40df95a1bd4a380939bbb6208ebb73a23b3189c4d1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意：`ent.View`不会生成`Create`/`Update`/`Delete`构建器。"
+      }
+    },
+    {
+      "segment_id": "47cd8dd6",
+      "source_content": "## Migration and Testing",
+      "source_content_hash": "e523e6705a25adbe3b5fa5433db11afeeba3b6441e4c1db445e38b75cee9294a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 迁移与测试"
+      }
+    },
+    {
+      "segment_id": "692c6053",
+      "source_content": "After defining the view schema, we need to inform Ent (and Atlas) about the SQL query that defines this view. If not\nconfigured, running an Ent query, such as the one defined above, will fail because there is no table named `clean_users`.",
+      "source_content_hash": "3e3285fb4d87eb95a5218782ac99c58cca70dcc64632d48a27718f1c70378767",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "定义视图模式后，需向Ent（及Atlas）声明定义该视图的SQL查询。若未配置，运行Ent查询（如上述定义）将因缺少`clean_users`表而失败。"
+      }
+    },
+    {
+      "segment_id": "a1600d1d",
+      "source_content": ":::note[Atlas Guide]\nThe rest of the document, assumes you use Ent with [Atlas Pro](https://atlasgo.io/features#pro-plan), as Ent does not have\nmigration support for views or other database objects besides tables and relationships. However, using Atlas or its Pro\nsubscription <u>is not mandatory</u>. Ent does not require a specific migration engine, and as long as the view exists in the\ndatabase, the client should be able to query it.\n:::",
+      "source_content_hash": "a9edb2bc939799699ebb07ae89c1ec6052b21ee9d65ff8d908157cd3ae08f865",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note[Atlas指南]\n本文档后续内容假设您使用[Atlas Pro](https://atlasgo.io/features#pro-plan)，因Ent本身不支持视图或其他非表对象的迁移。但使用Atlas或其专业订阅<u>非强制要求</u>。Ent不依赖特定迁移引擎，只要视图存在于数据库中，客户端即可查询。\n:::"
+      }
+    },
+    {
+      "segment_id": "a9c2a503",
+      "source_content": "To configure our view definition (`AS SELECT ...`), we have two options:",
+      "source_content_hash": "e249186b4aa9faab20548a674797045a291d39828c33a8472d5e73c78f8e895f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "配置视图定义(`AS SELECT ...`)有两种方案："
+      }
+    },
+    {
+      "segment_id": "6892c8d2",
+      "source_content": "1. Define it within the `ent/schema` in Go code.\n2. Keep the `ent/schema` independent of the view definition and create it externally. Either manually or automatically\n   using Atlas.",
+      "source_content_hash": "6a35c0fc3744beb5e54f523a32e67a7737edea010746381f874e5087cbe11cfe",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 在Go代码的`ent/schema`内定义\n2. 保持`ent/schema`独立于视图定义，通过外部方式（手动或Atlas自动）创建"
+      }
+    },
+    {
+      "segment_id": "be17ccc3",
+      "source_content": "Let's explore both options:",
+      "source_content_hash": "6746192b84637ce4e7298113e4b15d0c51fa2e770eb1ad93264acb7556b4372a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "下面分别探讨这两种方案："
+      }
+    },
+    {
+      "segment_id": "3cd8185f",
+      "source_content": "### Go Definition",
+      "source_content_hash": "2d07fd3a5bffac710e4a143e6d1bdb00da719950b8045829b5098e31a6ae5b6b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### Go代码定义"
+      }
+    },
+    {
+      "segment_id": "3e8f45da",
+      "source_content": "This example demonstrates how to define an `ent.View` with its SQL definition (`AS ...`) specified in the Ent schema.",
+      "source_content_hash": "d3f36203f99bcf02a914d1933cc02070946da1492e908b47577d870baac6da35",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本示例演示如何在Ent模式中定义`ent.View`并指定其SQL定义(`AS ...`)。"
+      }
+    },
+    {
+      "segment_id": "4c787c52",
+      "source_content": "The main advantage of this approach is that the `CREATE VIEW` correctness is checked during migration, not during queries.\nFor example, if one of the `ent.Field`s is defined in your `ent/schema` does not exist in your SQL definition, PostgreSQL\nwill return the following error:",
+      "source_content_hash": "4692309d165011031dbff3ae82cec913d5c0412b0d7ac1020fdd40ecdf93c6da",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此方案优势在于：`CREATE VIEW`的正确性会在迁移阶段而非查询阶段被验证。例如若`ent/schema`中定义的`ent.Field`在SQL定义中缺失，PostgreSQL将返回如下错误："
+      }
+    },
+    {
+      "segment_id": "e9921a93",
+      "source_content": "```text\n// highlight-next-line-error-message\ncreate \"clean_users\" view: pq: CREATE VIEW specifies more column names than columns\n```",
+      "source_content_hash": "272723753fdc4ed611314467e5a985e409d894db884fd6d4f382226e60faf6f7",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e9921a93"
+      }
+    },
+    {
+      "segment_id": "008183b0",
+      "source_content": "Here's an example of a view defined along with its fields and its `SELECT` query:",
+      "source_content_hash": "d6d02d704c5720e6091f98e71bd93701d12201401e4144ac7c9c8588035bc6a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "以下是包含字段定义及其`SELECT`查询的视图示例："
+      }
+    },
+    {
+      "segment_id": "aa8003b6",
+      "source_content": "<Tabs>\n<TabItem value=\"Builder Definition\">\n\nUsing the `entsql.ViewFor` API, you can use a dialect-aware builder to define the view. Note that you can have multiple\nview definitions for different dialects, and Atlas will use the one that matches the dialect of the migration.\n\n```go title=\"ent/schema/user.go\"\n// CleanUser represents a user without its PII field.\ntype CleanUser struct {\n\tent.View\n}\n\n// Annotations of the CleanUser.\nfunc (CleanUser) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentsql.ViewFor(dialect.Postgres, func(s *sql.Selector) {\n\t\t\ts.Select(\"id\", \"name\", \"public_info\").From(sql.Table(\"users\"))\n\t\t}),\n\t}\n}\n\n// Fields of the CleanUser.\nfunc (CleanUser) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\t// Note, unlike real schemas (tables, defined with ent.Schema),\n\t\t// the \"id\" field should be defined manually if needed.\n\t\tfield.Int(\"id\"),\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"public_info\"),\n\t}\n}\n```\n</TabItem>\n<TabItem value=\"Raw Definition\">\n\nAlternatively, you can use raw definitions to define the view. But note, this definition is skipped if the `ViewFor`\nannotation is defined for the dialect we generated migration to (Postgres in this case).\n\n```go title=\"ent/schema/user.go\"\n// CleanUser represents a user without its PII field.\ntype CleanUser struct {\n\tent.View\n}\n\n// Annotations of the CleanUser.\nfunc (CleanUser) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n        entsql.View(`SELECT id, name, public_info FROM users`),\n\t}\n}\n\n// Fields of the CleanUser.\nfunc (CleanUser) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\t// Note, unlike real schemas (tables, defined with ent.Schema),\n\t\t// the \"id\" field should be defined manually if needed.\n\t\tfield.Int(\"id\"),\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"public_info\"),\n\t}\n}\n```\n</TabItem>\n</Tabs>",
+      "source_content_hash": "4e1b95c91bd8c8fa52c787e35359326639ec604183913a6a3a49a3942af17e27",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_aa8003b6"
+      }
+    },
+    {
+      "segment_id": "dbeb30c1",
+      "source_content": "Let's simplify our configuration by creating an `atlas.hcl` file with the necessary parameters. We will use this config\nfile in the [usage](#usage) section below:",
+      "source_content_hash": "bca17997a74cd52e6870ecb942942ae0c2ae8c9b83bb9749925d7b2ed887e6d4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "通过创建包含必要参数的`atlas.hcl`文件简化配置，该配置文件将在下文[使用](#usage)环节使用："
+      }
+    },
+    {
+      "segment_id": "d5244955",
+      "source_content": "```hcl title=\"atlas.hcl\"\nenv \"local\" {\n  src = \"ent://ent/schema\"\n  dev = \"docker://postgres/16/dev?search_path=public\"\n}\n```",
+      "source_content_hash": "d8db658667d28255e754ba68e2602447f0897985a7abc40662a4be0214d29657",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d5244955"
+      }
+    },
+    {
+      "segment_id": "8f4e752e",
+      "source_content": "The full example exists in [Ent repository](https://github.com/ent/ent/tree/master/examples/viewschema).",
+      "source_content_hash": "7e32a5cb5acc018717df309dd39975a476dd99e5d14280ec1908876c77d00b5c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例参见[Ent代码库](https://github.com/ent/ent/tree/master/examples/viewschema)。"
+      }
+    },
+    {
+      "segment_id": "61d0a6d1",
+      "source_content": "### External Definition",
+      "source_content_hash": "3e725113fef19ec12bad950b041e304b91a7123bdd200610b5f5407b3b12e418",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "### 外部定义"
+      }
+    },
+    {
+      "segment_id": "face5559",
+      "source_content": "This example demonstrates how to define an `ent.View`, but keeps its definition in a separate file (`schema.sql`) or\ncreate manually in the database.",
+      "source_content_hash": "81446dff4e84bf995ce6b885bb995db27a4cb69f3e166eb512600e796ba67aaf",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "此示例演示如何定义一个`ent.View`，但将其定义保留在单独的文件（`schema.sql`）中或手动在数据库中创建。"
+      }
+    },
+    {
+      "segment_id": "4f217d4a",
+      "source_content": "```go title=\"ent/schema/user.go\"\n// CleanUser represents a user without its PII field.\ntype CleanUser struct {\n\tent.View\n}\n\n// Fields of the CleanUser.\nfunc (CleanUser) Fields() []ent.Field {\n\treturn []ent.Field{\n\t\tfield.Int(\"id\"),\n\t\tfield.String(\"name\"),\n\t\tfield.String(\"public_info\"),\n\t}\n}\n```",
+      "source_content_hash": "ea2c71f62ada624f694ec22b58e1ab0ba86dad404c740b6ef34659435ffd6f79",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4f217d4a"
+      }
+    },
+    {
+      "segment_id": "93f7c834",
+      "source_content": "After defining the view schema in Ent, the SQL `CREATE VIEW` definition needs to be configured (or created) separately\nto ensure it exists in the database when queried by the Ent runtime.",
+      "source_content_hash": "81d1dc6c41551c4ace7d1ec4c0824f7d81bf187cb2653eed4bf65aa1d8919eb0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在Ent中定义视图模式后，需要单独配置（或创建）SQL的`CREATE VIEW`定义，以确保在Ent运行时查询时该视图已存在于数据库中。"
+      }
+    },
+    {
+      "segment_id": "2153a2fa",
+      "source_content": "For this example, we will use Atlas' `composite_schema` data source to build a schema graph from our `ent/schema`\npackage and an SQL file describing this view. Let's create a file named `schema.sql` and paste the view definition in it:",
+      "source_content_hash": "c045a5af98f20c173162de0bf046effb61164345782dd481baf8610bda7481ce",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "对于此示例，我们将使用Atlas的`composite_schema`数据源，从我们的`ent/schema`包和一个描述此视图的SQL文件构建模式图。让我们创建一个名为`schema.sql`的文件，并将视图定义粘贴到其中："
+      }
+    },
+    {
+      "segment_id": "a3c4300b",
+      "source_content": "```sql title=\"schema.sql\"\n-- Create \"clean_users\" view\nCREATE VIEW \"clean_users\" (\"id\", \"name\", \"public_info\") AS SELECT id,\n    name,\n    public_info\n   FROM users;\n```",
+      "source_content_hash": "a339509c9576e8db8cbfc42b01a683dce2f8b7e69ab35bbbd21a726bf5740491",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a3c4300b"
+      }
+    },
+    {
+      "segment_id": "b632973a",
+      "source_content": "Next, we create an `atlas.hcl` config file with a `composite_schema` that includes both our `ent/schema` and the\n`schema.sql` file:",
+      "source_content_hash": "d9e3c57de8c4f0357148f5d2d96f5fd961785723f3c2ba6d651c1b87a1eab60e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们创建一个`atlas.hcl`配置文件，其中包含一个`composite_schema`，该模式包括我们的`ent/schema`和`schema.sql`文件："
+      }
+    },
+    {
+      "segment_id": "79d8cec2",
+      "source_content": "```hcl title=\"atlas.hcl\"\ndata \"composite_schema\" \"app\" {\n  # Load the ent schema first with all its tables.\n  schema \"public\" {\n    url = \"ent://ent/schema\"\n  }\n  # Then, load the views defined in the schema.sql file.\n  schema \"public\" {\n    url = \"file://schema.sql\"\n  }\n}\n\nenv \"local\" {\n  src = data.composite_schema.app.url\n  dev = \"docker://postgres/15/dev?search_path=public\"\n}\n```",
+      "source_content_hash": "d5b547be7354710c273e62dea01f8bf8544e5a265c7093bc2a4d999ae37bb152",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_79d8cec2"
+      }
+    },
+    {
+      "segment_id": "7ed923ee",
+      "source_content": "The full example exists in [Ent repository](https://github.com/ent/ent/tree/master/examples/viewcomposite).",
+      "source_content_hash": "88475a0178b1047905e31b882cd1ac12037f9e573d1f3374049113be1689c9e9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "完整示例可在[Ent仓库](https://github.com/ent/ent/tree/master/examples/viewcomposite)中找到。"
+      }
+    },
+    {
+      "segment_id": "ad966a7e",
+      "source_content": "## Usage",
+      "source_content_hash": "63bfd61a0561b255a2caa0a2e3add091ca7e327f2fa06a407cbb2ff341b858d8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 使用"
+      }
+    },
+    {
+      "segment_id": "6c4ea90c",
+      "source_content": "After setting up our schema, we can get its representation using the `atlas schema inspect` command, generate migrations for\nit, apply them to a database, and more. Below are a few commands to get you started with Atlas:",
+      "source_content_hash": "8c8bbe17ec6423bef0ab341e1c2f089a8cf22219ec7f88e3a634c63e4d9c651e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "设置好模式后，我们可以使用`atlas schema inspect`命令获取其表示，为其生成迁移，将其应用到数据库等。以下是一些使用Atlas入门的命令："
+      }
+    },
+    {
+      "segment_id": "ca32a808",
+      "source_content": "#### Inspect the Schema",
+      "source_content_hash": "0b8da15efa6536bf3d7ba2b7c234ece1c6fd8c165a258f150b75f3c4a8a94775",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查模式"
+      }
+    },
+    {
+      "segment_id": "d1996877",
+      "source_content": "The `atlas schema inspect` command is commonly used to inspect databases. However, we can also use it to inspect our\n`ent/schema` and print the SQL representation of it:",
+      "source_content_hash": "3977fae07767678fd5952dd4ca57c676ece2242f4a9e63a8360a80c0de7f90b9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`atlas schema inspect`命令通常用于检查数据库。然而，我们也可以用它来检查我们的`ent/schema`并打印其SQL表示："
+      }
+    },
+    {
+      "segment_id": "7d27bd2e",
+      "source_content": "```shell\natlas schema inspect \\\n  --env local \\\n  --url env://src \\\n  --format '{{ sql . }}'\n```",
+      "source_content_hash": "1842ce4f48f94bbd6a5aa04c673ac0b32a2a5303e5c49b31790f7f34cba2e364",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7d27bd2e"
+      }
+    },
+    {
+      "segment_id": "2e76bd58",
+      "source_content": "The command above prints the following SQL. Note, the `clean_users` view is defined in the schema after the `users` table:",
+      "source_content_hash": "a37b8f4b13d24b0c2228898134b9bde5273d07214963531a38f1e2a7236763bc",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述命令打印以下SQL。注意，`clean_users`视图在`users`表之后定义于模式中："
+      }
+    },
+    {
+      "segment_id": "b237f77e",
+      "source_content": "```sql\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, \"public_info\" character varying NOT NULL, \"private_info\" character varying NOT NULL, PRIMARY KEY (\"id\"));\n-- Create \"clean_users\" view\nCREATE VIEW \"clean_users\" (\"id\", \"name\", \"public_info\") AS SELECT id,\n    name,\n    public_info\n   FROM users;\n```",
+      "source_content_hash": "1a29da91ca175311fa3357e11fba5ec7c120d5fe0386c2388236b6b47f620ba3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b237f77e"
+      }
+    },
+    {
+      "segment_id": "450f22b0",
+      "source_content": "#### Generate Migrations For the Schema",
+      "source_content_hash": "c5990cc35443eac491da766def9a4b660ae86e07358dc8ba13ee7cc4264ae8c0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 为模式生成迁移"
+      }
+    },
+    {
+      "segment_id": "a6c4ab41",
+      "source_content": "To generate a migration for the schema, run the following command:",
+      "source_content_hash": "d37793d5ce1c9d58e36c9034b73243a6673c73c3d2019a3fc933949148642be3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要为模式生成迁移，请运行以下命令："
+      }
+    },
+    {
+      "segment_id": "50bd5256",
+      "source_content": "```shell\natlas migrate diff \\\n  --env local\n```",
+      "source_content_hash": "6b7403f27f8ed223e30c839e71ca4751a7ab8d6c8cadab93c9b0579c577ecadd",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_50bd5256"
+      }
+    },
+    {
+      "segment_id": "c1e7eaab",
+      "source_content": "Note that a new migration file is created with the following content:",
+      "source_content_hash": "9e85891e456985b55c4c4723d5a20a256836ff963d5bacf28310685aeb824a89",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意，会创建一个新的迁移文件，其内容如下："
+      }
+    },
+    {
+      "segment_id": "88b052dd",
+      "source_content": "```sql title=\"migrations/20240712090543.sql\"\n-- Create \"users\" table\nCREATE TABLE \"users\" (\"id\" bigint NOT NULL GENERATED BY DEFAULT AS IDENTITY, \"name\" character varying NOT NULL, \"public_info\" character varying NOT NULL, \"private_info\" character varying NOT NULL, PRIMARY KEY (\"id\"));\n-- Create \"clean_users\" view\nCREATE VIEW \"clean_users\" (\"id\", \"name\", \"public_info\") AS SELECT id,\n    name,\n    public_info\n   FROM users;\n```",
+      "source_content_hash": "fb7866adb3a88e411ddf79f98f28bc3fe7eb45c3b952bc0560db4d7be7c2ee4d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_88b052dd"
+      }
+    },
+    {
+      "segment_id": "4e36860d",
+      "source_content": "#### Apply the Migrations",
+      "source_content_hash": "dd262c901209a83701a71368b18fd88b248797d69ab716e0faf1fbcc27203f95",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 应用迁移"
+      }
+    },
+    {
+      "segment_id": "4cba7b8e",
+      "source_content": "To apply the migration generated above to a database, run the following command:",
+      "source_content_hash": "3b0f09a477a570f0dbe9432e3bfda1ef4da42bb2a1a2169041bbd1dde36f254d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要将上述生成的迁移应用到数据库，请运行以下命令："
+      }
+    },
+    {
+      "segment_id": "21658060",
+      "source_content": "```\natlas migrate apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```",
+      "source_content_hash": "9ac63adaa93ec903e09e8bf048fee595f2113774afd394318a89f192a26e03e1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_21658060"
+      }
+    },
+    {
+      "segment_id": "97db9bc5",
+      "source_content": ":::info[Apply the Schema Directly on the Database]\n\nSometimes, there is a need to apply the schema directly to the database without generating a migration file. For example,\nwhen experimenting with schema changes, spinning up a database for testing, etc. In such cases, you can use the command\nbelow to apply the schema directly to the database:\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\nOr, when writing tests, you can use the [Atlas Go SDK](https://github.com/ariga/atlas-go-sdk) to align the schema with\nthe database before running assertions:\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// Automatically update the database with the desired schema.\n// Another option, is to use 'migrate apply' or 'schema apply' manually.\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n// Run assertions.\nu1 := client.User.Create().SetName(\"a8m\").SetPrivateInfo(\"secret\").SetPublicInfo(\"public\").SaveX(ctx)\nv1 := client.CleanUser.Query().OnlyX(ctx)\nrequire.Equal(t, u1.ID, v1.ID)\nrequire.Equal(t, u1.Name, v1.Name)\nrequire.Equal(t, u1.PublicInfo, v1.PublicInfo)\n```\n:::",
+      "source_content_hash": "472278939ffc53bd8e1e836e6608604c1fc6321d570d1fef36b6295d0fa1decd",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::info[直接在数据库上应用模式]\n\n有时，需要直接将模式应用到数据库而不生成迁移文件。例如，在试验模式更改、为测试启动数据库等情况下。在这种情况下，可以使用以下命令直接将模式应用到数据库：\n\n```shell\natlas schema apply \\\n  --env local \\\n  --url \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\"\n```\n\n或者在编写测试时，可以使用[Atlas Go SDK](https://github.com/ariga/atlas-go-sdk)在运行断言之前将模式与数据库对齐：\n\n```go\nac, err := atlasexec.NewClient(\".\", \"atlas\")\nif err != nil {\n\tlog.Fatalf(\"failed to initialize client: %w\", err)\n}\n// 自动更新数据库以匹配所需模式。\n// 另一个选项是手动使用'migrate apply'或'schema apply'。\nif _, err := ac.SchemaApply(ctx, &atlasexec.SchemaApplyParams{\n\tEnv: \"local\",\n\tURL: \"postgres://postgres:pass@localhost:5432/database?search_path=public&sslmode=disable\",\n\tAutoApprove: true,\n}); err != nil {\n    log.Fatalf(\"failed to apply schema changes: %w\", err)\n}\n// 运行断言。\nu1 := client.User.Create().SetName(\"a8m\").SetPrivateInfo(\"secret\").SetPublicInfo(\"public\").SaveX(ctx)\nv1 := client.CleanUser.Query().OnlyX(ctx)\nrequire.Equal(t, u1.ID, v1.ID)\nrequire.Equal(t, u1.Name, v1.Name)\nrequire.Equal(t, u1.PublicInfo, v1.PublicInfo)\n```\n:::"
+      }
+    },
+    {
+      "segment_id": "3198f78d",
+      "source_content": "## Insertable/Updatable Views",
+      "source_content_hash": "ad322bfc1331783d598aac3fd600d1e30a6890ce18e5b3e27be579ce7f286c92",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 可插入/可更新视图"
+      }
+    },
+    {
+      "segment_id": "a290533e",
+      "source_content": "If you want to define an [insertable/updatable view](https://dev.mysql.com/doc/refman/8.4/en/view-updatability.html),\nset it as regular type (`ent.Schema`) and add the `entsql.Skip()` annotation to it to prevent Ent from generating\nthe `CREATE TABLE` statement for this view. Then, define the view in the database as described in the\n[external definition](#external-definition) section above.",
+      "source_content_hash": "3f6c874bc8b0db8005095628c1d42c441a7b12ae05a6cb8f5b29d0a38378c447",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如需定义[可插入/可更新视图](https://dev.mysql.com/doc/refman/8.4/en/view-updatability.html)，可将其设置为常规类型（`ent.Schema`）并添加`entsql.Skip()`注解，以避免Ent为此视图生成`CREATE TABLE`语句。随后，按照上文[外部定义](#external-definition)章节所述方式在数据库中定义该视图。"
+      }
+    },
+    {
+      "segment_id": "651f93cf",
+      "source_content": "```go title=\"ent/schema/user.go\"\n// CleanUser represents a user without its PII field.\ntype CleanUser struct {\n    ent.Schema\n}\n\n// Annotations of the CleanUser.\nfunc (CleanUser) Annotations() []schema.Annotation {\n    return []schema.Annotation{\n        entsql.Skip(),\n    }\n}\n\n// Fields of the CleanUser.\nfunc (CleanUser) Fields() []ent.Field {\n    return []ent.Field{\n        field.Int(\"id\"),\n        field.String(\"name\"),\n        field.String(\"public_info\"),\n    }\n}\n```",
+      "source_content_hash": "9e04f76f2d51cd0a3a8a627d6972c80857f2b3e923d74f4538060e8e26891b0b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_651f93cf"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/schema-view.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.655272+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "86552d52c495d4f1c395159f2b5c89f52fdf6f823ae23019bfa3aa4ba229f3cd"
+  }
+}

@@ -1,0 +1,712 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-gql.mdx",
+  "source_file_content_hash": "597377395d981c3bd3d9acbec195426987eef8b220a2d8c4fc68608852ef765c",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-gql\ntitle: Introduction\nsidebar_label: Introduction\n---",
+      "source_content_hash": "3e75b9fba73d71bfd713d1bae61eb9527215a5e8e1fd7b560764569f36737a5d",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "10c4cb47",
+      "source_content": "import Tabs from '@theme/Tabs';\nimport TabItem from '@theme/TabItem';",
+      "source_content_hash": "86702643a5c3bdf74257ff6062535897129ed9144c4f5b70edfe338fef3e5c73",
+      "node_type": "mdxjsEsm",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_10c4cb47"
+      }
+    },
+    {
+      "segment_id": "7e5c5a39",
+      "source_content": "In this tutorial, we will learn how to connect Ent to [GraphQL](https://graphql.org) and set up the various integrations\nEnt provides, such as:",
+      "source_content_hash": "62fdc4a946048e77166f29992a0a138df3cc39a10bf6b23165fc2dd148b832f7",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程将学习如何将Ent与[GraphQL](https://graphql.org)连接，并设置Ent提供的多种集成功能，例如："
+      }
+    },
+    {
+      "segment_id": "143e51c1",
+      "source_content": "1. Generating a GraphQL schema for nodes and edges defined in an Ent schema.\n2. Auto-generated `Query` and `Mutation` resolvers and provide seamless integration with the [Relay framework](https://relay.dev/).\n3. Filtering, pagination (including nested) and compliant support with the [Relay Cursor Connections Spec](https://relay.dev/graphql/connections.htm).\n4. Efficient [field collection](tutorial-todo-gql-field-collection.md) to overcome the N+1 problem without requiring data\n   loaders.\n5. [Transactional mutations](tutorial-todo-gql-tx-mutation.md) to ensure consistency in case of failures.",
+      "source_content_hash": "541fc2549826367f6275f215c2e4c7f21b41c5b8310ecef9c5de5d59b57cad9c",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1. 为Ent模式中定义的节点和边生成GraphQL模式。\n2. 自动生成`Query`和`Mutation`解析器，并与[Relay框架](https://relay.dev/)无缝集成。\n3. 支持过滤、分页（包括嵌套分页）并兼容[Relay游标连接规范](https://relay.dev/graphql/connections.htm)。\n4. 高效的[字段收集](tutorial-todo-gql-field-collection.md)功能，无需数据加载器即可解决N+1问题。\n5. [事务性变更](tutorial-todo-gql-tx-mutation.md)确保在失败时的一致性。"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "If you're not familiar with GraphQL, it's recommended to go over its [introduction guide](https://graphql.org/learn/)\nbefore going over this tutorial.",
+      "source_content_hash": "59cdfffdd8d9f681d59deb289fe1e328e914da997681f81ae753947391a7c327",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果您不熟悉GraphQL，建议在继续本教程之前先阅读其[入门指南](https://graphql.org/learn/)。"
+      }
+    },
+    {
+      "segment_id": "63622bf0",
+      "source_content": "#### Clone the code (optional)",
+      "source_content_hash": "b068b18a91c2d1cb5709786f96baae783976def17ac4580a202a72c3f85fa808",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 克隆代码（可选）"
+      }
+    },
+    {
+      "segment_id": "98cfbd53",
+      "source_content": "The code for this tutorial is available under [github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example), \nand tagged (using Git) in each step. If you want to skip the basic setup and start with the initial version of the GraphQL\nserver, you can clone the repository as follows:",
+      "source_content_hash": "d2069c98642d6ebc68a2dd114ebe37ed46738e9764d84b5bef890f08de632266",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程的代码托管在[github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example)，每个步骤都使用Git标签标记。如果想跳过基础设置直接使用GraphQL服务器的初始版本，可以按如下方式克隆仓库："
+      }
+    },
+    {
+      "segment_id": "15a1fd96",
+      "source_content": "```shell\ngit clone git@github.com:a8m/ent-graphql-example.git\ncd ent-graphql-example\ngo run ./cmd/todo\n```",
+      "source_content_hash": "d049c0398fb9d66137a672adcc7e46921c77c9b20d948379fd5923b4f67e9574",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_15a1fd96"
+      }
+    },
+    {
+      "segment_id": "a1b3d8cb",
+      "source_content": "## Basic Setup",
+      "source_content_hash": "0bcbb33b9e373c7ee0772f5872265a87659c50eac8f9221c0c04bc5f2dd5e0e4",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 基础设置"
+      }
+    },
+    {
+      "segment_id": "517051a7",
+      "source_content": "This tutorial begins where the previous one ended (with a working Todo-list schema). We start by installing the\n[contrib/entgql](https://pkg.go.dev/entgo.io/contrib/entgql) Ent extension and use it for generating our first schema. Then,\ninstall and configure the [99designs/gqlgen](https://github.com/99designs/gqlgen) framework for building our GraphQL\nserver and explore the official integration Ent provides to it.",
+      "source_content_hash": "01127e431f36d72726fe0234f4d3ee3087e8c36c2dd126519be825aeaad23d62",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程从上一个教程结束的地方开始（使用一个可工作的Todo列表模式）。首先安装[contrib/entgql](https://pkg.go.dev/entgo.io/contrib/entgql) Ent扩展，并用它生成我们的第一个模式。然后安装并配置[99designs/gqlgen](https://github.com/99designs/gqlgen)框架来构建GraphQL服务器，并探索Ent提供的官方集成功能。"
+      }
+    },
+    {
+      "segment_id": "9f9e64f5",
+      "source_content": "#### Install and configure `entgql`",
+      "source_content_hash": "2f71be9bdf19b3ef02d31d43628f6aa8ab1c848beeb19d27e2b86979b3df84cf",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 安装并配置`entgql`"
+      }
+    },
+    {
+      "segment_id": "1042b50d",
+      "source_content": "1\\. Install `entgql`:",
+      "source_content_hash": "9fe1a4a79812c2412274be28942c7d9c103501094464df00951c50800da47de5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 安装`entgql`："
+      }
+    },
+    {
+      "segment_id": "6648a219",
+      "source_content": "```shell\ngo get entgo.io/contrib/entgql@master\n```",
+      "source_content_hash": "25e25070060f41714b7865c45e98fb35b9d8454806a1155d3da321512d5e4e60",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6648a219"
+      }
+    },
+    {
+      "segment_id": "29528c8d",
+      "source_content": "2\\. Add the following annotations to the `Todo` schema to enable `Query` and `Mutation` (creation) capabilities:",
+      "source_content_hash": "5b25052bf54ccbb35fa5fff6c77b2bc334efdd2d06c03a26e44e291606456809",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 在`Todo`模式中添加以下注解以启用`Query`和`Mutation`（创建）功能："
+      }
+    },
+    {
+      "segment_id": "4795a13d",
+      "source_content": "```go title=\"ent/schema/todo.go\" {3-4}\nfunc (Todo) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentgql.QueryField(),\n\t\tentgql.Mutations(entgql.MutationCreate()),\n\t}\n}\n```",
+      "source_content_hash": "1da484270bed93f5c246f290ece763f1dda33bd5f2cf2d7202119955dd0fd6b4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4795a13d"
+      }
+    },
+    {
+      "segment_id": "40158b4b",
+      "source_content": "3\\. Create a new Go file named `ent/entc.go`, and paste the following content:",
+      "source_content_hash": "2fcc5cde9792c032fb599cb762dab0f79da8ff3100aa0ee219c002562a851992",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 创建一个新的Go文件`ent/entc.go`，并粘贴以下内容："
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```go title=\"ent/entc.go\"\n//go:build ignore\n\npackage main\n\nimport (\n    \"log\"\n\n    \"entgo.io/ent/entc\"\n    \"entgo.io/ent/entc/gen\"\n    \"entgo.io/contrib/entgql\"\n)\n\nfunc main() {\n\tex, err := entgql.NewExtension(\n\t\t// Tell Ent to generate a GraphQL schema for\n\t\t// the Ent schema in a file named ent.graphql.\n\t\tentgql.WithSchemaGenerator(),\n\t\tentgql.WithSchemaPath(\"ent.graphql\"),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"creating entgql extension: %v\", err)\n\t}\n\topts := []entc.Option{\n\t\tentc.Extensions(ex),\n\t}\n\tif err := entc.Generate(\"./ent/schema\", &gen.Config{}, opts...); err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "cd940db91decd2a6619cdab3f9519f621075c576add24db3a67f3de391ce829f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "e2e299c8",
+      "source_content": ":::note\nThe `ent/entc.go` is ignored using a build tag, and it is executed by the `go generate` command through the `generate.go`\nfile.\n:::",
+      "source_content_hash": "7e5b7fe8a66874df54b18a3ca8e30406eba140a8d03e163f2e6133582ed2417d",
+      "node_type": "containerDirective",
+      "translatable": true,
+      "translations": {
+        "zh-CN": ":::note\n`ent/entc.go`文件通过构建标签被忽略，它通过`generate.go`文件由`go generate`命令执行。\n:::"
+      }
+    },
+    {
+      "segment_id": "eb51d107",
+      "source_content": "**4\\.** Remove the `ent/generate.go` file and create a new one in the **root of the project** with the following\ncontents. In next steps, `gqlgen` commands will be added to this file as well.",
+      "source_content_hash": "55d5206949ed939cbb6202d568fd57811f2a0f2d473592b4ab1a5fc308e31877",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**4\\.** 删除`ent/generate.go`文件，并在**项目根目录**中创建一个新的`generate.go`文件，内容如下。后续步骤中，`gqlgen`命令也将添加到此文件中。"
+      }
+    },
+    {
+      "segment_id": "efbe5e3f",
+      "source_content": "```go title=\"generate.go\"\npackage todo\n\n//go:generate go run -mod=mod ./ent/entc.go\n```",
+      "source_content_hash": "2f418461ff7a59ef09875bc09cae4205c5dfd07106f8ca392ea6fd06c72e72da",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_efbe5e3f"
+      }
+    },
+    {
+      "segment_id": "42a5832e",
+      "source_content": "#### Running schema generation",
+      "source_content_hash": "c81e548ddceedbe8d20101036ed91542e372040bac64aa2e52f10437b23ac02a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 运行模式生成"
+      }
+    },
+    {
+      "segment_id": "0e80209e",
+      "source_content": "After installing and configuring `entgql`, it is time to execute the codegen:",
+      "source_content_hash": "dbd57c10e72724cf6d28d1bbd65408338ee23bc162e17ecbeabbc1a3cb03a263",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "安装并配置`entgql`后，即可执行代码生成："
+      }
+    },
+    {
+      "segment_id": "59534425",
+      "source_content": "```shell\ngo generate .\n```",
+      "source_content_hash": "340914127b6a3fe022d85c84fc7886c94c2d299c91cdf2575f75e152e3179c87",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_59534425"
+      }
+    },
+    {
+      "segment_id": "e9313fef",
+      "source_content": "You'll notice a new file was created named `ent.graphql`:",
+      "source_content_hash": "9805abc802efcca365c3319b678003973898e692190f73a2e5cac061dcac2f0c",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您会注意到一个新文件`ent.graphql`被创建："
+      }
+    },
+    {
+      "segment_id": "342e4d80",
+      "source_content": "```graphql title=\"ent.graphql\"\ndirective @goField(forceResolver: Boolean, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION\ndirective @goModel(model: String, models: [String!]) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION\n\"\"\"\nDefine a Relay Cursor type:\nhttps://relay.dev/graphql/connections.htm#sec-Cursor\n\"\"\"\nscalar Cursor\n\"\"\"\nAn object with an ID.\nFollows the [Relay Global Object Identification Specification](https://relay.dev/graphql/objectidentification.htm)\n\"\"\"\ninterface Node @goModel(model: \"todo/ent.Noder\") {\n  \"\"\"The id of the object.\"\"\"\n  id: ID!\n}\n\n# ...\n```",
+      "source_content_hash": "eb40ff034e9fa2d0207ac60e0932bb1cf2766f6cc0b8e5d6fe95762d17435e6a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_342e4d80"
+      }
+    },
+    {
+      "segment_id": "a461a67b",
+      "source_content": "#### Install and configure `gqlgen`",
+      "source_content_hash": "374779b66092939573fb825e42cf4c6c33e060df1bb3b5715a96a478859bbad3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 安装并配置`gqlgen`"
+      }
+    },
+    {
+      "segment_id": "e77cf7c6",
+      "source_content": "1\\. Install `99designs/gqlgen`:",
+      "source_content_hash": "7a2fc7eab9f4fb183cfada5d9a238dbe942670445ca8ed7813b36f1d87df8a1b",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 安装`99designs/gqlgen`："
+      }
+    },
+    {
+      "segment_id": "6e57b94c",
+      "source_content": "```shell\ngo get github.com/99designs/gqlgen\n```",
+      "source_content_hash": "07d653971b23c3927d17dc7e9b277eec8906efacacdfc840cee4dac1b6d87dce",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6e57b94c"
+      }
+    },
+    {
+      "segment_id": "9e90a9b3",
+      "source_content": "2\\. The gqlgen package can be configured using a `gqlgen.yml` file that is automatically loaded from the current directory.\nLet's add this file to the root of the project. Follow the comments in this file to understand what each config directive\nmeans:",
+      "source_content_hash": "704fd2adc9354c00b0988d4fcbe4186d3ebd37b6b0c3b8a5b58172cd54325ff1",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. gqlgen包可以通过当前目录自动加载的`gqlgen.yml`文件进行配置。将此文件添加到项目根目录。请参阅文件中的注释以了解每个配置指令的含义："
+      }
+    },
+    {
+      "segment_id": "eb25bb8c",
+      "source_content": "```yaml title=\"gqlgen.yml\"\n# schema tells gqlgen where the GraphQL schema is located.\nschema:\n  - ent.graphql\n\n# resolver reports where the resolver implementations go.\nresolver:\n  layout: follow-schema\n  dir: .\n\n# gqlgen will search for any type names in the schema in these go packages\n# if they match it will use them, otherwise it will generate them.\n\n# autobind tells gqngen to search for any type names in the GraphQL schema in the\n# provided package. If they match it will use them, otherwise it will generate new.\nautobind:\n  - todo/ent\n  - todo/ent/todo\n\n# This section declares type mapping between the GraphQL and Go type systems.\nmodels:\n  # Defines the ID field as Go 'int'.\n  ID:\n    model:\n      - github.com/99designs/gqlgen/graphql.IntID\n  Node:\n    model:\n      - todo/ent.Noder\n```",
+      "source_content_hash": "f960ab0901d59df63e69a346c2bd9e5d00c5480baed60b713d46dbdb5e9bbc07",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_eb25bb8c"
+      }
+    },
+    {
+      "segment_id": "61a78cbe",
+      "source_content": "3\\. Edit the `ent/entc.go` to let Ent know about the `gqlgen` configuration:",
+      "source_content_hash": "867cc05524c47503de9862e9c9d06aab0e469759b7d47ece9ae39447a6f6c426",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 编辑`ent/entc.go`文件，让Ent知道`gqlgen`的配置："
+      }
+    },
+    {
+      "segment_id": "904df6eb",
+      "source_content": "```go\n//go:build ignore\n\npackage main\n\nimport (\n    \"log\"\n\n    \"entgo.io/ent/entc\"\n    \"entgo.io/ent/entc/gen\"\n    \"entgo.io/contrib/entgql\"\n)\n\nfunc main() {\n\tex, err := entgql.NewExtension(\n\t\t// Tell Ent to generate a GraphQL schema for\n\t\t// the Ent schema in a file named ent.graphql.\n\t\tentgql.WithSchemaGenerator(),\n\t\tentgql.WithSchemaPath(\"ent.graphql\"),\n\t\t//highlight-next-line \n\t\tentgql.WithConfigPath(\"gqlgen.yml\"),\n\t)\n\tif err != nil {\n\t\tlog.Fatalf(\"creating entgql extension: %v\", err)\n\t}\n\topts := []entc.Option{\n\t\tentc.Extensions(ex),\n\t}\n\tif err := entc.Generate(\"./ent/schema\", &gen.Config{}, opts...); err != nil {\n\t\tlog.Fatalf(\"running ent codegen: %v\", err)\n\t}\n}\n```",
+      "source_content_hash": "c13338a7a25d204e2aa9d54275d7aa0a10bb6fcda2f837cf76e0eaacb38631bf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_904df6eb"
+      }
+    },
+    {
+      "segment_id": "af834e0d",
+      "source_content": "4\\. Add the `gqlgen` generate command to the `generate.go` file:",
+      "source_content_hash": "e5ad01b7aa625e98f1b7cb57427e21c228fc024c3fcc01852f64ea88d1da6c7d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "4\\. 将`gqlgen`生成命令添加到`generate.go`文件中："
+      }
+    },
+    {
+      "segment_id": "6b0761da",
+      "source_content": "```go title=\"generate.go\"\npackage todo\n\n//go:generate go run -mod=mod ./ent/entc.go\n//highlight-next-line\n//go:generate go run -mod=mod github.com/99designs/gqlgen\n```",
+      "source_content_hash": "ca140fc1e8d34df2b8f1d9d489f33524d45e87dcffabe9b4dea45890e10d06b1",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6b0761da"
+      }
+    },
+    {
+      "segment_id": "9ede513a",
+      "source_content": "Now, we're ready to run `go generate` to trigger `ent` and `gqlgen` code generation. Execute the following command from\nthe root of the project:",
+      "source_content_hash": "6c307d9d327ab71c79414be30fecc35bcedfb510cb82d2de00989fc628b4e696",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在，我们可以运行 `go generate` 来触发 `ent` 和 `gqlgen` 的代码生成。在项目根目录执行以下命令："
+      }
+    },
+    {
+      "segment_id": "18e3e63d",
+      "source_content": "```shell\ngo generate .\n```",
+      "source_content_hash": "340914127b6a3fe022d85c84fc7886c94c2d299c91cdf2575f75e152e3179c87",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_18e3e63d"
+      }
+    },
+    {
+      "segment_id": "228d01d5",
+      "source_content": "You may have noticed that some files were generated by `gqlgen`:",
+      "source_content_hash": "2a86f742707a8b695b27ed4b8e94e4e91db4c1301bb477cd98c0edffd48604c9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您可能已经注意到 `gqlgen` 生成了一些文件："
+      }
+    },
+    {
+      "segment_id": "d5244955",
+      "source_content": "```console\ntree -L 1\n.\n├── ent/\n├── ent.graphql\n//highlight-next-line\n├── ent.resolvers.go\n├── example_test.go\n├── generate.go\n//highlight-next-line\n├── generated.go\n├── go.mod\n├── go.sum\n├── gqlgen.yml\n//highlight-next-line\n└── resolver.go\n```",
+      "source_content_hash": "eb20ae357bfbf6e5140e6d6cab0d6faece2913557103dd5b69100bafc7d2b820",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d5244955"
+      }
+    },
+    {
+      "segment_id": "34bbfe56",
+      "source_content": "## Basic Server",
+      "source_content_hash": "0889e90980bc655e4c686d2facb79d58281838ac1c79868ecb1358a7b9012dcc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 基础服务器搭建"
+      }
+    },
+    {
+      "segment_id": "318fb07e",
+      "source_content": "Before building the GraphQL server we need to set up the main schema `Resolver` defined in `resolver.go`.\n`gqlgen` allows changing the generated `Resolver` and adding dependencies to it. Let's use `ent.Client` as\na dependency by pasting the following in `resolver.go`:",
+      "source_content_hash": "c4678df0d972b10bf64ff5bf063c3cc99dfd38b47a625246e3d6945c54090a1e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "在构建 GraphQL 服务器之前，我们需要配置 `resolver.go` 中定义的主模式解析器 `Resolver`。`gqlgen` 允许修改生成的 `Resolver` 并为其添加依赖项。让我们将 `ent.Client` 作为依赖项，将以下代码粘贴到 `resolver.go` 中："
+      }
+    },
+    {
+      "segment_id": "9d91602e",
+      "source_content": "```go title=\"resolver.go\"\npackage todo\n\nimport (\n\t\"todo/ent\"\n\t\n\t\"github.com/99designs/gqlgen/graphql\"\n)\n\n// Resolver is the resolver root.\ntype Resolver struct{ client *ent.Client }\n\n// NewSchema creates a graphql executable schema.\nfunc NewSchema(client *ent.Client) graphql.ExecutableSchema {\n\treturn NewExecutableSchema(Config{\n\t\tResolvers: &Resolver{client},\n\t})\n}\n```",
+      "source_content_hash": "23c83c05ba30c9c2e45a22c8bd585415fe507b410a304c4236f7b300f1e0e519",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9d91602e"
+      }
+    },
+    {
+      "segment_id": "b632973a",
+      "source_content": "After setting up the main resolver, we create a new directory `cmd/todo` and a `main.go` file with the following code\nto set up a GraphQL server:",
+      "source_content_hash": "31ec5332ed85bb269c941aea68d899f1e84a023b284ccbfc609b4009f54a821e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "设置好主解析器后，我们创建一个新目录 `cmd/todo` 和一个 `main.go` 文件，包含以下代码来搭建 GraphQL 服务器："
+      }
+    },
+    {
+      "segment_id": "79d8cec2",
+      "source_content": "```go title=\"cmd/todo/main.go\"\n\npackage main\n\nimport (\n\t\"context\"\n\t\"log\"\n\t\"net/http\"\n\n\t\"todo\"\n\t\"todo/ent\"\n\t\"todo/ent/migrate\"\n\n\t\"entgo.io/ent/dialect\"\n\t\"github.com/99designs/gqlgen/graphql/handler\"\n\t\"github.com/99designs/gqlgen/graphql/playground\"\n\n\t_ \"github.com/mattn/go-sqlite3\"\n)\n\nfunc main() {\n\t// Create ent.Client and run the schema migration.\n\tclient, err := ent.Open(dialect.SQLite, \"file:ent?mode=memory&cache=shared&_fk=1\")\n\tif err != nil {\n\t\tlog.Fatal(\"opening ent client\", err)\n\t}\n\tif err := client.Schema.Create(\n\t\tcontext.Background(),\n\t\tmigrate.WithGlobalUniqueID(true),\n\t); err != nil {\n\t\tlog.Fatal(\"opening ent client\", err)\n\t}\n\n\t// Configure the server and start listening on :8081.\n\tsrv := handler.NewDefaultServer(todo.NewSchema(client))\n\thttp.Handle(\"/\",\n\t\tplayground.Handler(\"Todo\", \"/query\"),\n\t)\n\thttp.Handle(\"/query\", srv)\n\tlog.Println(\"listening on :8081\")\n\tif err := http.ListenAndServe(\":8081\", nil); err != nil {\n\t\tlog.Fatal(\"http server terminated\", err)\n\t}\n}\n```",
+      "source_content_hash": "fb1ab88324ba0395c14e30335f0cbeb32c68fe68efb8a137c0b176883e73d4d6",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_79d8cec2"
+      }
+    },
+    {
+      "segment_id": "e8bf4d18",
+      "source_content": "Run the server using the command below, and open [localhost:8081](http://localhost:8081):",
+      "source_content_hash": "a6a4d1cd0678b01a6b5d103846dda10b057479d435522f3c0b9e82713023f16d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行以下命令启动服务器，并访问 [localhost:8081](http://localhost:8081)："
+      }
+    },
+    {
+      "segment_id": "010b0953",
+      "source_content": "```console\ngo run ./cmd/todo\n```",
+      "source_content_hash": "c39d838fd3b808ed67fd23fba1e98646e41fda42eb4474c7a7dfd875d162e067",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_010b0953"
+      }
+    },
+    {
+      "segment_id": "9802de48",
+      "source_content": "You should see the interactive playground:",
+      "source_content_hash": "ede2cc9216f6562fef1dee3d7d2b16751a9cb4068d4783bba006cea85281e751",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您应该能看到交互式 Playground："
+      }
+    },
+    {
+      "segment_id": "e9a0d59a",
+      "source_content": "![tutorial-todo-playground](https://entgo.io/images/assets/tutorial-gql-playground.png)",
+      "source_content_hash": "e4343990a3e200b0238e607d48b2a537f28d0fdad48622d45480805f174ff7e8",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "![tutorial-todo-playground](https://entgo.io/images/assets/tutorial-gql-playground.png)"
+      }
+    },
+    {
+      "segment_id": "a6efb0d1",
+      "source_content": "If you are having trouble with getting the playground to run, go to [first section](#clone-the-code-optional) and\nclone the example repository.",
+      "source_content_hash": "02c3eda9abeed5bc154fc9d57eb7c365f7b3fe5fde2e2c552c080594f7e65027",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果无法运行 Playground，请参考[第一节](#clone-the-code-optional)克隆示例仓库。"
+      }
+    },
+    {
+      "segment_id": "5cdbe003",
+      "source_content": "## Query Todos",
+      "source_content_hash": "927bd4b1ab50e1b4f96ace08baf36060e8bacee8eadaa512e634151cc063a7b2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 查询待办事项"
+      }
+    },
+    {
+      "segment_id": "647ea627",
+      "source_content": "If we try to query our todo list, we'll get an error as the resolver method is not yet implemented.\nLet's implement the resolver by replacing the `Todos` implementation in the query resolver:",
+      "source_content_hash": "72937f0754c3af6ddab98e8f3b66c81e3a9ca371dc6ef733ba7f071a589c4f25",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果尝试查询待办事项列表，由于解析器方法尚未实现，我们会收到错误。让我们通过替换查询解析器中的 `Todos` 实现来完成解析器："
+      }
+    },
+    {
+      "segment_id": "f4a7be08",
+      "source_content": "```diff title=\"ent.resolvers.go\"\nfunc (r *queryResolver) Todos(ctx context.Context) ([]*ent.Todo, error) {\n-\tpanic(fmt.Errorf(\"not implemented\"))\n+\treturn r.client.Todo.Query().All(ctx)\n}\n```",
+      "source_content_hash": "c9a3a6028575e5df74f6babd227e5fa6438f37136c32533ed2a391275bb698e3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f4a7be08"
+      }
+    },
+    {
+      "segment_id": "44fd9885",
+      "source_content": "Then, running this GraphQL query should return an empty todo list:",
+      "source_content_hash": "1d7cc7ba9fe49e9ef5c08691ecf7b44bed1aa6a7d059b543fa1cd803a6961c12",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后执行以下 GraphQL 查询应该会返回空列表："
+      }
+    },
+    {
+      "segment_id": "893577ee",
+      "source_content": "<Tabs\ndefaultValue=\"graphql\"\nvalues={[\n    {label: 'GraphQL', value: 'graphql'},\n    {label: 'Output', value: 'output'},\n]}>\n<TabItem value=\"graphql\">\n\n```graphql\nquery AllTodos {\n    todos {\n        id\n    }\n}\n```\n\n</TabItem>\n<TabItem value=\"output\">\n\n```json\n{\n  \"data\": {\n    \"todos\": []\n  }\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "337725130828a456d4520a6749f8ede98d8c69788e784cc569aaa53800ef5d44",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_893577ee"
+      }
+    },
+    {
+      "segment_id": "fa461c90",
+      "source_content": "## Mutating Todos",
+      "source_content_hash": "e3095be8f2ba9fda98c08d0327c009676563a3377b60e9d10ff2c83649da7407",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 变更待办事项"
+      }
+    },
+    {
+      "segment_id": "fe2c7f95",
+      "source_content": "As you can see above, our GraphQL schema returns an empty list of todo items. Let's create a few todo items, but this time\nwe'll do it from GraphQL. Luckily, Ent provides auto generated mutations for creating and updating nodes and edges.",
+      "source_content_hash": "36d8f30539deb8c815511f486ff7834a0ebe35f95e9b3373f666ee065eff3c08",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如上所示，我们的 GraphQL 模式返回了空的待办事项列表。现在让我们通过 GraphQL 创建几个待办事项。幸运的是，Ent 提供了自动生成的变更操作来创建和更新节点与边。"
+      }
+    },
+    {
+      "segment_id": "fd40deab",
+      "source_content": "1\\. We start by extending our GraphQL schema with custom mutations. Let's create a new file named `todo.graphql`\nand add our `Mutation` type:",
+      "source_content_hash": "c5c3b2eaa2eb5c71a2e4f9396ecd420c0b59762f6b16642135fee247c9da3007",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 首先扩展 GraphQL 模式以添加自定义变更。创建名为 `todo.graphql` 的新文件并添加 `Mutation` 类型："
+      }
+    },
+    {
+      "segment_id": "92fa9171",
+      "source_content": "```graphql title=\"todo.graphql\"\ntype Mutation {\n    # The input and the output are types generated by Ent.\n    createTodo(input: CreateTodoInput!): Todo\n}\n```",
+      "source_content_hash": "05e8b493c7873d487c513dbed18b0b772e247872c370f2b709311181253c9014",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_92fa9171"
+      }
+    },
+    {
+      "segment_id": "b63b9ccf",
+      "source_content": "2\\. Add the custom GraphQL schema to `gqlgen.yml` configuration:",
+      "source_content_hash": "cc2ec1facc13386a4a6b87a96d13e93d51ad92ccf50a10e30e96e6696de7441f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 将自定义 GraphQL 模式添加到 `gqlgen.yml` 配置中："
+      }
+    },
+    {
+      "segment_id": "371e39a0",
+      "source_content": "```yaml title=\"gqlgen.yml\"\nschema:\n  - ent.graphql\n//highlight-next-line\n  - todo.graphql\n# ...\n```",
+      "source_content_hash": "1103c28319fc8fe87eb2e9c772bc2ad1991bc2fe32ba92587e7c7225cf8f1813",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_371e39a0"
+      }
+    },
+    {
+      "segment_id": "158df793",
+      "source_content": "3\\. Run code generation:",
+      "source_content_hash": "d925c3fcda97af50bd28a3b5dde97ff58349a6d1eb42b214a01d04064215bc01",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "3\\. 运行代码生成："
+      }
+    },
+    {
+      "segment_id": "d68d5d0e",
+      "source_content": "```shell\ngo generate .\n```",
+      "source_content_hash": "340914127b6a3fe022d85c84fc7886c94c2d299c91cdf2575f75e152e3179c87",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d68d5d0e"
+      }
+    },
+    {
+      "segment_id": "69acbca3",
+      "source_content": "As you can see, `gqlgen` generated for us a new file named `todo.resolvers.go` with the `createTodo` resolver. Let's\nconnect it to Ent generated code, and ask Ent to handle this mutation:",
+      "source_content_hash": "187d691db47cfc680566270115299a9940a4bf126eb7a5f9bd91860c5b3ba0c9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "可以看到，`gqlgen` 为我们生成了名为 `todo.resolvers.go` 的新文件，其中包含 `createTodo` 解析器。让我们将其连接到 Ent 生成的代码，并让 Ent 处理这个变更："
+      }
+    },
+    {
+      "segment_id": "2c7ee013",
+      "source_content": "```diff title=\"todo.resolvers.go\"\nfunc (r *mutationResolver) CreateTodo(ctx context.Context, input ent.CreateTodoInput) (*ent.Todo, error) {\n-\tpanic(fmt.Errorf(\"not implemented: CreateTodo - createTodo\"))\n+\treturn r.client.Todo.Create().SetInput(input).Save(ctx)\n}\n```",
+      "source_content_hash": "9fa2921dc0ffe0d2c23e2dd8b951caafeb22a11ccf51359425d26d42426bcd0b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2c7ee013"
+      }
+    },
+    {
+      "segment_id": "2fc2d2cf",
+      "source_content": "4\\. Re-run `go run ./cmd/todo` again and go to the playground:",
+      "source_content_hash": "487d6dd40adb6fcf216d3a49859e2fa65b162bd5a980d0173935756c666be5ea",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "4\\. 重新运行 `go run ./cmd/todo` 并打开 Playground："
+      }
+    },
+    {
+      "segment_id": "8afa0643",
+      "source_content": "## Demo",
+      "source_content_hash": "876a02aca812b50e4066a2c9a0f9836ad09d694b1723d22256a8356af0a419a3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 演示"
+      }
+    },
+    {
+      "segment_id": "7e0b49a3",
+      "source_content": "At this stage, we are ready to create a todo item and query it:",
+      "source_content_hash": "e825f11410295b465ebadfa7d8f7e31adda3f23cc58598a057deac9df7966cf6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在我们可以创建待办事项并查询它了："
+      }
+    },
+    {
+      "segment_id": "ee746c5f",
+      "source_content": "<Tabs\ndefaultValue=\"mutation\"\nvalues={[\n    {label: 'Mutation', value: 'mutation'},\n    {label: 'Mutation Output', value: 'mutation_output'},\n    {label: 'Query', value: 'query'},\n    {label: 'Query Output', value: 'query_output'},\n]}>\n<TabItem value=\"mutation\">\n\n```graphql\nmutation CreateTodo {\n    createTodo(input: {text: \"Create GraphQL Example\", status: IN_PROGRESS, priority: 1}) {\n        id\n        text\n        createdAt\n        priority\n    }\n}\n```\n\n</TabItem>\n<TabItem value=\"mutation_output\">\n\n```json\n{\n  \"data\": {\n    \"createTodo\": {\n      \"id\": \"1\",\n      \"text\": \"Create GraphQL Example\",\n      \"createdAt\": \"2022-09-08T15:20:58.696576+03:00\",\n      \"priority\": 1,\n    }\n  }\n}\n```\n\n</TabItem>\n<TabItem value=\"query\">\n\n```graphql\nquery {\n  todos {\n    id\n    text\n    status\n  }\n}\n```\n\n</TabItem>\n<TabItem value=\"query_output\">\n\n```json\n{\n  \"data\": {\n    \"todos\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"Create GraphQL Example\",\n        \"status\": \"IN_PROGRESS\"\n      }\n    ]\n  }\n}\n```\n\n</TabItem>\n</Tabs>",
+      "source_content_hash": "634b2900616fca39909f8837135e15761298a4c5655bb14a1feaa08a33927cd7",
+      "node_type": "mdxJsxFlowElement",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ee746c5f"
+      }
+    },
+    {
+      "segment_id": "3441f612",
+      "source_content": "If you're having trouble with getting this example to work, go to [first section](#clone-the-code-optional) and clone the\nexample repository.",
+      "source_content_hash": "9f8d95b0b712281eaf9098615e9f1e1ae53d22ba15151249e00b8d84f620fbde",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "如果运行此示例遇到问题，请参考[第一节](#clone-the-code-optional)克隆示例仓库。"
+      }
+    },
+    {
+      "segment_id": "c22fd5e8",
+      "source_content": "---",
+      "source_content_hash": "cb3f91d54eee30e53e35b2b99905f70f169ed549fd78909d3dac2defc9ed8d3b",
+      "node_type": "thematicBreak",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "---"
+      }
+    },
+    {
+      "segment_id": "7f0cded5",
+      "source_content": "Please continue to the next section where we explain how to implement the\n[Relay Node Interface](https://relay.dev/graphql/objectidentification.htm) and learn how Ent automatically supports this.",
+      "source_content_hash": "2ff6272a8a0e279853f3742e52e413cd97869d6a2ca8e4022eb6e9f821a4862e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "请继续阅读下一节，我们将讲解如何实现 [Relay 节点接口](https://relay.dev/graphql/objectidentification.htm)以及 Ent 如何自动支持该功能。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-gql.mdx",
+  "last_updated_timestamp": "2025-06-05T15:16:18.688759+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "597377395d981c3bd3d9acbec195426987eef8b220a2d8c4fc68608852ef765c"
+  }
+}

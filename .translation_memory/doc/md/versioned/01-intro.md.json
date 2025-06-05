@@ -1,0 +1,152 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/versioned/01-intro.md",
+  "source_file_content_hash": "971cd3952a87b0cf8d772f6cf3322c531adc8cb92d169d766696f2e2e0c0f13f",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: intro\ntitle: Introduction\n---",
+      "source_content_hash": "dc04bbe657211bf78c5e785596d946c110269bcc2593cc3ab45d69f6ed938749",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "f85bbfb4",
+      "source_content": "## Schema Migration Flows",
+      "source_content_hash": "dde8f4d7fa21145796dd96dafd808f24f51b06cb3f38896088ba769a909a84b0",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 模式迁移流程"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "Ent supports two different workflows for managing schema changes:",
+      "source_content_hash": "16597d3f5057b76d149f3feb5379056c82b3c2285abc6deab2dd594aaf39bff2",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent支持两种不同的模式变更管理工作流："
+      }
+    },
+    {
+      "segment_id": "df80d009",
+      "source_content": "* Automatic Migrations - a declarative style of schema migrations which happen entirely at runtime.\n With this flow, Ent calculates the difference between the connected database and the database\n schema needed to satisfy the `ent.Schema` definitions, and then applies the changes to the database.\n* Versioned Migrations - a workflow where schema migrations are written as SQL files ahead of time\n and then are applied to the database by a specialized tool such as [Atlas](https://atlasgo.io) or \n [golang-migrate](https://github.com/golang-migrate/migrate).",
+      "source_content_hash": "a64cce80a7f2ff28894e4b8afd8a8ad37e1f48af9465e4723a9bbcf7aaa41bc8",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "* 自动迁移 - 完全在运行时进行的声明式模式迁移。该流程中，Ent会计算已连接数据库与满足`ent.Schema`定义所需数据库模式之间的差异，然后将变更应用到数据库。\n* 版本化迁移 - 将模式迁移预先编写为SQL文件，随后通过专用工具（如[Atlas](https://atlasgo.io)或[golang-migrate](https://github.com/golang-migrate/migrate)）应用到数据库的工作流。"
+      }
+    },
+    {
+      "segment_id": "cf898102",
+      "source_content": "Many users start with the automatic migration flow as it is the easiest to get started with, but\nas their project grows, they may find that they need more control over the migration process, and\nthey switch to the versioned migration flow.",
+      "source_content_hash": "c956658c7e87fa12a23afe95b0fca37880f08c17a186b04edf8e7776f9fcd304",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "许多用户从自动迁移流程开始，因为这是最容易上手的方案。但随着项目规模增长，当需要更多迁移过程控制权时，他们通常会转向版本化迁移流程。"
+      }
+    },
+    {
+      "segment_id": "f6168993",
+      "source_content": "This tutorial will walk you through the process of upgrading an existing project from automatic migrations\nto versioned migrations. ",
+      "source_content_hash": "fc5f4764b5303a0e1932bc6d3cf65eeeac52220618932844a195b7643ce062bb",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程将引导您完成将现有项目从自动迁移升级到版本化迁移的全过程。"
+      }
+    },
+    {
+      "segment_id": "63622bf0",
+      "source_content": "## Supporting repository",
+      "source_content_hash": "a942e4a7f4b8400cfd861bce3ca2a7c8a122bd6791dbf0855323e12b664e9a45",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 配套代码库"
+      }
+    },
+    {
+      "segment_id": "98cfbd53",
+      "source_content": "All of the steps demonstrated in this tutorial can be found in the \n[rotemtam/ent-versioned-migrations-demo](https://github.com/rotemtam/ent-versioned-migrations-demo)\nrepository on GitHub. In each section we will link to the relevant commit in the repository.",
+      "source_content_hash": "5ae2114cf050ccb9aca2c25b36a93f2fe211f5b2cc38fc0e07404416c233b4ce",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程演示的所有步骤都可以在GitHub上的[rotemtam/ent-versioned-migrations-demo](https://github.com/rotemtam/ent-versioned-migrations-demo)仓库中找到。每个章节我们会链接到仓库中的相关提交记录。"
+      }
+    },
+    {
+      "segment_id": "d9172fa4",
+      "source_content": "The initial Ent project which we will be upgrading can be found\n[here](https://github.com/rotemtam/ent-versioned-migrations-demo/tree/start).",
+      "source_content_hash": "7e2ad328388d606e80fc62d7427793e0ecdee098c5bf4765bd3f7cde5268af35",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "我们将要升级的初始Ent项目可在[此处](https://github.com/rotemtam/ent-versioned-migrations-demo/tree/start)获取。"
+      }
+    },
+    {
+      "segment_id": "48847fd4",
+      "source_content": "## Automatic Migration",
+      "source_content_hash": "6010f94c711f4f0e934b1473ec96e861bb10dec324dd3f69f2359582ae41781a",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自动迁移"
+      }
+    },
+    {
+      "segment_id": "4daf5cdd",
+      "source_content": "In this tutorial, we assume you have an existing Ent project and that you are using automatic migrations.\nMany simpler projects have a block of code similar to this in their `main.go` file:",
+      "source_content_hash": "ecc692392df6cae83774a9e1c2a090bed74af9731f5db18c98ac826928a30d33",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程假设您已有一个使用自动迁移的现有Ent项目。许多简单项目的`main.go`文件中都包含类似以下代码块："
+      }
+    },
+    {
+      "segment_id": "076d64d1",
+      "source_content": "```go\npackage main\n\nfunc main() {\n\t// Connect to the database (MySQL for example).\n\tclient, err := ent.Open(\"mysql\", \"root:pass@tcp(localhost:3306)/test\")\n\tif err != nil {\n\t\tlog.Fatalf(\"failed connecting to mysql: %v\", err)\n\t}\n\tdefer client.Close()\n\tctx := context.Background()\n\t// Run migration.\n\t// highlight-next-line\n\tif err := client.Schema.Create(ctx); err != nil {\n\t\tlog.Fatalf(\"failed creating schema resources: %v\", err)\n\t}\n\t// ... Continue with server start.\n}\n```",
+      "source_content_hash": "7ce5841db6bc295a23fe7818fff3324973e46555d3f47ad53b6af09891c99f6f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_076d64d1"
+      }
+    },
+    {
+      "segment_id": "b9aaa519",
+      "source_content": "This code connects to the database, and then runs the automatic migration tool to create all schema resources.",
+      "source_content_hash": "aaf8b106b53b46942ee5bd1d247f8a8c77e1864e7c58c6449bcdf7f51817cfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "这段代码连接数据库后，会运行自动迁移工具来创建所有模式资源。"
+      }
+    },
+    {
+      "segment_id": "e536ea0d",
+      "source_content": "Next, let's see how to set up our project for versioned migrations.",
+      "source_content_hash": "7465783d6f30348949e54258f7aa2c98592eba97cc8b177eaf467da538d8cd36",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "接下来，我们将了解如何为版本化迁移配置项目。"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/versioned/01-intro.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.671037+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "971cd3952a87b0cf8d772f6cf3322c531adc8cb92d169d766696f2e2e0c0f13f"
+  }
+}

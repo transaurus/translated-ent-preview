@@ -1,0 +1,652 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/predicates.md",
+  "source_file_content_hash": "66cc7ad8c51fe3e458a41f43ee1294ebfe9d893d2f3149b175828c6a2860edf0",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: predicates\ntitle: Predicates\n---",
+      "source_content_hash": "d63c913396a2bd090700a7a9791e9d7c7d6e401526edf1cace68dda0936db8b4",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "b3de8742",
+      "source_content": "## Field Predicates",
+      "source_content_hash": "424ebc1b60b5b6578fe5c1fd78c75b5d4c669736fd86306ee269e2e478065e07",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 字段谓词"
+      }
+    },
+    {
+      "segment_id": "df80d009",
+      "source_content": "- **Bool**:\n  - =, !=\n- **Numeric**:\n  - =, !=, >, <, >=, <=,\n  - IN, NOT IN\n- **Time**:\n  - =, !=, >, <, >=, <=\n  - IN, NOT IN\n- **String**:\n  - =, !=, >, <, >=, <=\n  - IN, NOT IN\n  - Contains, HasPrefix, HasSuffix\n  - ContainsFold, EqualFold (**SQL** specific)\n- **JSON**\n  - =, !=\n  - =, !=, >, <, >=, <= on nested values (JSON path).\n  - Contains on nested values (JSON path).\n  - HasKey, Len&lt;P>\n  - `null` checks for nested values (JSON path).\n- **Optional** fields:\n  - IsNil, NotNil",
+      "source_content_hash": "c4b955a3e61d4f6a03134c30135ef1925a542a87bac3fa4fd6f511c63a502439",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- **布尔类型**:\n  - =, !=\n- **数值类型**:\n  - =, !=, >, <, >=, <=,\n  - IN, NOT IN\n- **时间类型**:\n  - =, !=, >, <, >=, <=\n  - IN, NOT IN\n- **字符串类型**:\n  - =, !=, >, <, >=, <=\n  - IN, NOT IN\n  - Contains（包含）, HasPrefix（前缀匹配）, HasSuffix（后缀匹配）\n  - ContainsFold（不区分大小写包含）, EqualFold（不区分大小写相等，**SQL**特有）\n- **JSON类型**\n  - =, !=\n  - 对嵌套值使用=, !=, >, <, >=, <=（JSON路径）\n  - 对嵌套值使用Contains（JSON路径）\n  - HasKey（检查键是否存在）, Len&lt;P>（检查数组长度）\n  - 对嵌套值检查`null`字面量（JSON路径）\n- **可选字段**:\n  - IsNil（为空）, NotNil（非空）"
+      }
+    },
+    {
+      "segment_id": "d06306f7",
+      "source_content": "## Edge Predicates",
+      "source_content_hash": "484abe439990b2acfbdb3ed2de973dff166b3c313512d025f091e8d8c19ea445",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 边谓词"
+      }
+    },
+    {
+      "segment_id": "86b525ab",
+      "source_content": "- **HasEdge**. For example, for edge named `owner` of type `Pet`, use:\n\n  ```go\n   client.Pet.\n\t\tQuery().\n\t\tWhere(pet.HasOwner()).\n\t\tAll(ctx)\n  ```\n\n- **HasEdgeWith**. Add list of predicates for edge predicate.\n\n  ```go\n   client.Pet.\n\t\tQuery().\n\t\tWhere(pet.HasOwnerWith(user.Name(\"a8m\"))).\n\t\tAll(ctx)\n  ```",
+      "source_content_hash": "743eea4ea2683c5735172e6144291e296136a058a2ae89bc21e7a9ad2017102e",
+      "node_type": "list",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "- **HasEdge**。例如，对于名为`owner`且类型为`Pet`的边，使用：\n\n  ```go\n   client.Pet.\n\t\tQuery().\n\t\tWhere(pet.HasOwner()).\n\t\tAll(ctx)\n  ```\n\n- **HasEdgeWith**。为边谓词添加谓词列表。\n\n  ```go\n   client.Pet.\n\t\tQuery().\n\t\tWhere(pet.HasOwnerWith(user.Name(\"a8m\"))).\n\t\tAll(ctx)\n  ```"
+      }
+    },
+    {
+      "segment_id": "11c76fcc",
+      "source_content": "## Negation (NOT)",
+      "source_content_hash": "09025242e2dd824d5c558ead4f133f2c92d0b2c0f8bdf952a83a69c2d0b04399",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 否定（NOT）"
+      }
+    },
+    {
+      "segment_id": "ac961110",
+      "source_content": "```go\nclient.Pet.\n\tQuery().\n\tWhere(pet.Not(pet.NameHasPrefix(\"Ari\"))).\n\tAll(ctx)\n```",
+      "source_content_hash": "bf4706d989c4cda02614c3609f01427a931ef92c85afcdc5d45a8371447ae74b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ac961110"
+      }
+    },
+    {
+      "segment_id": "ab5fc5b5",
+      "source_content": "## Disjunction (OR)",
+      "source_content_hash": "0802b53b9d1db7b7351e9a6a8b2f27a47f8279c68e5c19865c2cf21c883ea538",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 析取（OR）"
+      }
+    },
+    {
+      "segment_id": "3adc0ceb",
+      "source_content": "```go\nclient.Pet.\n\tQuery().\n\tWhere(\n\t\tpet.Or(\n\t\t\tpet.HasOwner(),\n\t\t\tpet.Not(pet.HasFriends()),\n\t\t)\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "c5c63a69e89016f3a7476056b196a7f15e5d9361aad5fa811f5f7c8ef89bd25a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3adc0ceb"
+      }
+    },
+    {
+      "segment_id": "daed5acb",
+      "source_content": "## Conjunction (AND)",
+      "source_content_hash": "2055811a2c6111eacca4ff05d04bb07855d9c56eb06d8fc3b97417a2edc2f411",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 合取（AND）"
+      }
+    },
+    {
+      "segment_id": "468b36ba",
+      "source_content": "```go\nclient.Pet.\n\tQuery().\n\tWhere(\n\t\tpet.And(\n\t\t\tpet.HasOwner(),\n\t\t\tpet.Not(pet.HasFriends()),\n\t\t)\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "9191c55a8676644da079c6915254f8c6c0b3457f359262c40a4a917e473ff8c8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_468b36ba"
+      }
+    },
+    {
+      "segment_id": "2e771fd0",
+      "source_content": "## Custom Predicates",
+      "source_content_hash": "cd649a1976fb8f94555dc0ffcb9c59a87bdaca088f11b16f51d2863f7f5b5a13",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 自定义谓词"
+      }
+    },
+    {
+      "segment_id": "0750bfa1",
+      "source_content": "Custom predicates can be useful if you want to write your own dialect-specific logic or to control the executed queries.",
+      "source_content_hash": "c9c4065e0b80766fc6b0bd61f8f99df21cd17313650846496ca25c642cfcf9fd",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "当需要编写特定于数据库方言的逻辑或控制执行的查询时，自定义谓词会非常有用。"
+      }
+    },
+    {
+      "segment_id": "bd30d33e",
+      "source_content": "#### Get all pets of users 1, 2 and 3",
+      "source_content_hash": "4c205abc15113d6eeea3920cdb41bfee4ddb9411c80c8a630c64cce077ba70fd",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 获取用户1、2和3的所有宠物"
+      }
+    },
+    {
+      "segment_id": "daa16011",
+      "source_content": "```go\npets := client.Pet.\n\tQuery().\n\tWhere(func(s *sql.Selector) {\n\t\ts.Where(sql.InInts(pet.FieldOwnerID, 1, 2, 3))\n\t}).\n\tAllX(ctx)\n```",
+      "source_content_hash": "6d71938b81a4be08fa43978993921f5d42d6d8eefae72106b7526079b092cb58",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_daa16011"
+      }
+    },
+    {
+      "segment_id": "6ca4479f",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成以下SQL查询："
+      }
+    },
+    {
+      "segment_id": "cae897fb",
+      "source_content": "```sql\nSELECT DISTINCT `pets`.`id`, `pets`.`owner_id` FROM `pets` WHERE `owner_id` IN (1, 2, 3)\n```",
+      "source_content_hash": "392958fd732b1509e4e54d8d8b9f8cb937bfe6c40e50cf9087168dfb488ca08a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cae897fb"
+      }
+    },
+    {
+      "segment_id": "42a5832e",
+      "source_content": "#### Count the number of users whose JSON field named `URL` contains the `Scheme` key",
+      "source_content_hash": "d23956b18ef66d2c42a6bde7b890edf66a76303ccea197f59e3e685f7acd1029",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 统计JSON字段`URL`包含`Scheme`键的用户数量"
+      }
+    },
+    {
+      "segment_id": "c9873cf8",
+      "source_content": "```go\ncount := client.User.\n\tQuery().\n\tWhere(func(s *sql.Selector) {\n\t\ts.Where(sqljson.HasKey(user.FieldURL, sqljson.Path(\"Scheme\")))\n\t}).\n\tCountX(ctx)\n```",
+      "source_content_hash": "4be770b471e8c0f0d81da2e39830ef76a0e2a99e0c21a7e383a4479927250fe3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_c9873cf8"
+      }
+    },
+    {
+      "segment_id": "44aaa880",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成以下SQL查询："
+      }
+    },
+    {
+      "segment_id": "353ca453",
+      "source_content": "```sql\n-- PostgreSQL\nSELECT COUNT(DISTINCT \"users\".\"id\") FROM \"users\" WHERE \"url\"->'Scheme' IS NOT NULL\n\n-- SQLite and MySQL\nSELECT COUNT(DISTINCT `users`.`id`) FROM `users` WHERE JSON_EXTRACT(`url`, \"$.Scheme\") IS NOT NULL\n```",
+      "source_content_hash": "2b6e5870b443f1bc481777dbc22a611094878adbedc1225876de852d574c5b91",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_353ca453"
+      }
+    },
+    {
+      "segment_id": "36d6c3de",
+      "source_content": "#### Get all users with a `\"Tesla\"` car",
+      "source_content_hash": "91038e86c75c2dbf18f591bd57bad7c84da03a762ee7862e8c7001382fc98958",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 获取所有拥有`\"Tesla\"`汽车的用户"
+      }
+    },
+    {
+      "segment_id": "c364340c",
+      "source_content": "Consider an ent query such as: ",
+      "source_content_hash": "43ebabda5d5cda3d87ddcacd9e9ae83b8990878ddb829c7f207cf153959c57c4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "考虑如下ent查询："
+      }
+    },
+    {
+      "segment_id": "b474abd5",
+      "source_content": "```go\nusers := client.User.Query().\n\tWhere(user.HasCarWith(car.Model(\"Tesla\"))).\n\tAllX(ctx)\n```",
+      "source_content_hash": "8350fbfd56ba16c0b8f88656e2b8eb112428f2d648c07b39bca95eee522be96f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_b474abd5"
+      }
+    },
+    {
+      "segment_id": "14bc6b75",
+      "source_content": "This query can be rephrased in 3 different forms: `IN`, `EXISTS` and `JOIN`.",
+      "source_content_hash": "e73a6c3e49ce7cc89df56323d6854c6117d73383e7978ea7d7550235841e5575",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "该查询可以改写为三种形式：`IN`、`EXISTS`和`JOIN`。"
+      }
+    },
+    {
+      "segment_id": "9ed0f908",
+      "source_content": "```go\n// `IN` version.\nusers := client.User.Query().\n\tWhere(func(s *sql.Selector) {\n\t\tt := sql.Table(car.Table)\n        s.Where(\n            sql.In(\n                s.C(user.FieldID),\n                sql.Select(t.C(user.FieldID)).From(t).Where(sql.EQ(t.C(car.FieldModel), \"Tesla\")),\n            ),\n        )\n\t}).\n\tAllX(ctx)\n\n// `JOIN` version.\nusers := client.User.Query().\n\tWhere(func(s *sql.Selector) {\n\t\tt := sql.Table(car.Table)\n\t\ts.Join(t).On(s.C(user.FieldID), t.C(car.FieldOwnerID))\n\t\ts.Where(sql.EQ(t.C(car.FieldModel), \"Tesla\"))\n\t}).\n\tAllX(ctx)\n\n// `EXISTS` version.\nusers := client.User.Query().\n\tWhere(func(s *sql.Selector) {\n\t\tt := sql.Table(car.Table)\n\t\tp := sql.And(\n            sql.EQ(t.C(car.FieldModel), \"Tesla\"),\n\t\t\tsql.ColumnsEQ(s.C(user.FieldID), t.C(car.FieldOwnerID)),\n\t\t)\n\t\ts.Where(sql.Exists(sql.Select().From(t).Where(p)))\n\t}).\n\tAllX(ctx)\n```",
+      "source_content_hash": "27e3ea08fe5637356a678250669b8256e209a19a75b98612d1f5c4290e551ff5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9ed0f908"
+      }
+    },
+    {
+      "segment_id": "85ea22dd",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成以下SQL查询："
+      }
+    },
+    {
+      "segment_id": "9bc650e1",
+      "source_content": "```sql\n-- `IN` version.\nSELECT DISTINCT `users`.`id`, `users`.`age`, `users`.`name` FROM `users` WHERE `users`.`id` IN (SELECT `cars`.`owner_id` FROM `cars` WHERE `cars`.`model` = 'Tesla')\n\n-- `JOIN` version.\nSELECT DISTINCT `users`.`id`, `users`.`age`, `users`.`name` FROM `users` JOIN `cars` ON `users`.`id` = `cars`.`owner_id` WHERE `cars`.`model` = 'Tesla'\n\n-- `EXISTS` version.\nSELECT DISTINCT `users`.`id`, `users`.`age`, `users`.`name` FROM `users` WHERE EXISTS (SELECT * FROM `cars` WHERE `cars`.`model` = 'Tesla' AND `users`.`id` = `cars`.`owner_id`)\n```",
+      "source_content_hash": "a5bb77f537e44800a1f5b1a7b76daf81a28f2c9f1c69a44f8bfc9720f2826de8",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9bc650e1"
+      }
+    },
+    {
+      "segment_id": "cce332f2",
+      "source_content": "#### Get all pets where pet name contains a specific pattern",
+      "source_content_hash": "e33dc2d33bd4df67b34dc3e3a42891ea81cbf4d9953f7db36f80616137e1c8aa",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 获取名称包含特定模式的宠物"
+      }
+    },
+    {
+      "segment_id": "9ebd9d9b",
+      "source_content": "The generated code provides the `HasPrefix`, `HasSuffix`, `Contains`, and `ContainsFold` predicates for pattern matching.\nHowever, in order to use the `LIKE` operator with a custom pattern, use the following example.",
+      "source_content_hash": "3bb95ccbce4a5a89305e3dbed3964e951dcfe428d2892f6f9ba21fce7ea18776",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成的代码提供了`HasPrefix`、`HasSuffix`、`Contains`和`ContainsFold`谓词用于模式匹配。\n但若需使用自定义模式的`LIKE`运算符，请参考以下示例。"
+      }
+    },
+    {
+      "segment_id": "21f43a9a",
+      "source_content": "```go\npets := client.Pet.Query().\n\tWhere(func(s *sql.Selector){\n\t\ts.Where(sql.Like(pet.Name,\"_B%\"))\n\t}).\n\tAllX(ctx)\n```",
+      "source_content_hash": "8fb080160a5f25d6dd54a6afac61946dcf9023d4c7aa1807fbdc9d20cf91ece5",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_21f43a9a"
+      }
+    },
+    {
+      "segment_id": "6e5d54a8",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成以下SQL查询："
+      }
+    },
+    {
+      "segment_id": "bf3146e1",
+      "source_content": "```sql\nSELECT DISTINCT `pets`.`id`, `pets`.`owner_id`, `pets`.`name`, `pets`.`age`, `pets`.`species` FROM `pets` WHERE `name` LIKE '_B%'\n```",
+      "source_content_hash": "71f3e37e97677f16bc8f732dc63484a5ca86c8a4365f2c471737b5eeb3b992af",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_bf3146e1"
+      }
+    },
+    {
+      "segment_id": "778e087a",
+      "source_content": "#### Custom SQL functions",
+      "source_content_hash": "cd32aa4c02c96a1d8561929554c37df5dde8d14448594a9bfb45978b96d7ba9b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 自定义SQL函数"
+      }
+    },
+    {
+      "segment_id": "90c4b96b",
+      "source_content": "In order to use built-in SQL functions such as `DATE()`, use one of the following options:",
+      "source_content_hash": "56170fb26362c86cfc7a7d86c9ff4cbe329ada7163fe50d56fe62863d501c986",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "要使用内置SQL函数如`DATE()`，可选择以下方式之一："
+      }
+    },
+    {
+      "segment_id": "1f9058cd",
+      "source_content": "1\\. Pass a dialect-aware predicate function using the `sql.P` option:",
+      "source_content_hash": "28557dfa94914a9b41bcec271b790059fb559ba271926d1c108c7be6ee80c948",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "1\\. 通过`sql.P`选项传递方言感知的谓词函数："
+      }
+    },
+    {
+      "segment_id": "a414aca8",
+      "source_content": "```go\nusers := client.User.Query().\n\tSelect(user.FieldID).\n\tWhere(func(s *sql.Selector) {\n\t\ts.Where(sql.P(func(b *sql.Builder) {\n\t\t\tb.WriteString(\"DATE(\").Ident(\"last_login_at\").WriteByte(')').WriteOp(OpGTE).Arg(value)\n\t\t}))\n\t}).\n\tAllX(ctx)\n```",
+      "source_content_hash": "cbe5196612fe30f8538f1b6ecc91eabefc37fa21029594ca7d64b8566df64232",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a414aca8"
+      }
+    },
+    {
+      "segment_id": "9ede513a",
+      "source_content": "The above code will produce the following SQL query:",
+      "source_content_hash": "e7dc4ad5272f327157144e777a10c0d067391994d1ba8ef047ecc2a7d6aadfe6",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成以下SQL查询："
+      }
+    },
+    {
+      "segment_id": "60efc494",
+      "source_content": "```sql\nSELECT `id` FROM `users` WHERE DATE(`last_login_at`) >= ?\n```",
+      "source_content_hash": "461aeecc237322fd346cdcf04e53a6065007e58d5f0c0671218f30f92ca52725",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_60efc494"
+      }
+    },
+    {
+      "segment_id": "dbeb30c1",
+      "source_content": "2\\. Inline a predicate expression using the `ExprP()` option:",
+      "source_content_hash": "d44a368a957295d2afbda98b6d7284d4b834a7b8b9db08fc7b5cb35e96fb3a6a",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "2\\. 使用`ExprP()`选项内联谓词表达式："
+      }
+    },
+    {
+      "segment_id": "489cbec9",
+      "source_content": "```go\nusers := client.User.Query().\n\tSelect(user.FieldID).\n\tWhere(func(s *sql.Selector) {\n\t\ts.Where(sql.ExprP(\"DATE(last_login_at) >= ?\", value))\n\t}).\n\tAllX(ctx)\n```",
+      "source_content_hash": "68f977285b51b6abc9962ae3a19178ec4314788301b303f1f02752e30a37f2ae",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_489cbec9"
+      }
+    },
+    {
+      "segment_id": "4033c370",
+      "source_content": "The above code will produce the same SQL query:",
+      "source_content_hash": "885bf75bc312e97d284c80f8e4218bff1734f12d31dc112339d0ed2de8dd047f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "上述代码将生成相同的SQL查询："
+      }
+    },
+    {
+      "segment_id": "0869735f",
+      "source_content": "```sql\nSELECT `id` FROM `users` WHERE DATE(`last_login_at`) >= ?\n```",
+      "source_content_hash": "461aeecc237322fd346cdcf04e53a6065007e58d5f0c0671218f30f92ca52725",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0869735f"
+      }
+    },
+    {
+      "segment_id": "9349ceaa",
+      "source_content": "## JSON predicates",
+      "source_content_hash": "787178899864f9dd1b52cb91f610d50caaf0bb038690b2c5c02afcff8d089222",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## JSON谓词"
+      }
+    },
+    {
+      "segment_id": "e636ba62",
+      "source_content": "JSON predicates are not generated by default as part of the code generation. However, ent provides an official package\nnamed [`sqljson`](https://pkg.go.dev/entgo.io/ent/dialect/sql/sqljson) for applying predicates on JSON columns using the\n[custom predicates option](#custom-predicates).",
+      "source_content_hash": "d6ff9a82a2fc89b2d70112fe177a0f33acb107ba63a37843d5e7a877c1badc9d",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "JSON谓词默认不会作为代码生成的一部分自动生成。但ent官方提供了[`sqljson`](https://pkg.go.dev/entgo.io/ent/dialect/sql/sqljson)包，可通过[自定义谓词选项](#custom-predicates)对JSON列应用谓词操作。"
+      }
+    },
+    {
+      "segment_id": "f7d4d765",
+      "source_content": "#### Compare a JSON value",
+      "source_content_hash": "f9a5e30f6ca9b66889ba23d937837688e2d3948ec0ca81b9213e6b1fe61c2505",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 比较JSON值"
+      }
+    },
+    {
+      "segment_id": "3e53354a",
+      "source_content": "```go\nsqljson.ValueEQ(user.FieldData, data)\n\nsqljson.ValueEQ(user.FieldURL, \"https\", sqljson.Path(\"Scheme\"))\n\nsqljson.ValueNEQ(user.FieldData, content, sqljson.DotPath(\"attributes[1].body.content\"))\n\nsqljson.ValueGTE(user.FieldData, status.StatusBadRequest, sqljson.Path(\"response\", \"status\"))\n```",
+      "source_content_hash": "f0f549a71f44be89da7728fca59f94237179bdf20f6ca702ea9defe3aa5e2728",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_3e53354a"
+      }
+    },
+    {
+      "segment_id": "fe3afe38",
+      "source_content": "#### Check for the presence of a JSON key",
+      "source_content_hash": "49eb8cf372febec54a7f95fe0694484e31048e5e7412d516d951ebf2c19c833b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查JSON键是否存在"
+      }
+    },
+    {
+      "segment_id": "e55bb1a1",
+      "source_content": "```go\nsqljson.HasKey(user.FieldData, sqljson.Path(\"attributes\", \"[1]\", \"body\"))\n\nsqljson.HasKey(user.FieldData, sqljson.DotPath(\"attributes[1].body\"))\n```",
+      "source_content_hash": "4c817a8992c59481427d1ad077cb923c81bd9166d133d3618eac94850647638e",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_e55bb1a1"
+      }
+    },
+    {
+      "segment_id": "216a8ee1",
+      "source_content": "Note that, a key with the `null` literal as a value also matches this operation.",
+      "source_content_hash": "756f3f57e81057724ca598890c2c21fc7de8a6e0022870109c66d1f936b17307",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意：值为`null`字面量的键也会匹配此操作。"
+      }
+    },
+    {
+      "segment_id": "d59d3f3c",
+      "source_content": "#### Check JSON `null` literals",
+      "source_content_hash": "242dd45a81a06d964b06e587e14dfa3482794320f7adf93d82a50e6b57ea0083",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查JSON `null`字面量"
+      }
+    },
+    {
+      "segment_id": "099d21ed",
+      "source_content": "```go\nsqljson.ValueIsNull(user.FieldData)\n\nsqljson.ValueIsNull(user.FieldData, sqljson.Path(\"attributes\"))\n\nsqljson.ValueIsNull(user.FieldData, sqljson.DotPath(\"attributes[1].body\"))\n```",
+      "source_content_hash": "f0ec1bf488ae11e2fe1c9b96a652b86a90db60ef534e285802ebcf17b3d82c94",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_099d21ed"
+      }
+    },
+    {
+      "segment_id": "46e586a3",
+      "source_content": "Note that, the `ValueIsNull` returns true if the value is JSON `null`,\nbut not database `NULL`.",
+      "source_content_hash": "445e339099392b3f793df0cd80228a32034fa5acb5f16dac28eaf0801e9547df",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "注意：`ValueIsNull`仅在值为JSON `null`时返回true，不适用于数据库`NULL`。"
+      }
+    },
+    {
+      "segment_id": "c2db81f5",
+      "source_content": "#### Compare the length of a JSON array",
+      "source_content_hash": "322e65b453ce578e3eeddbcd6754c180d3be7330105acbbfb6e8ddee248f2ec2",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 比较JSON数组长度"
+      }
+    },
+    {
+      "segment_id": "ca8f8565",
+      "source_content": "```go\nsqljson.LenEQ(user.FieldAttrs, 2)\n\nsql.Or(\n\tsqljson.LenGT(user.FieldData, 10, sqljson.Path(\"attributes\")),\n\tsqljson.LenLT(user.FieldData, 20, sqljson.Path(\"attributes\")),\n)\n```",
+      "source_content_hash": "91a8664d006e1b2aa6f8a0245f3e722659edca58257581bf12e7a6caf3c689f4",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ca8f8565"
+      }
+    },
+    {
+      "segment_id": "793be93c",
+      "source_content": "#### Check if a JSON value contains another value",
+      "source_content_hash": "352cf35afe526ac173810c7b6d7cc70d898a97e8dbd6eac841704428e6fbdd1f",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查JSON值是否包含另一值"
+      }
+    },
+    {
+      "segment_id": "be1986a6",
+      "source_content": "```go\nsqljson.ValueContains(user.FieldData, data)\n\nsqljson.ValueContains(user.FieldData, attrs, sqljson.Path(\"attributes\"))\n\nsqljson.ValueContains(user.FieldData, code, sqljson.DotPath(\"attributes[0].status_code\"))\n```",
+      "source_content_hash": "77f7a88f33fe2a8c957e497b0474bf8924713100238e4db26681da914d650717",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_be1986a6"
+      }
+    },
+    {
+      "segment_id": "d087570f",
+      "source_content": "#### Check if a JSON string value contains a given substring or has a given suffix or prefix",
+      "source_content_hash": "ca8682b6adfa6a57e0da04e6df4c623f019682b33003712438fe3232490bdb2c",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查JSON字符串值是否包含子串/具有特定前缀或后缀"
+      }
+    },
+    {
+      "segment_id": "97766080",
+      "source_content": "```go\nsqljson.StringContains(user.FieldURL, \"github\", sqljson.Path(\"host\"))\n\nsqljson.StringHasSuffix(user.FieldURL, \".com\", sqljson.Path(\"host\"))\n\nsqljson.StringHasPrefix(user.FieldData, \"20\", sqljson.DotPath(\"attributes[0].status_code\"))\n```",
+      "source_content_hash": "f4aacd9ed5aa80660387bd76a3c5fb3f416818783430e79ab728443d0bfe5400",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_97766080"
+      }
+    },
+    {
+      "segment_id": "c06a14cd",
+      "source_content": "#### Check if a JSON value is equal to any of the values in a list",
+      "source_content_hash": "52851164a1d129fd577ba176a93a907f165223a56ec557b2f1bdf40fb4ec80a3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 检查JSON值是否等于列表中任一值"
+      }
+    },
+    {
+      "segment_id": "4aede6b2",
+      "source_content": "```go\nsqljson.ValueIn(user.FieldURL, []any{\"https\", \"ftp\"}, sqljson.Path(\"Scheme\"))\n\nsqljson.ValueNotIn(user.FieldURL, []any{\"github\", \"gitlab\"}, sqljson.Path(\"Host\"))\n```",
+      "source_content_hash": "01bb463da253facbb7c6252e97f06d31d578038413782d4f9afb3308e4ef37c2",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_4aede6b2"
+      }
+    },
+    {
+      "segment_id": "28d66ee4",
+      "source_content": "## Comparing Fields",
+      "source_content_hash": "558a43e615e583e8f5146b81f645dca97a6a3c32e5782f88bbcde4f1863cc4a3",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 字段比较"
+      }
+    },
+    {
+      "segment_id": "0974dfbb",
+      "source_content": "The `dialect/sql` package provides a set of comparison functions that can be used to compare fields in a query.",
+      "source_content_hash": "0cc3d1d756bd67638c94362f1879346786efca320eefa2a00eb43ae46904c618",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "`dialect/sql`包提供了一组比较函数，可用于查询中的字段比较。"
+      }
+    },
+    {
+      "segment_id": "30d584f8",
+      "source_content": "```go\nclient.Order.Query().\n\tWhere(\n\t\tsql.FieldsEQ(order.FieldTotal, order.FieldTax),\n        sql.FieldsNEQ(order.FieldTotal, order.FieldDiscount),\n\t).\n\tAll(ctx)\n\nclient.Order.Query().\n\tWhere(\n\t\torder.Or(\n\t\t\tsql.FieldsGT(order.FieldTotal, order.FieldTax),\n\t\t\tsql.FieldsLT(order.FieldTotal, order.FieldDiscount),\n\t\t),\n\t).\n\tAll(ctx)\n```",
+      "source_content_hash": "dd3a6a54b6884255e34ff6959cebc78f40d9a973ed7cb103fffc3e3ca5d9049c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_30d584f8"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/predicates.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.664978+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "66cc7ad8c51fe3e458a41f43ee1294ebfe9d893d2f3149b175828c6a2860edf0"
+  }
+}

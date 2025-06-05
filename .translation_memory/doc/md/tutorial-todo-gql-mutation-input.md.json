@@ -1,0 +1,512 @@
+{
+  "source_file_path_relative_to_docusaurus_root": "../md/tutorial-todo-gql-mutation-input.md",
+  "source_file_content_hash": "0821c3a4779f476aad6a26c9549120ff6572b1f3fe99fcc74cbdafda9b3e32c3",
+  "segments": [
+    {
+      "segment_id": "58cfcc64",
+      "source_content": "---\nid: tutorial-todo-gql-mutation-input\ntitle: Mutation Inputs\nsidebar_label: Mutation Inputs\n---",
+      "source_content_hash": "f3a46f58ca362f4d107d59616e1d7cee82b037ca43c86ae3ba4f6d8aa606a7ac",
+      "node_type": "yaml",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_58cfcc64"
+      }
+    },
+    {
+      "segment_id": "6ef78e84",
+      "source_content": "In this section, we continue the [GraphQL example](tutorial-todo-gql.mdx) by explaining how to extend the Ent code\ngenerator using Go templates and generate [input type](https://graphql.org/graphql-js/mutations-and-input-types/)\nobjects for our GraphQL mutations that can be applied directly on Ent mutations.",
+      "source_content_hash": "631f35c954bbfa5b3fd0ddd8e2c4adab70e05a42f7fc2fdae6248db2ad9919e5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本节我们将延续[GraphQL示例](tutorial-todo-gql.mdx)，讲解如何通过Go模板扩展Ent代码生成器，并为GraphQL变更操作生成可直接应用于Ent变更的[输入类型](https://graphql.org/graphql-js/mutations-and-input-types/)对象。"
+      }
+    },
+    {
+      "segment_id": "8a5f6a7b",
+      "source_content": "#### Clone the code (optional)",
+      "source_content_hash": "b068b18a91c2d1cb5709786f96baae783976def17ac4580a202a72c3f85fa808",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 克隆代码（可选）"
+      }
+    },
+    {
+      "segment_id": "180bddb1",
+      "source_content": "The code for this tutorial is available under [github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example),\nand tagged (using Git) in each step. If you want to skip the basic setup and start with the initial version of the GraphQL\nserver, you can clone the repository and run the program as follows:",
+      "source_content_hash": "c5ddf1e7fc5a58b55d73a9234b2b91ae7191a444529dad40258da4c79ab1ab7f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "本教程代码托管于[github.com/a8m/ent-graphql-example](https://github.com/a8m/ent-graphql-example)，每个步骤都有对应的Git标签。若想跳过基础配置直接使用GraphQL服务器的初始版本，可按以下方式克隆仓库并运行程序："
+      }
+    },
+    {
+      "segment_id": "93be3c14",
+      "source_content": "```console\ngit clone git@github.com:a8m/ent-graphql-example.git\ncd ent-graphql-example \ngo run ./cmd/todo/\n```",
+      "source_content_hash": "2fa40aa0226f164db69ac24b995a3ed9a55deb1c19c3ff3ea6301a27aaf46a06",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_93be3c14"
+      }
+    },
+    {
+      "segment_id": "40f9552a",
+      "source_content": "## Mutation Types",
+      "source_content_hash": "167d223323b5d4223668004cfe21e4ada47c4344059520bda8fef8c0905705fc",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 变更类型"
+      }
+    },
+    {
+      "segment_id": "f2c2bdd0",
+      "source_content": "Ent supports generating mutation types. A mutation type can be accepted as an input for GraphQL mutations, and it is\nhandled and verified by Ent. Let's tell Ent that our GraphQL `Todo` type supports create and update operations:",
+      "source_content_hash": "62d998e4b9176fde1c4fcb5221026dd08c05a2733b4ba422b58dbe9490d10577",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "Ent支持生成变更类型。这类类型可作为GraphQL变更的输入参数，并由Ent进行处理和验证。我们需要告知Ent我们的GraphQL `Todo`类型支持创建和更新操作："
+      }
+    },
+    {
+      "segment_id": "15a1fd96",
+      "source_content": "```go title=\"ent/schema/todo.go\"\nfunc (Todo) Annotations() []schema.Annotation {\n\treturn []schema.Annotation{\n\t\tentgql.QueryField(),\n\t\t//highlight-next-line\n\t\tentgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),\n\t}\n}\n```",
+      "source_content_hash": "09e96718b1df9cfc869ffcf457181c03ab13f7e5cd5c7e2dbbc8182f3848a07d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_15a1fd96"
+      }
+    },
+    {
+      "segment_id": "135468ee",
+      "source_content": "Then, run code generation:",
+      "source_content_hash": "69171bc593c116a6715faf1d285384535e5b247984c68cdfbc27223e6d8b07a9",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "然后运行代码生成："
+      }
+    },
+    {
+      "segment_id": "a11df754",
+      "source_content": "```go\ngo generate .\n```",
+      "source_content_hash": "6334f683dae58c5a8d82e6a8ffe78b81eb25dc9aec4810f2b24543f970ca5ddf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a11df754"
+      }
+    },
+    {
+      "segment_id": "95e9ba12",
+      "source_content": "You'll notice that Ent generated for you 2 types: `ent.CreateTodoInput` and `ent.UpdateTodoInput`.",
+      "source_content_hash": "c57bb469369838337916a982ed06d60162483d73632973c262eef11a169274d3",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "您会注意到Ent已生成两种类型：`ent.CreateTodoInput`和`ent.UpdateTodoInput`。"
+      }
+    },
+    {
+      "segment_id": "8bddee80",
+      "source_content": "## Mutations",
+      "source_content_hash": "f0230c152d1f58a7f6bd4f257e71e578057a437bbb740d21ac2cbf973c9d26e8",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 变更操作"
+      }
+    },
+    {
+      "segment_id": "a9d49f92",
+      "source_content": "After generating our mutation inputs, we can connect them to the GraphQL mutations:",
+      "source_content_hash": "2149c7a03415523c5a63a094087195d1109716f7f4d2086583db10f6d2ce69ca",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "生成变更输入类型后，我们可以将其与GraphQL变更操作关联："
+      }
+    },
+    {
+      "segment_id": "95318d95",
+      "source_content": "```graphql title=\"todo.graphql\"\ntype Mutation {\n  createTodo(input: CreateTodoInput!): Todo!\n  updateTodo(id: ID!, input: UpdateTodoInput!): Todo!\n}\n```",
+      "source_content_hash": "cd41700e02606704bb70d445ea4f8aba7596bef56ca57e234587c70fd31c297f",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_95318d95"
+      }
+    },
+    {
+      "segment_id": "4d52a261",
+      "source_content": "Running code generation we'll generate the actual mutations and the only thing left after that is to bind the resolvers\nto Ent.",
+      "source_content_hash": "c779a41159d16234413c3aee41ac0a885ca6bc915f72f2730633d369e0129857",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "运行代码生成将生成实际变更操作，最后只需将解析器与Ent绑定。"
+      }
+    },
+    {
+      "segment_id": "6d254e09",
+      "source_content": "```go\ngo generate .\n```",
+      "source_content_hash": "6334f683dae58c5a8d82e6a8ffe78b81eb25dc9aec4810f2b24543f970ca5ddf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_6d254e09"
+      }
+    },
+    {
+      "segment_id": "750e2f7e",
+      "source_content": "```go title=\"todo.resolvers.go\"\n// CreateTodo is the resolver for the createTodo field.\nfunc (r *mutationResolver) CreateTodo(ctx context.Context, input ent.CreateTodoInput) (*ent.Todo, error) {\n\treturn r.client.Todo.Create().SetInput(input).Save(ctx)\n}\n\n// UpdateTodo is the resolver for the updateTodo field.\nfunc (r *mutationResolver) UpdateTodo(ctx context.Context, id int, input ent.UpdateTodoInput) (*ent.Todo, error) {\n\treturn r.client.Todo.UpdateOneID(id).SetInput(input).Save(ctx)\n}\n```",
+      "source_content_hash": "f5648ffae54a2d81a540c26dc32a0f5e2a354e1cbd1566b4dc2b4d83bbeea97b",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_750e2f7e"
+      }
+    },
+    {
+      "segment_id": "b1cbdb65",
+      "source_content": "## Test the `CreateTodo` Resolver",
+      "source_content_hash": "13fbf967ecaf0de09beccad9e159cd4848eca5d907e97ef8eb85526681bb038b",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 测试`CreateTodo`解析器"
+      }
+    },
+    {
+      "segment_id": "afa378f7",
+      "source_content": "Let's start with creating 2 todo items by executing the `createTodo` mutations twice.",
+      "source_content_hash": "624f432c7c3d2244a146065af30a6eae97b8ca3a25dccd9016081e914bf1e880",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "首先通过执行两次`createTodo`变更来创建2个待办事项。"
+      }
+    },
+    {
+      "segment_id": "58ed925f",
+      "source_content": "#### Mutation",
+      "source_content_hash": "bea8dd9b4289fda06d66662c82b1daf975313e7d5501171a13e9f6232c7dfd0e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 变更语句"
+      }
+    },
+    {
+      "segment_id": "9f4336b3",
+      "source_content": "```graphql\nmutation CreateTodo {\n   createTodo(input: {text: \"Create GraphQL Example\", status: IN_PROGRESS, priority: 2}) {\n     id\n     text\n     createdAt\n     priority\n     parent {\n       id\n     }\n   }\n }\n```",
+      "source_content_hash": "e256accb45f54c62d769744902f3277e466bb8b49a3e9dd1e684b35b94d76b71",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_9f4336b3"
+      }
+    },
+    {
+      "segment_id": "e33a2404",
+      "source_content": "#### Output",
+      "source_content_hash": "53e5266fb3a1cbc900db7f3fa24625c4a7fee1e3e83c1cd0caf69c16541e01ce",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 输出结果"
+      }
+    },
+    {
+      "segment_id": "ec99e704",
+      "source_content": "```json\n{\n  \"data\": {\n    \"createTodo\": {\n      \"id\": \"1\",\n      \"text\": \"Create GraphQL Example\",\n      \"createdAt\": \"2021-04-19T10:49:52+03:00\",\n      \"priority\": 2,\n      \"parent\": null\n    }\n  }\n}\n```",
+      "source_content_hash": "f1d4cb0acdca49aeead4c7ef83b5a040ef940644dcb42f9deef1254224e17ada",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_ec99e704"
+      }
+    },
+    {
+      "segment_id": "d1f76d04",
+      "source_content": "#### Mutation",
+      "source_content_hash": "bea8dd9b4289fda06d66662c82b1daf975313e7d5501171a13e9f6232c7dfd0e",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 变更语句"
+      }
+    },
+    {
+      "segment_id": "f39e109c",
+      "source_content": "```graphql\nmutation CreateTodo {\n   createTodo(input: {text: \"Create Tracing Example\", status: IN_PROGRESS, priority: 2}) {\n     id\n     text\n     createdAt\n     priority\n     parent {\n       id\n     }\n   }\n }\n```",
+      "source_content_hash": "abdddae0e8af2afe0af07cdb72d9d8653c64357ebc4e7c0f17f80ce415829cc3",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_f39e109c"
+      }
+    },
+    {
+      "segment_id": "23b96cc0",
+      "source_content": "#### Output",
+      "source_content_hash": "53e5266fb3a1cbc900db7f3fa24625c4a7fee1e3e83c1cd0caf69c16541e01ce",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 输出结果"
+      }
+    },
+    {
+      "segment_id": "2f34b0ad",
+      "source_content": "```json\n{\n  \"data\": {\n    \"createTodo\": {\n      \"id\": \"2\",\n      \"text\": \"Create Tracing Example\",\n      \"createdAt\": \"2021-04-19T10:50:01+03:00\",\n      \"priority\": 2,\n      \"parent\": null\n    }\n  }\n}\n```",
+      "source_content_hash": "cb38ab311ed9a7620ca903febb4a029303eaa15bc388273c6cb99f645abea25a",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_2f34b0ad"
+      }
+    },
+    {
+      "segment_id": "734d40d8",
+      "source_content": "## Test the `UpdateTodo` Resolver",
+      "source_content_hash": "76a61f567905aa3b18d07be91ba65cc7880ce110b1b6317d542fe19bf6408038",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 测试`UpdateTodo`解析器"
+      }
+    },
+    {
+      "segment_id": "9e90a9b3",
+      "source_content": "The only thing left is to test the `UpdateTodo` resolver. Let's use it to update the `parent` of the 2nd todo item to `1`.",
+      "source_content_hash": "ecfd3ed57b1eb64bd1e1a50ccd6b18d567e838c69d8781c3d50b0be8d6411e7e",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "最后测试`UpdateTodo`解析器，将第二个待办事项的`parent`字段更新为`1`："
+      }
+    },
+    {
+      "segment_id": "a4a107b4",
+      "source_content": "```graphql\nmutation UpdateTodo {\n  updateTodo(id: 2, input: {parentID: 1}) {\n    id\n    text\n    createdAt\n    priority\n    parent {\n      id\n      text\n    }\n  }\n}\n```",
+      "source_content_hash": "d90b9f8058b94259b0b627eabb4075f43911843ecd83f33a32f3d10cd7ce05a9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_a4a107b4"
+      }
+    },
+    {
+      "segment_id": "ee213c98",
+      "source_content": "#### Output",
+      "source_content_hash": "53e5266fb3a1cbc900db7f3fa24625c4a7fee1e3e83c1cd0caf69c16541e01ce",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "#### 输出结果"
+      }
+    },
+    {
+      "segment_id": "75daf40d",
+      "source_content": "```json\n{\n  \"data\": {\n    \"updateTodo\": {\n      \"id\": \"2\",\n      \"text\": \"Create Tracing Example\",\n      \"createdAt\": \"2021-04-19T10:50:01+03:00\",\n      \"priority\": 1,\n      \"parent\": {\n        \"id\": \"1\",\n        \"text\": \"Create GraphQL Example\"\n      }\n    }\n  }\n}\n```",
+      "source_content_hash": "52f0c3867411a8cac7da6b48fea7375be9bc21c736f1f8d7580aa76f1e78dc1d",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_75daf40d"
+      }
+    },
+    {
+      "segment_id": "2b5df263",
+      "source_content": "## Create edges with mutations",
+      "source_content_hash": "f9952db30beefeaf7d4c5ecb1ef40be37a9615635813ce6a9f1c062391f0cf17",
+      "node_type": "heading",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "## 通过变更创建关联边"
+      }
+    },
+    {
+      "segment_id": "e29bd639",
+      "source_content": "To create the edges of a node in the same mutation, you can extend the GQL mutation input with the edge fields:",
+      "source_content_hash": "28ffc4a29a9c1d4ff05c131255b93973b65cec4565477f15d3e965e896b05218",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若要在同个变更中创建节点的关联边，可扩展GQL变更输入类型添加边字段："
+      }
+    },
+    {
+      "segment_id": "44ecd2e3",
+      "source_content": "```graphql title=\"extended.graphql\"\nextend input CreateTodoInput {\n  createChildren: [CreateTodoInput!]\n}\n```",
+      "source_content_hash": "f5397d25bbb5fdffda7e882822e70984abf8b171c67eb6fcfedc910e13b6b459",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_44ecd2e3"
+      }
+    },
+    {
+      "segment_id": "9ebd9d9b",
+      "source_content": "Next, run code generation again:",
+      "source_content_hash": "16b8a65eac7f401183e7f55b35d26721e6b0335cef64b1559c6417b0bb6c2295",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "再次运行代码生成："
+      }
+    },
+    {
+      "segment_id": "0152e600",
+      "source_content": "```go\ngo generate .\n```",
+      "source_content_hash": "6334f683dae58c5a8d82e6a8ffe78b81eb25dc9aec4810f2b24543f970ca5ddf",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_0152e600"
+      }
+    },
+    {
+      "segment_id": "af016b8e",
+      "source_content": "GQLGen will generate the resolver for the `createChildren` field, allowing you to use it in your resolver:",
+      "source_content_hash": "2f0098286f82631e755ac28c2be030ff9ae1cb3b404ddefb4bd63d6b60d0b333",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "GQLGen会为`createChildren`字段生成解析器，您可以在解析器中使用："
+      }
+    },
+    {
+      "segment_id": "96831bda",
+      "source_content": "```go title=\"extended.resolvers.go\"\n// CreateChildren is the resolver for the createChildren field.\nfunc (r *createTodoInputResolver) CreateChildren(ctx context.Context, obj *ent.CreateTodoInput, data []*ent.CreateTodoInput) error {\n\tpanic(fmt.Errorf(\"not implemented: CreateChildren - createChildren\"))\n}\n```",
+      "source_content_hash": "2ad9ca58f8dcc6fd5dd2675803adc95296cb3a04b35bb13020c67a348cd66f19",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_96831bda"
+      }
+    },
+    {
+      "segment_id": "b4204c03",
+      "source_content": "Now, we need to implement the logic to create the children:",
+      "source_content_hash": "ecd64eca653f09a39d0a93026fa31e3f76a2079f265b5aec9c0a8587ffaff0b5",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "现在需要实现创建子节点的逻辑："
+      }
+    },
+    {
+      "segment_id": "d9ca18af",
+      "source_content": "```go title=\"extended.resolvers.go\"\n// CreateChildren is the resolver for the createChildren field.\nfunc (r *createTodoInputResolver) CreateChildren(ctx context.Context, obj *ent.CreateTodoInput, data []*ent.CreateTodoInput) error {\n\t// highlight-start\n\t// NOTE: We need to use the Ent client from the context.\n\t// To ensure we create all of the children in the same transaction.\n\t// See: Transactional Mutations for more information.\n\tc := ent.FromContext(ctx)\n\t// highlight-end\n\tbuilders := make([]*ent.TodoCreate, len(data))\n\tfor i := range data {\n\t\tbuilders[i] = c.Todo.Create().SetInput(*data[i])\n\t}\n\ttodos, err := c.Todo.CreateBulk(builders...).Save(ctx)\n\tif err != nil {\n\t\treturn err\n\t}\n\tids := make([]int, len(todos))\n\tfor i := range todos {\n\t\tids[i] = todos[i].ID\n\t}\n\tobj.ChildIDs = append(obj.ChildIDs, ids...)\n\treturn nil\n}\n```",
+      "source_content_hash": "bbee8d870120982bc05858a4c6069a8b754532203576ff85d47dadb5b97db8c0",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_d9ca18af"
+      }
+    },
+    {
+      "segment_id": "09d52457",
+      "source_content": "Change the following lines to use the transactional client:",
+      "source_content_hash": "0f7f31b131583d644fd7e233958c1df924db2248d5feebfb899104c6d16967e4",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "修改以下代码使用事务客户端："
+      }
+    },
+    {
+      "segment_id": "741c654c",
+      "source_content": "```go title=\"todo.resolvers.go\"\n// CreateTodo is the resolver for the createTodo field.\nfunc (r *mutationResolver) CreateTodo(ctx context.Context, input ent.CreateTodoInput) (*ent.Todo, error) {\n\t// highlight-next-line\n\treturn ent.FromContext(ctx).Todo.Create().SetInput(input).Save(ctx)\n}\n\n// UpdateTodo is the resolver for the updateTodo field.\nfunc (r *mutationResolver) UpdateTodo(ctx context.Context, id int, input ent.UpdateTodoInput) (*ent.Todo, error) {\n\t// highlight-next-line\n\treturn ent.FromContext(ctx).Todo.UpdateOneID(id).SetInput(input).Save(ctx)\n}\n```",
+      "source_content_hash": "c8ab8b213ab5798e4438968259866363d7da423767999a2779ba659c366db235",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_741c654c"
+      }
+    },
+    {
+      "segment_id": "6dc3e423",
+      "source_content": "Test the mutation with the children:",
+      "source_content_hash": "93c9b90266c9c1e5d06b9410a97f3afbfaf7c0484b79b0201aa314c58de7066f",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "测试带子节点的变更操作："
+      }
+    },
+    {
+      "segment_id": "ceb4fd26",
+      "source_content": "**Mutation**",
+      "source_content_hash": "6a1192ad39000ff1f146d867b15aed77a8832214d026335d0e7122782f0e8213",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**变更语句**"
+      }
+    },
+    {
+      "segment_id": "7f3d1f07",
+      "source_content": "```graphql\nmutation {\n  createTodo(input: {\n    text: \"parent\", status:IN_PROGRESS,\n    createChildren: [\n      { text: \"children1\", status: IN_PROGRESS },\n      { text: \"children2\", status: COMPLETED }\n    ]\n  }) {\n    id\n    text\n    children {\n      id\n      text\n      status\n    }\n  }\n}\n```",
+      "source_content_hash": "e30b8accfc4bebdbbe69f0c95765bc8288f607399eab1028440ccc0d98c6df35",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_7f3d1f07"
+      }
+    },
+    {
+      "segment_id": "6085c028",
+      "source_content": "**Output**",
+      "source_content_hash": "21a5bd46032968f6c45c9b56894e8182f77f21c34df0131d10f2716a06e942a0",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "**输出结果**"
+      }
+    },
+    {
+      "segment_id": "cb0a9597",
+      "source_content": "```json\n{\n  \"data\": {\n    \"createTodo\": {\n      \"id\": \"3\",\n      \"text\": \"parent\",\n      \"children\": [\n        {\n          \"id\": \"1\",\n          \"text\": \"children1\",\n          \"status\": \"IN_PROGRESS\"\n        },\n        {\n          \"id\": \"2\",\n          \"text\": \"children2\",\n          \"status\": \"COMPLETED\"\n        }\n      ]\n    }\n  }\n}\n```",
+      "source_content_hash": "9ce71d45e825805829e0c725fdbf6cd659fe82ebe53e969b9d6fd5ef7da426b9",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_cb0a9597"
+      }
+    },
+    {
+      "segment_id": "60e22db4",
+      "source_content": "If you enable the debug Client, you'll see that the children are created in the same transaction:",
+      "source_content_hash": "0cc02cc71e84efcd1a23f32115b89df06b3e83c9d7528b6b26bd32f882181b53",
+      "node_type": "paragraph",
+      "translatable": true,
+      "translations": {
+        "zh-CN": "若启用调试客户端，可见子节点在同一事务中被创建："
+      }
+    },
+    {
+      "segment_id": "98fbc9ce",
+      "source_content": "```log\n2022/12/14 00:27:41 driver.Tx(7e04b00b-7941-41c5-9aee-41c8c2d85312): started\n2022/12/14 00:27:41 Tx(7e04b00b-7941-41c5-9aee-41c8c2d85312).Query: query=INSERT INTO `todos` (`created_at`, `priority`, `status`, `text`) VALUES (?, ?, ?, ?), (?, ?, ?, ?) RETURNING `id` args=[2022-12-14 00:27:41.046344 +0700 +07 m=+5.283557793 0 IN_PROGRESS children1 2022-12-14 00:27:41.046345 +0700 +07 m=+5.283558626 0 COMPLETED children2]\n2022/12/14 00:27:41 Tx(7e04b00b-7941-41c5-9aee-41c8c2d85312).Query: query=INSERT INTO `todos` (`text`, `created_at`, `status`, `priority`) VALUES (?, ?, ?, ?) RETURNING `id` args=[parent 2022-12-14 00:27:41.047455 +0700 +07 m=+5.284669251 IN_PROGRESS 0]\n2022/12/14 00:27:41 Tx(7e04b00b-7941-41c5-9aee-41c8c2d85312).Exec: query=UPDATE `todos` SET `todo_parent` = ? WHERE `id` IN (?, ?) AND `todo_parent` IS NULL args=[3 1 2]\n2022/12/14 00:27:41 Tx(7e04b00b-7941-41c5-9aee-41c8c2d85312).Query: query=SELECT DISTINCT `todos`.`id`, `todos`.`text`, `todos`.`created_at`, `todos`.`status`, `todos`.`priority` FROM `todos` WHERE `todo_parent` = ? args=[3]\n2022/12/14 00:27:41 Tx(7e04b00b-7941-41c5-9aee-41c8c2d85312): committed\n```",
+      "source_content_hash": "0b3ec1d730fb8bc3dc1cc6c54a7c7c670d18c2652243c84df91a10830bdbfe1c",
+      "node_type": "code",
+      "translatable": false,
+      "translations": {
+        "zh-CN": "@@untranslatable_placeholder_98fbc9ce"
+      }
+    }
+  ],
+  "target_i18n_subpath": "docusaurus-plugin-content-docs/current/tutorial-todo-gql-mutation-input.md",
+  "last_updated_timestamp": "2025-06-05T15:16:18.686741+00:00",
+  "schema_version": "1.0",
+  "translated_versions": {
+    "zh-CN": "0821c3a4779f476aad6a26c9549120ff6572b1f3fe99fcc74cbdafda9b3e32c3"
+  }
+}
